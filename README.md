@@ -1,6 +1,6 @@
 # kodi
 Ultimate Whitecream plugin update
-[B]Version 1.1.65 (mb)[/B]
+Version 1.1.65 
 Fixed: All TUBES
 Fixed: All Hentais
 Fixed: Webcams
