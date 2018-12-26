@@ -7,4 +7,4 @@ Fixed: Webcams
 Fixed: All Movies
 Fixed: All SCENES
 
-All credit to Jefry2012 on reddit.
+All credit to Jefry2012 on reddit for providing the plugin and holisticdioxide who is the author.
