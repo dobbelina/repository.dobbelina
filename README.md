@@ -1,4 +1,4 @@
-# kodi
+# Ultimate Whitecream
 Ultimate Whitecream plugin update	Version 1.1.66
 
 Fixed: Keyword deletion error
