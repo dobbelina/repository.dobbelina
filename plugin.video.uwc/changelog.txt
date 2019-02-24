@@ -1,0 +1,929 @@
+Version 1.1.67 
+Fixed: WatchXXXFree
+Fixed: YesPornPlease
+Fixed: ParadiseHill
+
+Version 1.1.66 
+Fixed: Keyword deletion error
+Fixed: WatchXXXFree
+Fixed: Porntrex
+Fixed: Camsoda
+ADDED: YesPornPlease
+
+[B]Version 1.1.65 (mb)[/B]
+Fixed: All TUBES
+Fixed: All Hentais
+Fixed: Webcams
+Fixed: All Movies
+Fixed: All SCENES
+
+[B]Version 1.1.64[/B]
+Fixed: Porntrex categories
+Fixed: Videomegaporn
+Fixed: Xtasie pagination and category listing
+Fixed: PornsLand channels pagination
+Fixed: Porndig
+
+
+[B]Version 1.1.63[/B]
+New site: Animeid Hentai
+New site: Pornvibe
+Fixed: Naked
+Fixed: ElReyX
+Fixed: Porntrex pagination when searching
+Fixed: PornHub search
+Favorites can be updated when adding them again with different pictures or names
+
+
+[B]Version 1.1.62[/B]
+New site: Datoporn
+Fixed: Porn00
+Fixed: XvideoSpanish
+Added minimal option to organize favorites: "Move favorite to end" is available from the context menu to move the video to the end of the favorites list
+Switch to ResolveURL XXX plugins from internally bundled ResolveURL plugins
+Keywords can now be cleared from the addon settings
+Added option to clear favorites from the addon settings
+Added option to backup and restore keywords and favorites
+
+
+[B]Version 1.1.61[/B]
+New site: YourPorn
+New site: JavWhores (thanks syknet69)
+Fixed: Xhamster
+Fixed: Cat3movie
+Fixed: milf.nl
+Fixed: Spankbang and added quality selector
+Removed: Sexix (site is down)
+
+
+[B]Version 1.1.60[/B]
+Fixed: Xtheatre pagination
+Fixed: Xhamster
+Fixed: Anybunny
+Fixed: HClips
+Changed to ResolveURL from URLResolver
+ResolveURL settings can now be opened directly from Ultimate Whitecream settings
+
+
+[B]Version 1.1.59[/B]
+New site: Vidz7
+Added: Porndig 4K support
+Added: Porntrex 4K support and quality selector
+Fixed: TubePornClassic
+Fixed: CamSoda
+Fixed: Porntrex images and category alphabetical order
+
+
+[B]Version 1.1.58[/B]
+Readded: HentaiHaven
+Fixed: Porntrex images
+Fixed: TubePornClassic
+Fixed: Cam4
+Usage of universal resolvers can now be enabled/disabled in addon settings (they should still be configured first in URLResolver).
+
+
+[B]Version 1.1.57[/B]
+New site: PornsLand
+Fixed: Freeomovie pagination
+Fixed: Czech3x pagination
+Fixed: Xtasie
+Fixed: PornHub
+Changed: Host detection is now done by URLResolver. This should result in more hosts to choose from.
+
+
+[B]Version 1.1.56[/B]
+Fixed: WatchXXXFree
+Fixed: Beeg
+Fixed: ElReyX
+Fixed: XvideoSpanish
+Fixed: HQPorner
+Fixed: StreamXXX
+Fixed: Xtasie
+Fixed: Ero-tik
+Fixed: K18
+Fixed: DaftSex
+Fixed: CzechHD (renamed to Czech3x)
+Fixed: Xtheatre
+Fixed: PelisxPorno
+Fixed: Eroticage
+Fixed: SpankBang
+Fixed: AmateurCool
+Fixed: Vporn
+Fixed: xHamster
+Fixed: Porndig
+Fixed: CamSoda
+Fixed: HDZog
+Fixed: TubePornClassic categories
+Fixed: PornHub video listing
+Fixed: Milf.nl video listing
+Fixed: HQPorner preview images
+Removed: HentaiHaven
+General video source fixes
+
+
+[B]Version 1.1.55[/B]
+Fixed: Porntrex listing - next page categories (private videos are hidden)
+Fixed: Porn00
+Fixed: Czechhd
+Fixed: HDZog
+Fixed: ParadiseHill
+Fixed: Other stuff I forgot
+Removed: Nudeflix
+
+
+[B]Version 1.1.54[/B]
+Added: Streamate and Bongacams (thanks hdgdl)
+Fixed: MrSexe, Pornhub, Rapidvideo
+Fixed: Tubepornclassics, Daftsex, Naked
+
+
+[B]Version 1.1.53[/B]
+Fixed: Myfreecams
+Added: Rapidvideo support in utils (for Ero-tik)
+Removed: HDPoz (redirects to Sexix)
+
+
+[B]Version 1.1.52[/B]
+Added: Daftsex (thanks hdgdl)
+Fixed: Xhamster, Chaturbate, Pornhive
+Fixed: some internal stuff
+
+
+[B]Version 1.1.51[/B]
+Fixed: Pornhub, Elreyx, HDZog, Porntrex
+Fixed: xxxstreams(org)
+Changed: Xtheatre is now Krypton only because of ssl
+
+
+[B]Version 1.1.50[/B]
+Fixed: Pornhub, HQporner
+Added: Slow option for Chaturbate
+
+
+[B]Version 1.1.49[/B]
+Fixed: Hentaihaven, Chaturbate
+
+
+[B]Version 1.1.48[/B]
+Fixed: Bubbaporn, Chaturbate, PornAQ, Naked
+Fixed: VPorn, xxxstreams(org)
+
+
+[B]Version 1.1.47[/B]
+Added: HDPoz
+Added: Conformation clearing search words
+Fixed: Pornhub categories, Onelist
+
+
+[B]Version 1.1.46[/B]
+Fixed: Porntrex, Freeomovie
+Fixed: MyFreeCams, Cam4
+Removed: Unused files
+
+
+[B]Version 1.1.45[/B]
+Added: Xhamster (thanks hdgdl)
+Fixed: VPorn, Camsoda, Cam4, Naked, Xtheatre, Porntrex
+Fixed: Bubbaporn, Spankbang, HClips, ParadiseHill
+Removed: Streams, use Ultimate IPTV
+
+
+[B]Version 1.1.44[/B]
+Added: Option to enable/disable differen chaturbate sections
+Added: HD Playback for Pornhub
+Fixed: Datoporn
+Fixed: Refresh favorite images for camsoda/naked
+Fixed: Porntrex categories
+Removed: Hentaicraving
+
+
+[B]Version 1.1.43[/B]
+Added: Remove single keywords from search list (contextmenu)
+Added: Amateur Cool and VPorn (thanks anton40)
+Fixed: Chaturbate next page
+Fixed: Pornhub categories
+Fixed: Freeomovie download
+Fixed: Camsoda (thanks hdgdl)
+Changed: Todayporn -> Bubbaporn
+Changed: Chaturbate playback (see Chaturbate tab in addon settings)
+
+
+[B]Version 1.1.42[/B]
+Fixed: Cam4 (thanks hdgdl)
+Changed: Switched to Urlresolver for Openload
+Changed: Internal changes, could be some bugs, please post them
+Removed: Some offline sites
+
+
+[B]Version 1.1.41[/B]
+Fixed: Pigeon fix
+
+
+[B]Version 1.1.40[/B]
+Fixed: Openload mistake
+
+
+[B]Version 1.1.39[/B]
+Fixed: xxxstreams(org)
+Changed: internal code changes
+
+
+[B]Version 1.1.38[/B]
+Added: Cloudflare support (fixes K18)
+Fixed: CzechHD
+Fixed: xxxstreams(eu) pagination
+Fixed: Openload
+
+
+[B]Version 1.1.37[/B]
+Fixed: Openload
+
+
+[B]Version 1.1.36[/B]
+Fixed: Camsoda/Cam4 (thanks hdgdl)
+Fixed: Openload
+Fixed: FlashX
+
+
+[B]Version 1.1.35[/B]
+Improved: More supported hosts for pornhive
+
+
+[B]Version 1.1.34[/B]
+Added: Naked (webcams, thanks hdgdl)
+Improved: Camsoda (thanks hdgdl)
+Fixed: Openload
+
+
+[B]Version 1.1.33[/B]
+Fixed: Openload (again)
+
+
+[B]Version 1.1.32[/B]
+Added: Camsode (thanks hdgdl)
+Changed: Cam4 video playback (thanks hdgdl)
+Fixed: Openload
+Fixed: FlashX
+
+[B]Version 1.1.31[/B]
+Anybunny is back :)
+Improved: FlashX
+Fixed: stupid bug I added, Tubepornclassic works again
+
+
+[B]Version 1.1.30[/B]
+Added: Datoporn (for Pelisxporno)
+Fixed: Openload (thanks pitoosie)
+Fixed: FlashX
+Improved: Keeplinks
+Removed: Anybunny (couldn't get it to work)
+
+
+[B]Version 1.1.29[/B]
+Fixed: Cat3movie listing
+Fixed: Mega3x videohost
+Fixed: FlashX videohost (thanks gujal)
+Improved: PornKinoX listing
+
+
+[B]Version 1.1.28[/B]
+Added: PornkinoX (thanks anton40)
+Fixed: Anybunny video playback
+Fixed: Openload
+
+
+[B]Version 1.1.27[/B]
+Fixed: Tubepornclassic downloading
+Fixed: Chaturbate Krypton playback
+Fixed: Porndig Pornstars/Studios
+Fixed: Cancel works on all the select dialogs
+Changed: Disabled caching for the main menu's
+
+
+[B]Version 1.1.26[/B]
+Fixed: Openload (credits are in the py)
+
+
+[B]Version 1.1.25[/B]
+Fixed: Openload part 2 (??)
+
+
+[B]Version 1.1.24[/B]
+Fixed: Openload (??)
+
+
+[B]Version 1.1.23[/B]
+Added: A to Z list for HentaiHaven
+Added: Filecrypt support (Pornkino)
+Fixed: Videomegaporn
+
+
+[B]Version 1.1.22[/B]
+Added: HentaiHaven
+Fixed: Stopped flooding the log with warnings
+
+
+[B]Version 1.1.21[/B]
+Fixed: FlashX
+Fixed: Tubepornclassic categories
+Fixed: xxxstreams(org)
+
+
+[B]Version 1.1.20[/B]
+Fixed: Pornhive
+
+
+[B]Version 1.1.19[/B]
+Fixed: Better Openload Fix
+
+
+[B]Version 1.1.18[/B]
+Fixed: Openload
+
+
+[B]Version 1.1.17[/B]
+Fixed: Sexix
+
+
+[B]Version 1.1.16[/B]
+Fixed: Jetload
+Added: Streamdefence support for watchxxxfree
+
+
+[B]Version 1.1.15[/B]
+Fixed: Porntrex
+Added: Keeplinks to utils, for Pornkino
+
+
+[B]Version 1.1.14[/B]
+Fixed: Saving Streamxxx to favorites
+Fixed: FlashX videos
+Fixed: Spankbang, Videomegaporn, WatchXXXFree, ParadiseHill
+Changed: Switched Contextmenu items
+
+
+[B]Version 1.1.13[/B]
+Fixed: Openload pt 2
+Fixed: Sexix
+
+
+[B]Version 1.1.12[/B]
+Fixed: Openload
+
+
+[B]Version 1.1.11[/B]
+Fixed: Hentai section
+Fixed: Spankbang videolisting
+
+
+[B]Version 1.1.10[/B]
+Added: MyFreeCams, check for more video servers
+Added: Age check dialog on first start
+
+
+[B]Version 1.1.9[/B]
+Added: Search for xxxstreams(org) (thanks Anton40)
+Added: Sexix
+Changed: UWC Fanart, also adding it to every 'folder'
+Fixed: MyFreeCams, you should now get every video
+Fixed: ParadiseHill video listing (fixed by Anton40)
+
+
+[B]Version 1.1.8[/B]
+Fixed: Streamxxx videos
+
+
+[B]Version 1.1.7[/B]
+Fixed: Search for Dutch Tubes
+Fixed: Bug in Pornhive giving unsupported host for Flashx/Streamcloud
+Changed: Timeout MyFreeCams, maybe it finds more videos
+
+
+[B]Version 1.1.6[/B]
+Changed: Downloader (should work with Openload and Videomega), based on Simpledownloader
+Changed: Videolisting improved for Spankbang
+Removed: Download context item from the webcams
+
+
+[B]Version 1.1.5[/B]
+Added: Spankbang (commited by NothingGnome)
+Added: K18
+
+
+[B]Version 1.1.4[/B]
+Fixed: Videowood, Jetload
+Fixed: MyFreeCams hanging on 2%
+Fixed: StreamXXX search
+
+
+[B]Version 1.1.3[/B]
+Fixed: Porn00
+Fixed: Pagination Czechhd
+Removed: Playporn (site is down)
+
+
+[B]Version 1.1.2[/B]
+Fixed: Beeg
+Fixed: Cat3movie
+
+
+[B]Version 1.1.1[/B]
+Fixed: Beeg (thanks to youtube-dl)
+Fixed: PornAQ videos (support for Openload)
+Added: Option to use the thumbnails as poster/fanart
+
+
+[B]Version 1.1.0[/B]
+Fixed: Pagination for Absoluporn and some videoplayback
+Fixed: Cam4, return to older method for getting videourl
+Fixed: Videolisting/Categories StreamXXX
+Fixed: Pagination for YourFreeTube
+
+
+[B]Version 1.0.99[/B]
+Added: More supported hosts for Pornhive
+
+
+[B]Version 1.0.98[/B]
+Changed: Small update
+
+
+[B]Version 1.0.97[/B]
+Fixed: Porndig
+
+
+[B]Version 1.0.96[/B]
+Added: Videowood and Jetload video hosts
+Changed: All the video hosts in utils.py have support for multiple videos
+
+
+[B]Version 1.0.95[/B]
+Added: Anybunny
+Changed: Converted most of the OK dialogs to notifications
+
+
+[B]Version 1.0.94[/B]
+Fixed: xxxstreams(org) pagination
+
+
+[B]Version 1.0.93[/B]
+Fixed: Openload
+Fixed: Streamxxx movie url
+Added: Multiple video support for Streamcloud
+
+
+[B]Version 1.0.92[/B]
+Fixed: Nudeflix
+Fixed: Porn00
+Fixed: HQporner
+
+
+[B]Version 1.0.91[/B]
+Added: Eroticage
+
+
+[B]Version 1.0.90[/B]
+Fixed: Unplayable item bug
+Removed: javhdonline and jav720p because of questionable content
+
+
+[B]Version 1.0.89[/B]
+Fixed: Multiple keyword search for ParadiseHill
+Fixed: xxxstreams (org) videos wouldn't load on Android
+
+
+[B]Version 1.0.88[/B]
+Added: xxxstreams (org) (Anton40)
+Added: jav720p
+Added: Search for Paradisehill ;)
+
+
+[B]Version 1.0.87[/B]
+Fixed: Quick fix for OpenLoad
+
+
+[B]Version 1.0.86[/B]
+Added: xxxstreams (eu)
+Removed: jsbeautifier, now using the jsunpack module by Bstrdsmkr
+
+
+[B]Version 1.0.85[/B]
+Fixed: Streamin.to playback
+Fixed: Improved Pornhive, also added streamin.to support
+
+
+[B]Version 1.0.84[/B]
+Fixed: Videomega playback
+Fixed: Pornhive
+
+
+[B]Version 1.0.83[/B]
+Added: CzechHD
+Added: Webcam image refresh in Favorites listing
+Changed: Chaturbate listing
+
+
+[B]Version 1.0.82[/B]
+Added: You can now add/use keywords for every site with a search function
+
+
+[B]Version 1.0.81[/B]
+Changed: Cam4 rtmp url, now you can use it with an external player like VLC
+Changed: Added User-agent to Chaturbate stream
+
+
+[B]Version 1.0.80[/B]
+Added: Porndig
+Added: AbsoluPorn
+Changed: MrSexe improvements
+
+
+[B]Version 1.0.79[/B]
+Added: Option for ParadiseHill in addon settings, to play all the parts as 1 playlist
+Fixed: Cam4 fix for people not getting the cam list (I hope)
+Changed: Very small improvement in videohost detection
+
+
+[B]Version 1.0.78[/B]
+Added: Cam4
+Added: Streamcloud to utils.py for Freeomovie
+Fixed: Beeg pagination
+Changed: Chaturbate page number in Next link
+Changed: Improved Myfreecams video loading (?)
+
+
+[B]Version 1.0.77[/B]
+Added: MyFreeCams
+Fixed: Double categories in Ero-tik
+Changed: Colors in the addon are more inline with the logo
+
+
+[B]Version 1.0.76[/B]
+Fixed: Pornhub video listing
+Changed: renamed Thepornnation to ThePornEmpire
+
+
+[B]Version 1.0.75[/B]
+Added: Favorites, you can add any video to the Whitecream Favorite list from the contextmenu
+
+
+[B]Version 1.0.74[/B]
+Fixed: Beeg is back
+Changed: more categories for MrSexe
+
+
+[B]Version 1.0.73[/B]
+Added: Ero-tik
+Added: Different sections/categories for Chaturbate
+Fixed: HQPorner
+
+
+[B]Version 1.0.72[/B]
+Added: Mega3X support (for Cat3Movie)
+Fixed: Xtheatre listing
+Fixed: PornAQ listing
+
+
+[B]Version 1.0.71[/B]
+Added: MrSexe (anton40)
+
+
+[B]Version 1.0.70[/B]
+Changed: Better image cache removal for Chaturbate, now it also removes the files from the hd.
+Added: Option in the Addon settings for auto-refresh image cache on Chaturbate.
+
+
+[B]Version 1.0.69[/B]
+Fixed: HClips channel listing
+Changed: Streamin.to url handling
+Added: Chaturbate, remove cached images from textures database. Not advised, but some people requested it.
+
+
+[B]Version 1.0.68[/B]
+Fixed: Openload
+Fixed: ParadiseHill going to page 11
+Fixed: Hdclips Next page channels
+
+[B]Version 1.0.67[/B]
+Added: Pornhub (anton40)
+Fixed: Watchxxxfree
+Fixed: Some other small fixes from anton40
+
+
+[B]Version 1.0.66[/B]
+Fixed: Freeomovie (I should test the pull requests before releasing)
+
+
+[B]Version 1.0.65[/B]
+Added: Hclips (anton40)
+Added: Freeomovie (anton40)
+Fixed: porn00
+Changed: temporary disabled watchxxxfree and beeg until fixed
+
+
+[B]Version 1.0.64[/B]
+Fixed: Videomega videos
+Fixed: Videomegaporn video listing
+
+
+[B]Version 1.0.63[/B]
+Added: ParadiseHill
+Fixed: PornTrex categories
+
+
+[B]Version 1.0.62[/B]
+Added: TubePornClassic (by request)
+Changed: Moved HDzog to scenes and 'Play from here' support for HDzog
+
+
+[B]Version 1.0.61[/B]
+Added: HDzog (anton40)
+Added: Cat3Movie (anton40)
+Changed: Improved FlashX url detection, so FlashX videos from PornKino works
+
+
+[B]Version 1.0.60[/B]
+Fixed: Better handling when the cookie file gets corrupted
+Changed: Again, the logo...this is the last time for a while :)
+
+
+[B]Version 1.0.59[/B]
+Fixed: libogski.com, rebranded to thepornation.com (Fr33m1nd)
+Added: Playporn & Pornkino (Fr33m1nd)
+Added: Justporn.to (anton40)
+
+
+[B]Version 1.0.58[/B]
+Fixed: OpenLoad
+
+
+[B]Version 1.0.57[/B]
+Fixed: HQPorner, noticed it sometimes needed a referer
+Changed: Small improvement finding a working Videomega link
+
+
+[B]Version 1.0.56[/B]
+Fixed: HQPorner, Todayporn
+
+
+[B]Version 1.0.55[/B]
+Fixed: Annoying dialog bug when you start a video
+
+
+[B]Version 1.0.54[/B]
+Fixed: OpenLoad playback
+Added: Streams (beta), a lot of streams from all around the internet, some work...some not.
+
+
+[B]Version 1.0.53[/B]
+Changed: Addon logo to png, and a smaller size
+
+
+[B]Version 1.0.52[/B]
+Added: Chaturbate in a new Webcams & Streams section
+Fixed: Streampleasure, hqporner, porntrex
+Changed: Addon logo, it's less adult and more universal now ;)
+
+
+[B]Version 1.0.51[/B]
+Added: Xtasie
+Added: StreamPleasure (it's also in the One List)
+Fixed: TodayPorn
+Fixed: OpenLoad playback
+Fixed: Nudeflix Categories
+
+
+[B]Version 1.0.50[/B]
+Fixed: StreamXXX fix from Fr33m1nd
+Fixed: Pornaq video's from VK
+Fixed: Beeq
+Fixed: Nudeflix
+Changed: Multiple Openload video's support for StreamXXX
+
+
+[B]Version 1.0.49[/B]
+Changed: oops, forgot to include another bug fix
+Changed: New logo
+Changed: Few site logo resizes
+
+
+[B]Version 1.0.48[/B]
+Fixed: Videomega playback due to refactoring playvideo()
+Added: javHDonline (credits to Fr33m1nd)
+Added: YourFreeTube
+
+
+[B]Version 1.0.47[/B]
+Added: Videomegaporn & StreamXXX (credits to Fr33m1nd)
+Added: Flyflv host for HQPorner
+Added: Nowvideo host for Pornhive
+
+
+[B]Version 1.0.46[/B]
+Added: HQPorner
+
+
+[B]Version 1.0.45[/B]
+Added: PelisxPorno & XvideoSpanish (credits to Fr33m1nd)
+Added: Progress dialog while loading videos from pornAQ/porn00
+Changed: Getting videos from VK, no more 'Too many requests' dialog
+
+
+[B]Version 1.0.44[/B]
+Fixed: FlashX video playback
+
+
+[B]Version 1.0.43[/B]
+Added: Libogski (credits to Fr33m1nd)
+Added: Support for VK videohost for Pornaq and Porn00
+
+
+[B]Version 1.0.42[/B]
+Added: ElReyX (credits to Fr33m1nd)
+
+
+[B]Version 1.0.41[/B]
+Fixed: PornTrex, double listing
+Fixed: Porn00, video playback
+
+
+[B]Version 1.0.40[/B]
+Oops, forgot to the unicode chars with utils.py
+
+
+[B]Version 1.0.39[/B]
+Fixed: PornTrex
+
+
+[B]Version 1.0.38[/B]
+Fixed: OpenLoad is fixed again (for how long?)
+Fixed: Porn00 playback
+Added: OpenLoad as supported host for Pornhive
+
+
+[B]Version 1.0.37[/B]
+Fixed: Yet another fix for OpenLoad
+
+
+[B]Version 1.0.36[/B]
+Added: Dutch tube sites (sextube.nl, milf.nl and porntube.nl)
+
+
+[B]Version 1.0.35[/B]
+Fixed: Another fix for OpenLoad
+
+
+[B]Version 1.0.34[/B]
+Fixed: Openload videos are working again
+
+
+[B]Version 1.0.33[/B]
+Fixed: Small fix for Porn00 and PornAQ
+
+
+[B]Version 1.0.32[/B]
+Added: A new 'Tubes' section, for tube-like sites. First one is todayporn.com
+
+
+[B]Version 1.0.31[/B]
+Added: By request, you can now browse watchxxxfree, pornaq, porn00 and porntrex together in one list
+Changed: Downloading dialog shows more info: filesize, how much is downloaded and an ETA
+
+
+[B]Version 1.0.30[/B]
+Changed: New way of downloading video's, it's not in the background anymore...it should work better
+Fixed: Getting video's from PornAQ and Porn00, it also supports the videos hosted on docs.google.com
+
+
+[B]Version 1.0.29[/B]
+Added: 'Play from here' support for Beeg, now you can watch all 300 videos per page at once :)
+
+
+[B]Version 1.0.28[/B]
+Fixed: Fix for downloading with Pornaq/Porn00
+Fixed: Due to site changes on Beeg, new way to pick the highest video quality (tnx hstegeman)
+
+
+[B]Version 1.0.27[/B]
+Fixed: Fix for downloading videos from sites other than watchxxfree and xtheatre
+
+
+[B]Version 1.0.26[/B]
+Added: Directly open your download folder (if set). Unfortunately, it doesn't go back to the addon.
+Fixed: FlashX videos (again)
+
+
+[B]Version 1.0.25[/B]
+Added: Download function for the videos (in contextmenu). It uses the Simple Downloader addon.
+
+
+[B]Version 1.0.24[/B]
+Fixed: FlashX videos
+
+
+[B]Version 1.0.23[/B]
+Fixed: OpenLoad videos are working again
+Changed: Always get the highest quality video for Beeg
+
+
+[B]Version 1.0.22[/B]
+Added: Beeg (video gets weird when skipped)
+Added: Streamin.to for Watchxxxfree (beta)
+Fixed: Fix for Porn00 that would crash the addon
+
+
+[B]Version 1.0.21[/B]
+Fixed: Quick (lazy) fix for the latest Porn00 videos
+
+
+[B]Version 1.0.20[/B]
+Fixed: OpenLoad videos
+
+
+[B]Version 1.0.19[/B]
+Added: Search for Pornhive and a message for unsupported videosites
+
+
+[B]Version 1.0.18[/B]
+Added: New movie site, Pornhive
+Changed: Moved all the sites to their own individual python file
+
+
+[B]Version 1.0.17[/B]
+Fixed: Some videos on xtheatre are split in 2 on videomega, it now asks which one to play
+
+
+[B]Version 1.0.16[/B]
+Added: Search for the latest additions: Porntrex, PornAQ and Porn00
+Fixed: Pagination for PornAQ and Porn00
+
+
+[B]Version 1.0.15[/B]
+Added: New video site, Porn00
+
+
+[B]Version 1.0.14[/B]
+Added: New video site, PornAQ
+
+
+[B]Version 1.0.13[/B]
+Added: New video site, Porntrex
+Added: Images for the various video sites
+
+
+[B]Version 1.0.12[/B]
+Fixed: Another fix for the OpenLoad video's
+
+
+[B]Version 1.0.11[/B]
+Fixed: Quick fix for the OpenLoad video's
+
+
+[B]Version 1.0.10[/B]
+Fixed: Movies 2 -> Categories -> 2 worded categories
+
+
+[B]Version 1.0.9[/B]
+Added: Categories for 'Movies 2'
+Fixed: Movies due to site changes
+
+
+[B]Version 1.0.8[/B]
+Added: Another movies source, not finished yet but the main list works 
+
+
+[B]Version 1.0.7[/B]
+Fixed: A  bug in the regex for the Movies, when browsing a categorie
+
+
+[B]Version 1.0.6[/B]
+Added: Descriptions for Scenes and Movies (by request)
+Put the view in 'Media Info 2' (Confluence) to show them
+
+
+[B]Version 1.0.5[/B]
+Fixed: Searching works again
+Fixed: Better videomega recognition
+
+
+[B]Version 1.0.4[/B]
+Added: Sorting for Scens and Movies
+Added: Setting to skip asking for a videohost (default=off)
+
+
+[B]Version 1.0.3[/B]
+Added: Top Pornstars for Scenes
+
+
+[B]Version 1.0.2[/B]
+Added: Search for Scenes and Movies
+Added: A to Z Hentai list, censored and uncensored
+
+
+[B]Version 1.0.1[/B]
+Fixed: Pagination - Thanks to 'hstegeman'
+Fixed: Better regex for Videomega host
+
+
+[B]Version 1.0.0[/B]
+Initial public release
