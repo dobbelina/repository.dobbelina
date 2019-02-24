@@ -1,17 +1,14 @@
 # Ultimate Whitecream
-Ultimate Whitecream plugin update	Version 1.1.66
-
-Fixed: Keyword deletion error
+Ultimate Whitecream plugin update	Version 1.1.67
 
 Fixed: WatchXXXFree
 
-Fixed: Porntrex
+Fixed: YesPornPlease
 
-Fixed: Camsoda
+Fixed: ParadiseHill
 
-ADDED: YesPornPlease
 
-All credit to the fantastic people at reddit who has provided the fixes.
+All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev
 
 https://www.reddit.com/r/Addons4Kodi/comments/a0owsw/ultimate_whitecream_can_anyone_fix/?sort=new
 
