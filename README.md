@@ -12,7 +12,7 @@ Added PerfectGirls
 Removed: Milf.nl
 
 
-All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev
+All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
 
 https://www.reddit.com/r/Addons4Kodi/comments/a0owsw/ultimate_whitecream_can_anyone_fix/?sort=new
 
