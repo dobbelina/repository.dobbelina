@@ -1,11 +1,15 @@
 # Ultimate Whitecream
-Ultimate Whitecream plugin update	Version 1.1.67
+Ultimate Whitecream plugin update	Version 1.1.68
 
-Fixed: WatchXXXFree
+Fixed: Czech3x
 
-Fixed: YesPornPlease
+Minor fixes: poldertube.nl
 
-Fixed: ParadiseHill
+Added: XvideosHits
+
+Added PerfectGirls
+
+Removed: Milf.nl
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev
