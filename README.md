@@ -3,7 +3,7 @@ Ultimate Whitecream plugin update	Version 1.1.68
 
 Fixed: Czech3x
 
-Minor fixes: poldertube.nl
+Minor fix: poldertube.nl
 
 Added: XvideosHits
 
