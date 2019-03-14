@@ -1,13 +1,10 @@
 # Ultimate Whitecream
-Ultimate Whitecream plugin update	Version 1.1.70
+Ultimate Whitecream plugin update	Version 1.1.71
 
-Fixed: Chaturbate
+Fixed: YourPorn
 
-Fixed: WatchXXXFree
+Minor fix: PornDoe
 
-Added: PornDoe
-
-Added: ClipHunter
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
 
