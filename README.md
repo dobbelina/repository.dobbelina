@@ -1,5 +1,5 @@
 # Ultimate Whitecream
-Ultimate Whitecream plugin update	Version 1.1.71
+Ultimate Whitecream addon update	Version 1.1.71
 
 Fixed: YourPorn
 
