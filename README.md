@@ -1,9 +1,7 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.71
+Ultimate Whitecream addon update	Version 1.1.72
 
-Fixed: YourPorn
-
-Minor fix: PornDoe
+Fixed mostly: DaftSex
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
