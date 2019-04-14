@@ -1,9 +1,9 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.73
+Ultimate Whitecream addon update	Version 1.1.74
 
 Fixed: Beeg
 
-Fixed: Spankbang
+Fixed: K18
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
