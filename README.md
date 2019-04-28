@@ -1,15 +1,9 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.75
+Ultimate Whitecream addon update	Version 1.1.76
 
-Added: Freepornstreams
+Fixed: xmoviesforyou (next page + categories)
 
-Added: Viralvideosx
-
-Added: Xmoviesforyou
-
-Removed: Elreyx
-
-Removed: Videomegaporn
+Added: Xozilla
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
