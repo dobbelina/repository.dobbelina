@@ -1,9 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.76
+Ultimate Whitecream addon update	Version 1.1.77
 
-Fixed: xmoviesforyou (next page + categories)
+Fixed: Xtheatre
 
-Added: Xozilla
+Fixed: Pornhive
+
+Fixed: Xvideohits
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
