@@ -1,11 +1,13 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.77
+Ultimate Whitecream addon update	Version 1.1.78
 
-Fixed: Xtheatre
+Added: Broken labels
 
-Fixed: Pornhive
+Fixed: HQPorner
 
-Fixed: Xvideohits
+Fixed: Pornsland
+
+Partly Fixed: K18.co
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
