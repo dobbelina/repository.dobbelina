@@ -1,13 +1,13 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.78
+Ultimate Whitecream addon update	Version 1.1.79
 
-Added: Broken labels
+Fixed: Cam4
 
-Fixed: HQPorner
+Fixed: Camsoda
 
-Fixed: Pornsland
+Fixed: sxyprn(YourPorn)
 
-Partly Fixed: K18.co
+Improved: DaftSex
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
