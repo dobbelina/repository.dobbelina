@@ -1,13 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.79
+Ultimate Whitecream addon update	Version 1.1.80
 
-Fixed: Cam4
+Fixed: FreeOMovie
 
-Fixed: Camsoda
+Improved: ViralVideosX 
 
-Fixed: sxyprn(YourPorn)
-
-Improved: DaftSex
+Improved: PornTrex
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
