@@ -1,11 +1,15 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.80
+Ultimate Whitecream addon update	Version 1.1.81
 
-Fixed: FreeOMovie
+Fixed: Animeid Hentai
 
-Improved: ViralVideosX 
+Fixed: DaftSex
 
-Improved: PornTrex
+Fixed: ParadiseHill
+
+Fixed: DatoPorn
+
+Improved: utils.py
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
