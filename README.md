@@ -1,15 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.81
+Ultimate Whitecream addon update	Version 1.1.82
 
-Fixed: Animeid Hentai
+Fixed: Xvideohits
+
+Fixed: Xtheatre
 
 Fixed: DaftSex
-
-Fixed: ParadiseHill
-
-Fixed: DatoPorn
-
-Improved: utils.py
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
