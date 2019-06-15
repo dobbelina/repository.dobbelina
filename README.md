@@ -1,11 +1,21 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.82
+Ultimate Whitecream addon update	Version 1.1.83
 
-Fixed: Xvideohits
+Removed: Cat3Movie
 
-Fixed: Xtheatre
+Fixed: PornHub
 
-Fixed: DaftSex
+Fixed: xHamster
+
+Fixed: Hentaihaven
+
+Fixed: XVideosHits
+
+Fixed: Anybunny
+
+Improved: Chaturbate,(Tag support)
+
+Improved: PornTrex
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
