@@ -1,13 +1,13 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.84
+Ultimate Whitecream addon update	Version 1.1.85
 
-Fixed: BubbaPorn
+Added: xVideos
 
-Fixed: XvideoSpanish
+Added: SpeedPorn
 
-Fixed: YourFreeTube
+Added: HDpornz
 
-Fixed: ParadiseHill
+Fixed: Sxyprn(yourporn)
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
