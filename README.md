@@ -1,15 +1,15 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.86
+Ultimate Whitecream addon update	Version 1.1.87
 
-Fixed: Animeid Hentai
+Fixed: sxyprn(YourPorn)
 
-Fixed: TubePornClassic
+Fixed: JavWhores
 
-Fixed: HClips
+Improved: SpeedPorn
 
-Fixed: HDZog
+Improved: MangoPorn
 
-Added: MangoPorn(Movies)
+Improved: PornsLand
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
