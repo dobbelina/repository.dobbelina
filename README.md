@@ -1,7 +1,9 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.88
+Ultimate Whitecream addon update	Version 1.1.89
 
 Fixed: BubbaPorn
+
+Improved: HQPorner
 
 Account added to settings for PornTrex and JavWhores
 
