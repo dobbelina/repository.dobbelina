@@ -1,15 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.87
+Ultimate Whitecream addon update	Version 1.1.88
 
-Fixed: sxyprn(YourPorn)
+Fixed: BubbaPorn
 
-Fixed: JavWhores
+Account added to settings for PornTrex and JavWhores
 
-Improved: SpeedPorn
-
-Improved: MangoPorn
-
-Improved: PornsLand
+General maintenance
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
