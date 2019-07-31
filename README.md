@@ -1,11 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.90
+Ultimate Whitecream addon update	Version 1.1.91
 
-Fixed: ParadiseHill
+Fixed: Animeid Hentai
 
-Fixed: PornTrex Downloads
+Fixed: XXX Streams(eu) Next Button
 
-Fixed: Download Folder Leia Bug
+Fixed: Downloads on many sites
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
