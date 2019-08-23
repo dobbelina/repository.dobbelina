@@ -1,11 +1,13 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.91
+Ultimate Whitecream addon update	Version 1.1.92
 
-Fixed: Animeid Hentai
+Removed: Vidz7
 
-Fixed: XXX Streams(eu) Next Button
+Added: Hzpornz
 
-Fixed: Downloads on many sites
+Fixed: Beeg
+
+Fixed: Porndig
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
