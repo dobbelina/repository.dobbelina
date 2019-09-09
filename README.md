@@ -1,13 +1,13 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.92
+Ultimate Whitecream addon update	Version 1.1.93
 
-Removed: Vidz7
+Fixed: PornAQ
 
-Added: Hzpornz
+Fixed: Porn00
 
-Fixed: Beeg
+Fixed: sxyprn(YourPorn)
 
-Fixed: Porndig
+Improved: HQPorner
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
