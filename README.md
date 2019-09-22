@@ -1,13 +1,25 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.93
+Ultimate Whitecream addon update	Version 1.1.94
 
-Fixed: PornAQ
+Fixed: YourFreeTube
 
-Fixed: Porn00
+Porn00 - added category images
 
-Fixed: sxyprn(YourPorn)
+PornAQ - replaced by Woxtube
 
-Improved: HQPorner
+HD Zog-Search fixed
+
+Mr. Sexe-Stars directory fixed
+
+Removed: Ero-tik
+
+Removed: Czech3x
+
+FreeOMovie Next button didn't show.
+
+Poldertube.nl fix, HD Sexfilms under categories didn't load
+
+Porntrex fix, Categories & Channel directories didn't load images.
 
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
