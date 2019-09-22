@@ -17,9 +17,9 @@ Removed: Czech3x
 
 FreeOMovie Next button didn't show.
 
-Poldertube.nl fix, HD Sexfilms under categories didn't load
+Poldertube.nl improvement
 
-Porntrex fix, Categories & Channel directories didn't load images.
+Porntrex improvement
 
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
