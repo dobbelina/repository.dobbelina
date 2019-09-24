@@ -1,25 +1,15 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.94
+Ultimate Whitecream addon update	Version 1.1.95
 
-Fixed: YourFreeTube
+Fixed: Sextube.nl
 
-Porn00 - added category images
+Added: 12Milf.nl
 
-PornAQ - replaced by Woxtube
+Fixed: Animeid Hentai
 
-HD Zog-Search fixed
+Fixed: Beeg
 
-Mr. Sexe-Stars directory fixed
-
-Removed: Ero-tik
-
-Removed: Czech3x
-
-FreeOMovie Next button didn't show.
-
-Poldertube.nl improvement
-
-Porntrex improvement
+Removed: K18
 
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
