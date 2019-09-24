@@ -11,6 +11,8 @@ Fixed: Beeg
 
 Removed: K18
 
+Play from here bugfix
+
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
 
