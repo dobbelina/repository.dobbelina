@@ -1,17 +1,19 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.95
+Ultimate Whitecream addon update	Version 1.1.96
 
-Fixed: Sextube.nl
+Fixed: Eroticage
 
-Added: 12Milf.nl
+Fixed: HClips
 
-Fixed: Animeid Hentai
+Fxed: MangoPorn
 
-Fixed: Beeg
+Fixed: Spankbang
 
-Removed: K18
+Fixed: SpeedPorn
 
-Play from here bugfix
+Fixed: Xtheatre
+
+Fixed: BubbaPorn
 
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
