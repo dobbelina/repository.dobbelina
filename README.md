@@ -26,7 +26,7 @@ For auto-updates, download repository.dobbelina-1.0.0.zip
 
 **Please post in the "Issues" section if you can contribute to fix broken**
 
-**sites/catchers.**
+**sites/catchers, or make a pull request**
 
 [![GitHub Issues Open](https://github-basic-badges.herokuapp.com/issues/dobbelina/repository.dobbelina.svg)]()
 
