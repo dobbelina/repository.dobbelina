@@ -1,6 +1,5 @@
 # Ultimate Whitecream
 Ultimate Whitecream addon update	Version 1.1.96
-<img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
 Fixed: Eroticage
 
@@ -32,4 +31,7 @@ For auto-updates, download repository.dobbelina-1.0.0.zip
 
 [![GitHub Commits](https://github-basic-badges.herokuapp.com/commits/dobbelina/repository.dobbelina.svg)]()
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300">
+</p>
 
