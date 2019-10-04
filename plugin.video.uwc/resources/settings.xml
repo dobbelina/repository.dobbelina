@@ -1,0 +1,48 @@
+<settings>
+    <category label="General">
+        <setting id="sortwxf" type="enum" lvalues="30012|30013|30014" label="30011" default="0"/>
+        <setting id="sortxt" type="enum" lvalues="30022|30023|30024|30025" label="30021" default="0"/>
+        <setting id="chaturbate" label="30003" type="bool" default="false" />
+        <setting id="paradisehill" label="30004" type="bool" default="false" />
+        <setting id="posterfanart" label="30005" type="bool" default="false" />
+        <setting id="download_path" type="folder" source="video" label="Download Folder"  option="writeable" default=""/>
+    </category>
+    <category label="Hosts and resolvers">
+        <setting id="dontask" label="30002" type="bool" default="false" />
+        <setting id="universal_resolvers" label="30026" type="bool" default="true" />
+        <setting id="open_smr_settings" type="action" label="30027" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=8)" />
+    </category>
+    <category label="Chaturbate">
+        <setting type="lsep" label="30110" />
+        <setting id="chatfemale" type="bool" label="30111" default="true" />
+        <setting id="chatmale" type="bool" label="30112" default="true" />
+        <setting id="chatcouple" type="bool" label="30113" default="true" />
+        <setting id="chattrans" type="bool" label="30114" default="true" />
+        <setting type="lsep" label="Playback mode" />
+        <setting id="chatslow" type="enum" label="30117" lvalues="30115|30116" default="0" />
+        <setting id="chatplay" type="enum" label="30100" lvalues="30101|30102|30103" default="0" />
+        <setting type="lsep" label="F4mProxy is slightly better" />
+        <setting type="lsep" label="RTMP needs a patched librtmp from:" />
+        <setting type="lsep" label="http://kodi.wiki/view/how-to:update_librtmp" />
+        <setting type="lsep" label="With RTMP, no audio on most streams though," />         
+        <setting type="lsep" label="because of missing Speex coded in Kodi" />        
+    </category>
+    <category label="Accounts">
+        <setting type="lsep" label="Porntrex"/>
+        <setting id="pt_user" type="text" label="User:" default=""/>
+        <setting id="pt_pass" type="text" label="Password:" option="hidden" default=""/>
+        <setting type="lsep" label="JAVWhores"/>
+        <setting id="jw_user" type="text" label="User:" default=""/>
+        <setting id="jw_pass" type="text" label="Password:" option="hidden" default=""/>
+    </category>
+    <category label="Favorites and keywords">
+        <setting type="lsep" label="Favorites" />
+        <setting id="backup_favorites" type="action" label="30201" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=910)" />
+        <setting id="restore_favorites" type="action" label="30202" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=911)" />
+        <setting id="clear_favorites" type="action" label="30203" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=912)" />
+        <setting type="lsep" label="Search keywords" />
+        <setting id="backup_keywords" type="action" label="30211" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=908)" />
+        <setting id="restore_keywords" type="action" label="30212" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=909)" />
+        <setting id="clear_keywords" type="action" label="30213" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=903)" />
+    </category>
+</settings>
