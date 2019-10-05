@@ -39,9 +39,9 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('<div class="thumb">.*?href="([^"]+)".*?src="([^"]+)".*?alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name in match:
-        name = utils.cleantext(name)
+    match = re.compile('id="video.+?img src="([^"]+)".+?href="([^"]+)" rel="bookmark" title="([^"]+)".+?class="duration" align="right">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)    
+    for img, videopage, name, duration in match:
+        name = utils.cleantext(name) + "[COLOR deeppink] " + duration + "[/COLOR]"
         utils.addDownLink(name, videopage, 142, img, '')
     try:
         nextp=re.compile('<a class="nextpostslink" rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -74,4 +74,25 @@ def Categories(url):
 
 @utils.url_dispatcher.register('142', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    utils.PLAYVIDEO(url, name, download)
+    vp = utils.VideoPlayer(name, download = download)
+    vp.progress.update(25, "", "Loading video page", "")
+    videohtml = utils.getHtml(url, url)
+    match = re.compile('<iframe[^/]+src="([^"]+)"[^>]+frameborder', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    links = {}
+    for i,link in enumerate(match):
+        if not link.startswith("http"): link = "https:" + link
+        if vp.resolveurl.HostedMediaFile(link):
+            links[str(i) + ': ' + link.split('/')[2]] = link
+        if 'mixdrop.co' in link:
+            html = utils.getHtml(link, url)
+            videolink = re.compile('MDCore.vsrc = "([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+            if not videolink.startswith("http"): videolink = "https:" + videolink
+            links[str(i) + ': ' + 'mixdrop.co'] = videolink 
+    videourl = utils.selector('Select link', links, dont_ask_valid=False)
+    if not videourl:
+        return
+    if 'mixdrop.co' in videourl:
+        vp.play_from_direct_link(videourl)
+    else:
+        vp.play_from_link_to_resolve(videourl)
+
