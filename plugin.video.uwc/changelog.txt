@@ -1,3 +1,6 @@
+Version 1.1.97
+Fixed: PelisxPorno (except hqq.tv links)
+
 Version 1.1.96
 Fixed: Eroticage
 Fixed: HClips
