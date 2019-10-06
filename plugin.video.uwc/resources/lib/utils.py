@@ -1122,7 +1122,12 @@ class VideoPlayer():
             sdpage = streamdefence(sdsrc)
             sdpages += sdpage
         sources = set(re.compile('iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(sdpages))
-        return sources
+        srcs = set()
+        for source in sources:
+            if 'strdef.world/player' in source:
+                source = getVideoLink(source, url)
+            srcs.add(source)
+        return srcs
 
     @_cancellable
     def _solve_filecrypt(self, fc_urls, url):
