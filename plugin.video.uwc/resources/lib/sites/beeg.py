@@ -66,22 +66,31 @@ def BGList(url):
     try:
         listjson = utils.getHtml(url,'https://beeg.com/')
     except:
-        return None
-    
+        return None   
     js = json.loads(listjson)
-
     color = False
     for video in js["videos"]:
         color = not color
         title = replaceunicode(video["title"])
-        img = "https://img.beeg.com/400x225/" + video["thumbs"][0]["image"]
+        if video["thumbs"]:
+            img = "https://img.beeg.com/400x225/" + video["thumbs"][0]["image"]
+        else:
+            continue
         svid = video["svid"]
         m, s = divmod(video["duration"], 60)
         duration = '{:d}:{:02d}'.format(m, s)
         name = title + "[COLOR deeppink] " + duration + "[/COLOR]"
         videopage = ''
+        thstart = 0
+        thend = 0
+        thoffset = 0
         for thumb in sorted(video["thumbs"], key = lambda x: x["start"]):
             if thumb["start"] != None:
+                if thumb["start"] == thstart and thumb["end"] == thend and thumb["offset"] == thoffset:
+                    continue
+                thstart = thumb["start"]
+                thend = thumb["end"]
+                thoffset = thumb["offset"]
                 img = "https://img.beeg.com/400x225/" + thumb["image"]
                 m, s = divmod(thumb["start"], 60)
                 start = '{:d}:{:02d}'.format(m, s)
@@ -178,14 +187,12 @@ def BGPlayvid(url, name, download=None):
         listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
         listitem.setProperty("IsPlayable","true")
         if int(sys.argv[1]) == -1:
-            utils.kodilog('play')
             pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
             pl.clear()
             pl.add(videourl, listitem)
             xbmc.Player().play(pl)
         else:
             listitem.setPath(str(videourl))
-            utils.kodilog('resolvedUrl')
             xbmcplugin.setResolvedUrl(utils.addon_handle, True, listitem)
 
 
