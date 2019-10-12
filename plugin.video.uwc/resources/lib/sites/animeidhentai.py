@@ -54,7 +54,7 @@ def animeidhentai_list(url):
             utils.addDownLink(utils.cleantext(name), video, 662, img, '')
 
     try:
-        next_page = re.compile(r'<a href="??([^"\s]+)\s*class="??next', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        next_page = re.compile(r'href="??([^"\s]+)"??\s*class="??next', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         utils.addDir('Next Page', next_page, 661, '')
     except:
         pass
