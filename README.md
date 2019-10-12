@@ -1,20 +1,12 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.96
+Ultimate Whitecream addon update	Version 1.1.97
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: Eroticage
+Fixed: PelisxPorno (except hqq.tv links)
 
-Fixed: HClips
+Fixed: Beeg
 
-Fxed: MangoPorn
-
-Fixed: Spankbang
-
-Fixed: SpeedPorn
-
-Fixed: Xtheatre
-
-Fixed: BubbaPorn
+Fixed: Animeid Hentai
 
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
@@ -22,7 +14,7 @@ All credit to the fantastic people at reddit who has provided the fixes, and esp
 
 and Whitecream & holisticdioxide who are the original author/s of the addon.
 
-For auto-updates, download repository.dobbelina-1.0.0.zip
+For auto-updates, download repository.dobbelina-1.0.0.zip here https://dobbelina.github.io
 
 **Please post in the "Issues" section if you can contribute to fix broken**
 
