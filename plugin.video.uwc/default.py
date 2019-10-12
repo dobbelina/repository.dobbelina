@@ -93,6 +93,8 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]FreePornStreams[/COLOR]','http://freepornstreams.org/',740,os.path.join(imgDir, 'freepornstreams.png'),'')
     utils.addDir('[COLOR hotpink]XMoviesForYou[/COLOR]','https://xmoviesforyou.com/',750,os.path.join(imgDir, 'xmoviesforyou.png'),'')
     utils.addDir('[COLOR hotpink]Xozilla[/COLOR]','https://www.xozilla.com/',770,os.path.join(imgDir, 'xozilla.png'),'')
+    utils.addDir('[COLOR hotpink]Emporner[/COLOR]','https://www.eporner.com/category/all/',540,'https://static-eu-cdn.eporner.com/new/logo.png','')
+    utils.addDir('[COLOR hotpink]HereXXX[/COLOR]','https://herexxx.com/',530,'https://herexxx.com/templates/defboot/images/logo.png','')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
