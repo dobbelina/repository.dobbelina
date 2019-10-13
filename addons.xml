@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.1.97"
+       version="1.1.98"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,10 +26,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.1.97[/B]
-Fixed: PelisxPorno (except hqq.tv links)
-Fixed: Beeg
-Fixed: Animeid Hentai
+        <news>[B]Version 1.1.98[/B]
+Added: Emporner
+Added: HereXXX
 </news>
     </extension>
 </addon>
