@@ -1,12 +1,11 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.97
+Ultimate Whitecream addon update	Version 1.1.98
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: PelisxPorno (except hqq.tv links)
+Added: Eporner
 
-Fixed: Beeg
+Added: HereXXX
 
-Fixed: Animeid Hentai
 
 ---
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
