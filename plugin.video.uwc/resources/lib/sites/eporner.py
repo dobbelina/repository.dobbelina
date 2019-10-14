@@ -39,10 +39,8 @@ def List(url):
     except:
         return None
     match = re.compile('div class="mb.+?class="mvhdico">.*?<span>([^<]+)<.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)".+?class="mbtim">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    i = 0
     for hd, videopage, name, img, duration in match:
-        i += 1
-        name = str(i) + ': ' + utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
+        name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
         utils.addDownLink(name, siteurl + videopage, 542, img, '')
     try:
         nextp, page = re.compile("href='([^']+/(\d+)/)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
@@ -108,8 +106,8 @@ def Lists(url):
     lists['Amateur Porn Videos - Top Rated'] = siteurl + '/category/amateur/SORT-top-rated/'
     lists['Amateur Porn Videos - Longest'] = siteurl + '/category/amateur/SORT-longest/'
     lists['Solo Girls Porn Videos - Recent'] = siteurl + '/category/solo/'
-    lists['Solo Girls Porn Videos - Top Rated'] = siteurl + '/category/solo/SORT-top-rated/'
-    lists['Solo Girls Porn Videos - Longest'] = siteurl + '/category/solo/SORT-longest/'
+    lists['Solo Girls Porn Videos - Top Rated'] = siteurl + '/category/solo/top-rated/'
+    lists['Solo Girls Porn Videos - Longest'] = siteurl + '/category/solo/longest/'
     lists['VR Porn Videos - Recent'] = siteurl + '/category/vr-porn/'
     lists['VR Porn Videos - Top Rated'] = siteurl + '/category/vr-porn/SORT-top-rated/'
     lists['VR Porn Videos - Longest'] = siteurl + '/category/vr-porn/SORT-longest/'
