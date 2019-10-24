@@ -173,7 +173,7 @@ def BGPlayvid(url, name, download=None):
     match = re.compile('"(\d+p)":\s*?"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
     for quality, url in match:
         list[quality] = url
-    url = utils.selector('Select quality', list, dont_ask_valid=False,  sort_by=lambda x: int(x[:-1]), reverse=True)
+    url = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x[:-1]), reverse=True)
     if not url:
         return
     url = url.replace("{DATA_MARKERS}","data=pc_XX")

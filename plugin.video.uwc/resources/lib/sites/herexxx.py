@@ -45,8 +45,11 @@ def List(url):
         if not videopage.startswith("http"): videopage = siteurl + videopage
         utils.addDownLink(name, videopage, 532, img, '')
     try:
-        nextp, page = re.compile('href="([^"]+/(\d+)/)" class="prevnext" title="Go to next page!"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        nextp, page = re.compile('href="([^"]+\D(\d+)/??)" class="prevnext" title="Go to next page!"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         utils.addDir('Next Page (' + page +')', siteurl + nextp, 531,'')
+        
+#        <a href="/search/video/?s=dance&page=2" class="prevnext" title="Go to next page!">
+        
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
