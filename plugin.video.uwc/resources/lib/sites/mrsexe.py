@@ -51,7 +51,7 @@ def List(url):
         name = utils.cleantext(name) + ' [COLOR deeppink]' + duration + '[/COLOR]'
         utils.addDownLink(name, 'http://www.mrsexe.com' + videopage, 402, img, '')
     try:
-        nextp=re.compile(r'<li class="arrow"><a href="(.+?)">suivant</li>').findall(listhtml)
+        nextp=re.compile(r'<li class="arrow"><a href="(.+?)">suivant</a></li>').findall(listhtml)
         utils.addDir('Next Page', 'http://www.mrsexe.com/' + nextp[0], 401,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)

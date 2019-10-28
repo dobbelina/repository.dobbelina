@@ -5,6 +5,7 @@
         <setting id="chaturbate" label="30003" type="bool" default="false" />
         <setting id="paradisehill" label="30004" type="bool" default="false" />
         <setting id="posterfanart" label="30005" type="bool" default="false" />
+        <setting id="porntrexacct" label="30030" type="bool" default="false" />
         <setting id="download_path" type="folder" source="video" label="Download Folder"  option="writeable" default=""/>
     </category>
     <category label="Hosts and resolvers">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.1.98"
+       version="1.1.99"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,9 +25,10 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.1.98[/B]
-Added: Eporner
-Added: HereXXX
+        <news>[B]Version 1.1.99[/B]
+Porntrex added disable private videos option
+Herexxx - fixed nextpage for search
+Beeg - option Don't ask for videohost setting
 </news>
     </extension>
 </addon>

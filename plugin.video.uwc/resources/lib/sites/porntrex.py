@@ -47,6 +47,7 @@ def JHMain():
 
 @utils.url_dispatcher.register('51', ['url'], ['page'])
 def PTList(url, page=1, onelist=None):
+    ptacct = utils.addon.getSetting("porntrexacct")
     if onelist:
         url = url.replace('/1/', '/' + str(page) + '/')
     try:
@@ -70,6 +71,8 @@ def PTList(url, page=1, onelist=None):
     for videopage, img, hd, duration, name in match:
         name = utils.cleantext(name)
         private = '[COLOR blue] private[/COLOR]' if 'Private' in hd else ''
+        if ptacct == "false" and private !='' :
+            continue
 #       Changed labelling adding Video quality
         if hd.find('4k') > 0:
             hd = " [COLOR orange]4K[/COLOR] "
