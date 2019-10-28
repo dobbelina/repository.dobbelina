@@ -82,7 +82,9 @@ def Playvid(performerID, name):
     ws.send('40/live')
     
     quitting = 0
+    i = 0
     while quitting == 0:
+        i += 1
         message =  ws.recv()
         match = re.compile('performer offline', re.DOTALL | re.IGNORECASE).findall(message)
         if match:
@@ -97,17 +99,26 @@ def Playvid(performerID, name):
             ws.close()
             utils.notify('Model not in freechat')
             return None
-           
-        match = re.compile('roomInfoUpdate', re.DOTALL | re.IGNORECASE).findall(message)
-        if match:
-            ws.send('42/live,["GetVideoPath",{"nginx":1,"protocol":2,"attempt":1}]')
-            while quitting == 0:
-                message = ws.recv()
-                match = re.compile('(http[^"]+m3u8)', re.DOTALL | re.IGNORECASE).findall(message)
-                if match:
-                    videourl = match[0]
-                    quitting=1
-                    ws.close()
+            
+        if message == '40/live':
+            ws.close()
+            quitting=1
+            link = 'https://sea1b-ls.naiadsystems.com/sea1b-edge-ls/80/live/s:' + data['performer']['nickname'] + '.json'
+            ref = 'https://www.streamate.com/cam/' + data['performer']['nickname']
+            j = utils.getHtml(link, ref)
+            match = re.compile('location":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(j)
+            videourl = match[0]
+        
+        # match = re.compile('roomInfoUpdate', re.DOTALL | re.IGNORECASE).findall(message)
+        # if match:
+            # ws.send('42/live,["GetVideoPath",{"nginx":1,"protocol":2,"attempt":1}]')
+            # while quitting == 0:
+                # message = ws.recv()
+                # match = re.compile('(http[^"]+m3u8)', re.DOTALL | re.IGNORECASE).findall(message)
+                # if match:
+                    # videourl = match[0]
+                    # quitting=1
+                    # ws.close()
 
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
