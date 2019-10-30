@@ -69,7 +69,7 @@ def INDEXS():
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',110,os.path.join(imgDir, 'elreyx.png'),'')
     utils.addDir('[COLOR hotpink]XvideoSpanish[/COLOR]','http://www.xvideospanish.net/',130,os.path.join(imgDir, 'xvideospanish.png'),'')
     utils.addDir('[COLOR hotpink]HQPorner[/COLOR]','http://hqporner.com/hdporn/1',150,os.path.join(imgDir, 'hqporner.png'),'')
-    utils.addDir('[COLOR grey]ViralVideosX[/COLOR] [COLOR red]Broken[/COLOR]','http://www.viralvideosx.com/',760,os.path.join(imgDir, 'viralvideosx.jpg'),'')
+    utils.addDir('[COLOR hotpink]ViralVideosPorno[/COLOR]','http://www.viralvideosporno.com/',760,'http://www.viralvideosporno.com/plantilla/imagenes/logo.jpg','')
     utils.addDir('[COLOR hotpink]StreamXXX[/COLOR]','http://streamxxx.tv/category/clips/',170,os.path.join(imgDir, 'streamxxx.png'),'')
     utils.addDir('[COLOR grey]JustPorn[/COLOR] [COLOR red]Broken[/COLOR]','http://justporn.to/category/scenes/',240,os.path.join(imgDir, 'justporn.png'),'')
     utils.addDir('[COLOR hotpink]YourFreeTube[/COLOR]','http://www.yourfreetube.net/newvideos.html',190,os.path.join(imgDir, 'yourfreetube.png'),'')
