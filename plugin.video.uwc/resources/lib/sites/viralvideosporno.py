@@ -24,7 +24,7 @@ import xbmcplugin
 from resources.lib import utils
 progress = utils.progress
 
-siteurl = 'http://www.viralvideosporno.com'
+siteurl = 'http://www.viralvideosporno.com/'
 
 
 @utils.url_dispatcher.register('760')
