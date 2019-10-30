@@ -24,7 +24,7 @@ import xbmcplugin
 from resources.lib import utils
 progress = utils.progress
 
-siteurl = 'http://www.viralvideosx.com/'
+siteurl = 'http://www.viralvideosporno.com'
 
 
 @utils.url_dispatcher.register('760')
@@ -41,16 +41,24 @@ def EXList(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-        
-    match = re.compile('<img src="([^"]+)" class="imagenes">.+?title="([^"]+)".*?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, name, videopage in match:
-        img = 'http:'+img if img.startswith('//') else img
-        videopage = 'http:'+videopage if videopage.startswith('//') else videopage
-        utils.addDownLink(utils.cleantext(name), videopage, 762, img, '')
+    match = re.compile('class="notice".+?href="([^"]+)">([^<]+).+?img src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if match:
+        for videopage, name, img in match:
+            img = 'http:'+img if img.startswith('//') else img
+            videopage = 'http:'+videopage if videopage.startswith('//') else videopage
+            name = utils.cleantext(name)
+            name = re.sub(r'(HD .+)$', r'[COLOR orange]\1[/COLOR]', name)
+            utils.addDownLink(name, videopage, 762, img, '')
+    else:
+        match = re.compile('class="portada.+?href="([^"]+)".+?img src="([^"]+)".+?class="titles">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        for videopage, img, name in match:
+            img = 'http:'+img if img.startswith('//') else img
+            videopage = 'http:'+videopage if videopage.startswith('//') else videopage
+            name = utils.cleantext(name)
+            utils.addDownLink(name, videopage, 762, img, '')
     try:
-	(next_page, page_nr)  = re.compile("<li class=.float-xs-right.><a href='([^']+)' title='Pagina (\d+)'><span class", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        if not next_page.startswith('http'):
-            next_page = 'http:' + next_page
+	(next_page, page_nr)  = re.compile("a href='([^']+/(\d+)/??)'[^<]+<span class=\"visible-xs-inline\">Siguiente<", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        next_page = 'http:' + next_page if next_page.startswith('//') else next_page
         utils.addDir('Page #' + page_nr, next_page, 761,'')
     except:
         pass
@@ -71,50 +79,27 @@ def EXSearch(url, keyword=None):
 @utils.url_dispatcher.register('763', ['url'])
 def EXCat(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('href="([^"]+\/categoria\/[^"]+)[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('href="([^"]+\/categoria\/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
-        catpage = 'https:' + catpage
+        catpage = 'http:' + catpage
         utils.addDir(utils.cleantext(name), catpage, 761, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)   
 
 
 @utils.url_dispatcher.register('762', ['url', 'name'], ['download'])
 def EXPlayvid(url, name, download=None):
-    regex = '''(?:iframe|IFRAME).*?(?:src|SRC)=['"](http[^"']+)'''
     url = 'http:'+url if url.startswith('//') else url
-    #
-    vp = utils.VideoPlayer(name, download, regex=regex)
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
-    
     videopage = utils.getHtml(url, '')
+    regex = '''(?:iframe|IFRAME).*?(?:src|SRC)=['"](http[^"']+)'''
     links = re.compile(regex, re.DOTALL | re.IGNORECASE).findall(videopage)
-    utils.kodilog(links)
+    links1 = re.compile('<b>([^<]+)...</b>', re.DOTALL | re.IGNORECASE).findall(videopage)
+    links += links1
+    select = {}
     for link in links:
-        if link.endswith('.jpg'):
-            continue
-        if link.endswith('.png'):
-            continue
-        if link.endswith('.js'):
-            continue
-        try:
-            videopage += utils.getHtml(link, url)
-        except:
-            pass
-    vp.play_from_html(videopage)
+        if vp.resolveurl.HostedMediaFile(link):
+            select[link.split('/')[2]] = link
+    videourl = utils.selector('Select link', select)
+    vp.play_from_link_to_resolve(videourl)
 
-@utils.url_dispatcher.register('767', ['url'])
-def EXMoviesList(url):
-    url = 'https:'+url if url.startswith('//') else url
-    listhtml = utils.getHtml(url, '')
-    match = re.compile('<div class="container_neus">(.*?)<div id="pagination">', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    match1 = re.compile('<a title="([^"]+)" href="([^"]+)".*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match[0])
-    for name, videopage, img in match1:  
-        img = 'https:'+img if img.startswith('//') else img
-        utils.addDownLink(name, videopage, 762, img, '')
-    try:
-        nextp=re.compile("<a href='([^']+)' title='([^']+)'>&raquo;</a>", re.DOTALL | re.IGNORECASE).findall(listhtml)
-        next = urllib.quote_plus(nextp[0][0])
-        next = next.replace(' ','+')
-        utils.addDir('Next Page', os.path.split(url)[0] + '/' + next, 767,'')
-    except: pass
-    xbmcplugin.endOfDirectory(utils.addon_handle)
