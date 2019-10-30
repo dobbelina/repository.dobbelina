@@ -1,12 +1,14 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.1.99
+Ultimate Whitecream addon update	Version 1.2.1
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Porntrex added disable private videos option
+MrSexe Next Page Fix
 
-Herexxx - fixed nextpage for search
+ViralVideosX replaced by ViralVideosPorno
 
-Beeg - option 'Don't ask for videohost' setting
+Fixed: streamate.com
+
+DaftSex updated server lists
 
 
 ---
