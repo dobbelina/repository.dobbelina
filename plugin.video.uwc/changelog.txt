@@ -1,3 +1,9 @@
+Version 1.2.2
+added hotpornfile.org
+daftsex: updated server list + added timeout to searches
+streamate: search fixed
+ViralVideosPorno search fix
+
 Version 1.2.1
 MrSexe Next Page Fix
 ViralVideosX replaced by ViralVideosPorno
