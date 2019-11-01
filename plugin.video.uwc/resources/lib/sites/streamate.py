@@ -144,7 +144,7 @@ def Search(url):
     except:
         utils.notify('Model not found - try again')
         return None
-    match = re.compile("p_signupargs: 'smid%3D([^']+)'", re.DOTALL | re.IGNORECASE).findall(response)
+    match = re.compile("'page',\s*'\/signup\/\?smid=([^']+)&", re.DOTALL | re.IGNORECASE).findall(response)
     if match:
         utils.notify('Found ' + keyword + ' adding to favorites now')
         img = "http://m1.nsimg.net/media/snap/" + match[0] + ".jpg"
