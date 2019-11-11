@@ -20,6 +20,7 @@ import re
 
 import xbmcplugin
 from resources.lib import utils
+import json
 
 
 @utils.url_dispatcher.register('430')
@@ -55,8 +56,30 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "", "Loading video page", "")
     videopage = utils.getHtml(url)
     videolink = re.compile('<iframe src="([^"]+)" ', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    videolink = videolink.replace('woof.tube','verystream.com')
-    vp.play_from_link_to_resolve(videolink)
+    if videolink.startswith('https://cine-matik.com/'):
+        page = utils.getHtml(videolink)
+        alternative = re.compile('input type="hidden" id="alternative" value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(page)[0]
+        video = videolink.replace('https://cine-matik.com/player/play.php?vid=','')
+        posturl = 'https://cine-matik.com/player/ajax_sources.php'
+        postRequest = {'vid' : video, 'alternative' : alternative}
+        response = utils.postHtml(posturl, form_data=postRequest, headers={'X-Requested-With' : 'XMLHttpRequest'}, compression=False)
+        js = json.loads(response)
+        sources = js["source"]
+        alternative1 = js["alternative"] if len(sources) == 0 else alternative
+        if len(sources) == 1 and not sources[0]["file"]: alternative1 = js["alternative"] 
+        if alternative1 != alternative:
+            postRequest = {'vid' : video, 'alternative' : 'mp4'}
+            response = utils.postHtml(posturl, form_data=postRequest, headers={'X-Requested-With' : 'XMLHttpRequest'}, compression=False)
+            js = json.loads(response)
+            sources = js["source"]
+        videolink = sources[0]["file"] if len(sources) !=0 else ''
+        if not videolink:
+            utils.notify('Oh oh','Couldn\'t find a video')
+            return
+        vp.play_from_direct_link(videolink)
+    else:
+        videolink = videolink.replace('woof.tube','verystream.com')
+        vp.play_from_link_to_resolve(videolink)
 
 
 @utils.url_dispatcher.register('433', ['url'])

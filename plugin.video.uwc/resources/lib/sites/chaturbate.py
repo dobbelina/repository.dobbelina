@@ -183,10 +183,12 @@ def Playvid(url, name):
     chatslow = int(addon.getSetting('chatslow'))
     listhtml = utils.getHtml(url, hdr=cbheaders)
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
-    
-    m3u8url = re.compile(r"jsplayer, '([^']+)", re.DOTALL | re.IGNORECASE).findall(listhtml)
+
+    listhtml = listhtml.replace('\\u0022','"')
+    m3u8url = re.compile(r'"hls_source":\s*"([^"]+m3u8)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+
     if m3u8url:
-        m3u8stream = m3u8url[0]
+        m3u8stream = m3u8url[0].replace('\\u002D','-')
         if chatslow == 1:
             m3u8stream = m3u8stream.replace('_fast','')
     else:
