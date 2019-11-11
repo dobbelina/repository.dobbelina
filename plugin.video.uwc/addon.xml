@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.2"
+       version="1.2.3"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,11 +25,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.2[/B]
-added hotpornfile.org
-daftsex: updated server list + added timeout to searches
-streamate: search fixed
-ViralVideosPorno search fix
+        <news>[B]Version 1.2.3[/B]
+Fixed: Chaturbate
+Fixed: Eroticage
 </news>
     </extension>
 </addon>

@@ -1,14 +1,10 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.2
+Ultimate Whitecream addon update	Version 1.2.3
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-added hotpornfile.org
+Fixed: Chaturbate
 
-daftsex: updated server list + added timeout to searches
-
-streamate: search fixed
-
-ViralVideosPorno search fix
+Fixed: Eroticage
 
 
 ---

@@ -1,3 +1,7 @@
+Version 1.2.3
+Fixed: Chaturbate
+Fixed: Eroticage
+
 Version 1.2.2
 added hotpornfile.org
 daftsex: updated server list + added timeout to searches
