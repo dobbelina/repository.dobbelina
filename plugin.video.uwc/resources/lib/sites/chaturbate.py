@@ -144,6 +144,7 @@ def List(url, page=1):
         return None		
 #    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
 #    for name,videopage, img, status, age in match:	
+    listhtml = listhtml.replace('title=""','title=" "')
     match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?gender(.+?).+?>(.+?)<.+?<li title="(.+?)".+?class="location".+?>(.+?)<.+?class="cams">(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for name,videopage, img, status, gender, age, roomtopic, location, activity in match:	
 
