@@ -67,11 +67,15 @@ def List(url, page=1):
         listhtml = utils.getHtml(url, url)
     except:
         return None
-    match = re.compile('data-hls-preview-url="([^"]+)".*? src="([^"]+)".*?title="Chat Now Free with ([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videourl, img, name in match:
+#    match = re.compile('data-hls-preview-url="([^"]+)".*? src="([^"]+)".*?title="Chat Now Free with ([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+#    for videourl, img, name in match:
+    match = re.compile('data-hls-preview-url="([^"]+)".*? src="([^"]+)".*?title="Chat Now Free with ([^"]+)".*?I speak ([^"]+) <\/div.*?"country".*?title="([^"]+).*? gender .*?title="([^"]+).*?orientation"> ([^"]+) <\/span.*?Broadcast Time"\/> ([^"]+) <\/span.*?viewers"> ([^"]+) <\/span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videourl, img, name, language, country, gender, orientation, broadcasttime, viewers in match:
         name = utils.cleantext(name)
+        info = "\n\n[B]Country:[/B] " + country + "\n\n[B]Language:[/B] " + language + "\n\n[B]Gender:[/B] " + gender + "\n\n[B]Orentation:[/B] " + orientation + "\n\n[B]Broadcast time:[/B] " + broadcasttime + "\n\n[B]Viewers:[/B] " + viewers 
 #        videourl = "http://www.cam4.com" + videourl
-        utils.addDownLink(name, videourl, 282, img, '', noDownload=True)
+#        utils.addDownLink(name, videourl, 282, img, '', noDownload=True)
+        utils.addDownLink(name, videourl, 282, img, info, noDownload=True)
     if re.search('<link rel="next"', listhtml, re.DOTALL | re.IGNORECASE):
             npage = page + 1        
             url = url.replace('/'+str(page),'/'+str(npage))

@@ -25,6 +25,12 @@ import urllib
 import xbmc
 import xbmcplugin
 import xbmcgui
+import codecs
+try:
+	import HTMLParser
+except ImportError:
+	import html.parser as HTMLParser
+genders = dict(f='Female', m='Male', c='Couple', s='Trans')
 from resources.lib import utils
 
 addon = utils.addon
@@ -49,6 +55,12 @@ def Main():
     if couple: utils.addDir('[COLOR hotpink]Couple[/COLOR]','https://chaturbate.com/couple-cams/?page=1',221,'','')
     if male: utils.addDir('[COLOR hotpink]Male[/COLOR]','https://chaturbate.com/male-cams/?page=1',221,'','')
     if trans: utils.addDir('[COLOR hotpink]Transsexual[/COLOR]','https://chaturbate.com/transsexual-cams/?page=1',221,'','')
+    #exhibitionist
+    utils.addDir('[COLOR hotpink]Exhibitionist Cams[/COLOR]','https://chaturbate.com/exhibitionist-cams/?page=1',221,'','')
+    if female: utils.addDir('[COLOR hotpink]Exhibitionist Cams - Female[/COLOR]','https://chaturbate.com/exhibitionist-cams/female/?page=1',221,'','')
+    if couple: utils.addDir('[COLOR hotpink]Exhibitionist Cams - Couple[/COLOR]','https://chaturbate.com/exhibitionist-cams/couple/?page=1',221,'','')
+    if male: utils.addDir('[COLOR hotpink]Exhibitionist Cams - Male[/COLOR]','https://chaturbate.com/exhibitionist-cams/male/?page=1',221,'','')
+    if trans: utils.addDir('[COLOR hotpink]Exhibitionist Cams - Transsexual[/COLOR]','https://chaturbate.com/exhibitionist-cams/transsexual/?page=1',221,'','')    
     #new
     utils.addDir('[COLOR hotpink]New Cams[/COLOR]','https://chaturbate.com/new-cams/?page=1',221,'','')
     if female: utils.addDir('[COLOR hotpink]New Cams - Female[/COLOR]','https://chaturbate.com/new-cams/female/?page=1',221,'','')
@@ -130,15 +142,20 @@ def List(url, page=1):
     except:
         
         return None		
-    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for name,videopage, img, status, age in match:	
+#    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+#    for name,videopage, img, status, age in match:	
+    listhtml = listhtml.replace('title=""','title=" "')
+    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?gender(.+?).+?>(.+?)<.+?<li title="(.+?)".+?class="location".+?>(.+?)<.+?class="cams">(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for name,videopage, img, status, gender, age, roomtopic, location, activity in match:	
 
         age = utils.cleantext(age.strip())
         name = utils.cleantext(name.strip())
         status = status.replace("\n","").strip()
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
         videopage = "https://chaturbate.com" + videopage
-        utils.addDownLink(name, videopage, 222, img, '', noDownload=True)
+        info = "\n\n[B]Status:[/B] " + status + "\n\n[B]Gender:[/B] " + genders[gender] + "\n\n[B]Age:[/B] " + age + "\n\n[B]Location:[/B] " + location + "\n\n[B]Activity:[/B] " + activity + "\n\n[B]Room topic:[/B] " + roomtopic
+        info = HTMLParser.HTMLParser().unescape(info).decode('utf-8')
+        utils.addDownLink(name, videopage, 222, img, info, noDownload=True)
     try:
         page = page + 1
         nextp=re.compile('<a href="([^"]+)" class="next', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -184,11 +201,14 @@ def Playvid(url, name):
     listhtml = utils.getHtml(url, hdr=cbheaders)
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
 
-    listhtml = listhtml.replace('\\u0022','"')
+    listhtml = codecs.decode(listhtml, 'unicode-escape')
+
+#    listhtml = listhtml.replace('\\u0022','"')
     m3u8url = re.compile(r'"hls_source":\s*"([^"]+m3u8)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
     if m3u8url:
-        m3u8stream = m3u8url[0].replace('\\u002D','-')
+#        m3u8stream = m3u8url[0].replace('\\u002D','-')
+        m3u8stream = m3u8url[0]
         if chatslow == 1:
             m3u8stream = m3u8stream.replace('_fast','')
     else:
