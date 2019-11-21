@@ -1,0 +1,183 @@
+[B]Version 2.8.7[/B]
+Support for HLSDIR which will return m3u8 but with local address so the f4mproxy will fetch the contents now kodi player, also fixed the bug at close
+[B]Version 2.8.6[/B]
+revert URL status, no error to be shown now
+[B]Version 2.8.5[/B]
+HSL bug
+[B]Version 2.8.4[/B]
+fixing wrong incoming URL
+[B]Version 2.8.3[/B]
+relaxed init check
+[B]Version 2.8.2[/B]
+return quickly if not playable - better message
+[B]Version 2.8.1[/B]
+return quickly if not playable
+[B]Version 2.8.0[/B]
+fixes for krypton, still in beta
+[B]Version 2.7.9[/B]
+Multiple try with TSDownloader
+[B]Version 2.7.8[/B]
+HLS quality issue
+[B]Version 2.7.7[/B]
+TSDownloader bug in logging
+[B]Version 2.7.6[/B]
+ua randomization
+[B]Version 2.7.5[/B]
+HLS sleep time
+[B]Version 2.7.3[/B]
+HLS fwd error
+[B]Version 2.7.0[/B]
+HLS fwd error
+[B]Version 2.6.9[/B]
+removed extension
+[B]Version 2.6.8[/B]
+bug fix
+[B]Version 2.6.7[/B]
+proxy and user agent
+[B]Version 2.6.6[/B]
+not so strick check for TS, little more
+[B]Version 2.6.5[/B]
+not so strick check for TS
+[B]Version 2.6.4[/B]
+redirector support
+[B]Version 2.6.3[/B]
+hlsretry little time change
+[B]Version 2.6.2[/B]
+iconImage support
+[B]Version 2.6.1[/B]
+callback in HLSRETRY
+[B]Version 2.6.0[/B]
+HLSRETRY in f4mproxy improvements
+
+[B]Version 2.5.8[/B]
+TSDownloader second improvements again
+
+[B]Version 2.5.7[/B]
+TSDownloader second improvements
+
+
+[B]Version 0.0.1[/B]
+- Initial Release.
+[B]Version 1.0.3[/B]
+- Support for headers.
+[B]Version 1.0.4[/B]
+- Some more fixes
+[B]Version 1.0.6[/B]
+- now its working with querystring
+[B]Version 1.0.7[/B]
+- headbug
+[B]Version 1.0.8[/B]
+- proxysetup
+[B]Version 1.0.10[/B]
+- bitrate support
+[B]Version 1.0.12[/B]
+- added support recorded streams
+[B]Version 1.0.13[/B]
+- code reformating and failed attempt for seek
+[B]Version 1.0.14[/B]
+- disable seek
+[B]Version 1.0.16[/B]
+- Support for nested manifest, thanks to the-one
+[B]Version 1.0.17[/B]
+- wrong xml quick fix from http://streamer11.elementssys.com:8080/albadawiyah-800-hdsx/archive/1400941159/now/manifest.f4m
+[B]Version 1.0.18[/B]
+- support for no meta data manifest like http://olystreameast.nbcolympics.com/vod/157717c8-9c74-4fd1-ab1a-7daca5246324/geo1-lucas-oil-pro-motocross0531120959-ua.ism/manifest(format=f4m-f4f).f4m
+[B]Version 2.0.0[/B]
+- support for simpledownloader. This is just any file which needs downloading so that xbmc can play, which is failing because of range xbmc is trying
+[B]Version 2.0.1[/B]
+small bug
+[B]Version 2.0.2[/B]
+another small bug
+[B]Version 2.0.3[/B]
+finall small bug solved :)
+
+[B]Version 2.1.0[/B]
+simple_dowloader now support bitrate which is currently only used for bein hd links
+[B]Version 2.1.1[/B]
+small change so that its visible inside the repo
+[B]Version 2.1.2[/B]
+support for Auth Param
+[B]Version 2.1.3[/B]
+fix auth param in qs
+[B]Version 2.1.4[/B]
+HLS DRM Support
+[B]Version 2.1.6[/B]
+HLS non enc speed supported
+[B]Version 2.1.7[/B]
+support setresolved param
+[B]Version 2.1.8[/B]
+Query string problem
+[B]Version 2.1.9[/B]
+Query string problem
+
+[B]Version 2.2.0[/B]
+Fixed for BBC, now picking up last fragement of last segment
+[B]Version 2.2.2[/B]
+updated the retry
+
+[B]Version 2.2.3[/B]
+added akhds support for tag decrypt and pvtoken
+
+[B]Version 2.2.4[/B]
+removed crypto reference
+
+[B]Version 2.2.5[/B]
+small bug
+
+[B]Version 2.2.6[/B]
+support local copy of pycrypto
+
+[B]Version 2.2.7[/B]
+support pycrypto proxy on Android
+
+[B]Version 2.2.8[/B]
+using libcrypto so file on Android
+[B]Version 2.2.9[/B]
+Default back to slow aes
+[B]Version 2.3.0[/B]
+ondemand load
+
+[B]Version 2.3.1[/B]
+small error in hls
+[B]Version 2.3.2[/B]
+small error in hls
+[B]Version 2.3.3[/B]
+return true when played
+[B]Version 2.3.4[/B]
+renamed util folder due to clash
+[B]Version 2.4.0[/B]
+Support for TSDownloader
+[B]Version 2.4.1[/B]
+slight change for TSDownloader
+[B]Version 2.4.3[/B]
+check if its TS
+[B]Version 2.4.4[/B]
+Play command
+[B]Version 2.4.5[/B]
+Proxy for HLS
+[B]Version 2.4.6[/B]
+check for naughty builds
+[B]Version 2.4.7[/B]
+check for naughty builds online
+[B]Version 2.4.8[/B]
+disabled check for naughty builds online
+[B]Version 2.4.9[/B]
+request module in hls
+[B]Version 2.5.0[/B]
+request module in hls
+[B]Version 2.5.1[/B]
+proxy issue in hls
+[B]Version 2.5.2[/B]
+auth param for hls if you want to ignore key url and pass yours
+[B]Version 2.5.3[/B]
+ignore unknown m3u8 tags
+[B]Version 2.5.4[/B]
+m3u8 more wait of no data
+[B]Version 2.5.5[/B]
+m3u8 more wait of no data
+[B]Version 2.5.6[/B]
+m3u8 fine tuning
+REVERSED
+
+
+
