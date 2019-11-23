@@ -96,6 +96,7 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]Eporner[/COLOR]','https://www.eporner.com/category/all/',540,'https://static-eu-cdn.eporner.com/new/logo.png','')
     utils.addDir('[COLOR hotpink]HereXXX[/COLOR]','https://herexxx.com/',530,'https://herexxx.com/templates/defboot/images/logo.png','')
     utils.addDir('[COLOR hotpink]Hotpornfile[/COLOR]','https://www.hotpornfile.org/',550,'https://www.hotpornfile.org/wp-content/themes/hpf-theme/assets/img/icons/apple-touch-icon-144x144-precomposed.png','')
+    utils.addDir('[COLOR hotpink]Cumlouder[/COLOR]','https://www.cumlouder.com/',210,'http://s2.static.cfgr3.com/surveys/cumlouder/logocm.png','')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
