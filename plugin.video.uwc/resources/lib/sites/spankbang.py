@@ -110,7 +110,9 @@ def Playvid(url, name, download=None):
     }
     resp = utils.postHtml(url, form_data=form_data, headers=headers, compression=False, NoCookie=None)
     sources = {}
-    srcs = re.compile('"stream_url_(240p|320p|480p|720p|1080p|4k)":\["([^"]+)"\]', re.DOTALL | re.IGNORECASE).findall(resp)  
+    srcs = re.compile('"stream_url_(240p|320p|480p|720p|1080p|4k)":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
+    if not srcs:
+        srcs = re.compile('"stream_url_m(3u)8":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
     for quality, videourl in srcs:
         if videourl:
             sources[quality] = videourl

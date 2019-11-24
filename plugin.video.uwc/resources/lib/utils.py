@@ -574,6 +574,8 @@ def cleantext(text):
     text = text.replace('&#038;','&')
     text = text.replace('&#8217;','\'')
     text = text.replace('&#8216;','\'')
+    text = text.replace('&#8220;','"')
+    text = text.replace('&#8221;','"')
     text = text.replace('&#8230;','...')
     text = text.replace('&quot;','"')
     text = text.replace('&#039;','`')
