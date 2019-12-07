@@ -1,3 +1,6 @@
+Version 1.2.5
+Fixed: xHamster
+
 Version 1.2.4
 Room info added to Cam4
 Added: Cumloader

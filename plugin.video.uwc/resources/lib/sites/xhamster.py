@@ -70,6 +70,7 @@ def Playvid(url, name, download=None):
     match = get_xhamster_link(response)
     vp.progress.update(25, "", "Loading video page", "")
     if match:
+	if not match.startswith('http'): match = 'https://xhamster.com/' +  match
         vp.play_from_direct_link(match)
     else:
         utils.notify('Oh oh','Couldn\'t find a video')
