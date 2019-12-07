@@ -28,7 +28,6 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl + '/categories/',733,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]',siteurl + '/search/',734,'','')
     List(siteurl + '/categories/All')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 
@@ -38,7 +37,7 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('<a class="t" href="([^"]+)".+?class="i" src="([^"]+)".+?<div class="tr">([^<]+)</div>(.+?)</a>.+?class="vttl.+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<a class="t.+?href="([^"]+)" >\s+<img class="i.+?src="([^"]+)".+?class="tr.+?>([^<]+)</div>(.+?)class="vttl.+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, duration, hd, name in match:
 	if '>HD<' in hd:
 	    hd = 'HD'
@@ -49,8 +48,9 @@ def List(url):
         name = name + " [COLOR orange]" + hd + "[/COLOR] " + "[COLOR deeppink]" + utils.cleantext(duration) + "[/COLOR]"
         utils.addDownLink(name, videopage, 732, img, '')
     try:
-        nextp = re.compile('rel="next" href="([^"]+)">&raquo;', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        utils.addDir('Next Page', siteurl + nextp[0], 731,'')
+        next_page = re.compile('rel="next" href="([^"]+)">&raquo;', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page, 731,'')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)

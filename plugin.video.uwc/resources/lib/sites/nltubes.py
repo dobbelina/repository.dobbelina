@@ -25,18 +25,18 @@ import xbmcgui
 from resources.lib import utils
 import requests
 
-sitelist = ['https://www.poldertube.nl', 'https://www.12milf.com/', 'https://www.sextube.nl']
+sitelist = ['https://www.poldertube.nl/', 'https://www.12milf.com/', 'https://www.sextube.nl/']
 
 
 @utils.url_dispatcher.register('100', ['url'], ['page'])
 def NLTUBES(url, page=1):
     siteurl = sitelist[page]
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + '/categorieen',103,'', page)
-    if page == 0:
-        utils.addDir('[COLOR hotpink]Search[/COLOR]', siteurl + '/pornofilms/zoeken/',104,'', page)
+    if page == 1:
+        utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories/',103,'', page)    
     else:
-        utils.addDir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=',104,'', page)
-    NLVIDEOLIST(url, page)
+        utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categorieen/',103,'', page)
+    utils.addDir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=',104,'', page)
+    NLVIDEOLIST(siteurl + '?filter=latest', page)
 
 
 @utils.url_dispatcher.register('101', ['url'], ['page'])
@@ -46,7 +46,6 @@ def NLVIDEOLIST(url, page=1):
         link = utils.getHtml3(url)
     except:
         return None
-#    match = re.compile(r'<article([^>]*)>.*?href="([^"]+)".*?src="([^"]+)".*?alt="([^"]+).*?duration">[^\d]+([^\s<]+)(?:\s|<)', re.DOTALL | re.IGNORECASE).findall(link)
     match = re.compile('<article[^"]+"([^"]+)".+?href="([^"]+)".*?src="([^"]+jpg)".*?alt="([^"]+).*?duration">\D*?([\d:]+)\D*?<', re.DOTALL | re.IGNORECASE).findall(link)
     for hd, videourl, img, name, duration in match:
         if 'high_' in hd:
@@ -59,10 +58,10 @@ def NLVIDEOLIST(url, page=1):
         if duration != '1"':
             utils.addDownLink(name + hd + duration2, videourl, 102, img, '')
     try:
-        nextp=re.compile('<a href="([^"]+)"[^>]*?>(?:Next|Volgende|VOLGENDE)<', re.DOTALL | re.IGNORECASE).findall(link)[0]
-        if siteurl not in nextp:
-            nextp = siteurl + nextp
-        utils.addDir('Next Page', nextp, 101, '', page)
+        next_page = re.compile('<a href="([^"]+)"[^>]*?>(?:Next|Volgende|VOLGENDE)<', re.DOTALL | re.IGNORECASE).findall(link)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        if siteurl not in next_page: next_pagep = siteurl + next_page
+        utils.addDir('Next Page (' + page_nr + ')', next_page, 101,'', page)
     except: pass
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
@@ -75,7 +74,7 @@ def NLPLAYVID(url, name, download=None):
     headers['Cookie'] = 'pageviews=1; postviews=1'
     videopage = utils.getHtml(url, 'https://www.sextube.nl/', hdr=headers)
     videourl = re.compile('<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    videourl = videourl[0]
+    videourl = videourl[0] + '|Referer=' + url
     vp.progress.update(75, "", "Loading video page", "")
     vp.play_from_direct_link(videourl)
 
@@ -95,15 +94,16 @@ def NLSEARCH(url, page=1, keyword=None):
 def NLCAT(url, page=1):
     siteurl = sitelist[page]
     link = utils.getHtml3(url)
-    if page == 0:
-        tags = re.compile('<div class="category".*?href="([^"]+)".*?<h2>([^<]+)<.*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(link)
-        utils.addDir('[COLOR orange]HD[/COLOR] Porno Films',siteurl + '/pornofilms/hd',101,'',page)
-    if page == 2:
+
+    if page == 1:    
+        tags = re.compile('href="(https://www.12milf.com/c/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(link)
+        for caturl, catname in tags:
+            if siteurl not in caturl: caturl = siteurl + caturl
+            utils.addDir(catname,caturl,101,'',page)
+    else:
         tags = re.compile('<article id=.*?href="([^"]+)" title="([^"]+)">.+?src="([^"]+)" class', re.DOTALL | re.IGNORECASE).findall(link)
-    for caturl, catname, catimg in tags:
-        if siteurl not in catimg:
-            catimg = siteurl + catimg
-        if siteurl not in caturl:
-            caturl = siteurl + caturl
-        utils.addDir(catname,caturl,101,catimg,page)
+        for caturl, catname, catimg in tags:
+            if siteurl not in catimg: catimg = siteurl + catimg
+            if siteurl not in caturl: caturl = siteurl + caturl
+            utils.addDir(catname,caturl,101,catimg,page)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -120,9 +120,9 @@ def INDEXM():
 @utils.url_dispatcher.register('6')
 def INDEXT():
     utils.addDir('[COLOR hotpink]BubbaPorn[/COLOR]','http://www.bubbaporn.com/page1.html',90,os.path.join(imgDir, 'bubba.png'),'')
-    utils.addDir('[COLOR hotpink]Poldertube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','http://www.poldertube.nl/pornofilms/nieuw',100,os.path.join(imgDir, 'poldertube.png'),0)
-    utils.addDir('[COLOR hotpink]12Milf.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.12milf.com/?filter=latest',100,os.path.join(imgDir, '12milf.png'),1)
-    utils.addDir('[COLOR hotpink]Sextube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.sextube.nl/?filter=latest',100,os.path.join(imgDir, 'sextube.png'),2)
+    utils.addDir('[COLOR hotpink]Poldertube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','http://www.poldertube.nl/',100,os.path.join(imgDir, 'poldertube.png'),0)
+    utils.addDir('[COLOR hotpink]12Milf.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.12milf.com/',100,os.path.join(imgDir, '12milf.png'),1)
+    utils.addDir('[COLOR hotpink]Sextube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.sextube.nl/',100,os.path.join(imgDir, 'sextube.png'),2)
     utils.addDir('[COLOR hotpink]TubePornClassic[/COLOR]','http://www.tubepornclassic.com/latest-updates/',360,os.path.join(imgDir, 'tubepornclassic.png'),'')
     utils.addDir('[COLOR hotpink]HClips[/COLOR]','http://www.hclips.com/latest-updates/',380,os.path.join(imgDir, 'hclips.png'),'')
     utils.addDir('[COLOR hotpink]PornHub[/COLOR]','https://www.pornhub.com/newest.html',390,os.path.join(imgDir, 'pornhub.png'),'')
