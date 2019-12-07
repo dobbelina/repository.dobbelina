@@ -41,7 +41,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Popular videos[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/?filter=popular',131)
     utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.xvideospanish.net/?s=',134,'','')
     List('https://www.xn--xvideos-espaol-1nb.com/?filter=latest')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
+
 
 
 @utils.url_dispatcher.register('131', ['url'])
@@ -51,7 +51,7 @@ def List(url):
     except:
         return None
     main = re.compile('<main.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    match = re.compile('<a href="([^"]+)" title="([^"]+)".*?data-src="([^"]+)"(.+?)/header', re.DOTALL | re.IGNORECASE).findall(main)
+    match = re.compile('article id.+?a href="([^"]+)" title="([^"]+)".+?(?:data-src|poster)="([^"]+)"(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(main)
     for videopage, name, img, duration in match:
         if 'fa fa-clock-o' in duration:
             duration = re.compile('fa fa-clock-o"></i> ([^<]+)<', re.DOTALL | re.IGNORECASE).findall(duration)[0]
@@ -64,7 +64,7 @@ def List(url):
         img = iriToUri(uimg)
         utils.addDownLink(name, videopage, 132, img, '')
     try:
-        nextp=re.compile('<a href="([^"]+)">Next</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        nextp=re.compile('class="current">\d+</a></li><li><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         unextp = unicode(nextp, encoding='utf-8')
         nextp = iriToUri(unextp)
         utils.addDir('Next Page', nextp, 131,'')
@@ -139,7 +139,7 @@ def Actors(url):
 
 @utils.url_dispatcher.register('132', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download)
+    vp = utils.VideoPlayer(name, download = download)
     vp.progress.update(25, "", "Loading video page", "")
     html = utils.getHtml(url)   
     videourl = re.compile('<iframe src="([^"]+)" ', re.DOTALL | re.IGNORECASE).findall(html)[0]
@@ -149,12 +149,6 @@ def Playvid(url, name, download=None):
      	listjson = utils.getHtml(videourl,'')
         listjson = listjson.replace('\/','/')          
         videourl = re.compile('"videoUrl":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listjson)[0]
-#        match = re.compile('"(videoUr[^"]+)":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listjson)
-#        links = {}
-#        for type, videourl in match:
-#            utils.kodilog(videourl)
-#            links['Direct ' + type] = videourl 
-#        videourl = utils.selector('Select link', links, dont_ask_valid=False)
         vp.play_from_direct_link(videourl)
     else: 
         if vp.resolveurl.HostedMediaFile(videourl):
@@ -162,7 +156,7 @@ def Playvid(url, name, download=None):
         else:
             if 'pornhub' in videourl:
                 from resources.lib.sites import pornhub
-                videourl = videourl.replace('embed/','view_video.php?viewkey=')                           
+                videourl = videourl.replace('embed/','view_video.php?viewkey=')
                 pornhub.Playvid(videourl,name)
             else:
                 utils.kodilog(' ???: ' + videourl)

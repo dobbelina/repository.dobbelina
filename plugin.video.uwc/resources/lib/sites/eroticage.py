@@ -28,7 +28,6 @@ def Main():
     utils.addDir('[COLOR hotpink]Tags[/COLOR]','http://www.eroticage.net/',433,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.eroticage.net/?s=',434,'','')
     List('http://www.eroticage.net/page/1/')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('431', ['url'])
@@ -57,7 +56,7 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url)
     videolink = re.compile('<iframe src="([^"]+)" ', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     if videolink.startswith('https://cine-matik.com/'):
-        page = utils.getHtml(videolink)
+        page = utils.getHtml(videolink, url)
         alternative = re.compile('input type="hidden" id="alternative" value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(page)[0]
         video = videolink.replace('https://cine-matik.com/player/play.php?vid=','')
         posturl = 'https://cine-matik.com/player/ajax_sources.php'
@@ -78,6 +77,7 @@ def Playvid(url, name, download=None):
             return
         vp.play_from_direct_link(videolink)
     else:
+        videolink = videolink.replace('https://www.pornhub.com/embed/','https://www.pornhub.com/view_video.php?viewkey=')
         videolink = videolink.replace('woof.tube','verystream.com')
         vp.play_from_link_to_resolve(videolink)
 
