@@ -26,6 +26,7 @@ import xbmc
 import xbmcplugin
 import xbmcgui
 from resources.lib import utils
+genders = dict(f='Female', m='Male', c='Couple', s='Trans')
 
 addon = utils.addon
 
@@ -130,15 +131,18 @@ def List(url, page=1):
     except:
         
         return None		
-    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for name,videopage, img, status, age in match:	
+    listhtml = listhtml.replace('title=""','title=" "')
+    match = re.compile(r'<li.+?data-slug="(.+?)".+?<a href="(\/.+?)".+?<img\s+src="(.+?)".+?_label.+?>(.+?)<.+?age.+?gender(.+?).+?>(.+?)<.+?<li title="(.+?)".+?class="location".+?>(.+?)<.+?class="cams">(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for name,videopage, img, status, gender, age, roomtopic, location, activity in match:	
 
         age = utils.cleantext(age.strip())
         name = utils.cleantext(name.strip())
         status = status.replace("\n","").strip()
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
         videopage = "https://chaturbate.com" + videopage
-        utils.addDownLink(name, videopage, 222, img, '', noDownload=True)
+        info = "\n\n[B]Status:[/B] " + status + "\n\n[B]Gender:[/B] " + genders[gender] + "\n\n[B]Age:[/B] " + age + "\n\n[B]Location:[/B] " + location + "\n\n[B]Activity:[/B] " + activity + "\n\n[B]Room topic:[/B] " + roomtopic
+        info = info.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&#39;", "'").replace("&quot;", '"')
+        utils.addDownLink(name, videopage, 222, img, info, noDownload=True)
     try:
         page = page + 1
         nextp=re.compile('<a href="([^"]+)" class="next', re.DOTALL | re.IGNORECASE).findall(listhtml)
