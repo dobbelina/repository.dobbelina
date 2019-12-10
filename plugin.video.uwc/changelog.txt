@@ -1,3 +1,6 @@
+Version 1.2.6
+Room info added to Chaturbate
+
 Version 1.2.5
 Fixed: xHamster
 Various other fixes
