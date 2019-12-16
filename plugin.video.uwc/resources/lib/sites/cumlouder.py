@@ -51,7 +51,7 @@ def List(url):
         utils.addDownLink(name, videopage, 212, img, '')
     try:
         next_page = re.compile('class="btn-pagination" itemprop="name"\s+href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        page_nr = [x for x in next_page.split('/') if x.isdigit()][0]
+        page_nr = re.findall('\d+', next_page)[-1]
         utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page, 211,'')
     except:
         pass

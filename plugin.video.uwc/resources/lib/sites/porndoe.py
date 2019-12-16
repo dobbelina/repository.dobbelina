@@ -25,11 +25,10 @@ siteurl = 'https://porndoe.com'
     
 @utils.url_dispatcher.register('720')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl+'/categories/',723,'','')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl+'/categories?sort=alpha',723,'','')
     utils.addDir('[COLOR hotpink]Channels[/COLOR]',siteurl+'/channels?sort=ranking&page=1',725,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]',siteurl+'/search?keywords=',724,'','')
     List(siteurl+'/videos')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 
@@ -41,7 +40,7 @@ def List(url):
         return None
     match = re.compile('img data-src="([^"]+)".+?alt="([^"]+)".+?<span class="txt">([^<]+)</span>.+?<span class="ico (.+?)"></span>.+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name, duration, ico, videopage in match:
-	videopage = siteurl + videopage
+	if not videopage.startswith('http'): videopage = siteurl + videopage
         name = utils.cleantext(name)
         if ico == 'ico-hd':
             ico = " [COLOR orange]HD[/COLOR] "
@@ -53,8 +52,9 @@ def List(url):
         name = name + ico + "[COLOR deeppink]" + utils.cleantext(duration) + "[/COLOR]"
         utils.addDownLink(name, videopage, 722, img, '')
     try:
-        nextp = re.compile('<li class="page next"><a href="([^"]+)"><span>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        utils.addDir('Next Page', siteurl + nextp[0], 721,'')
+        next_page = re.compile('"page next"><a href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page, 721,'')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -78,17 +78,18 @@ def Categories(url):
 
 
 @utils.url_dispatcher.register('725', ['url'])
-def Categories(url):
+def Channels(url):
+    utils.addDir('[COLOR hotpink]Channel Search[/COLOR]',siteurl+'/channels?name=',726,'','')
     cathtml = utils.getHtml(url, '')
-    match1 = re.compile('<h2 class="title"(.+?)Pagination: end -->', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
-    match = re.compile('<div class="item">[^<]+?<a href="([^"]+)".+?data-src="([^"]+)".+?"title">([^<]+)<.+?class="number">([^<]+)</span>', re.DOTALL | re.IGNORECASE).findall(match1)
+    match = re.compile('a data-under href="([^"]+)".+?data-src="([^"]+)".+?"title">([^<]+)<.+?class="number">([^<]+)</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, img, name, rank in match:
-        name = "[COLOR deeppink]" + rank + "[/COLOR] " + utils.cleantext(name.strip())
+        name = utils.cleantext(name.strip())
 	catpage = siteurl + catpage
         utils.addDir(name, catpage, 721, img, 2)    
     try:
-        nextp = re.compile('<li class="page next"><a href="[^"]+(page=\d+)"><span>', re.DOTALL | re.IGNORECASE).findall(match1)
-        utils.addDir('Next Page', siteurl + '/channels?sort=ranking&' + nextp[0], 725,'')
+        next_page = re.compile('"page next"><a href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page.replace('&amp;','&'), 725,'')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -104,4 +105,14 @@ def Search(url, keyword=None):
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title
         List(searchUrl)
+
+@utils.url_dispatcher.register('726', ['url'], ['keyword'])
+def SearchChannel(url, keyword=None):
+    searchUrl = url
+    if not keyword:
+        utils.searchDir(url, 726)
+    else:
+        title = keyword.replace(' ','+')
+        searchUrl = searchUrl + title
+        Channels(searchUrl)
 

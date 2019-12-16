@@ -120,9 +120,9 @@ def INDEXM():
 @utils.url_dispatcher.register('6')
 def INDEXT():
     utils.addDir('[COLOR hotpink]BubbaPorn[/COLOR]','http://www.bubbaporn.com/page1.html',90,os.path.join(imgDir, 'bubba.png'),'')
-    utils.addDir('[COLOR hotpink]Poldertube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','http://www.poldertube.nl/pornofilms/nieuw',100,os.path.join(imgDir, 'poldertube.png'),0)
-    utils.addDir('[COLOR hotpink]12Milf.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.12milf.com/?filter=latest',100,os.path.join(imgDir, '12milf.png'),1)
-    utils.addDir('[COLOR hotpink]Sextube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.sextube.nl/?filter=latest',100,os.path.join(imgDir, 'sextube.png'),2)
+    utils.addDir('[COLOR hotpink]Poldertube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','http://www.poldertube.nl/',100,os.path.join(imgDir, 'poldertube.png'),0)
+    utils.addDir('[COLOR hotpink]12Milf.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.12milf.com/',100,os.path.join(imgDir, '12milf.png'),1)
+    utils.addDir('[COLOR hotpink]Sextube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.sextube.nl/',100,os.path.join(imgDir, 'sextube.png'),2)
     utils.addDir('[COLOR hotpink]TubePornClassic[/COLOR]','http://www.tubepornclassic.com/latest-updates/',360,os.path.join(imgDir, 'tubepornclassic.png'),'')
     utils.addDir('[COLOR hotpink]HClips[/COLOR]','http://www.hclips.com/latest-updates/',380,os.path.join(imgDir, 'hclips.png'),'')
     utils.addDir('[COLOR hotpink]PornHub[/COLOR]','https://www.pornhub.com/newest.html',390,os.path.join(imgDir, 'pornhub.png'),'')
@@ -143,7 +143,7 @@ def INDEXW():
     utils.addDir('[COLOR hotpink]MyFreeCams[/COLOR] [COLOR white]- webcams[/COLOR]','https://www.myfreecams.com',270,os.path.join(imgDir, 'myfreecams.jpg'),'')
     utils.addDir('[COLOR hotpink]Cam4[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.cam4.com',280,os.path.join(imgDir, 'cam4.png'),'')    
     utils.addDir('[COLOR hotpink]Camsoda[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.camsoda.com',475,os.path.join(imgDir, 'camsoda.png'),'')    
-    utils.addDir('[COLOR hotpink]naked.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.naked.com',480,os.path.join(imgDir, 'naked.png'),'')
+    utils.addDir('[COLOR grey]naked.com[/COLOR] [COLOR red]Broken[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.naked.com',480,os.path.join(imgDir, 'naked.png'),'')
     if sys.version_info >= (2, 7, 9):
         utils.addDir('[COLOR hotpink]streamate.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.streammate.com',515,os.path.join(imgDir, 'streamate.png'),'')
     utils.addDir('[COLOR hotpink]bongacams.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.bongacams.com',520,os.path.join(imgDir, 'bongacams.png'),'')

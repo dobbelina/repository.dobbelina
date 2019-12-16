@@ -34,7 +34,6 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.mrsexe.com/', 403, '', '')
     utils.addDir('[COLOR hotpink]Stars[/COLOR]','http://www.mrsexe.com/filles/', 405, '', '')
     List('http://www.mrsexe.com/')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('401', ['url'])
@@ -51,8 +50,9 @@ def List(url):
         name = utils.cleantext(name) + ' [COLOR deeppink]' + duration + '[/COLOR]'
         utils.addDownLink(name, 'http://www.mrsexe.com' + videopage, 402, img, '')
     try:
-        nextp=re.compile(r'<li class="arrow"><a href="(.+?)">suivant</a></li>').findall(listhtml)
-        utils.addDir('Next Page', 'http://www.mrsexe.com/' + nextp[0], 401,'')
+        next_page=re.compile(r'<li class="arrow"><a href="(.+?)">suivant').findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', 'http://www.mrsexe.com/' + next_page, 401,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -87,11 +87,11 @@ def Stars(url):
     for starpage, img, name, vidcount in match1:
         img = 'https:' + img
         name = name + " (" + vidcount + " Videos)"
-        utils.kodilog(img)
         utils.addDir(name, 'http://www.mrsexe.com/' + starpage, 401, img)
     try:
-        nextp=re.compile(r'<li class="arrow"><a href="(.+?)">suivant</li>').findall(starhtml)
-        utils.addDir('Next Page', 'http://www.mrsexe.com/' + nextp[0], 405,'')
+        next_page=re.compile(r'<li class="arrow"><a href="(.+?)">suivant').findall(starhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', 'http://www.mrsexe.com/' + next_page, 405,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
