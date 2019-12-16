@@ -187,9 +187,16 @@ def Playvid(url, name):
     chatslow = int(addon.getSetting('chatslow'))
     listhtml = utils.getHtml(url, hdr=cbheaders)
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
+    info = ""
 
     listhtml = listhtml.replace('\\u0022','"')
     m3u8url = re.compile(r'"hls_source":\s*"([^"]+m3u8)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml2 = listhtml.replace('<div class="data"></div>','<div class="data"> </div>')
+    match = re.compile(r'<div class="label">(.+?)</div>.+?<div class="data">(.+?)</div>', re.DOTALL | re.IGNORECASE).findall(listhtml2)
+    for label, data in match:
+        if label != "About Me:" and label != "Wish List:" and data != "None":
+           info = info + "[B]" + label + "[/B] " + data + "\n"
+        info = info.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&#39;", "'").replace("&quot;", '"')
 
     if m3u8url:
         m3u8stream = m3u8url[0].replace('\\u002D','-')
@@ -233,7 +240,7 @@ def Playvid(url, name):
         videourl = "%s app=live-edge swfUrl=%s tcUrl=%s pageUrl=http://chaturbate.com/%s/ conn=S:%s conn=S:%s conn=S:2.650 conn=S:%s conn=S:%s playpath=mp4"%(streamserver,swfurl,streamserver,modelname,username,modelname,password,unknown)
 
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
+    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'Plot': info})
     listitem.setProperty("IsPlayable","true")
     xbmc.Player().play(videourl, listitem)
 
