@@ -85,14 +85,16 @@ def List(url, page=1):
 
 @utils.url_dispatcher.register('282', ['url', 'name'])
 def Playvid(url, name):
-#    listhtml = utils.getHtml(url, '', mobileagent)
-#    match = re.compile('src="(http[^"]+m3u8)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-#    if match:
-#       videourl = match[0] + "|User-Agent=" + urllib.quote_plus(mobileagent['User-Agent'])
+    info = ''
+    listhtml = utils.getHtml('https://www.cam4.com/' + name)
+    listhtml = listhtml.replace('><','> <')
+    match = re.compile(r'<span class="desc">(.+?)</span>.*?class="field.+?>(.+?)</', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for desc, field in match:
+        info = info + "[B]" + desc + "[/B] " + field + "\n"
     videourl = url + "|User-Agent=" + urllib.quote_plus(mobileagent['User-Agent'])
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
+    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'Plot': info})
     listitem.setProperty("IsPlayable","true")
     if int(sys.argv[1]) == -1:
        pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
