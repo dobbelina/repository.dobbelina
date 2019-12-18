@@ -58,8 +58,10 @@ def List(url):
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 172, img, '')
     try:
-        next_page=re.compile('class="next page-numbers" href=([\S]+)\s*>Next', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        page_nr = re.findall('\d+', next_page)[-1]
+        next_page = re.compile('class="next page-numbers" href=([\S]+)\s*>Next', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        next_page = next_page.replace('&#038;','&')
+        next_page = next_page.replace('"','')
+        page_nr = re.findall('\d+', next_page.replace('cat=5562',''))[-1]
         utils.addDir('Next Page (' + page_nr + ')', next_page, 171,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
