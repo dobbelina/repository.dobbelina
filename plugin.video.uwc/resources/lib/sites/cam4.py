@@ -72,7 +72,7 @@ def List(url, page=1):
     match = re.compile('data-hls-preview-url="(.*?)".*? src="(.+?)".*?title="Chat Now Free with (.+?)".*?(<div class="statusMsg2 "> (.*?)<|statusMsg3).*?I speak (.+?) <\/div.*?"country".*?title="([^"]+).*? gender .*?title="([^"]+).*?orientation"> ([^"]+) <\/span.*?Broadcast Time"\/> ([^"]+) <\/span.*?viewers"> ([^"]+) <\/span', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videourl, img, name, dummy, roomtopic, language, country, gender, orientation, broadcasttime, viewers in match:
         name = utils.cleantext(name)
-        info = "\n\n[B]Country:[/B] " + country + "\n\n[B]Language:[/B] " + language + "\n\n[B]Gender:[/B] " + gender + "\n\n[B]Orentation:[/B] " + orientation + "\n\n[B]Broadcast time:[/B] " + broadcasttime + "\n\n[B]Viewers:[/B] " + viewers 
+        info = "\n\n[B]Country:[/B] " + country + "\n\n[B]Language:[/B] " + language + "\n\n[B]Gender:[/B] " + gender + "\n\n[B]Orentation:[/B] " + orientation + "\n\n[B]Broadcast time:[/B] " + broadcasttime + "\n\n[B]Viewers:[/B] " + viewers + "\n\n[B]Room topic:[/B] " + roomtopic
 #        videourl = "http://www.cam4.com" + videourl
 #        utils.addDownLink(name, videourl, 282, img, '', noDownload=True)
         utils.addDownLink(name, videourl, 282, img, info, noDownload=True)
