@@ -1,3 +1,6 @@
+Version 1.2.7
+Fixed xHamster next page
+
 Version 1.2.6
 Room info added to Chaturbate
 Fixed: StreamXXX

@@ -56,7 +56,7 @@ def List(url):
         name = utils.cleantext(name) + hd + ' [COLOR hotpink]' + length + '[/COLOR]'
         utils.addDownLink(name, video, 507, img, '')
     try:
-        next_page = re.compile('<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(header_block)[0]
+        next_page = re.compile('data-page="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(response)[0]
         utils.addDir('Next Page', next_page, 506, '')
     except:
         pass
