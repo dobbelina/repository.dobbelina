@@ -40,9 +40,9 @@ def PTMain():
 
 @utils.url_dispatcher.register('55')
 def JHMain():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://www.javwhores.com/categories/', 53, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://www.javwhores.com/search/', 54, '', '')
-    JHList('https://www.javwhores.com/latest-updates/1/', 1)
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://www.javbangers.com/categories/', 53, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://www.javbangers.com/search/', 54, '', '')
+    JHList('https://www.javbangers.com/latest-updates/1/', 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('51', ['url'], ['page'])
@@ -142,9 +142,9 @@ def JHList(url, page=1, onelist=None):
         if html:
             listhtml = html
     for cookie in utils.cj:
-        if cookie.domain == '.javwhores.com' and cookie.name == 'PHPSESSID':
+        if cookie.domain == '.javbangers.com' and cookie.name == 'PHPSESSID':
             utils.addon.setSetting(id='session', value = cookie.value)
-        if cookie.domain == '.javwhores.com' and cookie.name == 'kt_member':
+        if cookie.domain == '.javbangers.com' and cookie.name == 'kt_member':
             utils.addon.setSetting(id='kt_member', value = cookie.value)    
 
     match = re.compile('class="video-item.*?href="([^"]+)" title="([^"]+)".*?original="([^"]+)"(.*?)clock-o"></i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -216,16 +216,16 @@ def PTPlayvid(url, name, download=None):
 
 
 def login(url):
-    if 'javwhores' in url:
+    if 'javbangers' in url:
         username = utils.addon.getSetting('jw_user')
         password = utils.addon.getSetting('jw_pass')
-        loginurl = 'https://www.javwhores.com/ajax-login/'
+        loginurl = 'https://www.javbangers.com/ajax-login/'
     if 'porntrex' in url:
         username = utils.addon.getSetting('pt_user')
         password = utils.addon.getSetting('pt_pass')
         loginurl = 'https://www.porntrex.com/ajax-login/'
     if username and password:
-        values = {'username':username, 'pass':password, 'remember_me':'1', 'action':'login', 'email_link':'https://www.javwhores.com/email/'}
+        values = {'username':username, 'pass':password, 'remember_me':'1', 'action':'login', 'email_link':'https://www.javbangers.com/email/'}
         data = utils.postHtml(loginurl, form_data=values, compression=False, NoCookie=None)
         if '>Log out<' not in data:
             utils.notify('Info','Login failed - check username/password in settings.')
@@ -246,7 +246,7 @@ def PTCat(url):
         img = re.sub(r"statics.cdntrex", "porntrex", img)
         catpage = catpage + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
 #   Changed 19.01.25
-        if url.find('javwhores') > 0:
+        if url.find('javbangers') > 0:
             utils.addDir(name, catpage, 451, img, 1)
         else:
             utils.addDir(name, catpage, 51, img, 1)
@@ -275,7 +275,7 @@ def PTSearch(url, keyword=None):
     else:
         searchUrl = searchUrl + '/' + keyword + '/'
 #   Changed 19.01.25
-        if url.find('javwhores') > 0:
+        if url.find('javbangers') > 0:
             JHList(searchUrl, 1)
         else:
             PTList(searchUrl, 1)
