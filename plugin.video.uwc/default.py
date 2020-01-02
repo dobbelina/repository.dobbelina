@@ -82,7 +82,7 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]PornsLand[/COLOR]','https://porns.land/recent-porns/',620,os.path.join(imgDir, 'pl.png'),'')
     utils.addDir('[COLOR hotpink]Hdpornz[/COLOR]','https://hdpornz.biz',950,os.path.join(imgDir, 'hdpornz.png'),'')
     utils.addDir('[COLOR hotpink]sxyprn(YourPorn)[/COLOR]','https://sxyprn.com/',650,os.path.join(imgDir, 'yourpornsexy.png'),'')
-    utils.addDir('[COLOR hotpink]JavWhores[/COLOR]','https://www.javwhores.com/',55,os.path.join(imgDir, 'javwhores.png'),'')
+    utils.addDir('[COLOR hotpink]JavBangers[/COLOR]','https://www.javbangers.com/latest-updates/1/',55,'https://www.javbangers.com/images/logo.png','')
     utils.addDir('[COLOR hotpink]DatoPorn[/COLOR]','http://datoporn.co/',670,os.path.join(imgDir, 'datoporn.png'),'')
     utils.addDir('[COLOR hotpink]Pornvibe[/COLOR]','https://pornvibe.org/',680,os.path.join(imgDir, 'pornvibe.png'),'')
     utils.addDir('[COLOR hotpink]YesPornPlease[/COLOR]','https://yespornplease.com/',690,os.path.join(imgDir, 'yespornplease.png'),'')
