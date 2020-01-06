@@ -33,7 +33,7 @@ def Main():
 
 def FindServer(video, vp):
     crazycloud_list = ['17-1','17-2','17-3','20-1','20-2','20-3']
-    daxab_list = ['12-1','17-4','20-5','32-1','33-1','43-1','45-1','46-1','47-1','48-1','50-1','52-1','53-1','54-1','55-1','56-1','57-1','58-1','59-1','60-1','63-1','64-1','65-1','66-1','67-1','68-1','68-2']
+    daxab_list = ['12-1','17-4','20-5','32-1','33-1','43-1','45-1','46-1','47-1','48-1','50-1','51-1','52-1','53-1','54-1','55-1','56-1','57-1','58-1','59-1','60-1','63-1','65-1','67-1','68-1','68-2','69-1','69-2','69-3','69-4']
     i = 1
     for srv in crazycloud_list:
 	server = 'https://psv' + srv + '.crazycloud.ru/videos/'
@@ -44,7 +44,7 @@ def FindServer(video, vp):
                	return (server + video)
         except:
 	    i = i+1
-    daxab_list.reverse()
+
     for srv in daxab_list:
         server = 'https://psv' + srv + '.daxab.com/videos/'
         vp.progress.update(25 + i, "", "Searching on daxab.com ... " + srv, "")
