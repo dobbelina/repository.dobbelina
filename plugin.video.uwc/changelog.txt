@@ -1,5 +1,6 @@
 Version 1.2.8
 DaftSex updated server lists
+Fixed: Eroticage
 
 Version 1.2.7
 Fixed xHamster next page
