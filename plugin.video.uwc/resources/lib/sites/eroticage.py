@@ -27,7 +27,7 @@ import json
 def Main():
     utils.addDir('[COLOR hotpink]Tags[/COLOR]','http://www.eroticage.net/',433,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.eroticage.net/?s=',434,'','')
-    List('http://www.eroticage.net/page/1/')
+    List('http://www.eroticage.net/?filter=latest')
 
 
 @utils.url_dispatcher.register('431', ['url'])
@@ -35,16 +35,17 @@ def List(url):
     try:
         html = utils.getHtml(url, '')
     except:
-        
         return None
-    match = re.compile('id="wrapper"(.*?)sayfala', re.DOTALL | re.IGNORECASE).findall(html)[0]
-    match1 = re.compile('<div class="titleFilm"><a href="([^"]+)">([^<]+)<.*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match)
-    for videopage, name, img in match1:
+    html = html.split(">RANDOM<")[0]
+    match = re.compile('<article.+?href="([^"]+)"\s*title="([^"]+)".+?img data-src="([^"]+)".+?</article>', re.DOTALL | re.IGNORECASE).findall(html)
+    
+    for videopage, name, img in match:
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 432, img, '')
     try:
-        nextp = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
-        utils.addDir('Next Page', nextp[0], 431,'')
+        nextp = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+        page_nr = re.findall('\d+', nextp)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', nextp, 431,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
