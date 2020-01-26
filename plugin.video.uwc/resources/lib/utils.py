@@ -780,7 +780,10 @@ def searchDir(url, mode, page=None):
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM keywords")
+        if addon.getSetting('searchsort') == 'true':
+            c.execute("SELECT * FROM keywords order by keyword")
+        else:
+            c.execute("SELECT * FROM keywords")
         for (keyword,) in c.fetchall():
             name = '[COLOR deeppink]' + urllib.unquote_plus(keyword) + '[/COLOR]'
             addDir(name, url, mode, uwcimage('uwc-search.png'), page=page, keyword=keyword)

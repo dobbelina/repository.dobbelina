@@ -31,45 +31,47 @@ def Main():
 def FindServer(video, vp, encrypted_server):
     srvs = {'SM':'1','iM':'2','yM':'3','CN':'4','SN':'5',
             'cTM':'17','AjM':'20','MDN':'43','UDN':'45','YDN':'46','cDN':'47','gDN':'48','ATN':'50','ETN':'51','ITN':'52','QTN':'54','MjN':'63',
-            'QjN':'64','UjN':'65','YjN':'66','cjN':'67', 'gjN':'68','kjN':'69'}
+            'QjN':'64','UjN':'65','YjN':'66','cjN':'67', 'gjN':'68','kjN':'69','AzN':'70','EzN':'71'}
 
     if encrypted_server.startswith('1JnLkV3bsNWe6Fmcj5'):
         srv = 'https://psv' + srvs[encrypted_server[21:24]] + '-' + srvs[encrypted_server[18:20]] + '.crazycloud.ru'
+        utils.kodilog(srv + '/videos/' + video)
         return srv + '/videos/' + video
         
     if encrypted_server.startswith('=02bj5iYhhXYk5'):
         srv = 'https://psv' + srvs[encrypted_server[17:20]] + '-' + srvs[encrypted_server[14:16]] + '.daxab.com'
+        utils.kodilog(srv + '/videos/' + video)
         return srv + '/videos/' + video
 
-    crazycloud_list = ['17-1','17-2','17-3','20-1','20-2','20-3']
-    daxab_list = ['12-1','17-4','20-5','32-1','33-1','43-1','45-1','46-1','47-1','48-1','50-1','51-1','52-1','53-1','54-1','55-1','56-1','57-1','58-1','59-1','60-1','63-1','64-1','65-1','66-1','67-1','68-1','68-2','69-1','69-2','69-3','69-4']
+    # crazycloud_list = ['17-1','17-2','17-3','20-1','20-2','20-3']
+    # daxab_list = ['12-1','17-4','20-5','32-1','33-1','43-1','45-1','46-1','47-1','48-1','50-1','51-1','52-1','53-1','54-1','55-1','56-1','57-1','58-1','59-1','60-1','63-1','64-1','65-1','66-1','67-1','68-1','68-2','69-1','69-2','69-3','69-4']
     
-    if len(encrypted_server)>25:
-        i = 1
-        for srv in crazycloud_list:
-            server = 'https://psv' + srv + '.crazycloud.ru'
-            vp.progress.update(25 + i, "", "Searching on crazycloud.ru ... " + srv, "")
-            try:
-                code = urllib2.urlopen(server + '/videos/' + video, timeout = 1).getcode()
-                if code == 200:
-                    with open(server_txt, 'a') as f:
-                        f.write(encrypted_server + '#' + server +'\r\n')
-                    return (server + '/videos/' + video)
-            except:
-                i = i+1
-    else:
-        i = 1
-        for srv in daxab_list:
-            server = 'https://psv' + srv + '.daxab.com'
-            vp.progress.update(25 + i, "", "Searching on daxab.com ... " + srv, "")
-            try:
-                code = urllib2.urlopen(server + '/videos/' + video, timeout = 0.5).getcode()
-                if code == 200:
-                    with open(server_txt, 'a') as f:
-                        f.write(encrypted_server + '#' + server +'\n')
-                    return (server + '/videos/' + video)
-            except:
-                i = i+1
+    # if len(encrypted_server)>25:
+        # i = 1
+        # for srv in crazycloud_list:
+            # server = 'https://psv' + srv + '.crazycloud.ru'
+            # vp.progress.update(25 + i, "", "Searching on crazycloud.ru ... " + srv, "")
+            # try:
+                # code = urllib2.urlopen(server + '/videos/' + video, timeout = 1).getcode()
+                # if code == 200:
+                    # with open(server_txt, 'a') as f:
+                        # f.write(encrypted_server + '#' + server +'\r\n')
+                    # return (server + '/videos/' + video)
+            # except:
+                # i = i+1
+    # else:
+        # i = 1
+        # for srv in daxab_list:
+            # server = 'https://psv' + srv + '.daxab.com'
+            # vp.progress.update(25 + i, "", "Searching on daxab.com ... " + srv, "")
+            # try:
+                # code = urllib2.urlopen(server + '/videos/' + video, timeout = 0.5).getcode()
+                # if code == 200:
+                    # with open(server_txt, 'a') as f:
+                        # f.write(encrypted_server + '#' + server +'\n')
+                    # return (server + '/videos/' + video)
+            # except:
+                # i = i+1
     utils.kodilog('not found ' + video)
 
 
@@ -98,15 +100,19 @@ def Playvid(url, name, download=None):
 
     videourl = re.compile('<iframe.+?src="(https://da{0,1}xa{0,1}b\.[ct]om{0,1}/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(vidsite)[0]
     videopage = utils.getHtml(videourl, 'https://daftsex.com/')
-    try:	
-        match = re.compile('id: "([^"]+)_([^"]+)".+:"(\d+)\.([^"]+)"}.+?server:\s*?"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-        (id1, id2, res, extra, server) =  match
-        video =  id1 + '/' + id2 + '/' + res + '.mp4?extra=' + extra
-        fserver = FindServer(video, vp, server)
-        vp.play_from_direct_link(fserver)
-    except:
-        video = 'https://vk.com/video' + re.compile("Fav.Toggle\(this, '([^']+)'", re.DOTALL | re.IGNORECASE).findall(vidsite)[0]
-        vp.play_from_link_to_resolve(video)
+    if utils.addon.getSetting('daftsexresolver') == '0':
+        server =''
+        try:	
+            match = re.compile('id: "([^"]+)_([^"]+)".+:"(\d+)\.([^"]+)"}.+?server:\s*?"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+            (id1, id2, res, extra, server) =  match
+            video =  id1 + '/' + id2 + '/' + res + '.mp4?extra=' + extra
+            fserver = FindServer(video, vp, server)
+            vp.play_from_direct_link(fserver)
+            return
+        except:
+            pass
+    video = 'https://vk.com/video' + re.compile("Fav.Toggle\(this, '([^']+)'", re.DOTALL | re.IGNORECASE).findall(vidsite)[0]
+    vp.play_from_link_to_resolve(video)
 
 @utils.url_dispatcher.register('613', ['url'], ['keyword'])
 def Search(url, keyword=None):

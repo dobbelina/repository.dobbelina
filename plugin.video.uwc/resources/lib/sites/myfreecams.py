@@ -33,6 +33,20 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib import websocket
 
+global WZOBSSERVERS
+global H5SERVERS
+global NGSERVERS
+global CHATSERVERS
+
+serverlist = utils.getHtml2('https://new.myfreecams.com/server')
+jsonlist =  simplejson.loads(serverlist)
+
+WZOBSSERVERS = jsonlist["wzobs_servers"]
+H5SERVERS = jsonlist["h5video_servers"]
+NGSERVERS = jsonlist["ngvideo_servers"]
+CHATSERVERS = jsonlist["chat_servers"]
+
+
 
 @utils.url_dispatcher.register('270')
 def Main():
@@ -41,25 +55,27 @@ def Main():
 
 @utils.url_dispatcher.register('271', ['url'])
 def List(url):
-	try:
-		listhtml = utils.getHtml2(url)
-	except:
-		
-		return None
+    try:
+        listhtml = utils.getHtml2(url)
+        serverlist = utils.getHtml2('https://new.myfreecams.com/server')
+    except:
+        
+        return None
 
-	match = re.compile('<div class=slm_c>.+?<a href="([^"]+)".+?src="([^"]+)".+?style=".+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-	for urk,img,name in match:
-		url = name
-		name = utils.cleantext(name)
-		#img = img + 'jpg'
-		#url = img[32:-17]
-		img = img.replace('90x90','300x300')
-		#if len(url) == 7:
-		#    url = '10' + url
-		#else:
-		#    url = '1' + url
-		utils.addDownLink(name, url, 272, img, '', noDownload=True)
-	xbmcplugin.endOfDirectory(utils.addon_handle)
+    match = re.compile('<div class=slm_c>.+?<a href="([^"]+)".+?src="([^"]+)".+?style=".+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for urk,img,name in match:
+        url = name
+        name = utils.cleantext(name)
+        #img = img + 'jpg'
+        #url = img[32:-17]
+        img = img.replace('90x90','300x300')
+        #if len(url) == 7:
+        #    url = '10' + url
+        #else:
+        #    url = '1' + url
+
+        utils.addDownLink(name, url, 272, img, '', noDownload=True)
+    xbmcplugin.endOfDirectory(utils.addon_handle)
     
 
 
@@ -67,6 +83,7 @@ def List(url):
 @utils.url_dispatcher.register('272', ['url', 'name'])
 def Playvid(url, name):
     videourl = myfreecam_start(url)
+
     if videourl:
         iconimage = xbmc.getInfoImage("ListItem.Thumb")
         listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -106,6 +123,8 @@ def read_model_data(m):
     global CAMGIRLSERVER
     global CAMGIRLCHANID
     global CAMGIRLUID
+    global PHASE
+   
     usr = ''
     msg = fc_decode_json(m)
     try:
@@ -126,10 +145,22 @@ def read_model_data(m):
     flags  = camgirlinfo['flags']
     u_info=msg['u']
 
+    if 'phase' in u_info:
+        PHASE = u_info['phase']
+    else:
+        PHASE = ''
+        
     try:
-        CAMGIRLSERVER = u_info['camserv']
-        if CAMGIRLSERVER >= 500:
-            CAMGIRLSERVER = CAMGIRLSERVER - 500
+        idx = str(u_info['camserv']).encode("utf-8")
+        if idx in WZOBSSERVERS:
+            CAMGIRLSERVER = WZOBSSERVERS[idx]
+        else: 
+            if idx in H5SERVERS:
+                CAMGIRLSERVER = H5SERVERS[idx]
+            else:
+                if idx in NGSERVERS:
+                    CAMGIRLSERVER = NGSERVERS[idx]
+        
         if vs != 0:
             CAMGIRLSERVER = 0
     except KeyError:
@@ -152,16 +183,14 @@ def myfreecam_start(url):
     global CAMGIRLSERVER
     global CAMGIRLUID
     global CAMGIRLCHANID
+  
+    
     CAMGIRL= url
     CAMGIRLSERVER = 0
 
     try:
-        xchat=[ 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-            20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 
-            33, 34, 35, 36, 39, 40, 41, 42, 43, 44, 45, 46, 
-            47, 48, 49, 56, 57, 58, 59, 60, 61
-              ]
-        host = "ws://xchat"+str(random.choice(xchat))+".myfreecams.com:8080/fcsl"
+        host = "ws://"+str(random.choice(CHATSERVERS))+".myfreecams.com:8080/fcsl"
+        utils.kodilog(host)
         ws = websocket.WebSocket()
         ws = websocket.create_connection(host)
         ws.send("hello fcserver\n\0")
@@ -181,7 +210,6 @@ def myfreecam_start(url):
                 break
 
             fc = hdr.group(1)
-
             mlen   = int(fc[0:4])
             fc_type = int(fc[4:])
 
@@ -192,7 +220,7 @@ def myfreecam_start(url):
                 break
 
             msg=urllib.unquote(msg)
-
+#            utils.kodilog(msg)
             if fc_type == 1:
                 ws.send("10 0 0 20 0 %s\n\0" % CAMGIRL)
             elif fc_type == 10:
@@ -205,8 +233,17 @@ def myfreecam_start(url):
                 break
     ws.close()
     if CAMGIRLSERVER != 0:
-        Url="http://video"+str(CAMGIRLSERVER)+".myfreecams.com:1935/NxServer/ngrp:mfc_"+\
-            str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8" #better resolution
+#        Url="http://video"+str(CAMGIRLSERVER)+".myfreecams.com:1935/NxServer/ngrp:mfc_"+\
+#            str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8" #better resolution
+
+        if PHASE == '':
+            Url="https://"+str(CAMGIRLSERVER)+".myfreecams.com/NxServer/ngrp:mfc_"+\
+                str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
+        else:
+            Url="https://"+str(CAMGIRLSERVER)+".myfreecams.com/NxServer/ngrp:mfc_a_"+\
+                str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
+
+
         return Url
     else:
         pass
