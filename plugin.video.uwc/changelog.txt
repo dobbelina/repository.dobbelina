@@ -1,3 +1,10 @@
+Version 1.2.9
+New options in settings:
+sort search keywords
+sort favorits
+select resolver for daftsex (internal or resolveurl)
+myfreecam fixed (works for me, but requires testing)
+
 Version 1.2.8
 DaftSex updated server lists
 Fixed: Eroticage

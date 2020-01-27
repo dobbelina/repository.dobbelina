@@ -1,10 +1,16 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.8
+Ultimate Whitecream addon update	Version 1.2.9
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-DaftSex updated server lists
+New options in settings:
 
-Fixed: Eroticage
+sort search keywords
+
+sort favorits
+
+select resolver for daftsex (internal or resolveurl)
+
+myfreecam fixed (works for me, but requires testing)
 
 
 ---
