@@ -7,6 +7,7 @@
         <setting id="posterfanart" label="30005" type="bool" default="false" />
         <setting id="porntrexacct" label="30030" type="bool" default="false" />
         <setting id="download_path" type="folder" source="video" label="Download Folder"  option="writeable" default=""/>
+        <setting id="daftsexresolver" type="enum" lvalues="30032|30033" label="30031" default="0"/>
     </category>
     <category label="Hosts and resolvers">
         <setting id="dontask" label="30002" type="bool" default="false" />
@@ -37,6 +38,8 @@
         <setting id="jw_pass" type="text" label="Password:" option="hidden" default=""/>
     </category>
     <category label="Favorites and keywords">
+        <setting id="favsort" label="30214" type="bool" default="false" />
+        <setting id="searchsort" label="30215" type="bool" default="false" />
         <setting type="lsep" label="Favorites" />
         <setting id="backup_favorites" type="action" label="30201" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=910)" />
         <setting id="restore_favorites" type="action" label="30202" enable="true" option="close" action="RunPlugin(plugin://plugin.video.uwc/?mode=911)" />

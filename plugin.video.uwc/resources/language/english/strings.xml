@@ -17,6 +17,9 @@
     <string id="30026">Enable universal resolvers</string>
     <string id="30027">Open ResolveURL settings</string>
     <string id="30030">Enable Porntrex Acct</string>
+    <string id="30031">Daftsex Resolver</string>
+    <string id="30032">Internal (video resolution limited to 720p)</string>
+    <string id="30033">ResolveURL (premium account required)</string>
     <string id="30100">Select Playback mode</string>
     <string id="30101">Direct</string>
     <string id="30102">F4mProxy</string>
@@ -36,4 +39,6 @@
     <string id="30211">Backup keywords</string>
     <string id="30212">Restore keywords</string>
     <string id="30213">Clear keywords</string>
+    <string id="30214">Favorites sorted</string>
+    <string id="30215">Search keywords sorted</string>
 </strings>
