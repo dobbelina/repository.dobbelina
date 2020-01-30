@@ -79,7 +79,7 @@ def List(url, page=1):
                 lang  = lang + ", "
             lang = lang + languages[language]
 
-        info = "\n\n[B]Age:[/B] " + str(model['age']) + "\n\n[B]Gender:[/B] " + model['gender'].title() + "\n\n[B]Orientation:[/B] " + model['sexPreference'].title() + "\n\n[B]Country:[/B] " + countries[model['countryCode']] + "\n\n[B]Language:[/B] " + lang + "\n\n[B]Broadcast type:[/B] " + model['broadcastType'].title() + "\n\n[B]Broadcast time:[/B] " + str(model['broadcastTime']) + "\n\n[B]Source:[/B] " + model['source'].title() + "\n\n[B]Viewers:[/B] " + str(model['viewers']) + "\n\n[B]Room topic:[/B] " + model['statusMessage'].title()
+        info = "\n\n[B]Age:[/B] " + str(model['age']) + "\n[B]Gender:[/B] " + model['gender'].title() + "\n[B]Orientation:[/B] " + model['sexPreference'].title() + "\n\n[B]Country:[/B] " + countries[model['countryCode']] + "\n[B]Language:[/B] " + lang + "\n\n[B]Broadcast type:[/B] " + model['broadcastType'].title() + "\n[B]Broadcast time:[/B] " + str(model['broadcastTime']) + "\n[B]Viewers:[/B] " + str(model['viewers']) + "\n\n[B]Source:[/B] " + model['source'].title() + " (" + str(model['resolution']) + ")" + "\n\n[B]Room topic:[/B] " + model['statusMessage'].title()
 
         utils.addDownLink(model['username'], model['hlsPreviewUrl'], 282, model['snapshotImageLink'], info, noDownload=True)
     if len(model_list['users'])== 60:
