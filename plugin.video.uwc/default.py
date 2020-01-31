@@ -63,7 +63,7 @@ def INDEXS():
     if sys.version_info >= (2, 7, 9):
         utils.addDir('[COLOR hotpink]WatchXXXFree[/COLOR]','https://watchxxxfreeinhd.com/page/1/',10,os.path.join(imgDir, 'wxf.png'),'')
         utils.addDir('[COLOR hotpink]PornTrex[/COLOR]','https://www.porntrex.com/latest-updates/1/',50,os.path.join(imgDir, 'pt.png'),'')
-    utils.addDir('[COLOR hotpink]Woxtube[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
+    utils.addDir('[COLOR grey]Woxtube[/COLOR] [COLOR red]Broken[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
     utils.addDir('[COLOR hotpink]Porn00[/COLOR]','http://www.porn00.org/page/1/',64,os.path.join(imgDir, 'p00.png'),'')
     utils.addDir('[COLOR hotpink]Beeg[/COLOR]','http://beeg.com/page-1',80,os.path.join(imgDir, 'bg.png'),'')
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',110,os.path.join(imgDir, 'elreyx.png'),'')
@@ -108,7 +108,7 @@ def INDEXM():
     utils.addDir('[COLOR hotpink]PornHive[/COLOR]','http://www.pornhive.tv/en/movies/all',70,os.path.join(imgDir, 'ph.png'),'')
     utils.addDir('[COLOR grey]JustPorn[/COLOR] [COLOR red]Broken[/COLOR]','http://justporn.to/category/dvdrips-full-movies/',245,os.path.join(imgDir, 'justporn.png'),'')
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',116,os.path.join(imgDir, 'elreyx.png'),'')
-    utils.addDir('[COLOR hotpink]PelisxPorno[/COLOR]','http://www.pelisxporno.com/',140,os.path.join(imgDir, 'pelisxporno.png'),'')
+    utils.addDir('[COLOR grey]PelisxPorno[/COLOR] [COLOR red]Broken[/COLOR]','http://www.pelisxporno.com/',140,os.path.join(imgDir, 'pelisxporno.png'),'')
     utils.addDir('[COLOR hotpink]StreamXXX[/COLOR]','http://streamxxx.tv/category/movies/',175,os.path.join(imgDir, 'streamxxx.png'),'')
     utils.addDir('[COLOR hotpink]ParadiseHill[/COLOR]','http://www.paradisehill.tv/en/',250,os.path.join(imgDir, 'paradisehill.png'),'')
     utils.addDir('[COLOR hotpink]FreeOMovie[/COLOR]','http://www.freeomovie.com/',370,os.path.join(imgDir, 'freeomovie.png'),'')
