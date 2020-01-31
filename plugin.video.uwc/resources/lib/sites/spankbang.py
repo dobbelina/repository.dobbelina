@@ -18,6 +18,7 @@
 '''
 
 import re
+import json
 
 import xbmc
 import xbmcplugin
@@ -50,15 +51,15 @@ def List(url):
     except:
         return None
     main_block = re.compile('<main id="container">(.*?)</main>', re.DOTALL).findall(listhtml)[0]
-    match = re.compile('<a href="(\/[^"]+\/)video[^"]+" class="thumb.*?data-src="([^"]+)".*?alt="([^"]+)".+?class="cover lazyload"(.*?)fa fa-clock-o"></i>(.+?)<', re.DOTALL).findall(main_block)
-    for videopage, img, name, hd, duration in match:
+    match = re.compile('<a href="(\/[^"]+\/)video[^"]+" class="thumb.*?data-src="([^"]+)".*?alt="([^"]+)".+?<span class="i-len">(.*?)<.+?<span class="i-hd">(.*?)<', re.DOTALL).findall(main_block)
+    for videopage, img, name, duration, hd in match:
         videopage = videopage + "embed/"
-        res = re.findall('"i-hd">(.+?)<', hd, re.DOTALL | re.IGNORECASE)
-        if res == []:
-            hd = ""
-        else:
-            hd = "[COLOR orange] " + res[0]
-        name = utils.cleantext(name) + hd + "[COLOR deeppink]" + duration + "m[/COLOR]"
+#        res = re.findall('"i-hd">(.+?)<', hd, re.DOTALL | re.IGNORECASE)
+#        if res == []:
+#            hd = ""
+#        else:
+#            hd = "[COLOR orange] " + res[0]
+        name = utils.cleantext(name) + "[COLOR orange] " + hd + " [COLOR deeppink]" + duration + "[/COLOR]"
         utils.addDownLink(name, base_url + videopage, play_mode, img, '')
     try:
         nextp=re.compile('<li class="active"><a>.+?</a></li><li><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -109,14 +110,16 @@ def Playvid(url, name, download=None):
 #   'X-CSRFToken': sb_csrf_session,
     }
     resp = utils.postHtml(url, form_data=form_data, headers=headers, compression=False, NoCookie=None)
-    sources = {}
-    srcs = re.compile('"stream_url_(240p|320p|480p|720p|1080p|4k)":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
-    if not srcs:
-        srcs = re.compile('"stream_url_m(3u)8":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
-    for quality, videourl in srcs:
-        if videourl:
-            sources[quality] = videourl
-    videourl = utils.selector('Select quality', sources, dont_ask_valid=True, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+#    sources = {}
+#    srcs = re.compile('"stream_url_(240p|320p|480p|720p|1080p|4k)":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
+#    if not srcs:
+#        srcs = re.compile('"stream_url_m(3u)8":\["([^"]+)"', re.DOTALL | re.IGNORECASE).findall(resp)
+#    for quality, videourl in srcs:
+#        if videourl:
+#            sources[quality] = videourl
+#    videourl = utils.selector('Select quality', sources, dont_ask_valid=True, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+    sources = json.loads(resp)
+    videourl = sources['m3u8'][0]
     if not videourl:
         return
     vp.play_from_direct_link(videourl)
