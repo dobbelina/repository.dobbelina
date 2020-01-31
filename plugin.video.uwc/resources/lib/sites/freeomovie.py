@@ -44,9 +44,9 @@ def List(url):
         img = img.replace('/i/','/t/')
         utils.addDownLink(name, videopage, 372, img, '')
     try:
-#        nextp = re.compile('<span class=\'current\'>.+?</span><a class="page larger".*?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-	nextp = re.compile('<a class="nextpostslink" rel="next" href="https://www.freeomovie.com/page/(\d+)/"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        utils.addDir('Next Page (' + str(nextp) + ')', 'https://www.freeomovie.com/page/' + str(nextp[0]), 371,'')
+        nextp = re.compile('a class="nextpostslink" rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', nextp)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', nextp, 371,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 

@@ -28,9 +28,9 @@ progress = utils.progress
 
 @utils.url_dispatcher.register('60')
 def PAQMain():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.woxtube.com/categories/',63,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.woxtube.com/page/1/?s=',68,'','')
-    PAQList('http://www.woxtube.com/page/1/',1)
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.pornaq.com/categories/',63,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.pornaq.com/page/1/?s=',68,'','')
+    PAQList('http://www.pornaq.com',1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -57,8 +57,9 @@ def PAQList(url, page=1, onelist=None):
         utils.addDownLink(name, videopage, 62, img, '')    
     if not onelist:
         try:
-            nextp=re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-            utils.addDir('Next Page', nextp,61,'')
+            nextp=re.compile("title='Next page' href='([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+            page_nr = re.findall('\d+', nextp)[-1]
+            utils.addDir('Next Page (' + page_nr + ')', nextp, 61,'')
         except:
             pass
         xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -66,6 +67,7 @@ def PAQList(url, page=1, onelist=None):
 
 @utils.url_dispatcher.register('62', ['url', 'name'], ['download'])
 def PPlayvid(url, name, download=None):
+    utils.kodilog(url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
     videopage = utils.getHtml(url)
@@ -89,8 +91,9 @@ def PPlayvid(url, name, download=None):
             vp.play_from_direct_link(videourl)
         else:
             vp.play_from_link_to_resolve(videourl)
-    if 'woxtube' in url:
+    if 'pornaq' in url:
         videourl = re.compile("<source src='([^']+)' title", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+        utils.kodilog(videourl)
         vp.play_from_direct_link(videourl + '|Referer=' + url)
 
 
@@ -100,8 +103,8 @@ def PCat(url):
     match = re.compile('<a title="([^"]+)" href="([^"]+)".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for name, videolist, img in match:
         name = name.replace(' Porn Videos','').title()
-        if 'woxtube' in url:
-            videolist = "http://www.woxtube.com" + videolist + "page/1/"
+        if 'pornaq' in url:
+            videolist = "http://www.pornaq.com" + videolist + "page/1/"
             utils.addDir(name, videolist, 61, img, 1)
         elif 'porn00' in url:
             videolist = "http://www.porn00.org" + videolist + "page/1/"
