@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.9"
+       version="1.2.10"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,12 +25,11 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.9[/B]
-New options in settings:
-sort search keywords
-sort favorits
-select resolver for daftsex (internal or resolveurl)
-myfreecam fixed (works for me, but requires testing)
+        <news>[B]Version 1.2.10[/B]
+Fixed: Spankbang
+Fixed: Cam4
+Fixed: FreeOMovie
+Fixed: Woxtube
 </news>
     </extension>
 </addon>
