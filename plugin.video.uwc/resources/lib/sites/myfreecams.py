@@ -33,21 +33,6 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib import websocket
 
-global WZOBSSERVERS
-global H5SERVERS
-global NGSERVERS
-global CHATSERVERS
-
-serverlist = utils.getHtml2('https://new.myfreecams.com/server')
-jsonlist =  simplejson.loads(serverlist)
-
-WZOBSSERVERS = jsonlist["wzobs_servers"]
-H5SERVERS = jsonlist["h5video_servers"]
-NGSERVERS = jsonlist["ngvideo_servers"]
-CHATSERVERS = jsonlist["chat_servers"]
-
-
-
 @utils.url_dispatcher.register('270')
 def Main():
     List('https://www.myfreecams.com/')
@@ -57,9 +42,7 @@ def Main():
 def List(url):
     try:
         listhtml = utils.getHtml2(url)
-        serverlist = utils.getHtml2('https://new.myfreecams.com/server')
     except:
-        
         return None
 
     match = re.compile('<div class=slm_c>.+?<a href="([^"]+)".+?src="([^"]+)".+?style=".+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -82,6 +65,17 @@ def List(url):
 
 @utils.url_dispatcher.register('272', ['url', 'name'])
 def Playvid(url, name):
+    global MFC_SERVERS
+    MFC_SERVERS = {}
+
+    serverlist = utils.getHtml2('https://new.myfreecams.com/server')
+    jsonlist =  simplejson.loads(serverlist)
+
+    MFC_SERVERS['WZOBSSERVERS'] = jsonlist["wzobs_servers"]
+    MFC_SERVERS['H5SERVERS'] = jsonlist["h5video_servers"]
+    MFC_SERVERS['NGSERVERS'] = jsonlist["ngvideo_servers"]
+    MFC_SERVERS['CHATSERVERS'] = jsonlist["chat_servers"]
+
     videourl = myfreecam_start(url)
 
     if videourl:
@@ -124,6 +118,11 @@ def read_model_data(m):
     global CAMGIRLCHANID
     global CAMGIRLUID
     global PHASE
+    
+    global MFC_SERVERS
+    WZOBSSERVERS = MFC_SERVERS['WZOBSSERVERS']
+    H5SERVERS = MFC_SERVERS['H5SERVERS']
+    NGSERVERS = MFC_SERVERS['NGSERVERS']
    
     usr = ''
     msg = fc_decode_json(m)
@@ -154,11 +153,14 @@ def read_model_data(m):
         idx = str(u_info['camserv']).encode("utf-8")
         if idx in WZOBSSERVERS:
             CAMGIRLSERVER = WZOBSSERVERS[idx]
+            utils.kodilog('  WZOB')
         else: 
             if idx in H5SERVERS:
                 CAMGIRLSERVER = H5SERVERS[idx]
+                utils.kodilog('  H5')
             else:
                 if idx in NGSERVERS:
+                    utils.kodilog('  NG')
                     CAMGIRLSERVER = NGSERVERS[idx]
         
         if vs != 0:
@@ -183,14 +185,14 @@ def myfreecam_start(url):
     global CAMGIRLSERVER
     global CAMGIRLUID
     global CAMGIRLCHANID
-  
-    
+    global MFC_SERVERS
+
     CAMGIRL= url
     CAMGIRLSERVER = 0
 
     try:
-        host = "ws://"+str(random.choice(CHATSERVERS))+".myfreecams.com:8080/fcsl"
-        utils.kodilog(host)
+        host = "ws://"+str(random.choice(MFC_SERVERS['CHATSERVERS']))+".myfreecams.com:8080/fcsl"
+#        utils.kodilog(host)
         ws = websocket.WebSocket()
         ws = websocket.create_connection(host)
         ws.send("hello fcserver\n\0")
