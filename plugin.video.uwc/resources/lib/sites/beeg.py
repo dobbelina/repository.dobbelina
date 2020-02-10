@@ -131,11 +131,17 @@ def BGList(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 def replaceunicode(str):
-    unicodechar = re.compile(r'\\u(....)').findall(str)
-    for x in unicodechar:
-        str = str.replace('\u' + x, unichr(int(x,16)))
-    str = str.replace('\\r','')
-    str = str.encode("utf8")
+    if str:
+        try:
+            unicodechar = re.compile(r'\\u(....)').findall(str)
+            for x in unicodechar:
+                str = str.replace('\u' + x, unichr(int(x,16)))
+            str = str.replace('\\r','')
+            str = str.encode("utf8")
+        except:
+            str = "unicode_error"
+    else:
+        str = ""
     return str
 
 
