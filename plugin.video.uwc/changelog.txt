@@ -1,5 +1,6 @@
 Version 1.2.11
 Fixed: Beeg
+Changed: Myfreecams
 
 Version 1.2.10
 Fixed: Spankbang

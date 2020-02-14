@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.10"
+       version="1.2.11"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,11 +26,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.10[/B]
-Fixed: Spankbang
-Fixed: Cam4
-Fixed: FreeOMovie
-Fixed: Woxtube
+        <news>[B]Version 1.2.11[/B]
+Fixed: Beeg
+Changed: Myfreecams
 </news>
     </extension>
 </addon>
