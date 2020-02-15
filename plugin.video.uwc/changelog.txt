@@ -1,6 +1,12 @@
-Version 1.3.0
+Version 1.2.11
+Fixed: Beeg
+Changed: Myfreecams
+
+Version 1.2.10
 Fixed: Spankbang
 Fixed: Cam4
+Fixed: FreeOMovie
+Fixed: Woxtube
 
 Version 1.2.9
 New options in settings:

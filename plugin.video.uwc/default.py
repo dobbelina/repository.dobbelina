@@ -63,7 +63,7 @@ def INDEXS():
     if sys.version_info >= (2, 7, 9):
         utils.addDir('[COLOR hotpink]WatchXXXFree[/COLOR]','https://watchxxxfreeinhd.com/page/1/',10,os.path.join(imgDir, 'wxf.png'),'')
         utils.addDir('[COLOR hotpink]PornTrex[/COLOR]','https://www.porntrex.com/latest-updates/1/',50,os.path.join(imgDir, 'pt.png'),'')
-    utils.addDir('[COLOR grey]Woxtube[/COLOR] [COLOR red]Broken[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
+    utils.addDir('[COLOR hotpink]Woxtube[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
     utils.addDir('[COLOR hotpink]Porn00[/COLOR]','http://www.porn00.org/page/1/',64,os.path.join(imgDir, 'p00.png'),'')
     utils.addDir('[COLOR hotpink]Beeg[/COLOR]','http://beeg.com/page-1',80,os.path.join(imgDir, 'bg.png'),'')
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',110,os.path.join(imgDir, 'elreyx.png'),'')
@@ -83,7 +83,7 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]Hdpornz[/COLOR]','https://hdpornz.biz',950,os.path.join(imgDir, 'hdpornz.png'),'')
     utils.addDir('[COLOR hotpink]sxyprn(YourPorn)[/COLOR]','https://sxyprn.com/',650,os.path.join(imgDir, 'yourpornsexy.png'),'')
     utils.addDir('[COLOR hotpink]JavBangers[/COLOR]','https://www.javbangers.com/latest-updates/1/',55,'https://www.javbangers.com/images/logo.png','')
-    utils.addDir('[COLOR hotpink]DatoPorn[/COLOR]','http://datoporn.co/',670,os.path.join(imgDir, 'datoporn.png'),'')
+    utils.addDir('[COLOR grey]DatoPorn[/COLOR] [COLOR red]Broken[/COLOR]','http://datoporn.co/',670,os.path.join(imgDir, 'datoporn.png'),'')
     utils.addDir('[COLOR hotpink]Pornvibe[/COLOR]','https://pornvibe.org/',680,os.path.join(imgDir, 'pornvibe.png'),'')
     utils.addDir('[COLOR hotpink]YesPornPlease[/COLOR]','https://yespornplease.com/',690,os.path.join(imgDir, 'yespornplease.png'),'')
     utils.addDir('[COLOR hotpink]XVideosHits[/COLOR]','https://www.xvideoshits.com/',700,os.path.join(imgDir, 'xvideoshits.png'),'')
