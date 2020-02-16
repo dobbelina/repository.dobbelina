@@ -35,7 +35,10 @@ def datoporn_list(url):
         listhtml = utils.getHtml(url)
     except Exception as e:
         return None
-    match = re.compile('''href="([^"]+)" class="video200 ">.+?url\('(.+?)'.+?<span>(.+?)<.+?class="title">(.+?)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    # match = re.compile('''href="([^"]+)" class="video200 ">.+?url\('(.+?)'.+?<span>(.+?)<.+?class="title">(.+?)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('''class="vid_block".+?href="([^"]+)".+?background: url\('([^']+)'\).+?span>([^<]+)<.+?class="link"><b>([^<]+)</b>''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    
+    
     for video, img, duration, name in match:
         duration = duration.strip()
         name = utils.cleantext(name) + " [COLOR deeppink]" + duration + "[/COLOR]"
@@ -74,4 +77,10 @@ def datoporn_search(url, keyword=None):
 @utils.url_dispatcher.register('672', ['url', 'name'], ['download'])
 def datoporn_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
+    # videourl = utils.getHtml(url,url)
+    # packed = re.compile('>(eval.+?)</script>', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
+    # unpacked = utils.unpack(packed)   
+    # videolink = re.compile('src:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
+    # vp.play_from_direct_link(videolink)
+
     vp.play_from_link_to_resolve(url)
