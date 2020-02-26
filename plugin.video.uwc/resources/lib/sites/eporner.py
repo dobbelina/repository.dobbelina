@@ -38,8 +38,8 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('div class="mb.+?class="mvhdico">.*?<span>([^<]+)<.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)".+?class="mbtim">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for hd, videopage, name, img, duration in match:
+    match = re.compile('data-vpid.+?><span>([^<]+)<.+?href="([^"]+)".+?img src="([^"]+)".+?title="([^"]+)">.+?title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for hd, videopage, img, name, duration in match:
         name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
         utils.addDownLink(name, siteurl + videopage, 542, img, '')
     try:

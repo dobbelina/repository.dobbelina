@@ -52,7 +52,7 @@ def List(url):
 
 @utils.url_dispatcher.register('752', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download,'<iframe src="([^"]+)"')
+    vp = utils.VideoPlayer(name, download)
     vp.play_from_site_link(url, url)
 
 

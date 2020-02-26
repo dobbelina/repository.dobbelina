@@ -43,6 +43,8 @@ def List(url):
     match = re.compile('class="thumbnail".+?src="([^"]+)".+?href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         name = utils.cleantext(name)
+        if 'IMAGESET' in name.upper():
+            continue
         name = name.replace('720p','[COLOR yellow]720p[/COLOR]')
         name = name.replace('1080p','[COLOR orange]1080p[/COLOR]')
         name = name.replace('2160p','[COLOR red]2160p[/COLOR]')
