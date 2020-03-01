@@ -27,7 +27,7 @@ def animeidhentai_main():
     utils.addDir('[COLOR hotpink]Uncensored[/COLOR]','https://animeidhentai.com/genre/hentai-uncensored/', 661, '', '')
     utils.addDir('[COLOR hotpink]3D[/COLOR]','https://animeidhentai.com/genre/3d/', 661, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://animeidhentai.com/?s=', 664, '', '')
-    animeidhentai_list('https://animeidhentai.com/genre/2019/')
+    animeidhentai_list('https://animeidhentai.com/genre/2020/')
 
 
 @utils.url_dispatcher.register('661', ['url'])
