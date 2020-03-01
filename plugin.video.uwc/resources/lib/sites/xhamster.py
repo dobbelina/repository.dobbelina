@@ -26,9 +26,28 @@ import xbmcplugin
 import xbmcgui
 from resources.lib import utils
 
+from HTMLParser import HTMLParser
+
 # xhamster serves different sites to newer and older browsers, a predefined user agent is needed
 xhamster_headers = dict(utils.headers)
 xhamster_headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+
+
+xhamster_qualities = {
+    'Any' : '',
+    'HD' : 'hd',
+    '4k' : '4k'
+}
+
+xhamster_durations = {
+    'Any' : '',
+    '0~10 min' : '?max-duration=10',
+    '10~40 min' : '?min-duration=10&max-duration=40',
+    '40+ min' : '?min-duration=40'
+}
+
+xhamster_quality = utils.addon.getSetting('xhamster_quality') or ''
+xhamster_duration = utils.addon.getSetting('xhamster_duration') or ''
 
 @utils.url_dispatcher.register('505')
 def Main():
@@ -36,10 +55,31 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories - Gay[/COLOR]','https://xhamster.com/gay/categories',508,'','')
     utils.addDir('[COLOR hotpink]Categories - Shemale[/COLOR]','https://xhamster.com/shemale/categories',508,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://xhamster.com/search.php?q=',509,'','')
-    List('https://xhamster.com/')
+    utils.addDir('[COLOR hotpink]Quality [[COLOR orange]' + xhamster_qualities.keys()[xhamster_qualities.values().index(xhamster_quality)] + '[/COLOR]][/COLOR]', 'https://xhamster.com/', 510, '', '')
+    utils.addDir('[COLOR hotpink]Duration [[COLOR orange]' + xhamster_durations.keys()[xhamster_durations.values().index(xhamster_duration)] + '[/COLOR]][/COLOR]', 'https://xhamster.com/', 511, '', '')
+
+    List('https://xhamster.com/' + xhamster_quality + xhamster_duration)
+
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
+@utils.url_dispatcher.register('510', ['url'])
+def select_quality(url):
+    global xhamster_quality
+    new_xhamster_quality = utils.selector('Select quality', xhamster_qualities, sort_by=str.lower)
+    if new_xhamster_quality is not None:
+        xhamster_quality = new_xhamster_quality
+        utils.addon.setSetting('xhamster_quality', xhamster_quality)
+        Main()
     
+@utils.url_dispatcher.register('511', ['url'])
+def select_duration(url):
+    global xhamster_duration
+    new_xhamster_duration = utils.selector('Select duration', xhamster_durations, sort_by=str.lower)
+    if new_xhamster_duration is not None:
+        xhamster_duration = new_xhamster_duration
+        utils.addon.setSetting('xhamster_duration', xhamster_duration)
+        Main()
+
 @utils.url_dispatcher.register('506', ['url'])
 def List(url):
     try:
@@ -52,11 +92,21 @@ def List(url):
     main_block = match0[0][1]
     match = re.compile('thumb-image-container" href="([^"]+)".*?<i class="thumb-image-container__icon([^>]+)>.*?src="([^"]+)".*?alt="([^"]+)".*?duration">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(main_block)
     for video, hd, img, name, length in match:
-        hd = ' [COLOR orange]HD[/COLOR]' if 'hd' in hd else ''
+        if 'uhd' in hd:
+            hd = ' [COLOR orange]4k[/COLOR]'
+        elif 'hd' in hd:
+            hd = ' [COLOR orange]HD[/COLOR]'
+        else:
+            hd = ''
         name = utils.cleantext(name) + hd + ' [COLOR hotpink]' + length + '[/COLOR]'
         utils.addDownLink(name, video, 507, img, '')
     try:
         next_page = re.compile('data-page="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(response)[0]
+
+        # remove html entities from url (&#..;)
+        h = HTMLParser()
+        next_page = h.unescape(next_page)
+
         utils.addDir('Next Page', next_page, 506, '')
     except:
         pass
