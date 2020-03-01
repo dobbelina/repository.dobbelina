@@ -1,14 +1,14 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.12
+Ultimate Whitecream addon update	Version 1.2.13
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: DatoPorn
+Fixed: Animeid Hentai
 
 Fixed: Eporner
 
-Fixed: Xmoviesforyou
+Fixed: HClips
 
-Fixed: Hotpornfile
+Improved: xHamster
 
 
 ---
