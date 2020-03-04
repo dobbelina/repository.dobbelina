@@ -29,7 +29,7 @@ progress = utils.progress
 
 @utils.url_dispatcher.register('390')
 def Main():
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.pornhub.com/video/search?o=mr&search=', 394, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.pornhub.com/video/search?search=', 394, '', '')
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.pornhub.com/categories?o=al', 393, '', '')
     List('http://www.pornhub.com/video?o=cm')
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -41,8 +41,8 @@ def List(url):
 		listhtml = utils.getHtml(url, '')
 	except:
 		return None
-	main_block = re.compile('videos search-video-thumbs[^>]+>(.*?)<div class="reset">', re.DOTALL).findall(listhtml)[0]
-	match = re.compile(' class=" js-pop.*?<a href="([^"]+)" title="([^"]+)".*?data-mediumthumb="([^"]+)".*?<var class="duration">([^<]+)</var>(.*?)</div', re.DOTALL).findall(main_block)
+	main_block = re.compile('search-video-thumbs(.*?)<div class="reset">', re.DOTALL).findall(listhtml)[0]
+	match = re.compile(' class="pcVideoListItem  js-pop videoblock videoBox.*?<a href="([^"]+)" title="([^"]+)".*?data-mediumthumb="([^"]+)".*?<var class="duration">([^<]+)</var>(.*?)</div', re.DOTALL).findall(main_block)
 	for videopage, name, img, duration, hd in match:
 		if hd.find('HD') > 0:
 			hd = " [COLOR orange]HD[/COLOR] "
