@@ -102,6 +102,8 @@ def HQPLAY(url, name, download=None):
 		return
 	#play_item = xbmcgui.ListItem(path=videourl)
 	#xbmcplugin.setResolvedUrl(utils.addon_handle, True, listitem=play_item)
+        if not videourl:
+                return
 	utils.playvid(videourl, name, download)
 
 
@@ -109,11 +111,18 @@ def getBMW(url):
     videopage = utils.getHtml(url, '')
     #redirecturl = utils.getVideoLink(url, '')
     #videodomain = re.compile("http://([^/]+)/", re.DOTALL | re.IGNORECASE).findall(redirecturl)[0]
-    videos = re.compile(r'file: "([^"]+mp4)", label: "\d', re.DOTALL | re.IGNORECASE).findall(videopage)
-    videourl = videos[-2]
+    videos = re.compile(r"<a href='([^']+)' style='color:#ddd'>(.+?)</a>", re.DOTALL | re.IGNORECASE).findall(videopage)
+    list = {}
+    for video_link, quality in videos:
+        quality = quality.replace('4K', '2160p')
+        list[quality] = video_link
+    videourl = utils.selector('Select quality', list, dont_ask_valid=True, sort_by=lambda x: int(re.findall(r'\d+', x)[0]), reverse=True)
+    if not videourl:
+        return
     if videourl.startswith('//'):
         videourl = 'https:' + videourl
     return videourl
+
 
 def getIP(url):
     videopage = utils.getHtml(url, '')
@@ -126,8 +135,14 @@ def getIP(url):
 def getFly(url):
     videopage = utils.getHtml(url, '')
 #    videos = re.compile('fileUrl="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    videos = re.compile("<source src='([^']+)'", re.DOTALL | re.IGNORECASE).findall(videopage)
-    videourl = videos[0]
+    videos = re.compile(r"<source src='([^']+)'.*?label='([^']+)'", re.DOTALL | re.IGNORECASE).findall(videopage)
+    list = {}
+    for video_link, quality in videos:
+        quality = quality.replace('4K', '2160p')
+        list[quality] = video_link
+    videourl = utils.selector('Select quality', list, dont_ask_valid=True, sort_by=lambda x: int(re.findall(r'\d+', x)[0]), reverse=True)
+    if not videourl:
+        return
     if videourl.startswith('//'):
         videourl = 'https:' + videourl
     return videourl
@@ -137,8 +152,14 @@ def getHQWO(url):
     videos1 = re.compile("<script type='text/javascript' src='([^']+)'></script>", re.DOTALL | re.IGNORECASE).findall(videopage1)
     url = videos1[-1]
     videopage2 = utils.getHtml(url, '')
-    videos = re.compile('file": "([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage2)
-    videourl = videos[-1]
+    videos = re.compile('"file": "([^"]+)".*?"label": "([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage2)
+    list = {}
+    for video_link, quality in videos:
+        quality = quality.replace('4K', '2160p')
+        list[quality] = video_link
+    videourl = utils.selector('Select quality', list, dont_ask_valid=True, sort_by=lambda x: int(re.findall(r'\d+', x)[0]), reverse=True)
+    if not videourl:
+        return
     if videourl.startswith('//'):
         videourl = 'https:' + videourl
     return videourl
