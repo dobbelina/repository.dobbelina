@@ -1,6 +1,7 @@
 Version 1.2.14
 Fixed: PornHub
 Fixed: HQPorner
+Fixed: sxyprn(YourPorn)
 
 Version 1.2.13
 Fixed: Animeid Hentai
