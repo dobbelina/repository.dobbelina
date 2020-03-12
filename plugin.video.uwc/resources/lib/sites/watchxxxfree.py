@@ -45,7 +45,7 @@ def WXFSort():
 @utils.url_dispatcher.register('12', ['url'])
 def WXFCat(url):
     cathtml = utils.getHtml(url, '')  #
-    match = re.compile('<img width=.+?data-lazy-src="(.+?)".+?a href="(.+?)"\s+title="(.+?)".+?span class="nb_cat border.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('<img width=.+?src="(.+?)".+?a href="(.+?)"\s+title="(.+?)".+?span class="nb_cat border.+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for img, catpage, name, videos in match:
         catpage = catpage + 'page/1/'
         name = utils.cleantext(name)
