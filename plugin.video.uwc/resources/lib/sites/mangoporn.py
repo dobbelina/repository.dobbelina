@@ -46,8 +46,9 @@ def List(url):
         name = utils.cleantext(name) + "[COLOR hotpink] (" + str(year) + ")[/COLOR]"
         utils.addDownLink(name, videopage, 802, img, '')
     try:
-        nextp = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        utils.addDir('Next Page ', nextp, 801, '')
+        next_page = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 801, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -97,7 +98,7 @@ def Playvid(url, name, download=None):
 @utils.url_dispatcher.register('803', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('href="(https://mangoporn.net/genres/[^"]+)" >([^<]+)</a> <i>([^<]+)</i>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('href="(https://mangoporn.net/genres/[^"]+)">([^<]+)</a> <i>([^<]+)</i>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, count in match:
         name = utils.cleantext(name) + "[COLOR hotpink] (" + count + ")[/COLOR]"
         utils.addDir(name, catpage, 801, '')    
