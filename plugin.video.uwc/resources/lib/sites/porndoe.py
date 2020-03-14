@@ -28,7 +28,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl+'/categories?sort=alpha',723,'','')
     utils.addDir('[COLOR hotpink]Channels[/COLOR]',siteurl+'/channels?sort=ranking&page=1',725,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]',siteurl+'/search?keywords=',724,'','')
-    List(siteurl+'/videos')
+    List(siteurl+'/videos?page=1')
 
 
 
@@ -38,21 +38,21 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('img data-src="([^"]+)".+?alt="([^"]+)".+?<span class="txt">([^<]+)</span>.+?<span class="ico (.+?)"></span>.+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('img  data-src="([^"]+)".+?alt="([^"]+)".+?<span class="txt">([^<]+)</span>.+?<span class="-mm-icon (.+?)"></span>.+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name, duration, ico, videopage in match:
 	if not videopage.startswith('http'): videopage = siteurl + videopage
         name = utils.cleantext(name)
-        if ico == 'ico-hd':
+        if ico == 'mm_icon-hd':
             ico = " [COLOR orange]HD[/COLOR] "
 	else:
-            if ico == 'ico-vr' > 0:
+            if ico == 'mm_icon-vr' > 0:
                 ico = " [COLOR green]VR[/COLOR] "
 	    else:
 	        ico = " "
         name = name + ico + "[COLOR deeppink]" + utils.cleantext(duration) + "[/COLOR]"
         utils.addDownLink(name, videopage, 722, img, '')
     try:
-        next_page = re.compile('"page next"><a href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        next_page = re.compile('"page next">.+? href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         page_nr = re.findall('\d+', next_page)[-1]
         utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page, 721,'')
     except:
@@ -62,8 +62,19 @@ def List(url):
 
 @utils.url_dispatcher.register('722', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download,'','src="([^"]+.mp4)')
-    vp.play_from_site_link(url, url)
+    videopage = utils.getHtml(url, '')
+    videos = re.compile('"videos": {(.+?)"preview"', re.DOTALL | re.IGNORECASE).findall(videopage)
+    videos1 = re.compile('"([^"]+)":.+?"type": "video".+?"url": "([^"]+)",.+?"default":.+?', re.DOTALL | re.IGNORECASE).findall(videos[0])
+    list = {}
+    for quality, video_link in videos1:
+        quality = quality + 'p'
+        list[quality] = video_link
+    videourl = utils.selector('Select quality', list, dont_ask_valid=True, sort_by=lambda x: int(re.findall(r'\d+', x)[0]), reverse=True)
+    if not videourl:
+        return
+    utils.playvid(videourl, name, download)
+
+
 
 
 @utils.url_dispatcher.register('723', ['url'])
@@ -81,13 +92,13 @@ def Categories(url):
 def Channels(url):
     utils.addDir('[COLOR hotpink]Channel Search[/COLOR]',siteurl+'/channels?name=',726,'','')
     cathtml = utils.getHtml(url, '')
-    match = re.compile('a data-under href="([^"]+)".+?data-src="([^"]+)".+?"title">([^<]+)<.+?class="number">([^<]+)</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('a data-under href="([^"]+)".+?data-src="([^"]+)".+?title="([^"]+)">.+?class="number">([^<]+)</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, img, name, rank in match:
         name = utils.cleantext(name.strip())
 	catpage = siteurl + catpage
         utils.addDir(name, catpage, 721, img, 2)    
     try:
-        next_page = re.compile('"page next"><a href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        next_page = re.compile('"page next">.+? href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
         page_nr = re.findall('\d+', next_page)[-1]
         utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page.replace('&amp;','&'), 725,'')
     except:
