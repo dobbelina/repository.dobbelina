@@ -28,9 +28,9 @@ progress = utils.progress
 
 @utils.url_dispatcher.register('60')
 def PAQMain():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.pornaq.com/categories/',63,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.pornaq.com/page/1/?s=',68,'','')
-    PAQList('http://www.pornaq.com',1)
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.pornaq.net/categories/',63,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.pornaq.net/s/',68,'','')
+    PAQList('http://www.pornaq.net',1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -104,7 +104,7 @@ def PCat(url):
     for name, videolist, img in match:
         name = name.replace(' Porn Videos','').title()
         if 'pornaq' in url:
-            videolist = "http://www.pornaq.com" + videolist + "page/1/"
+            videolist = "http://www.pornaq.net" + videolist + "videos/1/"
             utils.addDir(name, videolist, 61, img, 1)
         elif 'porn00' in url:
             videolist = "http://www.porn00.org" + videolist + "page/1/"
