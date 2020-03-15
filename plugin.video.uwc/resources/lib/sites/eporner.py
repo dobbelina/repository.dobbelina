@@ -38,7 +38,7 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    vids = listhtml.split('data-vpid=')
+    vids = listhtml.split('data-vp=')
     for i, vid in enumerate(vids):
         if i == 0:
             continue
