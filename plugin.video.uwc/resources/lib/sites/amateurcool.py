@@ -26,11 +26,13 @@ from resources.lib import utils
 @utils.url_dispatcher.register('490')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.amateurcool.com/most-recent/',493,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.amateurcool.com/search/videos/',494,'','')
     List('https://www.amateurcool.com/most-recent/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('491', ['url'])
 def List(url):
+    utils.kodilog(url)
     try:
         listhtml = utils.getHtml(url, '')
     except:
@@ -69,3 +71,14 @@ def Categories(url):
     for catpage, name in match:
         utils.addDir(name, catpage, 491, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
+
+
+@utils.url_dispatcher.register('494', ['url'], ['keyword'])  
+def Search(url, keyword=None):
+    searchUrl = url
+    if not keyword:
+        utils.searchDir(url, 494)
+    else:
+        title = keyword.replace(' ','-')
+        searchUrl = searchUrl + title + '/page1.html'
+        List(searchUrl)
