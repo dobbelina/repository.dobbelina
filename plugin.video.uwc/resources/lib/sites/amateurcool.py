@@ -28,11 +28,10 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.amateurcool.com/most-recent/',493,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.amateurcool.com/search/videos/',494,'','')
     List('https://www.amateurcool.com/most-recent/')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
+
 
 @utils.url_dispatcher.register('491', ['url'])
 def List(url):
-    utils.kodilog(url)
     try:
         listhtml = utils.getHtml(url, '')
     except:
@@ -42,9 +41,9 @@ def List(url):
         name = utils.cleantext(name + ' [COLOR deeppink]' +  duration + '[/COLOR]' )
         utils.addDownLink(name, videopage, 492, img, '')
     try:
-        nextp = re.compile('<a href=\'(.+?)\' class="next">').findall(listhtml)
-        xbmc.log(nextp[0])
-        utils.addDir('Next Page', url[:url.rfind('/')+1] + nextp[0], 491,'')
+        next_page = re.compile("<a href='([^']+)' class=\"next\">NEXT").findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', url[:url.rfind('/')+1] + next_page, 491, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
