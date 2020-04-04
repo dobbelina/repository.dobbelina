@@ -19,7 +19,7 @@ All credit to the fantastic people at reddit who has provided the fixes, and esp
 
 and Whitecream & holisticdioxide who are the original author/s of the addon.
 
-For auto-updates, download repository.dobbelina-1.0.1.zip here https://dobbelina.github.io
+For auto-updates, download repository.dobbelina-1.0.2.zip here https://dobbelina.github.io
 
 **Please post in the "Issues" section if you can contribute to fix broken**
 

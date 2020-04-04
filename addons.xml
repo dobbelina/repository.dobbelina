@@ -36,12 +36,12 @@ Improved: Vporn
     </extension>
 </addon>
 
-<addon id="repository.dobbelina" name="[COLOR pink]Dobbelina Repository[/COLOR]" version="1.0.1" provider-name="dobbelina">
+<addon id="repository.dobbelina" name="[COLOR pink]Dobbelina Repository[/COLOR]" version="1.0.2" provider-name="dobbelina">
     <extension point="xbmc.addon.repository" name="[COLOR pink]Dobbelina Repository[/COLOR]">
     <dir>
-        <info compressed="false">https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml</info>
-        <checksum>https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml.md5</checksum>
-        <datadir zip="true">https://raw.githubusercontent.com/jsergio123/zips/master/</datadir>
+        <info compressed="false">https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml</info>
+        <checksum>https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml.md5</checksum>
+        <datadir zip="true">https://raw.githubusercontent.com/Gujal00/smrzips/master/zips/</datadir>
 </dir>
         <info compressed="false">https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/addons.xml</info>
         <checksum>https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/addons.xml.md5</checksum>
