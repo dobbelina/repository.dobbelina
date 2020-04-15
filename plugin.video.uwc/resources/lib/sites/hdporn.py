@@ -67,7 +67,6 @@ def PAQList(url, page=1, onelist=None):
 
 @utils.url_dispatcher.register('62', ['url', 'name'], ['download'])
 def PPlayvid(url, name, download=None):
-    utils.kodilog(url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
     videopage = utils.getHtml(url)
@@ -93,7 +92,6 @@ def PPlayvid(url, name, download=None):
             vp.play_from_link_to_resolve(videourl)
     if 'pornaq' in url:
         videourl = re.compile("<source src='([^']+)' title", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-        utils.kodilog(videourl)
         vp.play_from_direct_link(videourl + '|Referer=' + url)
 
 

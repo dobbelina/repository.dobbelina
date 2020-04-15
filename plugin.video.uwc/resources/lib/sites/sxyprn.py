@@ -53,25 +53,41 @@ def yourporn_list(url, page=None, section=None):
     videos = listhtml.split("div class='post_el_small'")
     
     for video in videos:
-        match = re.compile("' src='([^']+)'>.+?class='duration_small'[^<]+>([^<]+)</span(.+?)href='([^']+)' title='([^']+)'>", re.DOTALL | re.IGNORECASE).findall(video)
+        match = re.compile("href='([^']+)' title='([^']+)'>", re.DOTALL | re.IGNORECASE).findall(video)
         if match:
-            (img, duration, hd, videourl, title) = match[0]
+            (videourl, title) = match[0]
             name = title
-            if '#' in title:
+            if "img class='mini_post_vid_thumb'" in video:
+                img = re.compile("src='(//[^']+jpg)'", re.DOTALL | re.IGNORECASE).findall(video)
+                if img:
+                    img = 'https:' + img[0]
+                else:
+                    img = ''
+            else:
+                img = ''
+                
+            if "class='duration_small'" in video:
+                duration = re.compile(">([\d\?:]+)<", re.DOTALL | re.IGNORECASE).findall(video)[0]
+            else:
+                duration = ''
+
+            if '#' in name:
                 name = name.split('#')[0]
                 name = name.replace('\t',' ')
                 name = name.replace('\n',' ')
-            if "title='bitrate" in hd:
-                match_hd = re.compile("'bitrate[^']+'>([^<]+)<", re.DOTALL | re.IGNORECASE).findall(hd)
+
+            if "title='bitrate" in video:
+                match_hd = re.compile("'bitrate[^']+'>([^<]+)<", re.DOTALL | re.IGNORECASE).findall(video)
                 hd = " [COLOR orange]" + match_hd[0] + "[/COLOR]"
             else:
                 hd = ''
             if duration == '??':
                 duration = 'Prepairing new video. Please wait'
                 
-            if duration == 'EXTERNAL LINK':
+            if 'http://' in title or 'https://' in title:
                 videourls = re.compile("(http.+?)(?:\s|'|$)", re.DOTALL | re.IGNORECASE).findall(title)
                 videourl = '|'.join(videourls) + '@'
+                duration = 'EXTERNAL LINK'
 
             name = utils.cleantext(name) + hd + " [COLOR deeppink]" + duration + "[/COLOR]"
             img = make_url(img)
@@ -158,21 +174,25 @@ def yourporn_play(url, name, download=None):
     else:
         url = url.replace('https://yps.to/','https://sxyprn.com/')
         html = utils.getHtml(url, '')
-        videourl = re.compile('''data-vnfo='{".+?":"(.+?)"''', re.DOTALL | re.IGNORECASE).findall(html)[0].replace('\/','/')
-        tmp = videourl.split('/')
-        tmp[5] = str(int(tmp[5]) - ssut51(re.sub(r'\D', '', tmp[6])) - ssut51(re.sub(r'\D', '', tmp[7])))
-        videourl = '/'.join(tmp)
-        match = re.search('src="(/js/main[^"]+)"', html, re.DOTALL | re.IGNORECASE)
-        if match:
-            result = match.group(1)
-            jsscript = utils.getHtml(make_url(result), url)
-            replaceint = re.search(r'tmp\[1\]\+= "(\d+)";', jsscript, re.DOTALL | re.IGNORECASE).group(1)
-            videourl = videourl.replace('/cdn/', '/cdn%s/' % replaceint)
+        html0 = html.split("class='comments_blog")[0]
+        if "title='>External Link!<'" in html0:
+            vp.play_from_html(html0)
         else:
-            videourl = videourl.replace('/cdn/','/cdn8/')
-        videourl = make_url(videourl)
-        vp.progress.update(75, "", "Playing video", "")        
-        vp.play_from_direct_link(videourl)
+            videourl = re.compile('''data-vnfo='{".+?":"(.+?)"''', re.DOTALL | re.IGNORECASE).findall(html)[0].replace('\/','/')
+            tmp = videourl.split('/')
+            tmp[5] = str(int(tmp[5]) - ssut51(re.sub(r'\D', '', tmp[6])) - ssut51(re.sub(r'\D', '', tmp[7])))
+            videourl = '/'.join(tmp)
+            match = re.search('src="(/js/main[^"]+)"', html, re.DOTALL | re.IGNORECASE)
+            if match:
+                result = match.group(1)
+                jsscript = utils.getHtml(make_url(result), url)
+                replaceint = re.search(r'tmp\[1\]\+= "(\d+)";', jsscript, re.DOTALL | re.IGNORECASE).group(1)
+                videourl = videourl.replace('/cdn/', '/cdn%s/' % replaceint)
+            else:
+                videourl = videourl.replace('/cdn/','/cdn8/')
+            videourl = make_url(videourl)
+            vp.progress.update(75, "", "Playing video", "")        
+            vp.play_from_direct_link(videourl)
 
 
 def yourporn_multiple_videos(html):

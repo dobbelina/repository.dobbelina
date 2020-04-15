@@ -29,7 +29,7 @@ progress = utils.progress
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://xxxstreams.org/',423,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','http://xxxstreams.org/?s=',424,'','')
-    List('http://xxxstreams.org/page/1')
+    List('http://xxxstreams.org/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -43,6 +43,9 @@ def List(url):
     match = re.compile('<div class="entry-content">.*?<img src="([^"]+)".*?<a href="([^"]+)" class="more-link">.+?<span class="screen-reader-text">([^"]+)</span>', re.DOTALL | re.IGNORECASE).findall(html)
     for img, videopage, name in match:
         name = utils.cleantext(name)
+        if 'Siterip' in name or 'Ubiqfile' in name or 'manyvids' in name:
+            continue
+
         utils.addDownLink(name, videopage, 422, img, '')
     try:
         nextp = re.compile('<a class="next.*?href="(.+?)">', re.DOTALL | re.IGNORECASE).findall(html)
