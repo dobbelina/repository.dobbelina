@@ -25,7 +25,7 @@ siteurl = 'http://freepornstreams.org'
     
 @utils.url_dispatcher.register('740')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl,743,'','')
+#    utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl,743,'','')
     utils.addDir('[COLOR hotpink]Clips[/COLOR]',siteurl+'/free-stream-porn/',746,'','')
     utils.addDir('[COLOR hotpink]Movies[/COLOR]',siteurl+'/free-full-porn-movies/',747,'','')
     utils.addDir('[COLOR hotpink]HD[/COLOR]',siteurl+'/tag/high-def-porn-video/',748,'','')
@@ -44,6 +44,8 @@ def List(url):
     match = re.compile('<a href="([^"]+)" rel="bookmark">([^<]+)</a>.+?<img src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
+        if 'Siterip' in name or 'Ubiqfile' in name:
+            continue
         utils.addDownLink(name, videopage, 742, img, '')
     try:
         nextp = re.compile('<div class="nav-previous"><a href="([^"]+)" ><span class="meta-nav">', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -67,14 +69,14 @@ def ListHD(url):
 
 @utils.url_dispatcher.register('742', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download,'a href="([^"]+)" rel="nofollow"')
+    vp = utils.VideoPlayer(name, download,'a href="([^"]+)" rel="nofollow')
     vp.play_from_site_link(url, url)
 
 
 @utils.url_dispatcher.register('743', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('(http://freepornstreams.org/tag/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('href="([^"]+)" rel="tag">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
         name = utils.cleantext(name) 
         utils.addDir(name, catpage, 741, '', 2)    

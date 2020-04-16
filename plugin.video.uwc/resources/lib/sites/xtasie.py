@@ -30,7 +30,7 @@ def XTCMain():
     utils.addDir('[COLOR hotpink]Top Rated[/COLOR]','http://xtasie.com/top-rated-porn-videos/',201,'','')
     utils.addDir('[COLOR hotpink]Most Viewed[/COLOR]','http://xtasie.com/most-viewed-porn-videos/',201,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','http://xtasie.com/?s=',204,'','')
-    XTCList('http://xtasie.com/porn-video-list/')
+    XTCList('http://xtasie.com/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

@@ -63,13 +63,10 @@ def List(url):
 @utils.url_dispatcher.register('722', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, '')
-    videos = re.compile('"videos": {(.+?)"preview"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    videos1 = re.compile('"([^"]+)":.+?"type": "video".+?"url": "([^"]+)",.+?"default":.+?', re.DOTALL | re.IGNORECASE).findall(videos[0])
-    list = {}
-    for quality, video_link in videos1:
-        quality = quality + 'p'
-        list[quality] = video_link
-    videourl = utils.selector('Select quality', list, dont_ask_valid=True, sort_by=lambda x: int(re.findall(r'\d+', x)[0]), reverse=True)
+    embeded = re.compile('<link itemprop="embedURL" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    embededpage = utils.getHtml(embeded, url)
+    videos = re.compile('<source[^=]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(embededpage)
+    videourl = videos[-1].split('?')[0]
     if not videourl:
         return
     utils.playvid(videourl, name, download)

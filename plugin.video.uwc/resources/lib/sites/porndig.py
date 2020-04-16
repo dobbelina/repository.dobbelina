@@ -80,10 +80,6 @@ def List(channel, section, page=0):
         urldata = utils.getHtml("https://www.porndig.com/posts/load_more_posts", pdreferer, headers, data=data)
     except:
         return None
-    utils.kodilog(pdreferer)
-    utils.kodilog(headers)
-    utils.kodilog(data)    
-    utils.kodilog(urldata)
     urldata = ParseJson(urldata)
     i = 0
     match = re.compile(r'<a.*?href="([^"]+)" alt="([^"]+)">(.+?)img\s+data-src="(.+?)".+?<span class="pull-left">(.+?)<',re.DOTALL | re.IGNORECASE).findall(urldata)

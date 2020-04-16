@@ -31,7 +31,7 @@ def Main():
 def FindServer(video, vp, encrypted_server):
     srvs = {'SM':'1','iM':'2','yM':'3','CN':'4','SN':'5',
             'cTM':'17','AjM':'20','MDN':'43','UDN':'45','YDN':'46','cDN':'47','gDN':'48','ATN':'50','ETN':'51','ITN':'52','QTN':'54','MjN':'63',
-            'QjN':'64','UjN':'65','YjN':'66','cjN':'67', 'gjN':'68','kjN':'69','AzN':'70','EzN':'71'}
+            'QjN':'64','UjN':'65','YjN':'66','cjN':'67', 'gjN':'68','kjN':'69','AzN':'70','EzN':'71','MDO':'83','QDO':'84'}
 
     if encrypted_server.startswith('1JnLkV3bsNWe6Fmcj5'):
         srv = 'https://psv' + srvs[encrypted_server[21:24]] + '-' + srvs[encrypted_server[18:20]] + '.crazycloud.ru'

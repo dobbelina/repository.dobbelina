@@ -24,9 +24,9 @@ from resources.lib import utils
 
 @utils.url_dispatcher.register('670')
 def datoporn_main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://datoporn.co/categories_all', 673, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://datoporn.co/?op=search&k=', 674, '', '')
-    datoporn_list('http://datoporn.co/')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://dato.porn/categories/', 673, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://dato.porn/search/', 674, '', '')
+    datoporn_list('http://dato.porn')
 
 
 @utils.url_dispatcher.register('671', ['url'])
@@ -35,20 +35,16 @@ def datoporn_list(url):
         listhtml = utils.getHtml(url)
     except Exception as e:
         return None
-    # match = re.compile('''href="([^"]+)" class="video200 ">.+?url\('(.+?)'.+?<span>(.+?)<.+?class="title">(.+?)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    match = re.compile('''class="vid_block".+?href="([^"]+)".+?background: url\('([^']+)'\).+?span>([^<]+)<.+?class="link"><b>([^<]+)</b>''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    
-    
-    for video, img, duration, name in match:
+    match = re.compile('class="item.+?href="([^"]+)" title="([^"]+)".+?data-original="([^"]+)".+?class="duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for video, name, img, duration in match:
         duration = duration.strip()
         name = utils.cleantext(name) + " [COLOR deeppink]" + duration + "[/COLOR]"
         utils.addDownLink(name, video, 672, img, '')
     try:
-#        next_page = re.compile('''<a href='([^']+)'>Next''', re.DOTALL | re.IGNORECASE).search(listhtml).group(1)
-        next_page = re.compile('''a class='page-link' href='([^']+)'>Next''', re.DOTALL | re.IGNORECASE).search(listhtml).group(1)
-	utils.kodilog(next_page)
-        page_number = ''.join([nr for nr in next_page.split('=')[-1] if nr.isdigit()])
-        utils.addDir('Next Page (' + page_number + ')', next_page, 671, '')
+        next_page = re.compile('class="next"><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml).group(1)
+        if next_page.startswith('/'): next_page = 'https://dato.porn' + next_page
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', next_page, 671, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -57,8 +53,8 @@ def datoporn_list(url):
 @utils.url_dispatcher.register('673', ['url']) 
 def datoporn_cat(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('''class="vid_block".*?href="([^"]+)".*?url[(]([^)]+)[)].*?<span>([^<]+)</span>.*?<b>([^<]+)</b''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for catpage, img, count, name in sorted(match, key=lambda x: x[3].strip().lower()):
+    match = re.compile('class="item" href="([^"]+)" title="([^"]+)">.+?class="thumb" src="([^"]+)".+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for catpage, name, img, count in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip()) + " [COLOR deeppink]" + count.strip() + "[/COLOR]"
         utils.addDir(name, catpage, 671, img, 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -69,18 +65,18 @@ def datoporn_search(url, keyword=None):
     if not keyword:
         utils.searchDir(url, 674)
     else:
-        title = keyword.replace(' ','+')
+        title = keyword.replace(' ','-')
         url += title
         datoporn_list(url)
 
 
 @utils.url_dispatcher.register('672', ['url', 'name'], ['download'])
 def datoporn_play(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download)
-    # videourl = utils.getHtml(url,url)
-    # packed = re.compile('>(eval.+?)</script>', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
-    # unpacked = utils.unpack(packed)   
-    # videolink = re.compile('src:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
-    # vp.play_from_direct_link(videolink)
-
-    vp.play_from_link_to_resolve(url)
+    url = url.split('/')
+    url = url[:-2]
+    url = '/'.join(url)
+    url = url.replace('videos','embed')
+    vp = utils.VideoPlayer(name, download,'', "video_url: '([^']+)'")
+    videohtml = utils.getHtml(url)
+    vp.play_from_html(videohtml)
+#    vp.play_from_link_to_resolve(url)
