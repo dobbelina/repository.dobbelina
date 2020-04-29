@@ -30,7 +30,6 @@ def HQMAIN():
     utils.addDir('[COLOR hotpink]Girls[/COLOR]','https://hqporner.com/porn-actress.php',153,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://hqporner.com/?s=',154,'','')
     HQLIST('https://hqporner.com/hdporn/1')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('151', ['url'])
@@ -40,18 +39,18 @@ def HQLIST(url):
         link = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('<a href="([^"]+)" class="image featured non-overlay atfib".*?<img id="[^"]+" src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(link)   # Working as of 19.05.15
-    for url, img, name in match:
-        name = utils.cleantext(name)    
+    match = re.compile('class="box feature">\s*<a href="([^"]+)".+?src="([^"]+)" alt="([^"]+)".+?class="icon fa-clock-o meta-data">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(link)  
+    for url, img, name, duration in match:
+        name = utils.cleantext(name).capitalize() + " [COLOR deeppink]" + duration + "[/COLOR]"
         videourl = "https://www.hqporner.com" + url
         if img.startswith('//'):
-            img = 'https:' + img
+            img = 'https:' + img + '|verifypeer=false'
         utils.addDownLink(name, videourl, 152, img, '')
     try:
         nextp=re.compile('<a href="([^"]+)" class="button mobile-pagi pagi-btn">Next</a>', re.DOTALL | re.IGNORECASE).findall(link)
         nextp = "https://www.hqporner.com" + nextp[0]
-        print "NEXTP: " + nextp
-        utils.addDir('Next Page', nextp,151,'')
+        page_nr = re.findall('\d+', nextp)[-1]
+        utils.addDir('Next Page (' + page_nr + ')', nextp, 151, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
