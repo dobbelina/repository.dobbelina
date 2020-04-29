@@ -31,7 +31,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Korean Porn[/COLOR]','https://javhoho.com/category/free-korean-porn/',311,'','')
     utils.addDir('[COLOR hotpink]Asian Porn[/COLOR]','https://javhoho.com/category/free-asian-porn/',311,'','')
     utils.addDir('[COLOR hotpink]Virtual Reality Porn[/COLOR]','https://javhoho.com/category/free-jav-vr-virtual-reality/',311,'','')    
-#    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.cambro.tv/search/',314,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://javhoho.com/search/',314,'','')
     List('https://javhoho.com/all-movies-free-jav-uncensored-censored-asian-porn-korean/')
 
 
@@ -43,9 +43,15 @@ def List(url):
         
         return None
     match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?srcset="(\S+).+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name in match:
-        name = utils.cleantext(name)
-        utils.addDownLink(name, videopage, 312, img, '')
+    if match:
+        for videopage, img, name in match:
+            name = utils.cleantext(name)
+            utils.addDownLink(name, videopage, 312, img, '')
+    else:   # search
+        match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?title="([^"]+)".+?srcset="(\S+)', re.DOTALL | re.IGNORECASE).findall(listhtml)       
+        for videopage, name, img in match:
+            name = utils.cleantext(name)
+            utils.addDownLink(name, videopage, 312, img, '')
     try:
         next_page = re.compile('href="([^"]+)">&raquo;<').findall(listhtml)[0]
         page_nr = re.findall('\d+', next_page)[-1]
@@ -60,8 +66,9 @@ def Search(url, keyword=None):
     if not keyword:
         utils.searchDir(url, 314)
     else:
-        title = keyword.replace(' ','-')
-        searchUrl = searchUrl + title + '/'
+        title = keyword.replace(' ','+')
+        searchUrl = searchUrl + title
+        utils.kodilog(searchUrl)
         List(searchUrl)
 
 
@@ -95,7 +102,7 @@ def Playvid(url, name, download=None):
             links[quality] = video_link
         selected = utils.selector('Select quality', links, dont_ask_valid=True, sort_by=lambda x: int(x[:-1]), reverse=True)
         if not selected: return
-        vp.play_from_direct_link(selected)
+        vp.play_from_direct_link(selected + '|Referer=' + allplayer)
     except:
         vp.play_from_html(videohtml)
     
