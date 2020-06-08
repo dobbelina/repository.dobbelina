@@ -135,7 +135,7 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]Anybunny[/COLOR]','http://anybunny.com/',320,os.path.join(imgDir, 'anybunny.png'),'')    
     utils.addDir('[COLOR hotpink]SpankBang[/COLOR]','http://spankbang.com/new_videos/',440,os.path.join(imgDir, 'spankbang.png'),'')	
     utils.addDir('[COLOR hotpink]Amateur Cool[/COLOR]','http://www.amateurcool.com/most-recent/',490,os.path.join(imgDir, 'amateurcool.png'),'')	
-    utils.addDir('[COLOR hotpink]Vporn[/COLOR]','https://www.vporn.com/newest/',500,os.path.join(imgDir, 'vporn.png'),'')
+    utils.addDir('[COLOR hotpink]PornOne[/COLOR]','https://pornone.com/newest/',500,os.path.join(imgDir, 'porn1.png'),'')
     utils.addDir('[COLOR hotpink]xHamster[/COLOR]','https://xhamster.com/',505,os.path.join(imgDir, 'xhamster.png'),'')
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
