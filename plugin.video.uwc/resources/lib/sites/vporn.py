@@ -25,9 +25,9 @@ from resources.lib import utils
 
 @utils.url_dispatcher.register('500')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.vporn.com/newest/',503,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.vporn.com/search?q=',504,'','')
-    List('https://www.vporn.com/newest/')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://pornone.com/categories/',503,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://pornone.com/search?q=',504,'','')
+    List('https://pornone.com/newest/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('501', ['url'])
@@ -57,7 +57,7 @@ def List(url):
 @utils.url_dispatcher.register('502', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
 	html = utils.getHtml(url, '')
-	videourl = re.compile('video id="vporn-video-player".*?<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+	videourl = re.compile('video id="pornone-video-player".*?<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
 	if download == 1:
 		utils.downloadVideo(videourl, name)
 	else:    
@@ -67,13 +67,14 @@ def Playvid(url, name, download=None):
 		listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
 		xbmc.Player().play(videourl, listitem)		
 
-@utils.url_dispatcher.register('503')
-def Categories():
-    cathtml = utils.getHtml('https://www.vporn.com/', '')
-    cat_block = re.compile('<div class="cats-all categories-list">(.*?)</div>', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
-    match = re.compile('<a href="([^"]+)".*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cat_block)
-    for cat, name in match[1:]:
-        catpage = "https://www.vporn.com"+ cat
+@utils.url_dispatcher.register('503', ['url'])
+def Categories(url):
+    cathtml = utils.getHtml(url)
+    cat_block = cathtml.split('>All Categories<')[2]
+    match = re.compile('a href="([^"]+)".+?img src="([^"]+)".+?"title">([^<]+)<.+?"videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cat_block)
+    for cat, img, name, videos in match:
+        catpage = "https://pornone.com"+ cat
+        name = utils.cleantext(name) + "[COLOR deeppink] " + videos + "[/COLOR]"
         utils.addDir(name, catpage, 501, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
     
