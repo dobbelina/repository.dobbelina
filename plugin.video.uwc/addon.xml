@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.19"
+       version="1.2.20"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,10 +25,8 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.19[/B]
-Fixed: DaftSex
-Fixed: HQPorner
-Fixed: JAVhoho
+        <news>[B]Version 1.2.20[/B]
+Changed: Vporn to PornOne
 </news>
     </extension>
 </addon>
