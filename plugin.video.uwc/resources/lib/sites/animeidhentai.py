@@ -24,7 +24,7 @@ from resources.lib import utils
 
 @utils.url_dispatcher.register('660')
 def animeidhentai_main():
-    utils.addDir('[COLOR hotpink]Uncensored[/COLOR]','https://animeidhentai.com/genre/hentai-uncensored/', 661, '', '')
+    utils.addDir('[COLOR hotpink]Uncensored[/COLOR]','https://animeidhentai.com/hentai/uncensored-hentai/', 661, '', '')
     utils.addDir('[COLOR hotpink]3D[/COLOR]','https://animeidhentai.com/genre/3d/', 661, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://animeidhentai.com/?s=', 664, '', '')
     animeidhentai_list('https://animeidhentai.com/genre/2020/')
@@ -75,14 +75,18 @@ def animeidhentai_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
     html = utils.getHtml(url)
-    video_url = re.compile('data-lazy-src="([^"]+ksplayer[^"]+)"></iframe>', re.DOTALL | re.IGNORECASE).findall(html)
-    video_url  = video_url[0].replace('embed','download')
+#    video_url = re.compile('data-lazy-src="([^"]+ksplayer[^"]+)"></iframe>', re.DOTALL | re.IGNORECASE).findall(html)
+    video_url = re.compile('data-lazy-src="([^"]+embed[^"]+)"></iframe>', re.DOTALL | re.IGNORECASE).findall(html)[0]
+#    video_url  = video_url[0].replace('embed','download')
     videopage = utils.getHtml(video_url, url)
-    match = re.compile('''href=["']?(?P<url>[^"']+)["']?>DOWNLOAD <span>(?P<label>[^<]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    packed = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    unpacked = utils.unpack(packed)
+    video = re.compile('"file":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
+#    match = re.compile('''href=["']?(?P<url>[^"']+)["']?>DOWNLOAD <span>(?P<label>[^<]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
     vp.progress.update(50, "", "Loading video page", "")
-    list = {}
-    for video_link, quality in match:
-        list[quality] = video_link
-    selected = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x[:-1]), reverse=True)
-    if not selected: return
-    vp.play_from_direct_link(selected)
+#    list = {}
+#    for video_link, quality in match:
+#        list[quality] = video_link
+#    selected = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x[:-1]), reverse=True)
+#    if not selected: return
+    vp.play_from_direct_link(video)

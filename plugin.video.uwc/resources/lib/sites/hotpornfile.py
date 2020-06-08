@@ -30,7 +30,7 @@ siteurl = 'https://www.hotpornfile.org/'
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl, 553,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=', 554,'','')
-    List(siteurl)
+    List(siteurl + 'category/videos')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -67,7 +67,6 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title
-        utils.kodilog(searchUrl)
         List(searchUrl)
 
 
@@ -94,7 +93,7 @@ def Playvid(url, name, download=None):
     packed = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(videourl1)[0]
     unpacked = utils.unpack(packed)
     vp.progress.update(75, "", "Loading video page", "")    
-    source = re.search('''sources\s*:\s*\["([^"]+)''', unpacked)
+    source = re.search('src:"([^"]+)"', unpacked)
     if source:
         vp.play_from_direct_link(source.group(1))
     else:

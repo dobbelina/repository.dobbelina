@@ -41,24 +41,28 @@ xhamster_qualities = {
 
 xhamster_durations = {
     'Any' : '',
-    '0~10 min' : '?max-duration=10',
-    '10~40 min' : '?min-duration=10&max-duration=40',
-    '40+ min' : '?min-duration=40'
+    '0~10 min' : 'max-duration=10',
+    '10~40 min' : 'min-duration=10&max-duration=40',
+    '40+ min' : 'min-duration=40'
 }
 
 xhamster_quality = utils.addon.getSetting('xhamster_quality') or ''
 xhamster_duration = utils.addon.getSetting('xhamster_duration') or ''
 
+if xhamster_qualities.values().count(xhamster_quality) == 0:
+    xhamster_quality = ''
+
+if xhamster_durations.values().count(xhamster_duration) == 0:
+    xhamster_duration = ''
+
 @utils.url_dispatcher.register('505')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories - Straight[/COLOR]','https://xhamster.com/categories',508,'','')
+    utils.addDir('[COLOR hotpink]Categories - Straight[/COLOR]','https://xhamster.com/categories?straight=',508,'','')
     utils.addDir('[COLOR hotpink]Categories - Gay[/COLOR]','https://xhamster.com/gay/categories',508,'','')
     utils.addDir('[COLOR hotpink]Categories - Shemale[/COLOR]','https://xhamster.com/shemale/categories',508,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://xhamster.com/search.php?q=',509,'','')
-    utils.addDir('[COLOR hotpink]Quality [[COLOR orange]' + xhamster_qualities.keys()[xhamster_qualities.values().index(xhamster_quality)] + '[/COLOR]][/COLOR]', 'https://xhamster.com/', 510, '', '')
-    utils.addDir('[COLOR hotpink]Duration [[COLOR orange]' + xhamster_durations.keys()[xhamster_durations.values().index(xhamster_duration)] + '[/COLOR]][/COLOR]', 'https://xhamster.com/', 511, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://xhamster.com/search/',509,'','')
 
-    List('https://xhamster.com/' + xhamster_quality + xhamster_duration)
+    List('https://xhamster.com/')
 
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -69,7 +73,10 @@ def select_quality(url):
     if new_xhamster_quality is not None:
         xhamster_quality = new_xhamster_quality
         utils.addon.setSetting('xhamster_quality', xhamster_quality)
-        Main()
+        if url == "https://xhamster.com/":
+            Main()
+        else:
+            List(url)
     
 @utils.url_dispatcher.register('511', ['url'])
 def select_duration(url):
@@ -78,19 +85,42 @@ def select_duration(url):
     if new_xhamster_duration is not None:
         xhamster_duration = new_xhamster_duration
         utils.addon.setSetting('xhamster_duration', xhamster_duration)
-        Main()
+        if url == "https://xhamster.com/":
+            Main()
+        else:
+            List(url)
+
+@utils.url_dispatcher.register('512', ['url'])
+def ListNext(url):
+    return List(url, NoFilter=True)
+
 
 @utils.url_dispatcher.register('506', ['url'])
-def List(url):
+def List(url, NoFilter=False):
+    if NoFilter:
+        qurl = url
+    else:
+        if url.startswith('https://xhamster.com/search/'):
+            qurl = url + '?quality=' + xhamster_quality + '&' + xhamster_duration
+        else:
+            if not url.endswith('/') and not url.endswith('='):
+                url += '/'
+            qurl = url + xhamster_quality + '?' + xhamster_duration
+        utils.addDir('[COLOR hotpink]Quality [[COLOR orange]' + xhamster_qualities.keys()[xhamster_qualities.values().index(xhamster_quality)] + '[/COLOR]][/COLOR]', url, 510, '', '')
+        utils.addDir('[COLOR hotpink]Duration [[COLOR orange]' + xhamster_durations.keys()[xhamster_durations.values().index(xhamster_duration)] + '[/COLOR]][/COLOR]', url, 511, '', '')
+
     try:
-        response = utils.getHtml(url, hdr=xhamster_headers)
+        response = utils.getHtml(qurl, hdr=xhamster_headers)
     except:
-        return None
+        # possibly no results with the filters applied, still show a directory to let the user change the filters
+        xbmcplugin.endOfDirectory(utils.addon_handle)
+        return
     
     match0 = re.compile('<head>(.*?)</head>.*?index-videos.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(response)
     header_block = match0[0][0]
     main_block = match0[0][1]
     match = re.compile('thumb-image-container" href="([^"]+)".*?<i class="thumb-image-container__icon([^>]+)>.*?src="([^"]+)".*?alt="([^"]+)".*?duration">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(main_block)
+    h = HTMLParser()
     for video, hd, img, name, length in match:
         if 'uhd' in hd:
             hd = ' [COLOR orange]4k[/COLOR]'
@@ -98,16 +128,14 @@ def List(url):
             hd = ' [COLOR orange]HD[/COLOR]'
         else:
             hd = ''
-        name = utils.cleantext(name) + hd + ' [COLOR hotpink]' + length + '[/COLOR]'
+        name = h.unescape(name).strip() + hd + ' [COLOR hotpink]' + length + '[/COLOR]'
         utils.addDownLink(name, video, 507, img, '')
     try:
-        next_page = re.compile('data-page="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(response)[0]
-
-        # remove html entities from url (&#..;)
-        h = HTMLParser()
-        next_page = h.unescape(next_page)
-
-        utils.addDir('Next Page', next_page, 506, '')
+        next_page = re.compile('data-page="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(response)
+        if len(next_page) > 0:
+            next_page = next_page[0]
+            next_page = h.unescape(next_page)
+            utils.addDir('Next Page', next_page, 512, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
