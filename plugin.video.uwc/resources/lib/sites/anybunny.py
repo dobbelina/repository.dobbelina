@@ -54,9 +54,26 @@ def List(url):
 
 @utils.url_dispatcher.register('322', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
+    #vp = utils.VideoPlayer(name, download, "video_url: '([^']+)'")
+    #vp.progress.update(25, "", "Loading video page", "")
+    #listhtml = utils.getHtml(url)
+    #videourl = re.compile('iframe width="\d+" height="\d+" src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    #vp.progress.update(45, "", "Loading video page", "")
+    #videohtml = utils.getHtml(videourl)
+    #ktplayer = re.compile("<script type=\"text/javascript\" src='([^']+)'>", re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
+    #ktplayer = 'https://azblowjobtube.com' + ktplayer
+    #vp.progress.update(65, "", "Loading video page", "")
+    #kthtml = utils.getHtml(ktplayer)
+    #vars = re.compile(',([a-z]+)="([^"]*)"', re.DOTALL | re.IGNORECASE).findall(kthtml)
+    #videolink = re.compile('video_url:([^,]+),', re.DOTALL | re.IGNORECASE).findall(kthtml)[0]
+    #for (var, value) in vars:
+    #    videolink = videolink.replace(var, value)
+    #videolink = videolink.replace('"','')
+    #videolink = videolink.replace('+','')
+    #vp.progress.update(85, "", "Loading video page", "")
+    #vp.play_from_direct_link(videolink)
     vp = utils.VideoPlayer(name, download, 'src=["]([^"]+)')
     vp.play_from_site_link(url)
-
 
 @utils.url_dispatcher.register('323', ['url'])
 def Categories(url):
