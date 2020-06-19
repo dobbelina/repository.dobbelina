@@ -63,7 +63,9 @@ def HQCAT(url):
     tags = sorted(tags, key=lambda x: x[2])
     for caturl, catimg, catname in tags:
         caturl = "https://www.hqporner.com" + caturl
-        catimg = "https://www.hqporner.com" + catimg        
+        #catimg = "https://www.hqporner.com" + catimg
+        if catimg.startswith('//'):
+            catimg = 'https:' + catimg + '|verifypeer=false'        
         utils.addDir(catname,caturl,151,catimg)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 

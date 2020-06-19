@@ -116,7 +116,7 @@ def Years(url):
 @utils.url_dispatcher.register('805', ['url'])
 def Studio(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('a href="(https://mangoporn.net/studios/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('a href="(https://mangoporn.net/adult/studios/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         utils.addDir(name, catpage, 801, '')    
@@ -125,7 +125,7 @@ def Studio(url):
 @utils.url_dispatcher.register('806', ['url'])
 def Pornstars(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('a href="(https://mangoporn.net/pornstar/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('a href="(https://mangoporn.net/adult/pornstar/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         utils.addDir(name, catpage, 801, '')    
