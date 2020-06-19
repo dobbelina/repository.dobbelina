@@ -41,13 +41,14 @@ def List(url):
     except:
         return None
 
-    match = re.compile('<article.+?img src="([^"]+)" alt="([^"]+)".+?a href="([^"]+)".+?span.+?>(\d+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, name, videopage, year in match:
-        name = utils.cleantext(name) + "[COLOR hotpink] (" + str(year) + ")[/COLOR]"
+    match = re.compile('<article.+?img src="([^"]+)" alt="([^"]+)".+?a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, name, videopage in match:
+        name = utils.cleantext(name) #+ "[COLOR hotpink] (" + str(year) + ")[/COLOR]"
         utils.addDownLink(name, videopage, 802, img, '')
     try:
-        nextp = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        utils.addDir('Next Page ', nextp, 801, '')
+        next_page = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 801, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -68,8 +69,8 @@ def Playvid(url, name, download=None):
     links = {}
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
-    videopage = utils.getHtml(url)
-    html = re.compile('<center><!-- Display player -->(.+?)<center>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    html = utils.getHtml(url)
+#    html = re.compile('<center><!-- Display player -->(.+?)<center>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     srcs = re.compile('<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for title, src in srcs:
         title = title.replace(name.split("[",1)[0],'').replace(' on','')
@@ -97,7 +98,7 @@ def Playvid(url, name, download=None):
 @utils.url_dispatcher.register('803', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('href="(https://mangoporn.net/genres/[^"]+)" >([^<]+)</a> <i>([^<]+)</i>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('href="(https://mangoporn.net/genres/[^"]+)">([^<]+)</a> <i>([^<]+)</i>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, count in match:
         name = utils.cleantext(name) + "[COLOR hotpink] (" + count + ")[/COLOR]"
         utils.addDir(name, catpage, 801, '')    

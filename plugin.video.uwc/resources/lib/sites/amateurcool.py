@@ -26,8 +26,9 @@ from resources.lib import utils
 @utils.url_dispatcher.register('490')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.amateurcool.com/most-recent/',493,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.amateurcool.com/search/videos/',494,'','')
     List('https://www.amateurcool.com/most-recent/')
-    xbmcplugin.endOfDirectory(utils.addon_handle)
+
 
 @utils.url_dispatcher.register('491', ['url'])
 def List(url):
@@ -40,9 +41,9 @@ def List(url):
         name = utils.cleantext(name + ' [COLOR deeppink]' +  duration + '[/COLOR]' )
         utils.addDownLink(name, videopage, 492, img, '')
     try:
-        nextp = re.compile('<a href=\'(.+?)\' class="next">').findall(listhtml)
-        xbmc.log(nextp[0])
-        utils.addDir('Next Page', url[:url.rfind('/')+1] + nextp[0], 491,'')
+        next_page = re.compile("<a href='([^']+)' class=\"next\">NEXT").findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', url[:url.rfind('/')+1] + next_page, 491, '')
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -69,3 +70,14 @@ def Categories(url):
     for catpage, name in match:
         utils.addDir(name, catpage, 491, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
+
+
+@utils.url_dispatcher.register('494', ['url'], ['keyword'])  
+def Search(url, keyword=None):
+    searchUrl = url
+    if not keyword:
+        utils.searchDir(url, 494)
+    else:
+        title = keyword.replace(' ','-')
+        searchUrl = searchUrl + title + '/page1.html'
+        List(searchUrl)

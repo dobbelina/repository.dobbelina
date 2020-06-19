@@ -38,8 +38,8 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('class="list__item_link"><a href="([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?<time>(.*?)</time>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    utils.kodilog(match)
+    match = re.compile('class="list__item_link">.+?href="([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?<time>(.*?)</time>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    
     for videopage, name, img, duration in match:
 	videopage = siteurl + videopage
         name = utils.cleantext(name)

@@ -43,7 +43,7 @@ def List(url):
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 432, img, '')
     try:
-        nextp = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+        nextp = re.compile('href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).findall(html)[0]
         page_nr = re.findall('\d+', nextp)[-1]
         utils.addDir('Next Page (' + page_nr + ')', nextp, 431,'')
     except: pass

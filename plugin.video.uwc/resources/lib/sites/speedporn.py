@@ -26,8 +26,10 @@ import sys
 import urllib2,urllib
 @utils.url_dispatcher.register('780')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://speedporn.net/porn-genres/', 783, '', '')
-    utils.addDir('[COLOR hotpink]Tags[/COLOR]', 'https://speedporn.net/home/', 784, '', '')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://speedporn.net/categories/', 783, '', '')
+    utils.addDir('[COLOR hotpink]Porn-genres[/COLOR]', 'https://speedporn.net/porn-genres/', 783, '', '')
+    utils.addDir('[COLOR hotpink]Actors[/COLOR]', 'https://speedporn.net/actors/', 783, '', '')
+    utils.addDir('[COLOR hotpink]Tags[/COLOR]', 'https://speedporn.net/tags/', 784, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://speedporn.net/?s=',785,'','')
     List('https://speedporn.net/?filter=latest')
 
@@ -38,13 +40,14 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
-    match = re.compile('<article id=.+?href="([^"]+)"\s*title="([^"]+)".+?data-src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, name, img in match:
+    match = re.compile('class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name in match:
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 782, img, '')
     try:
-        nextp = re.compile('<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        utils.addDir('Next Page', nextp, 781,'')
+        next_page = re.compile('<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 781, '')
     except:
         pass
         
@@ -65,19 +68,22 @@ def url_decode(str):
 @utils.url_dispatcher.register('783', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('href="(https://speedporn.net\?genres=[^"]+)"\s*title="([^"]+)".+?src="([^"]+)" class', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img in match:
-        name = utils.cleantext(name)
+    match = re.compile('class="video-block video-block-cat".+?href="([^"]+)".+?data-src="([^"]+)".+?class="title">([^<]+)</span><div class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, img, name, videos in match:
+        name = utils.cleantext(name) + " [COLOR deeppink]" + videos + "[/COLOR]"
         utils.addDir(name, catpage, 781, img)
-    match = re.compile('href="(https://speedporn.net[^"]+)" class="inactive">(\d+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for pageurl, pagenr in match:
-        utils.addDir('[COLOR pink]Page ' + str(pagenr) + '[/COLOR]', pageurl, 783, '')
+    try:
+        next_page = re.compile('class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        page_nr = re.findall('\d+', next_page)[-1]
+        utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 783, '')
+    except:
+        pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('784', ['url'])
 def Tags(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('<a href="(https://speedporn.net/tag/[^"]+)">([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('div class="tag-item"><a href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         utils.addDir(name, catpage, 781, '')
