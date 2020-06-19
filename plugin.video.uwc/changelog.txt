@@ -1,3 +1,8 @@
+Version 1.2.21
+Fixed: AnyBunny
+Improved: HQPorner
+Improved: Mangoporn
+
 Version 1.2.20
 Changed: Vporn to PornOne
 
