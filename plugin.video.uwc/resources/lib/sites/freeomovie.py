@@ -26,9 +26,9 @@ progress = utils.progress
 
 @utils.url_dispatcher.register('370') 
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.freeomovie.com/', 373, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.freeomovie.com/?s=', 374, '', '')    
-    List('http://www.freeomovie.com/')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.freeomovie.to/', 373, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.freeomovie.to/?s=', 374, '', '')    
+    List('https://www.freeomovie.to/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('371', ['url']) 
@@ -38,7 +38,7 @@ def List(url):
     except:
         
         return None
-    match = re.compile('<h2><a href="([^"]+)".*?title="([^"]+)">.+?<img src="([^"]+)".+? width="', re.DOTALL).findall(listhtml)
+    match = re.compile('<h2><a href="([^"]+)".*?title="([^"]+)">.+?class="rmbd" src="([^"]+)".+? width="', re.DOTALL).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
         img = img.replace('/i/','/t/')
@@ -73,5 +73,5 @@ def Cat(url):
 
 @utils.url_dispatcher.register('372', ['url', 'name'], ['download'])   
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, '<a href="([^"]+)" target','')
+    vp = utils.VideoPlayer(name, download, '<a href="([^"]+)"target="myIframe"','')
     vp.play_from_site_link(url, url)
