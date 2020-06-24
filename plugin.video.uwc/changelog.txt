@@ -3,6 +3,7 @@ Fixed: FreeOMovie
 Fixed: AnyBunny
 Improved: HQPorner
 Improved: Mangoporn
+Improved: Animeid Hentai
 
 Version 1.2.20
 Changed: Vporn to PornOne
