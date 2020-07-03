@@ -107,7 +107,7 @@ def Playvid(url, name, download=None):
             videourl = videos[videopart]
         else: videourl = videos[0]
         videourl = videourl.replace('\/','/')
-        videourl = videourl + "|referer="+ url
+        videourl = "https:" + videourl
     
     if download == 1 and playall == '':
         utils.downloadVideo(videourl, name)

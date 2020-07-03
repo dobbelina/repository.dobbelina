@@ -62,8 +62,8 @@ def INDEXbrowse():
 def INDEXS():
 #    utils.addDir('[COLOR hotpink]JustFullPorn NETU !!![/COLOR]','https://justfullporn.com/',10,'https://justfullporn.com/wp-content/uploads/2020/04/cropped-FJUD.png','')
     utils.addDir('[COLOR hotpink]PornTrex[/COLOR]','https://www.porntrex.com/latest-updates/1/',50,os.path.join(imgDir, 'pt.png'),'')
-    utils.addDir('[COLOR hotpink]Woxtube[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
-    utils.addDir('[COLOR hotpink]Porn00[/COLOR]','http://www.porn00.org/page/1/',64,os.path.join(imgDir, 'p00.png'),'')
+#    utils.addDir('[COLOR hotpink]Woxtube NO LONGER EXISTS[/COLOR]','http://www.woxtube.com/page/1/',60,os.path.join(imgDir, 'woxtube.png'),'')
+    utils.addDir('[COLOR hotpink]Porn00[/COLOR]','https://www.porn00.org/page/1/',64,os.path.join(imgDir, 'p00.png'),'')
     utils.addDir('[COLOR hotpink]Beeg[/COLOR]','http://beeg.com/page-1',80,os.path.join(imgDir, 'bg.png'),'')
     utils.addDir('[COLOR hotpink]XvideoSpanish[/COLOR]','http://www.xvideospanish.net/',130,os.path.join(imgDir, 'xvideospanish.png'),'')
     utils.addDir('[COLOR hotpink]HQPorner[/COLOR]','http://hqporner.com/hdporn/1',150,os.path.join(imgDir, 'hqporner.png'),'')
