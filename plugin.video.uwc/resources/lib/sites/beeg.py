@@ -38,12 +38,12 @@ dialog = utils.dialog
 addon = utils.addon
 
 
-def BGVersion():
-    bgpage = utils.getHtml('https://beeg.com','')
-    bgversion = re.compile(r"var beeg_version = (\d+);", re.DOTALL | re.IGNORECASE).findall(bgpage)[0]
-    bgsavedversion = addon.getSetting('bgversion')
-    if bgversion != bgsavedversion or not addon.getSetting('bgsalt'):
-        addon.setSetting('bgversion',bgversion)
+#def BGVersion():
+#    bgpage = utils.getHtml('https://api.beeg.com/api/v6/1593627308202/index/main/0/pc','')
+#    bgversion = re.compile(r"var bundle_version = (\d+);", re.DOTALL | re.IGNORECASE).findall(bgpage)[0]
+#    bgsavedversion = addon.getSetting('bgversion')
+#    if bgversion != bgsavedversion or not addon.getSetting('bgsalt'):
+#        addon.setSetting('bgversion',bgversion)
 #        bgjspage = utils.getHtml('https://beeg.com/static/cpl/'+bgversion+'.js','https://beeg.com')
 #        bgsalt = re.compile('beeg_salt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(bgjspage)[0]
 #        addon.setSetting('bgsalt',bgsalt)
@@ -51,18 +51,18 @@ def BGVersion():
 
 @utils.url_dispatcher.register('80')
 def BGMain():
-    BGVersion()
-    bgversion = addon.getSetting('bgversion')
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://beeg.com/api/v6/'+bgversion+'/index/main/0/pc',83,'','')
-    utils.addDir('[COLOR hotpink]Channels[/COLOR]','https://beeg.com/api/v6/'+bgversion+'/channels',85,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://beeg.com/api/v6/'+bgversion+'/index/tag/0/pc?tag=',84,'','')
-    BGList('https://beeg.com/api/v6/'+bgversion+'/index/main/0/pc')
+    #BGVersion()
+    #bgversion = addon.getSetting('bgversion')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://beeg.com/api/v6/1593627308202/index/main/0/pc',83,'','')
+    utils.addDir('[COLOR hotpink]Channels[/COLOR]','https://beeg.com/api/v6/1593627308202/channels',85,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://beeg.com/tag/',84,'','')
+    BGList('https://beeg.com/api/v6/1593627308202/index/main/0/pc')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('81', ['url'])
 def BGList(url):
-    bgversion = addon.getSetting('bgversion')
+    #bgversion = addon.getSetting('bgversion')
     try:
         listjson = utils.getHtml(url,'https://beeg.com/')
     except:
@@ -96,7 +96,7 @@ def BGList(url):
                 start = '{:d}:{:02d}'.format(m, s)
                 m, s = divmod(thumb["end"], 60)
                 end = '{:d}:{:02d}'.format(m, s)
-                videopage = "https://beeg.com/api/v6/" + bgversion + "/video/" + str(svid) + "?v=2&s=" + str(thumb["start"]) + "&e=" + str(thumb["end"])
+                videopage = "https://beeg.com/api/v6/1593627308202/video/" + str(svid) + "?v=2&s=" + str(thumb["start"]) + "&e=" + str(thumb["end"])
                 if color:
                     name = "[COLOR powderblue]" + title
                 else:
@@ -104,7 +104,7 @@ def BGList(url):
                 name = name + "[COLOR deeppink] " + duration + "" + "[COLOR blue]  (" + start + " - " + end + ")[/COLOR]"
                 utils.addDownLink(name, videopage, 82, img, '')
         if videopage == '':
-            videopage = "https://beeg.com/api/v6/" + bgversion + "/video/" + str(svid) + "?v=2"
+            videopage = "https://beeg.com/api/v6/1593627308202/video/" + str(svid) + "?v=2"
             utils.addDownLink(name, videopage, 82, img, '')
         
     # match = re.compile(r'\{"cid":\d+,"title":"([^"]*)","start":([^,]+),"end":([^,]+),.+?"image":"([^"]+)".+?"svid":(\d+),"duration":(\d+),', re.DOTALL | re.IGNORECASE).findall(listjson)
@@ -120,7 +120,7 @@ def BGList(url):
         # name = replaceunicode(title) + "[COLOR deeppink] " + duration + "[/COLOR]"
         # utils.addDownLink(name, videopage, 82, img, '')
     try:
-        page=re.compile('https://beeg.com/api/v6/' + bgversion + '/index/[^/]+/([0-9]+)/pc', re.DOTALL | re.IGNORECASE).findall(url)[0]
+        page=re.compile('https://beeg.com/api/v6/1593627308202/index/[^/]+/([0-9]+)/pc', re.DOTALL | re.IGNORECASE).findall(url)[0]
         page = int(page)
         npage = page + 1
         jsonpage = re.compile(r'pages":(\d+)', re.DOTALL | re.IGNORECASE).findall(listjson)[0]
@@ -204,11 +204,11 @@ def BGPlayvid(url, name, download=None):
 
 @utils.url_dispatcher.register('83', ['url'])
 def BGCat(url):
-    bgversion = addon.getSetting('bgversion')
+#    bgversion = addon.getSetting('bgversion')
     caturl = utils.getHtml5(url)
     tags = re.compile('{"tag":"(.+?)","videos":(.+?)}', re.DOTALL | re.IGNORECASE).findall(caturl)
     for tag, count in tags:
-        videolist = "https://beeg.com/api/v6/"+bgversion+"/index/tag/0/pc?tag=" + tag.encode("utf8")
+        videolist = "https://beeg.com/api/v6/1593627308202/index/tag/0/pc?tag=" + tag.encode("utf8")
         videolist = videolist.replace(" ","%20")
         name = replaceunicode(tag)
         name = name.title() +' [COLOR deeppink]' + count + '[/COLOR]'
@@ -217,15 +217,15 @@ def BGCat(url):
 
 @utils.url_dispatcher.register('85', ['url'])
 def BGChannels(url):
-    bgversion = addon.getSetting('bgversion')
+#    bgversion = addon.getSetting('bgversion')
     caturl = utils.getHtml5(url)
     tags = re.compile('"id":(\d+),.+?"channel":"([^"]+)",.+?,"ps_name":"([^"]+)".+?"ps_about":"([^"]*)",.+?"videos":(\d*),"image":(\d+),', re.DOTALL | re.IGNORECASE).findall(caturl)
     for id, channel, name, about, count, img in tags:
         if img != '0':
-            img = "https://beeg.com/media/channels/" + id + ".png?_=" + bgversion
+            img = "https://beeg.com/media/channels/" + id + ".png?_="
         else:
             img = "https://beeg.com/img/icons/avatars/channel-512.png"
-        videolist = "https://beeg.com/api/v6/"+bgversion+"/index/channel/0/pc?channel=" + channel.encode("utf8")
+        videolist = "https://beeg.com/api/v6/1593627308202/index/channel/0/pc?channel=" + channel.encode("utf8")
         videolist = videolist.replace(" ","%20")        
         name = replaceunicode(name)
         name = name.title() +' [COLOR deeppink]' + count + '[/COLOR] ... ' + '[COLOR brown]' + about + '[/COLOR]' 
