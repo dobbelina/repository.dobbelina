@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.21"
+       version="1.2.22"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,12 +26,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.21[/B]
-Fixed: FreeOMovie
-Fixed: AnyBunny
-Improved: HQPorner
-Improved: Mangoporn
-Improved: Animeid Hentai
+        <news>[B]Version 1.2.22[/B]
+Fixed ParadiseHill
+Fixed: Beeg
 </news>
     </extension>
 </addon>

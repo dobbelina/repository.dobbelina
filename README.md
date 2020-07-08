@@ -1,16 +1,10 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.21
+Ultimate Whitecream addon update	Version 1.2.22
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: FreeOMovie
+Fixed ParadiseHill
 
-Fixed: AnyBunny
-
-Improved: HQPorner
-
-Improved: Mangoporn
-
-Improved: Animeid Hentai
+Fixed: Beeg
 
 
 ---
