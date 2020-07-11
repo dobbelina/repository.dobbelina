@@ -83,7 +83,7 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]JavBangers[/COLOR]','https://www.javbangers.com/latest-updates/1/',55,'https://www.javbangers.com/images/logo.png','')
     utils.addDir('[COLOR hotpink]DatoPorn[/COLOR]','http://datoporn.co/',670,os.path.join(imgDir, 'datoporn.png'),'')
     utils.addDir('[COLOR hotpink]Pornvibe[/COLOR]','https://pornvibe.org/',680,os.path.join(imgDir, 'pornvibe.png'),'')
-#    utils.addDir('[COLOR hotpink]YesPornPlease - DOWN !!![/COLOR]','https://yespornplease.com/',690,os.path.join(imgDir, 'yespornplease.png'),'')
+    utils.addDir('[COLOR hotpink]PornGo[/COLOR]','https://www.porngo.com/latest-updates/1/',690,'https://www.porngo.com/img/logo.png','')
 #    utils.addDir('[COLOR hotpink]XVideosHits - NETU !!![/COLOR]','https://www.xvideoshits.com/',700,os.path.join(imgDir, 'xvideoshits.png'),'')
     utils.addDir('[COLOR hotpink]PerfectGirls[/COLOR]','http://www.perfectgirls.net/',710,os.path.join(imgDir, 'perfectgirls.png'),'')
     utils.addDir('[COLOR hotpink]PornDoe[/COLOR]','https://www.porndoe.com/',720,os.path.join(imgDir, 'porndoe.png'),'')
