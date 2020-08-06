@@ -123,7 +123,7 @@ def Playvid(url, name, download=None):
                 listitem = xbmcgui.ListItem(newname, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
                 listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
                 listitem.setProperty("IsPlayable","true")
-                videourl = videourl + "|referer="+ url
+                videourl = "https:" + videourl
                 pl.add(videourl, listitem)
                 i += 1
                 listitem = ''
