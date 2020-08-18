@@ -148,8 +148,9 @@ def Playvid(url, name, download=None):
     match = get_xhamster_link(response)
     vp.progress.update(25, "", "Loading video page", "")
     if match:
-        if not match.startswith('http'): match = 'https://xhamster.com/' +  match
-        vp.play_from_direct_link(match)
+        if not match.startswith('http'):
+            match = 'https://xhamster.com/' + match
+        vp.play_from_direct_link(match + '|referer=' + url)
     else:
         utils.notify('Oh oh','Couldn\'t find a video')
 
@@ -162,7 +163,7 @@ def Categories(url):
     for url, name in match:
         utils.addDir(name, url, 506, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
+
 @utils.url_dispatcher.register('509', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
@@ -174,17 +175,15 @@ def Search(url, keyword=None):
         List(searchUrl)
 
 def get_xhamster_link(html):
-    for line in html.split('\n'):
-        line = line.strip()
-        if line.startswith("window.initials"):
-            jsonline = line[18:-1]
-            break
-    else:
+    try:
+        jsonline = re.findall(r'window\.initials=(.*?);<', html)[0]
+    except:
         return None
-    try:        
+    try:
         xjson = json.loads(jsonline)
-        highest_quality_source = xjson["xplayerSettings"]["sources"]['standard']["mp4"][0]#[-1]
-        links = (highest_quality_source["url"], highest_quality_source["fallback"])
-        return links[0] if 'xhcdn' in links[0] or not links[1] else links[1]
+        for link in xjson["xplayerSettings"]["sources"]['standard']["mp4"]:
+            if 'xhcdn' in link["url"] or 'xhcdn' in link["fallback"]:
+                return link["url"] if 'xhcdn' in link["url"] or not link["fallback"] else link["fallback"]
+        return None
     except IndexError:
         return None
