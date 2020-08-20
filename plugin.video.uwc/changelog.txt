@@ -1,5 +1,6 @@
 Version 1.2.24
 Paradisehill play all parts fix
+Fixed: xHamster
 
 Version 1.2.23
 Fixed: Porn00

@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.23"
+       version="1.2.24"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,9 +26,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.23[/B]
-Fixed: Porn00
-Added: PornGo(YesPornPlease)
+        <news>[B]Version 1.2.24[/B]
+Paradisehill play all parts fix
+Fixed: xHamster
 </news>
     </extension>
 </addon>
