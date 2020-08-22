@@ -126,8 +126,11 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]Poldertube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','http://www.poldertube.nl/',100,os.path.join(imgDir, 'poldertube.png'),0)
     utils.addDir('[COLOR hotpink]12Milf.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.12milf.com/',100,os.path.join(imgDir, '12milf.png'),1)
     utils.addDir('[COLOR hotpink]Sextube.nl[/COLOR] [COLOR orange](Dutch)[/COLOR]','https://www.sextube.nl/',100,os.path.join(imgDir, 'sextube.png'),2)
-    utils.addDir('[COLOR hotpink]TubePornClassic[/COLOR]','http://www.tubepornclassic.com/latest-updates/',360,os.path.join(imgDir, 'tubepornclassic.png'),'')
-    utils.addDir('[COLOR hotpink]HClips[/COLOR]','http://www.hclips.com/latest-updates/',380,os.path.join(imgDir, 'hclips.png'),'')
+    utils.addDir('[COLOR hotpink]Txxx[/COLOR]','http://txxx.com',380,os.path.join(imgDir, 'tubepornclassic.png'),0)
+    utils.addDir('[COLOR hotpink]TubePornClassic[/COLOR]','http://tubepornclassic.com',380,os.path.join(imgDir, 'tubepornclassic.png'),1)
+    utils.addDir('[COLOR hotpink]VoyeurHit[/COLOR]','http://voyeurhit.com',380,os.path.join(imgDir, 'tubepornclassic.png'),2)
+    utils.addDir('[COLOR hotpink]HClips[/COLOR]','http://hclips.com',380,os.path.join(imgDir, 'hclips.png'),3)
+
     utils.addDir('[COLOR hotpink]PornHub[/COLOR]','https://www.pornhub.com/newest.html',390,os.path.join(imgDir, 'pornhub.png'),'')
     utils.addDir('[COLOR hotpink]Porndig[/COLOR] [COLOR white]Professional[/COLOR]','http://www.porndig.com',290,os.path.join(imgDir, 'porndig.png'),'')
     utils.addDir('[COLOR hotpink]Porndig[/COLOR] [COLOR white]Amateurs[/COLOR]','http://www.porndig.com',290,os.path.join(imgDir, 'porndig.png'),'')
