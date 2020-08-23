@@ -212,39 +212,32 @@ def myfreecam_start(url):
                 break
 
             fc = hdr.group(1)
-            mlen   = int(fc[0:4])
-            fc_type = int(fc[4:])
+            mlen   = int(fc[0:6])
+            fc_type = int(fc[6:])
 
-            msg=sock_buf[4:4+mlen]
+            msg=sock_buf[6:6+mlen]
 
             if len(msg) < mlen:
                 rembuf=''.join(sock_buf)
                 break
 
             msg=urllib.unquote(msg)
-#            utils.kodilog(msg)
             if fc_type == 1:
                 ws.send("10 0 0 20 0 %s\n\0" % CAMGIRL)
             elif fc_type == 10:
                 read_model_data(msg)
                 quitting=1
 
-            sock_buf=sock_buf[4+mlen:]
+            sock_buf=sock_buf[6+mlen:]
 
             if len(sock_buf) == 0:
                 break
     ws.close()
     if CAMGIRLSERVER != 0:
-#        Url="http://video"+str(CAMGIRLSERVER)+".myfreecams.com:1935/NxServer/ngrp:mfc_"+\
-#            str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8" #better resolution
-
         if PHASE == '':
-            Url="https://"+str(CAMGIRLSERVER)+".myfreecams.com/NxServer/ngrp:mfc_"+\
-                str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
+            Url="https://" + str(CAMGIRLSERVER) + ".myfreecams.com/NxServer/ngrp:mfc_" + str(CAMGIRLCHANID) + ".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
         else:
-            Url="https://"+str(CAMGIRLSERVER)+".myfreecams.com/NxServer/ngrp:mfc_a_"+\
-                str(CAMGIRLCHANID)+".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
-
+            Url="https://" + str(CAMGIRLSERVER) + ".myfreecams.com/NxServer/ngrp:mfc_a_" + str(CAMGIRLCHANID) + ".f4v_mobile/playlist.m3u8?nc=0.5863279394620062"
 
         return Url
     else:

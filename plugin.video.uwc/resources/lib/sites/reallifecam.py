@@ -86,22 +86,24 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "", "Loading video page", "")
 
     videopage = utils.getHtml(url)
-    refurl = re.compile('<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+#    utils.kodilog(videopage)
+    refurl = re.compile('<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     vp.progress.update(50, "", "Loading video page", "")
     utils.kodilog(refurl)
-    refpage = utils.getHtml(refurl)
-    
-    videourl = re.compile('JuicyCodes.Run\(([^\)]+)\)', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
-    videourl = videourl.replace('"+"','').replace('"','')
-    videourl = base64.b64decode(videourl)
-    
+    refpage = utils.getHtml(refurl)  
+#    videourl = re.compile('JuicyCodes.Run\(([^\)]+)\)', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
+    videourl = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
+#    videourl = videourl.replace('"+"','').replace('"','')
+#    videourl = base64.b64decode(videourl)
+
     videourl = utils.unpack(videourl)
-    videolinks = re.compile('"src":"([^"]+)".+?"res":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)
-    list = {}
-    for url, quality in videolinks:
-        list[quality] = url
-    url = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x), reverse=True)
-    if not url:
-        return
-    videolink = url + '|Referer=' + refurl
+    utils.kodilog(videourl)    
+    videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
+#    list = {}
+#    for url, quality in videolinks:
+#        list[quality] = url
+#    url = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x[:-1]), reverse=True)
+#    if not url:
+#        return
+    videolink = videolink + '|Referer=' + refurl
     vp.play_from_direct_link(videolink)

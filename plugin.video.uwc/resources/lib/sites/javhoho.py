@@ -40,7 +40,7 @@ def List(url):
     try:
         listhtml = utils.getHtml(url)
     except:
-        
+        utils.kodilog('site error')
         return None
     match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?srcset="(\S+).+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
@@ -84,25 +84,38 @@ def Cat(url):
 
 @utils.url_dispatcher.register('312', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    links = {}
     vp = utils.VideoPlayer(name, download)
+    vp.progress.update(20, "", "Loading video page", "")
     videohtml = utils.getHtml(url)
-    try: 
-        allplayer = re.compile('<iframe src="(//allplayer[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
-        allplayer = 'https:' + allplayer
-        vp.progress.update(20, "", "Loading video page", "")
-        allplayerhtml = utils.getHtml(allplayer,url)
-        vp.progress.update(40, "", "Loading video page", "")    
-        packed = re.compile('>(eval.+?)jwplayer\(\)', re.DOTALL | re.IGNORECASE).findall(allplayerhtml)[0]
-        unpacked = utils.unpack(packed)
-        unpacked = unpacked.replace('\\','')
-        directlinks = re.compile("file:'([^']+)',.+?,label:'([^']+)'", re.DOTALL | re.IGNORECASE).findall(unpacked)
-        vp.progress.update(60, "", "Loading video page", "")
-        for video_link, quality in directlinks:
-            links[quality] = video_link
-        selected = utils.selector('Select quality', links, dont_ask_valid=True, sort_by=lambda x: int(x[:-1]), reverse=True)
-        if not selected: return
-        vp.play_from_direct_link(selected + '|Referer=' + allplayer)
-    except:
-        vp.play_from_html(videohtml)
+    match = re.compile('target="_blank"\s+href=(\S+)\s+[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    links = []
+    for l in match:
+        if l[1] not in ('FE', 'PT'):
+            continue
+        u = utils.getVideoLink(l[0], l[0])
+        if 's=http' in u:
+            u = 'http' + u.split('s=http')[-1]
+        u = u.replace('youvideos.ru/f','feurl.com/v')
+        links.insert(0,u)
+    vp.play_from_link_list(links)
+    return
+    
+    # hqplayer = re.compile('<iframe src="(https://javhoho.com/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
+# #    hqplayer = links[0]
+    # utils.kodilog(hqplayer)
+    # link = utils.getVideoLink(hqplayer, hqplayer)
+    # utils.kodilog(link)
+
+    # playerhtml = utils.getHtml(link)
+# #    utils.kodilog(playerhtml)
+
+    # vp.progress.update(40, "", "Loading video page", "")    
+    # packed = re.compile('(eval\(function\(p,a,c,k,e,d\).+?)\s*</script>', re.DOTALL | re.IGNORECASE).findall(playerhtml)[0]
+    # utils.kodilog("packed: " + packed)
+    # unpacked = utils.unpack(packed)
+    # utils.kodilog("unpacked: " + unpacked)
+# #    unpacked = unpacked.replace('\\','')
+    # videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
+    # vp.progress.update(60, "", "Loading video page", "")
+    # vp.play_from_direct_link(videolink) # + '|Referer=' + videolink)
     

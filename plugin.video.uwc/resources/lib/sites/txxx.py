@@ -32,18 +32,22 @@ from resources.lib import utils
 progress = utils.progress
 import urllib2,urllib
 
-@utils.url_dispatcher.register('380')
-def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://hclips.com/api/json/categories/14400/str.all.json', 383, '', '')
-    utils.addDir('[COLOR hotpink]Channels[/COLOR]','https://hclips.com/api/json/channels/14400/str/latest-updates/80/..1.json', 385, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://hclips.com/api/videos.php?params=259200/str/relevance/60/search..1.all..day&sort=latest-updates&date=day&type=all&s=', 384, '', '')    
-    List('https://hclips.com/api/json/videos/86400/str/latest-updates/60/..1.all..day.json')
+sites = ['https://txxx.com', 'https://tubepornclassic.com', 'https://voyeurhit.com', 'https://hclips.com']
+
+@utils.url_dispatcher.register('380', ['url'], ['page'])
+def Main(url, page=0):
+    site = sites[page]
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]',site + '/api/json/categories/14400/str.all.json', 383, '', '')
+    if page in [0, 3]:
+        utils.addDir('[COLOR hotpink]Channels[/COLOR]',site + '/api/json/channels/14400/str/latest-updates/80/..1.json', 385, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]',site + '/api/videos.php?params=259200/str/relevance/60/search..1.all..day&sort=latest-updates&date=day&type=all&s=', 384, '', '')    
+    List(site + '/api/json/videos/86400/str/latest-updates/60/..1.all..day.json')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('381', ['url'])
 def List(url):
-    
+    site = url.split('/api')[0]
     m = re.search('\.(\d+)\.', url)
     if m:
         page = int(m.group(1))
@@ -55,7 +59,7 @@ def List(url):
     
     if "videos" in js.keys():
         for video in js["videos"]:
-            videopage = "https://hclips.com/videos/" + video["video_id"] + "/" + video["dir"] + "/"
+            videopage = site + "/videos/" + video["video_id"] + "/" + video["dir"] + "/"
             img = video["scr"]
             name = video["title"]
             name = name.encode("UTF-8")
@@ -96,12 +100,13 @@ def Search(url, keyword=None):
 
 @utils.url_dispatcher.register('383', ['url'])
 def Categories(url):
+    site = url.split('/api')[0]
     listjson = utils.getHtml(url, url)
     js = json.loads(listjson)
 
     for cat in sorted(js["categories"], key = lambda x: x["title"]):
         catpage = cat["dir"]
-        catpage = "https://hclips.com/api/json/videos/86400/str/latest-updates/60/categories.{}.1.all..day.json".format(catpage)
+        catpage = site + "/api/json/videos/86400/str/latest-updates/60/categories.{}.1.all..day.json".format(catpage)
         name = cat["title"]
         vids = cat["total_videos"]
         vids = ' [COLOR deeppink]{} videos[/COLOR]'.format(vids).encode("UTF-8") 
@@ -113,6 +118,7 @@ def Categories(url):
 
 @utils.url_dispatcher.register('385', ['url'])
 def Channels(url):
+    site = url.split('/api')[0]
     m = re.search('\.(\d+)\.', url)
     if m:
         page = int(m.group(1))
@@ -125,7 +131,7 @@ def Channels(url):
     if "channels" in js.keys():
         for chan in js["channels"]:
             catpage = chan["dir"]
-            catpage = "https://hclips.com/api/json/videos/3600/str/latest-updates/20/channel.{}.1.all...json".format(catpage)
+            catpage = site + "/api/json/videos/3600/str/latest-updates/20/channel.{}.1.all...json".format(catpage)
             name = chan["title"]
             name = name.encode("UTF-8")
             img = chan["img"]
@@ -141,17 +147,18 @@ def Channels(url):
 
 @utils.url_dispatcher.register('382', ['url', 'name'], ['download'])    
 def Playvid(url, name, download=None):
+    site = url.split('/video')[0]
     vp = utils.VideoPlayer(name, download = download)
     vp.progress.update(25, "", "Playing video", "")        
-    videolink = GetTxxxVideo(url)
+    videolink = GetTxxxVideo(url, site)
     if videolink.startswith('/'):
-        videolink = 'https://hclips.com' + videolink
+        videolink = site + videolink
     vp.progress.update(40, "", "Playing video", "")    
     vp.play_from_direct_link(videolink)
     
-def GetTxxxVideo(videopage):
+def GetTxxxVideo(videopage, site):
     id = videopage.split('/')[-3]
-    vidpage = "https://hclips.com/api/videofile.php?video_id={}&lifetime=8640000".format(id)
+    vidpage = site + "/api/videofile.php?video_id={}&lifetime=8640000".format(id)
     vidcontent = utils.getHtml(vidpage, videopage)
     vidurl = re.search('video_url":"([^"]+)', vidcontent).group(1)
     replacemap = {'M':'\u041c', 'A':'\u0410', 'B':'\u0412', 'C':'\u0421', 'E':'\u0415', '=':'~', '+':'.', '/':','}
