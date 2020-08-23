@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.24"
+       version="1.2.25"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,9 +26,14 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.24[/B]
-Paradisehill play all parts fix
-Fixed: xHamster
+        <news>[B]Version 1.2.25[/B]
+Fixed: TubePornClassic
+Fixed: Beeg
+Fixed: JAVhoho
+Fixed: MyFreeCams
+Fixed: Reallifecam
+Added: Txxx
+Added: VoyeurHit
 </news>
     </extension>
 </addon>
