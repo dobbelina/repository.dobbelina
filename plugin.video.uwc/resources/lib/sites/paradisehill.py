@@ -107,7 +107,7 @@ def Playvid(url, name, download=None):
             videourl = videos[videopart]
         else: videourl = videos[0]
         videourl = videourl.replace('\/','/')
-        videourl = "https:" + videourl
+        #videourl = "https:" + videourl
     
     if download == 1 and playall == '':
         utils.downloadVideo(videourl, name)
@@ -123,7 +123,7 @@ def Playvid(url, name, download=None):
                 listitem = xbmcgui.ListItem(newname, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
                 listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
                 listitem.setProperty("IsPlayable","true")
-                videourl = "https:" + videourl
+                #videourl = "https:" + videourl
                 pl.add(videourl, listitem)
                 i += 1
                 listitem = ''
