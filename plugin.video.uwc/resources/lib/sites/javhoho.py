@@ -42,13 +42,13 @@ def List(url):
     except:
         
         return None
-    match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?srcset="(\S+).+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?data-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         for videopage, img, name in match:
             name = utils.cleantext(name)
             utils.addDownLink(name, videopage, 312, img, '')
     else:   # search
-        match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?title="([^"]+)".+?srcset="(\S+)', re.DOTALL | re.IGNORECASE).findall(listhtml)       
+        match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?title="([^"]+)".+?data-src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)       
         for videopage, name, img in match:
             name = utils.cleantext(name)
             utils.addDownLink(name, videopage, 312, img, '')
