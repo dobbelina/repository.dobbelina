@@ -145,14 +145,18 @@ def List(url, NoFilter=False):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     response = utils.getHtml(url, hdr=xhamster_headers)    
-    match = get_xhamster_link(response)
+#    match = get_xhamster_link(response)
     vp.progress.update(25, "", "Loading video page", "")
-    if match:
-        if not match.startswith('http'):
-            match = 'https://xhamster.com/' + match
-        vp.play_from_direct_link(match + '|referer=' + url)
-    else:
-        utils.notify('Oh oh','Couldn\'t find a video')
+    
+    match = re.compile('"sources":{"mp4":{([^}]+)},', re.DOTALL | re.IGNORECASE).findall(response)
+    match0 = re.compile('"([^"]+)":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match[0])
+    links = {}
+    for quality, video_link in match0:
+        links[quality] = video_link
+    selected = utils.selector('Select quality', links, dont_ask_valid=True, sort_by=lambda x: int(x[:-1]), reverse=True)
+    if not selected: return
+    selected = selected.replace('\\/','\\') + '|Referer=' + url
+    vp.play_from_direct_link(selected)
 
 
 @utils.url_dispatcher.register('508', ['url'])
@@ -163,7 +167,7 @@ def Categories(url):
     for url, name in match:
         utils.addDir(name, url, 506, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-
+    
 @utils.url_dispatcher.register('509', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
@@ -175,15 +179,17 @@ def Search(url, keyword=None):
         List(searchUrl)
 
 def get_xhamster_link(html):
-    try:
-        jsonline = re.findall(r'window\.initials=(.*?);<', html)[0]
-    except:
+    for line in html.split('\n'):
+        line = line.strip()
+        if line.startswith("window.initials"):
+            jsonline = line[18:-1]
+            break
+    else:
         return None
-    try:
+    try:        
         xjson = json.loads(jsonline)
-        for link in xjson["xplayerSettings"]["sources"]['standard']["mp4"]:
-            if 'xhcdn' in link["url"] or 'xhcdn' in link["fallback"]:
-                return link["url"] if 'xhcdn' in link["url"] or not link["fallback"] else link["fallback"]
-        return None
+        highest_quality_source = xjson["xplayerSettings"]["sources"]['standard']["mp4"][0]#[-1]
+        links = (highest_quality_source["url"], highest_quality_source["fallback"])
+        return links[0] if 'xhcdn' in links[0] or not links[1] else links[1]
     except IndexError:
         return None

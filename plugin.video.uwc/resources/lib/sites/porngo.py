@@ -97,7 +97,7 @@ def ypp_search(url, keyword=None):
 @utils.url_dispatcher.register('692', ['url', 'name'], ['download'])
 def ypp_play(url, name, download=None):
     videopage = utils.getHtml(url, '')
-    videos = re.compile(r'video-links__link" href="([^"]+)".*?no-load-content>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(videopage)
+    videos = re.compile(r'video-links__link" href="([^"]+)" .*?no-load-content>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(videopage)
     list = {}
     for video_link, quality in videos:
         quality = quality.replace('4K', '2160p')

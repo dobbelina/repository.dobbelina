@@ -87,14 +87,17 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
     videopage = utils.getHtml(url, url)
-    videourl = re.compile('"><iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    vp.progress.update(50, "", "Loading video page", "")
-    videourl1 = utils.getHtml(videourl, url)
-    packed = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(videourl1)[0]
-    unpacked = utils.unpack(packed)
-    vp.progress.update(75, "", "Loading video page", "")    
-    source = re.search('src:"([^"]+)"', unpacked)
-    if source:
-        vp.play_from_direct_link(source.group(1))
+    if 'gounlimited.to/embed' in videopage:
+        videourl = re.compile('"><iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+        vp.progress.update(50, "", "Loading video page", "")
+        videourl1 = utils.getHtml(videourl, url)
+        packed = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(videourl1)[0]
+        unpacked = utils.unpack(packed)
+        vp.progress.update(75, "", "Loading video page", "")    
+        source = re.search('src:"([^"]+)"', unpacked)
+        if source:
+            vp.play_from_direct_link(source.group(1))
+        else:
+            utils.notify('Video not found.')
     else:
-        utils.notify('Video not found.')
+        vp.play_from_html(videopage)
