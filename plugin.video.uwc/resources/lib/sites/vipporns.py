@@ -80,4 +80,8 @@ def Cat(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download,'', "video_url: '([^']+)'")
     videohtml = utils.getHtml(url)
-    vp.play_from_html(videohtml)
+    if 'video_url:' in videohtml:
+        vp.play_from_html(videohtml)
+    else:
+        vp = utils.VideoPlayer(name, download, 'src=["]([^"]+)')
+        vp.play_from_site_link(url)
