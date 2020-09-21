@@ -1,5 +1,9 @@
 Version 1.2.27
 Fixed: PornHub
+Fixed: Hotpornfile
+Fixed: IPornoVideos
+Fixed: PornGo
+Fixed: xHamster
 
 Version 1.2.26
 Fixed: Paradisehill
