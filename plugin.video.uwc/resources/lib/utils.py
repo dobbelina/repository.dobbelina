@@ -453,6 +453,8 @@ def get_sucuri_cookie(html):
     s = re.sub(r'\n', '', s)
     s = re.sub(r'document\.cookie', 'cookie', s)
     sucuri_cookie = '' ; exec(s)
+    if sucuri_cookie == '':
+        sucuri_cookie = cookie
     sucuri_cookie = re.compile('([^=]+)=(.*)').findall(sucuri_cookie)[0]
     sucuri_cookie = '%s=%s' % (sucuri_cookie[0], sucuri_cookie[1])
     return sucuri_cookie
