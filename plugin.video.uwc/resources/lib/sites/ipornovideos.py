@@ -22,7 +22,7 @@ import re
 import xbmcplugin
 from resources.lib import utils
 
-siteurl = 'http://ipornovideos.com/'
+siteurl = 'https://ipornovideos.com/'
 
 @utils.url_dispatcher.register('260')
 def Main():
@@ -44,20 +44,15 @@ def List(url):
             (videopage, name, img) = match[0]
         else:
             continue
-        if 'Premium user request' in name:
-            continue
         m = re.search("img src='(.+?)'", img)
         if m:
             img = m.group(1)
         else:
             img = ''
-        if '(' in name:
-            name = name.split('(')
-            hd = name[-1]
-            name[-1] = ''
-            name = ''.join(name)
-        else:
-            hd = ''
+        name = name.split('(')
+        hd = name[-1]
+        name[-1] = ''
+        name = ''.join(name)
         name = utils.cleantext(name)
         if 'FullHD' in hd:
             name = name + '[COLOR orange] FullHD[/COLOR]'
@@ -97,26 +92,28 @@ def Cat(url):
 @utils.url_dispatcher.register('262', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download) #, regex="<a href='([^']+)'[^>]+>Watch Online")
-    vp.progress.update(25, "", "Loading video page", "")
-    
-    page = utils.getHtml(url, '')
-    match = re.compile('data-fo="([^"]+)"\s*data-id="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(page)
-    blocks = re.compile('\[data-id="([^"]+)"\]\{display:block;\}', re.DOTALL | re.IGNORECASE).findall(page)
-    
-    posturl = 'https://ipornovideos.com/wp-content/themes/twentyten/ajax.php'
-    hdr = utils.headers
-    hdr['X-Requested-With'] = 'XMLHttpRequest'
-
-    links = ''
-    for m in match:
-        if m[0] in ('k2s.cc', 'www.xmegadrive.com' ) : continue
-        if m[1] not in blocks: continue
-        data = {}
-        data['type'] = 'link'
-        data['id'] = m[1]
-        data['fo'] = m[0]
-        res = utils.getHtml(posturl, url, hdr=hdr, data=data)
-        res = res.replace('\/','/')
-        links += res
-    links = links.replace('jetload.net/#!/d/', 'jetload.net/p/')
-    vp.play_from_html(links)
+#    vp.progress.update(25, "", "Loading video page", "")
+#
+#    page = utils.getHtml(url, '')
+#    match = re.compile('data-fo="([^"]+)"\s*data-id="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(page)
+#    blocks = re.compile('\[data-id="([^"]+)"\]\{display:block;\}', re.DOTALL | re.IGNORECASE).findall(page)
+#
+#    posturl = 'https://ipornovideos.com/wp-content/themes/twentyten/ajax.php'
+#    hdr = utils.headers
+#    hdr['X-Requested-With'] = 'XMLHttpRequest'
+#
+#    links = ''
+#    for m in match:
+#        if m[0] in ('k2s.cc', 'www.xmegadrive.com' ) : continue
+#        if m[1] not in blocks: continue
+#        data = {}
+#        data['type'] = 'link'
+#        data['id'] = m[1]
+#        data['fo'] = m[0]
+#        res = utils.getHtml(posturl, url, hdr=hdr, data=data)
+#        res = res.replace('\/','/')
+#        links += res
+#    links = links.replace('jetload.net/#!/d/', 'jetload.net/p/')
+#    vp.play_from_html(links)
+    videohtml = utils.getHtml(url)
+    vp.play_from_html(videohtml)
