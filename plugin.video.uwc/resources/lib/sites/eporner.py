@@ -26,10 +26,10 @@ siteurl = 'https://www.eporner.com'
 @utils.url_dispatcher.register('540')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl + '/cats/',543,'','')
-    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]',siteurl + '/pornstars/',545,'','')
-    utils.addDir('[COLOR hotpink]Lists[/COLOR]',siteurl,546,'','')
+    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]',siteurl + '/pornstar-list/',545,'','')
+    utils.addDir('[COLOR hotpink]Lists[/COLOR]',siteurl ,546,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]',siteurl+'/search/',544,'','')
-    List(siteurl + '/cat/all/')
+    List(siteurl + '/recent/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('541', ['url'])
@@ -42,13 +42,16 @@ def List(url):
     for i, vid in enumerate(vids):
         if i == 0:
             continue
-        match = re.compile('<span>([^<]+)<.+?href="([^"]+)".+?src="(http[^"]+)".+?title="([^"]+)">.+?title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
+        match = re.compile('<span>([^<]+)<.+? data-src="(https[^"]+)" .+?<a href="([^"]+)">([^<]+)</a>.+?<span class="mbtim" title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
         if match:
-            hd, videopage, img, name, duration = match[0]
+            hd, img, videopage, name, duration = match[0]
             name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
             utils.addDownLink(name, siteurl + videopage, 542, img, '')
     try:
-        nextp, page = re.compile("href='([^']+/(\d+)/)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if '/recent/' in url:
+            nextp, page = re.compile("href='(/(\d+)/[^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        else: 
+            nextp, page = re.compile("href='([^']+/(\d+)/)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         utils.addDir('Next Page (' + page +')', siteurl + nextp, 541,'')
     except:
         pass
