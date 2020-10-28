@@ -1,5 +1,7 @@
 Version 1.2.29
 Fixed: Eporner
+Fixed: IPornoVideos
+Fixed: Spankbang
 
 Version 1.2.28
 Fixed: IPornoVideos
