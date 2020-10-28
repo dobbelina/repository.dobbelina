@@ -51,7 +51,7 @@ def List(url):
     except:
         return None
     main_block = re.compile('<main id="container">(.*?)</main>', re.DOTALL).findall(listhtml)[0]
-    match = re.compile('<a href="(\/[^"]+\/)video[^"]+" class="thumb.*?data-src="([^"]+)".*?alt="([^"]+)".+?<span class="i-len">(.*?)<.+?<span class="i-hd">(.*?)<', re.DOTALL).findall(main_block)
+    match = re.compile('<a href="(\/[^"]+\/)video[^"]+" class="thumb.*?data-src="([^"]+)".*?alt="([^"]+)".+?<span class="l">(.*?)<.+?<span class="h">(.*?)<', re.DOTALL).findall(main_block)
     for videopage, img, name, duration, hd in match:
         videopage = videopage + "embed/"
 #        res = re.findall('"i-hd">(.+?)<', hd, re.DOTALL | re.IGNORECASE)
