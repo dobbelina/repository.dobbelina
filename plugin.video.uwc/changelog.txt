@@ -1,3 +1,6 @@
+Version 1.2.30
+Fixed: Camsoda
+
 Version 1.2.29
 Fixed: Eporner
 Fixed: IPornoVideos

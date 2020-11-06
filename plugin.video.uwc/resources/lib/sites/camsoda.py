@@ -29,7 +29,7 @@ from resources.lib import utils
 @utils.url_dispatcher.register('475')
 def Main():
     utils.addDir('[COLOR red]Refresh Camsoda images[/COLOR]', '', 479, '', Folder=False)
-    List('http://www.camsoda.com/api/v1/browse/online')
+    List('https://www.camsoda.com/api/v1/browse/online')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -42,16 +42,26 @@ def List(url):
 	except:
 		return None
 	data = json.loads(response)
-	for camgirl in data['results']:
+#	print(json.dumps(data["results"], indent = 4, sort_keys=True))
+        print "url: " + url
+        for camgirl in data["results"]:
 		try:
+#	                print ( camgirl )
 #			userid=camgirl['user_id']
-			userid=camgirl['tpl'][0]
-#			name = camgirl['username'].encode("ascii", errors="ignore")
-			name = camgirl['tpl'][1].encode("ascii", errors="ignore")
-			videourl = "https://www.camsoda.com/api/v1/video/vtoken/" + name
+#			userid = camgirl["tpl"]["0"]
+		        gender = camgirl["tpl"]["8"].encode("ascii", errors="ignore")
+#		        print "GENDER: " + gender
+		        username = camgirl["tpl"]["1"].encode("ascii", errors="ignore")
+#		        print "USERNAME: " + username
+		        display_name = camgirl["tpl"]["2"].encode("utf-8", errors="ignore")
+#	 		print "DISPLAY_NAME: " + display_name		        
+			videourl = "https://www.camsoda.com/api/v1/video/vtoken/" + username
 #			imag='http://md.camsoda.com/thumbs/%s.jpg'%(name)
-			imag = 'http:' + camgirl['tpl'][9]
-			utils.addDownLink(name, videourl, 478, imag, '', noDownload=True)
+#			imag = 'http:' + camgirl['tpl'][9]
+			imag = 'https:' + camgirl["tpl"]["10"].encode("ascii", errors="ignore")
+#	 		print "IMAG: " + imag	
+			if 'f' in gender:
+			       utils.addDownLink(username, videourl, 478, imag, '', noDownload=True)
 		except:
 			pass
 	xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -81,10 +91,17 @@ def Playvid(url, name):
     url = url + "?username=guest_" + str(random.randrange(100, 55555))
     response = utils.getHtml(url)
     data = json.loads(response)
+    print(json.dumps(data, indent = 4, sort_keys=True))
+    if len(data["edge_servers"])==0:
+        utils.notify('Model is Offline or Private')
+        return None
     if "camhouse" in data['stream_name']:
         videourl = "https://camhouse.camsoda.com/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
+    elif "edge" in data["edge_servers"][0]:
+        videourl = "https://" + data["edge_servers"][0] + "/" +  data["stream_name"] + "_h264_aac_720p/index.m3u8?token=" + data["token"]
     else:
-        videourl = "https://" + data['edge_servers'][0] + "/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
+        videourl = "https://" + data["edge_servers"][0] + "/" + data["app"] + "/mp4:" + data["stream_name"] + "_aac/mono.m3u8?token=" + data["token"]
+    print "VideoURL: " + videourl
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
     listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
