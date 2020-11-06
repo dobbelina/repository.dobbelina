@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 '''
     Ultimate Whitecream
     Copyright (C) 2015 Whitecream
@@ -27,10 +28,18 @@ progress = utils.progress
 
 @utils.url_dispatcher.register('240')
 def Main():
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://justporn.to/?s=', 244, '', '')
-    utils.addDir('[COLOR hotpink]DVDrips[/COLOR]','http://justporn.to/category/dvdrips-full-movies/', 241, '', '')
-    List('http://justporn.to/')
 
+    utils.addDir('[COLOR hotpink]Archiv[/COLOR]','http://justporn.to/category/hd-filme/', 241, '', '')
+
+    utils.addDir('[COLOR hotpink]DVDRiPS – Full Movies[/COLOR]','http://justporn.to/category/dvdrips-full-movies/', 241, '', '')
+    utils.addDir('[COLOR hotpink]Scenes[/COLOR]','http://justporn.to/category/scenes/', 240, '', '')
+    utils.addDir('[COLOR hotpink]Allgemein[/COLOR]','http://justporn.to/category/allgemein/', 241, '', '')
+    utils.addDir('[COLOR hotpink]Deutsche Filme[/COLOR]','http://justporn.to/category/deutsche-filme/', 241, '', '')
+    utils.addDir('[COLOR hotpink]HD-Filme[/COLOR]','http://justporn.to/category/hd-filme/', 241, '', '')
+
+
+    List('http://justporn.to/category/dvdrips-full-movies/')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('241', ['url'])
@@ -40,7 +49,7 @@ def List(url):
     except:
         
         return None
-    match = re.compile('<h2><a href="([^"]+)" rel="bookmark" title="([^"]+)".+?<img src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('div style="background.+?href="(.+?)" title="(.+?)">.+?<img src="(.+?)".+?style="position', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 242, img, '')
