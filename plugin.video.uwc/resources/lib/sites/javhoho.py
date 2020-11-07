@@ -17,8 +17,10 @@
 '''
 
 import re
+import requests
+import json
 
-import xbmcplugin
+import xbmc, xbmcplugin, xbmcgui
 from resources.lib import utils
 progress = utils.progress
 
@@ -32,7 +34,8 @@ def Main():
     utils.addDir('[COLOR hotpink]Asian Porn[/COLOR]','https://javhoho.com/category/free-asian-porn/',311,'','')
     utils.addDir('[COLOR hotpink]Virtual Reality Porn[/COLOR]','https://javhoho.com/category/free-jav-vr-virtual-reality/',311,'','')    
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://javhoho.com/search/',314,'','')
-    List('https://javhoho.com/all-movies-free-jav-uncensored-censored-asian-porn-korean/')
+    #List('https://javhoho.com/all-movies-free-jav-uncensored-censored-asian-porn-korean/')
+    List('https://javhoho.com/')
 
 
 @utils.url_dispatcher.register('311', ['url'])
@@ -84,6 +87,52 @@ def Cat(url):
 
 @utils.url_dispatcher.register('312', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
+    listhtml = utils.getHtml(url)
+    match = re.compile('data-lazy-type="iframe" data-src="([^"]+)"',).findall(listhtml)
+    videoArray = []
+    for item in match:
+        if 'javhoho.com' in item:
+            try:
+                listhtml = utils.getHtml(item)
+                videourl = 'https://www.bitporno.com' + re.compile('file: "(.+?)"', re.DOTALL).findall(listhtml)[0]
+                videoArray.append(['Bitporno', videourl])
+            except: continue
+        if 'streamz.cc' in item:
+            try:
+                listhtml = utils.getHtml(item)
+                packed = re.compile('(eval\(function\(p,a,c,k,e,d\).+?)\s*</script>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+                unpacked = utils.unpack(packed)
+                videourl = re.compile("'(http.+?)\\\\'", re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
+                videoArray.append(['Streamz.cc', videourl])
+            except: continue
+        if 'gdriveplayer.to' in item:
+            try:
+                listhtml = utils.getHtml('https:' + item)
+                packed = re.compile('(eval\(function\(p,a,c,k,e,d\).+?)\s*</script>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+                unpacked = utils.unpack(packed)
+                videourl = re.compile("'(http.+?)'", re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
+                videoArray.append(['Gdriveplayer.to', videourl])
+            except: continue
+        if 'youvideos.ru' in item:
+            try:
+                r = requests.post(item.replace('/v/', '/api/source/'), data='').text
+                movieJson = json.loads(r)['data']
+                videoRU = [[str(item['label']), item['file']] for item in movieJson]
+                videoArray.append(['YouVideos.ru', videourl])
+            except: pass
+    if not videoArray:
+        utils.notify('Oh oh','Couldn\'t find a video')
+        return
+    choice = xbmcgui.Dialog().select('Select server', [item[0] for item in videoArray])
+    videourl = videoArray[choice][1]
+    if 'YouVideos.ru' in videoArray[choice][0]:
+        choice = xbmcgui.Dialog().select('Select resolution', [str(item[0]) for item in videoRU])
+        videourl = videoRU[choice][1]
+    
+    xbmc.Player().play(videourl)
+    return
+
+
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(20, "", "Loading video page", "")
     videohtml = utils.getHtml(url)
