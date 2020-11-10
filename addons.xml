@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.29"
+       version="1.2.30"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,10 +26,12 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.29[/B]
-Fixed: Eporner
-Fixed: IPornoVideos
-Fixed: Spankbang
+        <news>[B]Version 1.2.30[/B]
+Fixed: Camsoda
+Fixed: JAVhoho
+Improved: Beeg
+Improved: Eporner
+Improved: Justporn
 </news>
     </extension>
 </addon>
