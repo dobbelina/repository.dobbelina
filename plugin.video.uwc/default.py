@@ -109,7 +109,7 @@ def INDEXM():
 #    if sys.version_info >= (2, 7, 9):
 #        utils.addDir('[COLOR hotpink]Xtheatre[/COLOR] - NETU !!!','http://xtheatre.net/page/1/',20,os.path.join(imgDir, 'xt.png'),'')
     utils.addDir('[COLOR hotpink]PornHive[/COLOR]','http://www.pornhive.tv/en/movies/all',70,os.path.join(imgDir, 'ph.png'),'')
-    utils.addDir('[COLOR hotpink]JustPorn[/COLOR]','http://justporn.to/category/dvdrips-full-movies/',241,os.path.join(imgDir, 'justporn.png'),'')
+    utils.addDir('[COLOR hotpink]JustPorn[/COLOR]','http://justporn.to/category/dvdrips-full-movies/',240,os.path.join(imgDir, 'justporn.png'),'')
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',116,os.path.join(imgDir, 'elreyx.png'),'')
     utils.addDir('[COLOR hotpink]PelisxPorno[/COLOR]','http://www.pelisxporno.com/',140,os.path.join(imgDir, 'pelisxporno.png'),'')
     utils.addDir('[COLOR hotpink]StreamXXX[/COLOR]','http://streamxxx.tv/category/movies/',175,os.path.join(imgDir, 'streamxxx.png'),'')
