@@ -18,7 +18,7 @@
 
 import re
 import urlparse
-import xbmcplugin
+import xbmc, xbmcplugin, xbmcgui
 from resources.lib import utils
 
 def urlEncodeNonAscii(b):
@@ -50,14 +50,16 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    main = re.compile('<main.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    match = re.compile('article id.+?a href="([^"]+)" title="([^"]+)".+?(?:data-src|poster)="([^"]+)"(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(main)
-    for videopage, name, img, duration in match:
-        if 'fa fa-clock-o' in duration:
-            duration = re.compile('fa fa-clock-o"></i> ([^<]+)<', re.DOTALL | re.IGNORECASE).findall(duration)[0]
-        else:
-            duration = ''
-        name = "[COLOR deeppink]" + duration + "[/COLOR] " + utils.cleantext(name)
+    article = re.compile('<article(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for item in article:
+        match = re.compile('href="([^"]+)" title="([^"]+)".+?(?:data-src|poster)="([^"]+)".+?fa fa-eye"></i> (.+?)<.+?fa fa-clock-o"></i>(.+?)<', re.DOTALL | re.IGNORECASE).findall(item)[0]
+        videopage = match[0]
+        name = utils.cleantext(match[1]).encode("ascii", errors="ignore")
+        img = match[2]
+        views = match[3]
+        duration = match[4]
+        if 'span' in duration: continue
+        name = "[COLOR deeppink]" + duration + "[/COLOR] [COLOR yellow][" + views + '][/COLOR] ' + utils.cleantext(name)
         uvideopage = unicode(videopage, encoding='utf-8')
         videopage = iriToUri(uvideopage)
         uimg = unicode(img, encoding='utf-8')
@@ -159,4 +161,6 @@ def Playvid(url, name, download=None):
                 videourl = videourl.replace('embed/','view_video.php?viewkey=')
                 pornhub.Playvid(videourl,name)
             else:
-                utils.kodilog(' ???: ' + videourl)
+                utils.kodilog(' ???: ' + videourl)    vp.play_from_link_to_resolve(embeded)
+    #vp.play_from_direct_link(selected)
+
