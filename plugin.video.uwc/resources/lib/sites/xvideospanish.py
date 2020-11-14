@@ -141,26 +141,34 @@ def Actors(url):
 
 @utils.url_dispatcher.register('132', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download = download)
-    vp.progress.update(25, "", "Loading video page", "")
-    html = utils.getHtml(url)   
-    videourl = re.compile('<iframe src="([^"]+)" ', re.DOTALL | re.IGNORECASE).findall(html)[0]
-    if '/player/' in videourl:
-        videourl = videourl.replace('/player/?data=','')
-        videourl = 'https://www.xn--xvideos-espaol-1nb.com/player/getVideo.php?data=' + videourl
-     	listjson = utils.getHtml(videourl,'')
-        listjson = listjson.replace('\/','/')          
-        videourl = re.compile('"videoUrl":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listjson)[0]
-        vp.play_from_direct_link(videourl)
-    else: 
-        if vp.resolveurl.HostedMediaFile(videourl):
-            vp.play_from_link_to_resolve(videourl)
-        else:
-            if 'pornhub' in videourl:
-                from resources.lib.sites import pornhub
-                videourl = videourl.replace('embed/','view_video.php?viewkey=')
-                pornhub.Playvid(videourl,name)
-            else:
-                utils.kodilog(' ???: ' + videourl)    vp.play_from_link_to_resolve(embeded)
+    vp = utils.VideoPlayer(name, download)
+    videopage = utils.getHtml(url, '')
+    embeded = re.compile('<meta itemprop="embedURL" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    embededpage = utils.getHtml(embeded, url)
+    if 'xvideos' in embeded:
+        sources = re.compile("html5player.set(Video.+?)\('(https.+?)'\);").findall(embededpage)
+        if sources:
+            choice = xbmcgui.Dialog().select('Select Playlink',[link[0] for link in sources], preselect=2)
+            if choice != -1:
+                selected = sources[choice][1]
+                listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage="DefaultVideo.png") 
+                listitem.setInfo('video', {'Title': name, 'Genre': 'XvideoSpanish'})
+                #xbmc.Player().play(selected, listitem)
+    elif 'xhamster' in embeded:
+        try:
+            match = re.compile('"sources":.*?"mp4":.*?{([^}]+}].+?}})', re.DOTALL | re.IGNORECASE).findall(embededpage)
+            #xbmcgui.Dialog().textviewer(url, str(match))
+            match0 = re.compile('"([^"]+)":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match[0])[0]
+            #xbmcgui.Dialog().textviewer(url, str(match0) + '\n' + str(len(match0)))
+            if len(match0)>2:
+                links = {}
+                for quality, video_link in match0:
+                    links[quality] = video_link
+                selected = utils.selector('Select quality', links, dont_ask_valid=True, sort_by=lambda x: int(x[:-1]), reverse=True)
+                if not selected: return
+            else: selected = match0[1]
+            selected = selected.replace('\\/','\\') + '|Referer=' + url.replace('https://www.xn--xvideos-espaol-1nb.com/', 'https://xhamster.com/videos/')
+        except: pass
+    vp.play_from_link_to_resolve(embeded)
     #vp.play_from_direct_link(selected)
 
