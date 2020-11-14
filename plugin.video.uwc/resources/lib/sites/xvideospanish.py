@@ -18,7 +18,7 @@
 
 import re
 import urlparse
-import xbmcplugin
+import xbmc, xbmcplugin, xbmcgui
 from resources.lib import utils
 
 def urlEncodeNonAscii(b):
@@ -33,13 +33,13 @@ def iriToUri(iri):
 
 @utils.url_dispatcher.register('130')
 def Main():
-#    utils.addDir('[COLOR grey]Tags[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/tags/',133,'','')
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.xvideospanish.net/videos-pornos-por-productora-gratis/page/1/',135,'','')
+    utils.addDir('[COLOR grey]Tags[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/tags/',133,'','')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/videos-pornos-por-productora-gratis/page/1/',135,'','')
     utils.addDir('[COLOR hotpink]Actors[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/actors/',136,'','')
     utils.addDir('[COLOR hotpink]Longest videos[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/?filter=longest',131)
     utils.addDir('[COLOR hotpink]Most viewed videos[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/?filter=most-viewed',131)
     utils.addDir('[COLOR hotpink]Popular videos[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/?filter=popular',131)
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','http://www.xvideospanish.net/?s=',134,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.xn--xvideos-espaol-1nb.com/?s=',134,'','')
     List('https://www.xn--xvideos-espaol-1nb.com/?filter=latest')
 
 
@@ -50,14 +50,16 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    main = re.compile('<main.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    match = re.compile('article id.+?a href="([^"]+)" title="([^"]+)".+?(?:data-src|poster)="([^"]+)"(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(main)
-    for videopage, name, img, duration in match:
-        if 'fa fa-clock-o' in duration:
-            duration = re.compile('fa fa-clock-o"></i> ([^<]+)<', re.DOTALL | re.IGNORECASE).findall(duration)[0]
-        else:
-            duration = ''
-        name = "[COLOR deeppink]" + duration + "[/COLOR] " + utils.cleantext(name)
+    article = re.compile('<article(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for item in article:
+        match = re.compile('href="([^"]+)" title="([^"]+)".+?(?:data-src|poster)="([^"]+)".+?fa fa-eye"></i> (.+?)<.+?fa fa-clock-o"></i>(.+?)<', re.DOTALL | re.IGNORECASE).findall(item)[0]
+        videopage = match[0]
+        name = utils.cleantext(match[1]).encode("ascii", errors="ignore")
+        img = match[2]
+        views = match[3]
+        duration = match[4]
+        if 'span' in duration: continue
+        name = "[COLOR deeppink]" + duration + "[/COLOR] [COLOR yellow][" + views + '][/COLOR] ' + utils.cleantext(name)
         uvideopage = unicode(videopage, encoding='utf-8')
         videopage = iriToUri(uvideopage)
         uimg = unicode(img, encoding='utf-8')
@@ -139,7 +141,6 @@ def Actors(url):
 
 @utils.url_dispatcher.register('132', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-<<<<<<< HEAD
     vp = utils.VideoPlayer(name, download)
     videopage = utils.getHtml(url, '')
     embeded = re.compile('<meta itemprop="embedURL" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
@@ -171,26 +172,3 @@ def Playvid(url, name, download=None):
     vp.play_from_link_to_resolve(embeded)
     #vp.play_from_direct_link(selected)
 
-=======
-    vp = utils.VideoPlayer(name, download = download)
-    vp.progress.update(25, "", "Loading video page", "")
-    html = utils.getHtml(url)   
-    videourl = re.compile('<iframe src="([^"]+)" ', re.DOTALL | re.IGNORECASE).findall(html)[0]
-    if '/player/' in videourl:
-        videourl = videourl.replace('/player/?data=','')
-        videourl = 'https://www.xn--xvideos-espaol-1nb.com/player/getVideo.php?data=' + videourl
-     	listjson = utils.getHtml(videourl,'')
-        listjson = listjson.replace('\/','/')          
-        videourl = re.compile('"videoUrl":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listjson)[0]
-        vp.play_from_direct_link(videourl)
-    else: 
-        if vp.resolveurl.HostedMediaFile(videourl):
-            vp.play_from_link_to_resolve(videourl)
-        else:
-            if 'pornhub' in videourl:
-                from resources.lib.sites import pornhub
-                videourl = videourl.replace('embed/','view_video.php?viewkey=')
-                pornhub.Playvid(videourl,name)
-            else:
-                utils.kodilog(' ???: ' + videourl)
->>>>>>> parent of 8180757... Update xvideospanish.py
