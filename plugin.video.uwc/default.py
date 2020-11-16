@@ -115,7 +115,6 @@ def INDEXM():
     utils.addDir('[COLOR hotpink]StreamXXX[/COLOR]','http://streamxxx.tv/category/movies/',175,os.path.join(imgDir, 'streamxxx.png'),'')
     utils.addDir('[COLOR hotpink]ParadiseHill[/COLOR]','http://www.paradisehill.tv/en/',250,os.path.join(imgDir, 'paradisehill.png'),'')
     utils.addDir('[COLOR hotpink]FreeOMovie[/COLOR]','http://www.freeomovie.com/',370,os.path.join(imgDir, 'freeomovie.png'),'')
-    utils.addDir('[COLOR hotpink]Eroticage[/COLOR]','http://www.eroticage.net/',430,os.path.join(imgDir, 'eroticage.png'),'')
     utils.addDir('[COLOR hotpink]SpeedPorn[/COLOR]','https://speedporn.net/',780,os.path.join(imgDir, 'speedporn11.png'),'')
     utils.addDir('[COLOR hotpink]MangoPorn[/COLOR]','https://mangoporn.net/',800,os.path.join(imgDir, 'mangoporn.png'),'')
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
