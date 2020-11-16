@@ -42,8 +42,7 @@ def List(url):
     for i, vid in enumerate(vids):
         if i == 0:
             continue
-        #match = re.compile('<span>([^<]+)<.+? data-src="(https[^"]+)" .+?<a href="([^"]+)">([^<]+)</a>.+?<span class="mbtim" title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
-        match = re.compile('Quality"><span>(.+?)<.+? href="([^"]+)".+?src="(http[^"]+)".+?href.+?>(.+?)<.+?title="Duration">([^"]+)<\/', re.DOTALL | re.IGNORECASE).findall(vid)
+        match = re.compile('<span>([^<]+)<.+? data-src="(https[^"]+)" .+?<a href="([^"]+)">([^<]+)</a>.+?<span class="mbtim" title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
         if match:
             hd, img, videopage, name, duration = match[0]
             name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
