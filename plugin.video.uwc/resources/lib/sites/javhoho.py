@@ -56,8 +56,8 @@ def List(url):
     except:
         utils.kodilog('site error')
         return None
-    match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?data-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if match:
+    if not '/search/' in url:
+        match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?data-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
         for videopage, img, name in match:
             name = utils.cleantext(name)
             utils.addDownLink(name, videopage, 312, img, '')
@@ -85,7 +85,6 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title
-        utils.kodilog(searchUrl)
         List(searchUrl)
 
 
@@ -140,7 +139,7 @@ def Playvid(url, name, download=None):
     choice = xbmcgui.Dialog().select('Select server', [item[0] for item in videoArray])
     videourl = videoArray[choice][1]
     if 'YouVideos.ru' in videoArray[choice][0]:
-        choice = xbmcgui.Dialog().select('Select resolution', [str(item[0]) for item in videoRU])
+        choice = xbmcgui.Dialog().select('Select resolution', sorted([str(item[0]) for item in videoRU]))
         videourl = videoRU[choice][1]
     
     xbmc.Player().play(videourl)

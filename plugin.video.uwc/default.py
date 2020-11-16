@@ -141,6 +141,9 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]PornOne[/COLOR]','https://pornone.com/newest/',500,os.path.join(imgDir, 'porn1.png'),'')
     utils.addDir('[COLOR hotpink]xHamster[/COLOR]','https://xhamster.com/',505,os.path.join(imgDir, 'xhamster.png'),'')
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
+    utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
+    utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
+
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('7')
@@ -153,6 +156,7 @@ def INDEXW():
     if sys.version_info >= (2, 7, 9):
         utils.addDir('[COLOR hotpink]streamate.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.streammate.com',515,os.path.join(imgDir, 'streamate.png'),'')
     utils.addDir('[COLOR hotpink]bongacams.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.bongacams.com',520,os.path.join(imgDir, 'bongacams.png'),'')
+    utils.addDir('[COLOR hotpink]RedTube Live[/COLOR] [COLOR white]- webcams[/COLOR]','https://www.redtube.com/live?track=6001',580,os.path.join(imgDir, 'RedTube.jpg'),'')
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('3')

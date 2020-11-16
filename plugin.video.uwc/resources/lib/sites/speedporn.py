@@ -31,7 +31,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Actors[/COLOR]', 'https://speedporn.net/actors/', 783, '', '')
     utils.addDir('[COLOR hotpink]Tags[/COLOR]', 'https://speedporn.net/tags/', 784, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://speedporn.net/?s=',785,'','')
-    List('https://speedporn.net/?filter=latest')
+    List('https://speedporn.net/')
 
 
 @utils.url_dispatcher.register('781', ['url'])
