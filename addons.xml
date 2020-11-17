@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.30"
+       version="1.2.31"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,12 +26,14 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.30[/B]
-Fixed: Camsoda
-Fixed: JAVhoho
-Improved: Beeg
-Improved: Eporner
-Improved: Justporn
+        <news>[B]Version 1.2.31[/B]
+Improved: JAVhoho
+Fixed: MangoPorn
+Added: redTube
+Added: RedTube Live
+Added: desixnxx
+Added: BitPorno
+Removed: Eroticage
 </news>
     </extension>
 </addon>

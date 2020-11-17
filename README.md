@@ -1,16 +1,20 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.30
+Ultimate Whitecream addon update	Version 1.2.31
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: Camsoda
+Improved: JAVhoho
 
-Fixed: JAVhoho
+Fixed: MangoPorn
 
-Improved: Beeg
+Added: redTube
 
-Improved: Eporner
+Added: RedTube Live
 
-Improved: Justporn
+Added: desixnxx
+
+Added: BitPorno
+
+Removed: Eroticage
 
 
 ---
