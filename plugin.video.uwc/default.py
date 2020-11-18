@@ -100,7 +100,9 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]Reallifecam[/COLOR]','https://www.reallifecam.to/',230,'https://reallifecam.to/images/logo/logo.png',0)
     utils.addDir('[COLOR hotpink]Voyeur-house[/COLOR]','https://voyeur-house.to',230,'https://voyeur-house.to/images/logo/logo.png',1)
     utils.addDir('[COLOR hotpink]JAVhoho[/COLOR]','https://javhoho.com/',310,'https://javhoho.com/wp-content/uploads/2019/11/JAVhoho.com-logo.png',1)
+    utils.addDir('[COLOR hotpink]FreeVideo[/COLOR]','https://freevideo.cz',960,os.path.join(imgDir, 'freevideo.png'),'')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
+    
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
