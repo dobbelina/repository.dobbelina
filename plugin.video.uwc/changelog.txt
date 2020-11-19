@@ -1,3 +1,8 @@
+Version 1.2.33
+Added PornHD
+Updated: RedTube
+Fixed: Eporner
+
 Version 1.2.32
 Added: FreeVideo.cz
 
