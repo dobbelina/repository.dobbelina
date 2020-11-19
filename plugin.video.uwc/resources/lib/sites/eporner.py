@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 '''
     Ultimate Whitecream
     Copyright (C) 2016 Whitecream
@@ -17,8 +18,8 @@
 '''
 
 import re
-
-import xbmcplugin
+import json
+import xbmcplugin, xbmcgui, xbmc
 from resources.lib import utils
 
 siteurl = 'https://www.eporner.com'
@@ -42,9 +43,10 @@ def List(url):
     for i, vid in enumerate(vids):
         if i == 0:
             continue
-        match = re.compile('<span>([^<]+)<.+? data-src="(https[^"]+)" .+?<a href="([^"]+)">([^<]+)</a>.+?<span class="mbtim" title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
+        #match = re.compile('<span>([^<]+)<.+? data-src="(https[^"]+)" .+?<a href="([^"]+)">([^<]+)</a>.+?<span class="mbtim" title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
+        match = re.compile('Quality"><span>(.+?)<.+? href="([^"]+)".+?src="(http[^"]+)".+?href.+?>(.+?)<.+?title="Duration">([^"]+)<\/', re.DOTALL | re.IGNORECASE).findall(vid)
         if match:
-            hd, img, videopage, name, duration = match[0]
+            hd, videopage, img, name, duration = match[0]
             name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
             utils.addDownLink(name, siteurl + videopage, 542, img, '')
     try:
@@ -59,8 +61,29 @@ def List(url):
 
 @utils.url_dispatcher.register('542', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, '"contentUrl": "([^"]+)"')
-    vp.play_from_site_link(url)
+    #url = https://www.eporner.com/xhr/video/nk5i9WkOOwn?hash=ko0zczywdgxi1hfmerq1bphxaf&domain=www.eporner.com&fallback=false&embed=true&supportedFormats=dash,mp4
+    try:
+        listhtml = utils.getHtml(url, '')
+    except:
+        return None
+    embed = re.compile("vid = '(.+?)'.+?hash = '(.+?)'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    vid = embed[0]
+    s = embed[1]
+    hash = ''.join((encode_base_n(int(s[lb:lb + 8], 16), 36) for lb in range(0, 32, 8)))
+    jsonUrl = 'https://www.eporner.com/xhr/video/' + vid + '?hash=' + hash + '&domain=www.eporner.com&fallback=false&embed=true&supportedFormats=dash,mp4'
+    listJson = utils.getHtml(jsonUrl, '')
+    videoJson = json.loads(listJson)
+    videoArray = []
+    for (k, v) in videoJson['sources']['mp4'].items():
+        videoArray.append((k, v['src']))
+    video = sorted(videoArray, key = lambda x: int(x[0].split('p')[0]), reverse=True)
+    choice = xbmcgui.Dialog().select('Select resolution', [item[0] for item in video])
+    if choice==-1: return
+    videourl = video[choice][1]
+    iconimage = xbmc.getInfoImage("ListItem.Thumb")
+    listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+    listitem.setInfo('video', {'Title': name, 'Genre': 'Eporner'})
+    xbmc.Player().play(videourl, listitem)
 
 @utils.url_dispatcher.register('543', ['url'])
 def Cat(url):
@@ -133,3 +156,21 @@ def Search(url, keyword=None):
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title 
         List(searchUrl)
+
+
+def encode_base_n(num, n, table=None):
+    FULL_TABLE = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    if not table:
+        table = FULL_TABLE[:n]
+
+    if n > len(table):
+        raise ValueError('base %d exceeds table length %d' % (n, len(table)))
+
+    if num == 0:
+        return table[0]
+
+    ret = ''
+    while num:
+        ret = table[num % n] + ret
+        num = num // n
+    return ret

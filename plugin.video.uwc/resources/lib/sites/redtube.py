@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import re
+import os
 import urllib, requests
 
 import xbmc
@@ -11,10 +12,13 @@ from resources.lib import websocket
 import json
 
 progress = utils.progress
+imgDir = utils.imgDir
 
 
 @utils.url_dispatcher.register('590')
 def Main():
+    utils.addDir('[COLOR yellow]RedTube Live[/COLOR]','https://www.redtube.com/live?track=6001',580,os.path.join(imgDir, 'RedTube.jpg'),'')
+
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest&search=', 594, '', '')
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://api.redtube.com/?data=redtube.Categories.getCategoriesList&output=json', 593, '', '')
     #utils.addDir('[COLOR hotpink]Tags[/COLOR]', 'https://api.redtube.com/?data=redtube.Tags.getTagList&output=json', 595, '', '')

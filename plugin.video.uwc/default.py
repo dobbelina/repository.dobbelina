@@ -145,6 +145,8 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
     utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
     utils.addDir('[COLOR hotpink]desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
+    utils.addDir('[COLOR hotpink]PornHD[/COLOR]','https://www.pornhd.com/',870,os.path.join(imgDir, 'PornHD.jpg'),'')
+
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('7')
