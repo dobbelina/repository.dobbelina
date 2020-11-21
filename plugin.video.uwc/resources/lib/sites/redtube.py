@@ -245,12 +245,10 @@ def PlayCam(url, name, check=False, download=None):
             utils.notify(name, 'I\'m currently performing live...')
             return
 
-    #movieJson = sorted([item for item in json.loads(media) if ('hls' in item['format'] and item['defaultQuality']==False)], key = lambda x: int(x['quality']), reverse=True)
-    #choice = xbmcgui.Dialog().select('Select resolution', [str(item['quality']) for item in movieJson])
-
-    choice = xbmcgui.Dialog().select('Select resolution', sorted([str(item['videoWidth']) + ' x ' + str(item['videoHeight']) for item in encodings], key = lambda x: int(x[:4]), reverse=True))
+    sort = sorted(encodings, key = lambda x: int(x['videoWidth']), reverse = True)
+    choice = xbmcgui.Dialog().select('Select resolution', [str(item['videoWidth']) for item in sort])
     if choice == -1: return
-    videourl = encodings[choice]['location']
+    videourl = sort[choice]['location']
 
     CAMGIRLPLOT = CAMGIRLPLOT + '\n[B]Name:[/B] ' + attribJson['Name']
     CAMGIRLPLOT = CAMGIRLPLOT + '\n[B]Country:[/B] ' + attribJson['Country']
