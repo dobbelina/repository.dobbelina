@@ -12,7 +12,7 @@ Fixed: Naked
 
 
 ---
-All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
+All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12 & camilt
 
 
 and Whitecream & holisticdioxide who are the original author/s of the addon.
