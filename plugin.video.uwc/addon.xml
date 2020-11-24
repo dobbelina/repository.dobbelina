@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.33"
+       version="1.2.34"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,11 +25,10 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.33[/B]
-Added PornHD
-Updated: RedTube
-Fixed: Eporner
-Fixed: Naked
+        <news>[B]Version 1.2.34[/B]
+Updated: redTube
+Added: Pandamovies
+Updated: JAVhoho
 </news>
     </extension>
 </addon>
