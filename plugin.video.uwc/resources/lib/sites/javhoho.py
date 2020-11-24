@@ -56,16 +56,10 @@ def List(url):
     except:
         utils.kodilog('site error')
         return None
-    if not '/search/' in url:
-        match = re.compile('class="item-thumbnail".+?href="([^"]+)">.+?data-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        for videopage, img, name in match:
-            name = utils.cleantext(name)
-            utils.addDownLink(name, videopage, 312, img, '')
-    else:   # search
-        match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?title="([^"]+)".+?data-src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)       
-        for videopage, name, img in match:
-            name = utils.cleantext(name)
-            utils.addDownLink(name, videopage, 312, img, '')
+    match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)       
+    for videopage, img, name in match:
+        name = utils.cleantext(name)
+        utils.addDownLink(name, videopage, 312, img, '')
     try:
         next_page = re.compile('href="([^"]+)">&raquo;<').findall(listhtml)[0]
         last_page = re.compile('class="last" href="([^"]+)"').findall(listhtml)
@@ -139,10 +133,14 @@ def Playvid(url, name, download=None):
     choice = xbmcgui.Dialog().select('Select server', [item[0] for item in videoArray])
     videourl = videoArray[choice][1]
     if 'YouVideos.ru' in videoArray[choice][0]:
-        choice = xbmcgui.Dialog().select('Select resolution', sorted([str(item[0]) for item in videoRU]))
-        videourl = videoRU[choice][1]
+        videoRUs = sorted(videoRU, key = lambda x: int(x[0][:-1]), reverse = True)
+        choice = xbmcgui.Dialog().select('Select resolution', [str(item[0]) for item in videoRUs])
+        videourl = videoRUs[choice][1]
     
-    xbmc.Player().play(videourl)
+    iconimage = xbmc.getInfoImage("ListItem.Thumb")
+    listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
+    listitem.setInfo('video', {'Title': name, 'Genre': 'JAVhoho'})
+    xbmc.Player().play(videourl, listitem)
     return
 
 
