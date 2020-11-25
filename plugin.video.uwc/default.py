@@ -101,6 +101,8 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]Voyeur-house[/COLOR]','https://voyeur-house.to',230,'https://voyeur-house.to/images/logo/logo.png',1)
     utils.addDir('[COLOR hotpink]JAVhoho[/COLOR]','https://javhoho.com/',310,'https://javhoho.com/wp-content/uploads/2019/11/JAVhoho.com-logo.png',1)
     utils.addDir('[COLOR hotpink]FreeVideo[/COLOR]','https://freevideo.cz',960,os.path.join(imgDir, 'freevideo.png'),'')
+    utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
+    utils.addDir('[COLOR hotpink]PornHD[/COLOR]','https://www.pornhd.com/',870,os.path.join(imgDir, 'PornHD.jpg'),'')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
     
 
@@ -144,9 +146,7 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]xHamster[/COLOR]','https://xhamster.com/',505,os.path.join(imgDir, 'xhamster.png'),'')
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
     utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
-    utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
     utils.addDir('[COLOR hotpink]desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
-    utils.addDir('[COLOR hotpink]PornHD[/COLOR]','https://www.pornhd.com/',870,os.path.join(imgDir, 'PornHD.jpg'),'')
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
