@@ -53,6 +53,8 @@ import xbmcvfs
 from functools import wraps
 from kvs import decryptHash
 
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 
 from url_dispatcher import URL_Dispatcher
 
@@ -650,6 +652,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
 
 
 def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True):
+    if addon.getSetting(name.replace('[COLOR hotpink]', '').replace('[/COLOR]', '').replace(' [COLOR white]', '').strip()): return
     u = (sys.argv[0] +
          "?url=" + urllib.quote_plus(url) +
          "&mode=" + str(mode) +
@@ -657,6 +660,10 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
          "&channel=" + str(channel) +
          "&section=" + str(section) +
          "&keyword=" + urllib.quote_plus(keyword) +
+         "&name=" + urllib.quote_plus(name))
+    disSite = (sys.argv[0] +
+         "?url=" + urllib.quote_plus('%s') % ('https://google.com' if url=='' else url) +
+         "&mode=" + str('999') +
          "&name=" + urllib.quote_plus(name))
     ok = True
     if not iconimage:
@@ -669,6 +676,9 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         liz.setArt({'poster': iconimage})
     liz.setArt({'fanart': fanart})
     liz.setInfo(type="Video", infoLabels={"Title": name})
+    contextMenuItems = []
+    contextMenuItems.append(('[COLOR hotpink]Disable Site/category[/COLOR]', 'xbmc.RunPlugin('+disSite+')'))
+    liz.addContextMenuItems(contextMenuItems, replaceItems=False)
 
     if len(keyword) >= 1:
         keyw = (sys.argv[0] +
@@ -1179,3 +1189,61 @@ def PLAYVIDEO(url, name, download=None, regex='''(?:src|SRC|href|HREF)=\s*["']([
     Exists for compatiblity with old site plug-ins."""
     vp = VideoPlayer(name, download, regex)
     vp.play_from_site_link(url, url)
+
+@url_dispatcher.register('998', ["url", "name"])
+def enSite(url, name):
+    settingsPath = xbmc.translatePath(os.path.join(resDir, 'settings.xml'))
+    tree = ET.parse(settingsPath)
+    root = tree.getroot()
+    categ = root.find("./category/[@id='enDiss']")
+    site = root.find("./category/setting/[@id='%s']"%(name.replace('[COLOR hotpink]', '').replace('[/COLOR]', '').replace(' [COLOR white]', '').strip()))
+    categ.remove(site)
+    mydata = ET.tostring(root)
+    reparsed = minidom.parseString(mydata)
+    xml = reparsed.toprettyxml(indent="    ", newl='', encoding="utf-8")
+
+    with open(settingsPath, 'w') as output:
+        output.write(xml)
+
+    # Delete from user_data
+    userSettings = xbmc.translatePath(os.path.join(addon.getAddonInfo('profile'), 'settings.xml'))
+    tree = ET.parse(userSettings)
+    root = tree.getroot()
+    site = root.find("./setting/[@id='%s']"%(name.replace('[COLOR hotpink]', '').replace('[/COLOR]', '').replace(' [COLOR white]', '').strip()))
+    root.remove(site)
+    mydata = ET.tostring(root)
+    reparsed = minidom.parseString(mydata)
+    xml = reparsed.toprettyxml(indent="    ", newl='', encoding="utf-8")
+
+    with open(userSettings, 'w') as output:
+        output.write(xml)
+
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register('999', ["url", "name"])
+def disSite(url, name):
+    settingsPath = xbmc.translatePath(os.path.join(resDir, 'settings.xml'))
+    tree = ET.parse(settingsPath)
+    root = tree.getroot()
+    categ = root.find("./category/[@id='enDiss']")
+    if categ is None:
+        categ = ET.SubElement(root, 'category')
+        categ.set('id', 'enDiss')
+        categ.set('label', 'ReEnable Sites/Categories')
+
+    site = ET.SubElement(categ, 'setting')
+    site.set('default', name)
+    site.set('id', name.replace('[COLOR hotpink]', '').replace('[/COLOR]', '').replace(' [COLOR white]', '').strip())
+    site.set('type', 'action')
+    site.set('option', 'close' )
+    site.set('action','RunPlugin(%s?url=%s&mode=998&name=%s)' %(sys.argv[0], urllib.quote_plus(name), urllib.quote_plus(name)))
+
+    mydata = ET.tostring(root)
+    reparsed = minidom.parseString(mydata)
+    xml = reparsed.toprettyxml(indent="    ", newl='', encoding="utf-8")
+
+    with open(settingsPath, 'w') as output:
+        output.write(xml)
+
+    xbmc.executebuiltin('Container.Refresh')
