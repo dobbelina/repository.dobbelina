@@ -1,3 +1,9 @@
+Version 1.2.35
+Added: NetFlixPorno
+New option for Enable/Disable site/category.
+Disable from contextual menu, 
+Reenable from Add-on settings
+
 Version 1.2.34
 Updated: redTube
 Added: Pandamovies

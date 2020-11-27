@@ -1,12 +1,14 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.34
+Ultimate Whitecream addon update	Version 1.2.35
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Updated: redTube
+Added: NetFlixPorno
 
-Added: Pandamovies
+New option for Enable/Disable site/category.
 
-Updated: JAVhoho
+Disable from contextual menu, 
+
+Reenable from Add-on settings
 
 
 ---
