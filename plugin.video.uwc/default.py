@@ -195,9 +195,10 @@ def smrSettings():
 
 
 def change():
-    if addon.getSetting('changelog_seen_version') == utils.__version__ or not os.path.isfile(utils.changelog):
+    version = addon.getAddonInfo('version')
+    if addon.getSetting('changelog_seen_version') == version or not os.path.isfile(utils.changelog):
         return
-    addon.setSetting('changelog_seen_version', utils.__version__)
+    addon.setSetting('changelog_seen_version', version)
     heading = '[B][COLOR hotpink]Whitecream[/COLOR] [COLOR white]Changelog[/COLOR][/B]'
     with open(utils.changelog) as f:
         cl_lines = f.readlines()
