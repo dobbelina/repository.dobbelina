@@ -71,7 +71,7 @@ headers = {'User-Agent': USER_AGENT,
 openloadhdr = headers
 
 addon_handle = int(sys.argv[1])
-addon = xbmcaddon.Addon(id=__scriptid__)
+addon = xbmcaddon.Addon()
 
 progress = xbmcgui.DialogProgress()
 dialog = xbmcgui.Dialog()
@@ -597,8 +597,11 @@ def cleanhtml(raw_html):
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
 
-def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False):
-    contextMenuItems = []
+def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, context=None):
+    if context:
+        contextMenuItems = context
+    else:
+        contextMenuItems = []
     favtext = "Remove from" if fav == 'del' else "Add to" # fav == 'add' or 'del'
     u = (sys.argv[0] +
          "?url=" + urllib.quote_plus(url) +
@@ -651,7 +654,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     return ok
 
 
-def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True):
+def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True, desc=None):
     if addon.getSetting(name.replace('[COLOR hotpink]', '').replace('[/COLOR]', '').replace(' [COLOR white]', '').strip()): return
     u = (sys.argv[0] +
          "?url=" + urllib.quote_plus(url) +
@@ -676,6 +679,8 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         liz.setArt({'poster': iconimage})
     liz.setArt({'fanart': fanart})
     liz.setInfo(type="Video", infoLabels={"Title": name})
+    if desc:
+        liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
     contextMenuItems = []
     contextMenuItems.append(('[COLOR hotpink]Disable Site/category[/COLOR]', 'xbmc.RunPlugin('+disSite+')'))
     liz.addContextMenuItems(contextMenuItems, replaceItems=False)

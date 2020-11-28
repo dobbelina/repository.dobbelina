@@ -24,6 +24,8 @@ import xbmcplugin
 import xbmcgui
 import requests
 from resources.lib import utils
+import sys
+import urllib
 
 
 @utils.url_dispatcher.register('50')
@@ -34,6 +36,8 @@ def PTMain():
     utils.addDir('[COLOR hotpink]New[/COLOR]', 'https://www.porntrex.com/tags/new/', 51, '', '')
     utils.addDir('[COLOR hotpink]Longest[/COLOR]', 'https://www.porntrex.com/longest/', 51, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://www.porntrex.com/search/', 54, '', '')
+    if utils.addon.getSetting('pt_user'):
+        utils.addDir('[COLOR deeppink]Favorites[/COLOR]', 'https://www.porntrex.com/my/favourites/videos/', 51, '', '')
     PTList('https://www.porntrex.com/latest-updates/1/', 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -42,6 +46,8 @@ def PTMain():
 def JHMain():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://www.javbangers.com/categories/', 53, '', '')
     utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://www.javbangers.com/search/', 54, '', '')
+    if utils.addon.getSetting('jw_user'):
+        utils.addDir('[COLOR deeppink]Favorites[/COLOR]', 'https://www.javbangers.com/my/favourites/videos/', 57, '', '')
     JHList('https://www.javbangers.com/latest-updates/1/', 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -71,7 +77,7 @@ def PTList(url, page=1, onelist=None):
     for videopage, img, hd, duration, name in match:
         name = utils.cleantext(name)
         private = '[COLOR blue] private[/COLOR]' if 'Private' in hd else ''
-        if ptacct == "false" and private !='' :
+        if ptacct == "false" and private != '' :
             continue
 #       Changed labelling adding Video quality
         if hd.find('4k') > 0:
@@ -105,7 +111,20 @@ def PTList(url, page=1, onelist=None):
         newimg = str(imgint) + '.jpg'
 
         img = img.replace('1.jpg', newimg)
-        utils.addDownLink(name, videopage, 52, img, '')
+        
+        context = None
+        if utils.addon.getSetting('pt_user'):
+            ctxadd = (sys.argv[0] +
+                "?mode=" + str('56') +
+                "&url=" + urllib.quote_plus(videopage) +
+                "&fav=add")
+            ctxdel = (sys.argv[0] +
+                "?mode=" + str('56') +
+                "&url=" + urllib.quote_plus(videopage) +
+                "&fav=del")
+            context = [('[COLOR deeppink]Add to PORNTREX favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'), 
+                       ('[COLOR deeppink]Delete from PORNTREX favorites[/COLOR]', 'xbmc.RunPlugin('+ctxdel+')')]
+        utils.addDownLink(name, videopage, 52, img, '', context=context)
     if not onelist:
         if re.search('<li class="next">', listhtml, re.DOTALL | re.IGNORECASE):
             npage = page + 1
@@ -128,8 +147,9 @@ def PTList(url, page=1, onelist=None):
             utils.addDir('Next Page (' + str(npage) + ')', url, 51, '', npage)
         xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('451', ['url'], ['page'])
+@utils.url_dispatcher.register('57', ['url'], ['page'])
 def JHList(url, page=1, onelist=None):
+    ptacct = utils.addon.getSetting("porntrexacct")
     if onelist:
         url = url.replace('/1/', '/' + str(page) + '/')
     try:
@@ -151,6 +171,8 @@ def JHList(url, page=1, onelist=None):
     for videopage, name, img, hd, duration in match:
         name = utils.cleantext(name)
         private = '[COLOR blue] private[/COLOR]' if 'Private' in hd else ''
+        if ptacct == "false" and private != '' :
+            continue
         if hd.find('HD') > 0:
             hd = " [COLOR orange]HD[/COLOR] "
         elif hd.find('4k') > 0:
@@ -169,7 +191,21 @@ def JHList(url, page=1, onelist=None):
         imgint = randint(1, 10)
         newimg = str(imgint) + '.jpg'
         img = img.replace('1.jpg', newimg)
-        utils.addDownLink(name, videopage, 52, img, '')
+
+        context = None
+        if utils.addon.getSetting('jw_user'):
+            ctxadd = (sys.argv[0] +
+                "?mode=" + str('56') +
+                "&url=" + urllib.quote_plus(videopage) +
+                "&fav=add")
+            ctxdel = (sys.argv[0] +
+                "?mode=" + str('56') +
+                "&url=" + urllib.quote_plus(videopage) +
+                "&fav=del")
+            context = [('[COLOR deeppink]Add to JAVBANGERS favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'), 
+                       ('[COLOR deeppink]Delete from JAVBANGERS favorites[/COLOR]', 'xbmc.RunPlugin('+ctxdel+')')]
+        utils.addDownLink(name, videopage, 52, img, '', context=context)
+
     if not onelist:
         if re.search('<li class="next">', listhtml, re.DOTALL | re.IGNORECASE):
             npage = page + 1
@@ -185,8 +221,32 @@ def JHList(url, page=1, onelist=None):
             else:
                 url = url.replace('/' + str(page) + '/', '/' + str(npage) + '/')
             print "Next URL: " + url
-            utils.addDir('Next Page (' + str(npage) + ')', url, 451, '', npage)
+            utils.addDir('Next Page (' + str(npage) + ')', url, 57, '', npage)
         xbmcplugin.endOfDirectory(utils.addon_handle)
+
+@utils.url_dispatcher.register('56', ['url', 'fav'])
+def contextMenu(url, fav):
+    id = url.split("/")[4]
+    fav_addurl = url + '?mode=async&format=json&action=add_to_favourites&video_id=' + id + '&album_id=&fav_type=0&playlist_id=0'
+    fav_delurl = url + '?mode=async&format=json&action=delete_from_favourites&video_id=' + id + '&album_id=&fav_type=0&playlist_id=0'
+    if fav == 'add':
+        login(url)
+        resp = utils.getHtml(fav_addurl, url)
+        if ('success') in resp:
+            utils.notify('Added to Favorites')
+        else:
+            msg = re.findall('message":"([^"]+)"', resp)[0]
+            utils.notify(msg)
+        return
+    if fav == 'del':
+        login(url)
+        resp = utils.getHtml(fav_delurl, url)
+        if ('success') in resp:
+            utils.notify('Deleted from Favorites')
+        else:
+            msg = re.findall('message":"([^"]+)"', resp)[0]
+            utils.notify(msg)
+        return
 
 
 @utils.url_dispatcher.register('52', ['url', 'name'], ['download'])
@@ -247,7 +307,7 @@ def PTCat(url):
         catpage = catpage + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
 #   Changed 19.01.25
         if url.find('javbangers') > 0:
-            utils.addDir(name, catpage, 451, img, 1)
+            utils.addDir(name, catpage, 57, img, 1)
         else:
             utils.addDir(name, catpage, 51, img, 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
