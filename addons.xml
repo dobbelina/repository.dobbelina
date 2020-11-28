@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.26"
+       version="1.2.35"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,10 +26,11 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.26[/B]
-Fixed: Paradisehill
-Fixed: JAVhoho
-Fixed: VipPorns
+        <news>[B]Version 1.2.35[/B]
+Added: NetFlixPorno
+New option for Enable/Disable site/category.
+Disable from contextual menu, 
+Reenable from Add-on settings
 </news>
     </extension>
 </addon>

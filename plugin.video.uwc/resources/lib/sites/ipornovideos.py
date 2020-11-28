@@ -22,7 +22,7 @@ import re
 import xbmcplugin
 from resources.lib import utils
 
-siteurl = 'http://ipornovideos.com/'
+siteurl = 'https://ipornovideos.com/'
 
 @utils.url_dispatcher.register('260')
 def Main():

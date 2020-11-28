@@ -37,6 +37,15 @@
         <setting id="jw_user" type="text" label="User:" default=""/>
         <setting id="jw_pass" type="text" label="Password:" option="hidden" default=""/>
     </category>
+    <category label="RedTube Live Search">
+        <setting type="lsep" label="Model Picture" />
+        <setting id="bio_pic" type="bool" label="Profile" default="true" />
+        <setting type="lsep" label="Search" />
+        <setting id="rName" type="bool" label="Name" default="false" />
+        <setting id="rAge" type="bool" label="Age" default="false" />
+        <setting id="rCountry" type="bool" label="Country" default="false" />
+        <setting id="rGender" type="bool" label="Gender" default="false" />
+    </category>
     <category label="Favorites and keywords">
         <setting id="favsort" label="30214" type="bool" default="false" />
         <setting id="searchsort" label="30215" type="bool" default="false" />

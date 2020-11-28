@@ -28,8 +28,16 @@ from resources.lib import utils
 @utils.url_dispatcher.register('480')
 def Main():
 	utils.addDir('[COLOR red]Refresh naked.com images[/COLOR]','',483,'',Folder=False)
-	List('http://new.naked.com/')
+	List('https://www.naked.com/live/girls/')
 	xbmcplugin.endOfDirectory(utils.addon_handle)
+
+def cleanname(s):
+        if not s:
+            return ''
+        badchars = '\\*?\"<>|\''
+        for c in badchars:
+            s = s.replace(c, '')
+        return s
 
 
 @utils.url_dispatcher.register('481', ['url'])
@@ -38,16 +46,17 @@ def List(url):
 		clean_database(False)
 	try:
 		data = utils.getHtml(url, '')
-	except:
-		
+	except:		
 		return None
-	
-	model_list = re.compile('each-model-img[^?]+title="([^"]+)"[^?]+href="([^"]+)"[^?]+src="([^"]+)"[^?]+each-model-info', re.DOTALL | re.IGNORECASE).findall(data)
-	for model, url, img in model_list:
-	#	img='https:'+img
+
+	model_list = re.compile('live clearfix model-wrapper.*?data-model-id=(.*?)data-model-name=(.*?)data-model-seo-name=(.*?)data.*?data-video-host=(.*?)data.*?data-live-image-src=(.*?)data.*?End Live', re.DOTALL | re.IGNORECASE).findall(data)
+	for model_id, model, seo_name, videohost, img in model_list:
 		img = 'https:'+img if img.startswith('//') else img
-		name = model.replace("'s webcam","").strip()
-		videourl = "http://new.naked.com" + url
+                img = cleanname(img)
+                name = cleanname(model)
+		videourl = "http://www.naked.com/?model=" + cleanname(seo_name)
+#	        videourl = 'https://manifest.vscdns.com/chunklist.m3u8?model_id=' + cleanname(model_id) + '&host=' + cleanname(videohost) + '&provider=level3&secure=true'
+                print "VIDEOURL: " + videourl
 		utils.addDownLink(name, videourl, 482, img, '', noDownload=True)
 	xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -72,10 +81,15 @@ def clean_database(showdialog=True):
 @utils.url_dispatcher.register('482', ['url', 'name'])
 def Playvid(url, name):
 	listhtml = utils.getHtml(url, '')
-	namex=name.replace(' ','-').lower()
+	namex=name.replace(' ','-').lower()      
 	try:
-	
-		videourl ='https://static-transcode-k8s-g.camster.com/t-/hls/hls_000s_%s_mid/index.m3u8'%namex
+                seo_nameurl=url.split('=')[1]
+	        model_list = re.compile('live clearfix model-wrapper.*?data-model-id=(.*?)data-model-name=(.*?)data-model-seo-name=(.*?)data.*?data-video-host=(.*?)data.*?data-live-image-src=(.*?)data.*?End Live', re.DOTALL | re.IGNORECASE).findall(listhtml)
+                print (model_list)
+	        for model_id, model, seo_name, videohost, img in model_list:
+			if seo_nameurl in seo_name:
+	        		videourl = 'https://manifest.vscdns.com/chunklist.m3u8?model_id=' + cleanname(model_id) + '&host=' + cleanname(videohost) + '&provider=level3&secure=true'
+
 		iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 		listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
@@ -84,6 +98,8 @@ def Playvid(url, name):
 			pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 			pl.clear()
 			pl.add(videourl, listitem)
+                        listitem.setProperty('inputstreamaddon','inputstream.adaptive')
+                        listitem.setProperty('inputstream.adaptive.manifest_type', 'hls')
 			xbmc.Player().play(pl)
 		else:
 			iconimage = xbmc.getInfoImage("ListItem.Thumb")

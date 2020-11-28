@@ -30,7 +30,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Years[/COLOR]', 'https://mangoporn.net/', 804, '', '')
     utils.addDir('[COLOR hotpink]Studios[/COLOR]', 'https://mangoporn.net/', 805, '', '')
     utils.addDir('[COLOR hotpink]Pornstars[/COLOR]', 'https://mangoporn.net/', 806, '', '')    
-    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://mangoporn.net/?s=', 807, '', '') 
+    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://mangoporn.net/search/', 807, '', '') 
     List('https://mangoporn.net/genres/featured-movies/')
 
 
@@ -45,12 +45,22 @@ def List(url):
     for img, name, videopage in match:
         name = utils.cleantext(name) #+ "[COLOR hotpink] (" + str(year) + ")[/COLOR]"
         utils.addDownLink(name, videopage, 802, img, '')
-    try:
-        next_page = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        page_nr = re.findall('\d+', next_page)[-1]
-        utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 801, '')
-    except:
-        pass
+    if '/search/' in url:
+        try:
+            allPages = re.compile('class="pagination"><span>Page.*?of(.+?)</span>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+            next_page = re.compile('<span class="current".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+            if '/page/' in next_page:
+                page_nr = next_page.split('/')[-2]		#re.findall('\d+', next_page)[-1]
+                utils.addDir('Next Page (' + str(page_nr) + '/' + allPages + ')', next_page, 801, '')
+        except:
+            pass
+    else:
+        try:
+            next_page = re.compile('link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+            page_nr = re.findall('\d+', next_page)[-1]
+            utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 801, '')
+        except:
+            pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

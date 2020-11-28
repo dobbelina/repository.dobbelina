@@ -1,16 +1,18 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.26
+Ultimate Whitecream addon update	Version 1.2.35
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: Paradisehill
+Added: NetFlixPorno
 
-Fixed: JAVhoho
+New option for Enable/Disable site/category.
 
-Fixed: VipPorns
+Disable from contextual menu, 
+
+Reenable from Add-on settings
 
 
 ---
-All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12
+All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12 & camilt
 
 
 and Whitecream & holisticdioxide who are the original author/s of the addon.

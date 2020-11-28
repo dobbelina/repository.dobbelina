@@ -1,5 +1,53 @@
+Version 1.2.35
+Added: NetFlixPorno
+New option for Enable/Disable site/category.
+Disable from contextual menu, 
+Reenable from Add-on settings
+
+Version 1.2.34
+Updated: redTube
+Added: Pandamovies
+Updated: JAVhoho
+
+Version 1.2.33
+Added PornHD
+Updated: RedTube
+Fixed: Eporner
+Fixed: Naked
+
+Version 1.2.32
+Added: FreeVideo.cz
+
+Version 1.2.31
+Improved: JAVhoho
+Fixed: MangoPorn
+Added: redTube
+Added: RedTube Live
+Added: desixnxx
+Added: BitPorno
+Removed: Eroticage
+
+Version 1.2.30
+Fixed: Camsoda
+Fixed: JAVhoho
+Improved: Beeg
+Improved: Eporner
+Improved: Justporn
+
+Version 1.2.29
+Fixed: Eporner
+Fixed: IPornoVideos
+Fixed: Spankbang
+
+Version 1.2.28
+Fixed: IPornoVideos
+
 Version 1.2.27
 Fixed: PornHub
+Fixed: Hotpornfile
+Fixed: IPornoVideos
+Fixed: PornGo
+Fixed: xHamster
 
 Version 1.2.26
 Fixed: Paradisehill

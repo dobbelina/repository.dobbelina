@@ -100,7 +100,11 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]Reallifecam[/COLOR]','https://www.reallifecam.to/',230,'https://reallifecam.to/images/logo/logo.png',0)
     utils.addDir('[COLOR hotpink]Voyeur-house[/COLOR]','https://voyeur-house.to',230,'https://voyeur-house.to/images/logo/logo.png',1)
     utils.addDir('[COLOR hotpink]JAVhoho[/COLOR]','https://javhoho.com/',310,'https://javhoho.com/wp-content/uploads/2019/11/JAVhoho.com-logo.png',1)
+    utils.addDir('[COLOR hotpink]FreeVideo[/COLOR]','https://freevideo.cz',960,os.path.join(imgDir, 'freevideo.png'),'')
+    utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
+    utils.addDir('[COLOR hotpink]PornHD[/COLOR]','https://www.pornhd.com/',870,os.path.join(imgDir, 'PornHD.jpg'),'')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
+    
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
@@ -109,14 +113,16 @@ def INDEXM():
 #    if sys.version_info >= (2, 7, 9):
 #        utils.addDir('[COLOR hotpink]Xtheatre[/COLOR] - NETU !!!','http://xtheatre.net/page/1/',20,os.path.join(imgDir, 'xt.png'),'')
     utils.addDir('[COLOR hotpink]PornHive[/COLOR]','http://www.pornhive.tv/en/movies/all',70,os.path.join(imgDir, 'ph.png'),'')
-    utils.addDir('[COLOR hotpink]JustPorn[/COLOR]','http://justporn.to/category/dvdrips-full-movies/',241,os.path.join(imgDir, 'justporn.png'),'')
+    utils.addDir('[COLOR hotpink]JustPorn[/COLOR]','http://justporn.to/category/dvdrips-full-movies/',240,os.path.join(imgDir, 'justporn.png'),'')
 #    utils.addDir('[COLOR hotpink]ElReyX[/COLOR]','http://elreyx.com/index1.html',116,os.path.join(imgDir, 'elreyx.png'),'')
     utils.addDir('[COLOR hotpink]PelisxPorno[/COLOR]','http://www.pelisxporno.com/',140,os.path.join(imgDir, 'pelisxporno.png'),'')
     utils.addDir('[COLOR hotpink]StreamXXX[/COLOR]','http://streamxxx.tv/category/movies/',175,os.path.join(imgDir, 'streamxxx.png'),'')
     utils.addDir('[COLOR hotpink]ParadiseHill[/COLOR]','http://www.paradisehill.tv/en/',250,os.path.join(imgDir, 'paradisehill.png'),'')
     utils.addDir('[COLOR hotpink]FreeOMovie[/COLOR]','http://www.freeomovie.com/',370,os.path.join(imgDir, 'freeomovie.png'),'')
-    utils.addDir('[COLOR hotpink]Eroticage[/COLOR]','http://www.eroticage.net/',430,os.path.join(imgDir, 'eroticage.png'),'')
     utils.addDir('[COLOR hotpink]SpeedPorn[/COLOR]','https://speedporn.net/',780,os.path.join(imgDir, 'speedporn11.png'),'')
+    utils.addDir('[COLOR hotpink]PandaMovie[/COLOR]','https://pandamovies.pw/adult/movies/page/1/', 600, os.path.join(imgDir, 'pandamovie.png'),'')
+    utils.addDir('[COLOR hotpink]NetFlixPorno[/COLOR]','https://netflixporno.net/',810,os.path.join(imgDir, 'netflixporno-1.png'),'')
+
     utils.addDir('[COLOR hotpink]MangoPorn[/COLOR]','https://mangoporn.net/',800,os.path.join(imgDir, 'mangoporn.png'),'')
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
@@ -141,6 +147,9 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]PornOne[/COLOR]','https://pornone.com/newest/',500,os.path.join(imgDir, 'porn1.png'),'')
     utils.addDir('[COLOR hotpink]xHamster[/COLOR]','https://xhamster.com/',505,os.path.join(imgDir, 'xhamster.png'),'')
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
+    utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
+    utils.addDir('[COLOR hotpink]desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
+
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('7')
@@ -149,10 +158,11 @@ def INDEXW():
     utils.addDir('[COLOR hotpink]MyFreeCams[/COLOR] [COLOR white]- webcams[/COLOR]','https://www.myfreecams.com',270,os.path.join(imgDir, 'myfreecams.jpg'),'')
     utils.addDir('[COLOR hotpink]Cam4[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.cam4.com',280,os.path.join(imgDir, 'cam4.png'),'')    
     utils.addDir('[COLOR hotpink]Camsoda[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.camsoda.com',475,os.path.join(imgDir, 'camsoda.png'),'')    
-    utils.addDir('[COLOR grey]naked.com[/COLOR] [COLOR red]Broken[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.naked.com',480,os.path.join(imgDir, 'naked.png'),'')
+    utils.addDir('[COLOR hotpink]naked.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.naked.com',480,os.path.join(imgDir, 'naked.png'),'')
     if sys.version_info >= (2, 7, 9):
         utils.addDir('[COLOR hotpink]streamate.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.streammate.com',515,os.path.join(imgDir, 'streamate.png'),'')
     utils.addDir('[COLOR hotpink]bongacams.com[/COLOR] [COLOR white]- webcams[/COLOR]','http://www.bongacams.com',520,os.path.join(imgDir, 'bongacams.png'),'')
+    utils.addDir('[COLOR hotpink]RedTube Live[/COLOR] [COLOR white]- webcams[/COLOR]','https://www.redtube.com/live?track=6001',580,os.path.join(imgDir, 'RedTube.jpg'),'')
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('3')
