@@ -78,7 +78,10 @@ def Playvid(url, name, download=None):
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
     listitem.setInfo('video', {'Title': name, 'Genre': 'PornHD'})
-    xbmc.Player().play(videourl, listitem)
+    if download == 1:
+	utils.downloadVideo(videourl, name)
+    else:    
+        xbmc.Player().play(videourl, listitem)
 
 
 @utils.url_dispatcher.register('873', ['url'], ['keyword'])
