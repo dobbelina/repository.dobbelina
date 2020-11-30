@@ -1,14 +1,14 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.35
+Ultimate Whitecream addon update	Version 1.2.36
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Added: NetFlixPorno
+PornTrex/JavBangers favorites fix
 
-New option for Enable/Disable site/category.
+Beeg improvements
 
-Disable from contextual menu, 
+Fixed download PornHD
 
-Reenable from Add-on settings
+Fixed: ParadiseHill
 
 
 ---
