@@ -56,6 +56,8 @@ from kvs import decryptHash
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+from resolveurl.plugins.lib import captcha_lib
+
 from url_dispatcher import URL_Dispatcher
 
 url_dispatcher = URL_Dispatcher()
@@ -401,9 +403,8 @@ def getHtml(url, referer='', hdr=None, NoCookie=None, data=None):
         if data:
             data = urllib.urlencode(data)
         if not hdr:
-            req = Request(url, data, headers)
-        else:
-            req = Request(url, data, hdr)
+            hdr = headers
+        req = Request(url, data, hdr)
         if len(referer) > 1:
             req.add_header('Referer', referer)
         if data:
@@ -422,12 +423,28 @@ def getHtml(url, referer='', hdr=None, NoCookie=None, data=None):
                 cj.save(cookiePath)
             except:
                 pass
-        response.close()
     except urllib2.HTTPError as e:
         result = e.read()
-        if e.code == 503 and 'cf-browser-verification' in result:
+        if e.code == 429 and 'ccapimg' in result:
+            keyname = re.search('key=([^"]+)"', result).group(1)
+            img = captcha_lib.write_img(referer + 'ccapimg?key=' + keyname)
+            solution = captcha_lib.get_response(img, y=225)
+            form_data = {'secimgkey': (None, keyname), 'secimginp': (None, solution)}
+            hdr = headers
+            if 'Referer' in hdr:
+                del hdr['Referer']
+            hdr['referer'] = url
+            try:
+                resp = requests.post(url, files=form_data, headers=hdr)
+                resp.encoding = 'ISO-8859-1'
+                result = resp.text
+            finally:
+                if resp: resp.close()
+            return result
+        elif e.code == 503 and 'cf-browser-verification' in result:
             result = cloudflare.solve(url,cj, USER_AGENT)
         else:
+            notify('HTTPError', str(e))
             raise
     except Exception as e:
         if 'SSL23_GET_SERVER_HELLO' in str(e):
@@ -437,6 +454,8 @@ def getHtml(url, referer='', hdr=None, NoCookie=None, data=None):
             notify('Oh oh','It looks like this website is down.')
             raise
         return None
+    finally:
+        if response: response.close()
     if 'sucuri_cloudproxy_js' in result:
         headers['Cookie'] = get_sucuri_cookie(result)
         result = getHtml(url, referer, hdr=headers)

@@ -103,6 +103,7 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]FreeVideo[/COLOR]','https://freevideo.cz',960,os.path.join(imgDir, 'freevideo.png'),'')
     utils.addDir('[COLOR hotpink]BitPorno[/COLOR]','https://www.bitporno.com/search/all/sort-mostviewed/time-today/page-0',860,'https://www.bitporno.com/images/logobt.png','')
     utils.addDir('[COLOR hotpink]PornHD[/COLOR]','https://www.pornhd.com/',870,os.path.join(imgDir, 'PornHD.jpg'),'')
+    utils.addDir('[COLOR hotpink]PeekVids[/COLOR]','https://www.peekvids.com/',890,os.path.join(imgDir, 'peekvids.png'),'')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
     
 

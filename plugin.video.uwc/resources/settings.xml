@@ -2,6 +2,9 @@
                 <category label="General">                        
                                 <setting default="0" id="sortwxf" label="30011" lvalues="30012|30013|30014" type="enum"/>                        
                                 <setting default="0" id="sortxt" label="30021" lvalues="30022|30023|30024|30025" type="enum"/>                        
+                                <setting default="0" id="filteruploaded" label="30051" lvalues="30050|30052|30053|30054|30055" type="enum"/>
+                                <setting default="0" id="filterduration" label="30061" lvalues="30050|30062|30063" type="enum"/>
+                                <setting default="0" id="filterquality" label="30071" lvalues="30050|30072|30073" type="enum"/>
                                 <setting default="false" id="chaturbate" label="30003" type="bool"/>                        
                                 <setting default="false" id="paradisehill" label="30004" type="bool"/>                        
                                 <setting default="false" id="posterfanart" label="30005" type="bool"/>                        
