@@ -22,16 +22,16 @@ import xbmcplugin, xbmcgui
 from resources.lib import utils
 
 
-@utils.url_dispatcher.register('890')
+@utils.url_dispatcher.register('930')
 def Main():
-    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.cartoonpornvideos.com/categories/',893,'','')
-    utils.addDir('[COLOR hotpink]Characters[/COLOR]','https://www.cartoonpornvideos.com/characters/',895,'','')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.cartoonpornvideos.com/search/video/',894,'','')
+    utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.cartoonpornvideos.com/categories/',933,'','')
+    utils.addDir('[COLOR hotpink]Characters[/COLOR]','https://www.cartoonpornvideos.com/characters/',935,'','')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.cartoonpornvideos.com/search/video/',934,'','')
     List('https://www.cartoonpornvideos.com/videos/straight/all-recent-1.html')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('891', ['url'])
+@utils.url_dispatcher.register('931', ['url'])
 def List(url):
     try:
         html = utils.getHtml(url, '')
@@ -41,15 +41,15 @@ def List(url):
     match = re.compile('class="item".+?href="(.*?)".+?src="(.+?)".+?alt="(.+?)".+?class="time">(.+?)</span>', re.DOTALL | re.IGNORECASE).findall(html)
     for videopage, img, name, duration in match:
         name = '[COLOR yellow]' + duration.strip() + '[/COLOR] ' + utils.cleantext(name)
-        utils.addDownLink(name, videopage, 892, img, '')
+        utils.addDownLink(name, videopage, 932, img, '')
     try:
         (nextlink, nextp) = re.compile('a href="([^"]+-(\d*)\.html)" class="next"', re.DOTALL | re.IGNORECASE).findall(html)[0]
-        utils.addDir('Next Page (%s)'%str(nextp), nextlink, 891,'')
+        utils.addDir('Next Page (%s)'%str(nextp), nextlink, 931,'')
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('892', ['url', 'name'], ['download'])
+@utils.url_dispatcher.register('932', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     try:
@@ -62,7 +62,7 @@ def Playvid(url, name, download=None):
     vp.play_from_html(html)
 
 
-@utils.url_dispatcher.register('893', ['url'])
+@utils.url_dispatcher.register('933', ['url'])
 def Categories(url):
     try:
         cathtml = utils.getHtml(url, '')
@@ -70,21 +70,21 @@ def Categories(url):
         return None
     match = re.compile('class="item video-category".+?href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, img, name in match:
-        utils.addDir(name, catpage, 891, img)
+        utils.addDir(name, catpage, 931, img)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('894', ['url'], ['keyword'])
+@utils.url_dispatcher.register('934', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
-        utils.searchDir(url, 894)
+        utils.searchDir(url, 934)
     else:
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title
         List(searchUrl)
 
-@utils.url_dispatcher.register('895', ['url'])
+@utils.url_dispatcher.register('935', ['url'])
 def Characters(url):
     try:
         charhtml = utils.getHtml(url, '')
@@ -92,5 +92,5 @@ def Characters(url):
         return None
     match = re.compile('div class="item".+?href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(charhtml)
     for charpage, img, name in match:
-        utils.addDir(name.replace('Videos', '').strip(), charpage, 891, img.replace('\r\n', ''))
+        utils.addDir(name.replace('Videos', '').strip(), charpage, 931, img.replace('\r\n', ''))
     xbmcplugin.endOfDirectory(utils.addon_handle)
