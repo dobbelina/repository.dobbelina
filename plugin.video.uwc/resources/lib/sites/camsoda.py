@@ -54,14 +54,14 @@ def List(url):
 		        username = camgirl["tpl"]["1"].encode("ascii", errors="ignore")
 #		        print "USERNAME: " + username
 		        display_name = camgirl["tpl"]["2"].encode("utf-8", errors="ignore")
-#	 		print "DISPLAY_NAME: " + display_name		        
+#	 		print "DISPLAY_NAME: " + display_name
 			videourl = "https://www.camsoda.com/api/v1/video/vtoken/" + username
 #			imag='http://md.camsoda.com/thumbs/%s.jpg'%(name)
 #			imag = 'http:' + camgirl['tpl'][9]
 			imag = 'https:' + camgirl["tpl"]["10"].encode("ascii", errors="ignore")
-#	 		print "IMAG: " + imag	
+#	 		print "IMAG: " + imag
 			if 'f' in gender:
-			       utils.addDownLink(username, videourl, 478, imag, '', noDownload=True)
+			       utils.addDownLink(username, videourl, 478, imag, '')
 		except:
 			pass
 	xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -86,8 +86,8 @@ def clean_database(showdialog=True):
         pass
 
 
-@utils.url_dispatcher.register('478', ['url', 'name'])
-def Playvid(url, name):
+@utils.url_dispatcher.register('478', ['url', 'name'], ['download'])
+def Playvid(url, name, download=0):
     url = url + "?username=guest_" + str(random.randrange(100, 55555))
     response = utils.getHtml(url)
     data = json.loads(response)
@@ -114,5 +114,6 @@ def Playvid(url, name):
     else:
 		iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-		listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
+		listitem.setInfo('video', {'Title': name, 'Genre': 'CamSoda'})
 		xbmc.Player().play(videourl, listitem)
+    if utils.addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, name)

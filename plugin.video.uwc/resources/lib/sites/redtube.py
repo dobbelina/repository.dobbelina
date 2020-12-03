@@ -50,7 +50,7 @@ def List(url):
         duration = movie['video']['duration']
         name = "[COLOR deeppink]" + duration + "[/COLOR] " + title
         # name = "[COLOR deeppink]" + duration + "[/COLOR]"
-      
+
         utils.addDownLink(name, movieUrl, 592, imgUrl, '')
     #try:
     thisP=re.compile('&page=(.+?)&', re.DOTALL).findall(url)[0]
@@ -123,7 +123,7 @@ def ListChannel(url):
 
 
 @utils.url_dispatcher.register('592', ['url', 'name'], ['download'])
-def Playvid(url, name, download=None):
+def Playvid(url, name, download=0):
     try:
         listhtml = utils.getHtml(url, '')
     except:
@@ -215,7 +215,7 @@ def ListLive(url, page=1, searchStr=None):
     return
 
 @utils.url_dispatcher.register('582', ['url', 'name'], ['check', 'download'])
-def PlayCam(url, name, check=False, download=None):
+def PlayCam(url, name, check=False, download=0):
     global CAMGIRLPLOT
     global NAME
     CAMGIRLPLOT = ''
@@ -291,9 +291,9 @@ def get_roomid(url):
                 data = re.compile('"data":.*?"(.+?)"', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(message)[0]
                 utils.kodilog(str(message[0]))
                 utils.notify(NAME, str(data))
-                return ''            
+                return ''
             if 'roomid' not in message:
-                utils.notify(NAME, re.compile('"data".+?"(.+?)"', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(message)[0]) 
+                utils.notify(NAME, re.compile('"data".+?"(.+?)"', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(message)[0])
                 return ''
             roomid = re.compile('"roomid":"(.+?)"', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(message)[0]
             plot = re.compile('"roomtopic":"(.+?)"', re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(message)
@@ -313,7 +313,7 @@ def LiveCategories(url):
         return
     cJson = json.loads(cathtml)
     cat = [item for item in cJson if ('status' not in item and 'requestkey' not in item)]
-    
+
     selectedCat = utils.selector('Select server', cat)
     #xbmcgui.Dialog().textviewer(url, str(selectedCat))
     for item in cJson[selectedCat]:

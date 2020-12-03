@@ -1211,6 +1211,45 @@ def PLAYVIDEO(url, name, download=None, regex='''(?:src|SRC|href|HREF)=\s*["']([
     vp = VideoPlayer(name, download, regex)
     vp.play_from_site_link(url, url)
 
+@url_dispatcher.register('914', ["url", "name"])
+def dwnld_stream(url, name):
+    download_path = addon.getSetting('download_path')
+    if download_path == '':
+        try:
+            download_path = xbmcgui.Dialog().browse(0, "Download Path", 'myprograms', '', False, False)
+            addon.setSetting(id='download_path', value=download_path)
+            if not os.path.exists(download_path):
+                os.mkdir(download_path)
+        except:
+            pass
+
+    ffmpeg_location = addon.getSetting("ffmpeg_location")
+    if ffmpeg_location == '':
+        try:
+            ffmpeg_location = xbmcgui.Dialog().browse(0, "ffmpeg Location", 'myprograms', '', False, False)
+            addon.setSetting(id='ffmpeg_location', value=ffmpeg_location)
+            if not os.path.isfile(download_path + 'ffmpeg.exe'):
+                notify('Could not find ffmpeg!', download_path + 'ffmpeg.exe')
+                return
+        except: pass
+
+    cmd = ffmpeg_location + 'ffmpeg -i "' + url + '" -vcodec copy -acodec copy "' + download_path + name + time.strftime("%Y%m%d-%H%M%S") + '.mkv"'
+    import subprocess
+    SW_HIDE = 0
+    info = subprocess.STARTUPINFO()
+    info.dwFlags = subprocess.STARTF_USESHOWWINDOW
+    info.wShowWindow = SW_HIDE
+    proc = subprocess.Popen(cmd, shell=False, startupinfo=info)
+    xbmc.log('Process started at ' + str(time.time()), xbmc.LOGNOTICE)
+    xbmc.log('[myUWC] Process playing ' + cmd, xbmc.LOGNOTICE)
+    time.sleep(10)
+    while xbmc.Player().isPlaying():
+        xbmc.log('[myUWC] Process playing ' + xbmc.Player().getPlayingFile(), xbmc.LOGNOTICE)
+        time.sleep(5)
+    proc.kill()
+    xbmc.log('Process ended at ' + str(time.time()), xbmc.LOGNOTICE)
+
+
 @url_dispatcher.register('998', ["url", "name"])
 def enSite(url, name):
     settingsPath = xbmc.translatePath(os.path.join(resDir, 'settings.xml'))

@@ -8,7 +8,9 @@
                                 <setting default="false" id="chaturbate" label="30003" type="bool"/>                        
                                 <setting default="false" id="paradisehill" label="30004" type="bool"/>                        
                                 <setting default="false" id="posterfanart" label="30005" type="bool"/>                        
-                                <setting default="" id="download_path" label="Download Folder" option="writeable" source="video" type="folder"/>                        
+                                <setting default="" id="download_path" label="Download Folder" option="writeable" source="video" type="folder" value="C:\temp\"/>                        
+                                <setting default="" id="ffmpeg_location" label="Location of ffmpeg" option="writeable" source="video" type="folder" value="C:\ffmpeg\bin\"/>                                                                                                                                                                        
+                                <setting default="false" id="dwnld_stream" label="Download stream" type="bool"/>                                                                                                                                                                        
                                 <setting default="0" id="daftsexresolver" label="30031" lvalues="30032|30033" type="enum"/>                        
                 </category>            
                 <category label="Hosts and resolvers">                        

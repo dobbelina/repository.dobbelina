@@ -25,7 +25,7 @@ import urllib
 try:
     import simplejson
 except:
-    import json as simplejson   
+    import json as simplejson
 
 import xbmc
 import xbmcplugin
@@ -57,14 +57,14 @@ def List(url):
         #else:
         #    url = '1' + url
 
-        utils.addDownLink(name, url, 272, img, '', noDownload=True)
+        utils.addDownLink(name, url, 272, img, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
 
 
 
-@utils.url_dispatcher.register('272', ['url', 'name'])
-def Playvid(url, name):
+
+@utils.url_dispatcher.register('272', ['url', 'name'], ['download'])
+def Playvid(url, name, download=0):
     global MFC_SERVERS
     MFC_SERVERS = {}
 
@@ -91,10 +91,11 @@ def Playvid(url, name):
         else:
             listitem.setPath(str(videourl))
             xbmcplugin.setResolvedUrl(utils.addon_handle, True, listitem)
+        if utils.addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, name)
     else:
         utils.notify('Oh oh','Couldn\'t find a playable webcam link')
-        
-        
+
+
 #from iptvplayer
 
 vs_str={}
@@ -118,12 +119,12 @@ def read_model_data(m):
     global CAMGIRLCHANID
     global CAMGIRLUID
     global PHASE
-    
+
     global MFC_SERVERS
     WZOBSSERVERS = MFC_SERVERS['WZOBSSERVERS']
     H5SERVERS = MFC_SERVERS['H5SERVERS']
     NGSERVERS = MFC_SERVERS['NGSERVERS']
-   
+
     usr = ''
     msg = fc_decode_json(m)
     try:
@@ -148,13 +149,13 @@ def read_model_data(m):
         PHASE = u_info['phase']
     else:
         PHASE = ''
-        
+
     try:
         idx = str(u_info['camserv']).encode("utf-8")
         if idx in WZOBSSERVERS:
             CAMGIRLSERVER = WZOBSSERVERS[idx]
             utils.kodilog('  WZOB')
-        else: 
+        else:
             if idx in H5SERVERS:
                 CAMGIRLSERVER = H5SERVERS[idx]
                 utils.kodilog('  H5')
@@ -162,7 +163,7 @@ def read_model_data(m):
                 if idx in NGSERVERS:
                     utils.kodilog('  NG')
                     CAMGIRLSERVER = NGSERVERS[idx]
-        
+
         if vs != 0:
             CAMGIRLSERVER = 0
     except KeyError:
@@ -242,4 +243,3 @@ def myfreecam_start(url):
         return Url
     else:
         pass
-
