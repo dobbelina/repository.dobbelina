@@ -309,10 +309,7 @@ def downloadVideo(url, name):
     def clean_filename(s):
         if not s:
             return ''
-        badchars = '\\/:*?\"<>|\''
-        for c in badchars:
-            s = s.replace(c, '')
-        return s
+        return re.sub(r'(?u)[^-\w.]', '_', s)
 
     download_path = addon.getSetting('download_path')
     if download_path == '':
@@ -325,7 +322,7 @@ def downloadVideo(url, name):
             pass
     if download_path != '':
         dp = xbmcgui.DialogProgress()
-        name = name.split("[")[0]
+        name = re.sub(r"\[COLOR.+?\/COLOR\]", '', name).strip()
         dp.create("Ultimate Whitecream Download",name[:50])
         tmp_file = tempfile.mktemp(dir=download_path, suffix=".mp4")
         tmp_file = xbmc.makeLegalFilename(tmp_file)
@@ -336,10 +333,10 @@ def downloadVideo(url, name):
             if downloaded:
                 vidfile = xbmc.makeLegalFilename(download_path + clean_filename(name) + ".mp4")
                 try:
-                  os.rename(tmp_file, vidfile)
-                  return vidfile
+                    os.rename(tmp_file, vidfile)
+                    return vidfile
                 except:
-                  return tmp_file
+                    return tmp_file
             else: raise StopDownloading('Stopped Downloading')
         except:
             while os.path.exists(tmp_file):
