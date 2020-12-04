@@ -81,16 +81,16 @@ def List(url, page=1):
 
         info = "\n\n[B]Age:[/B] " + str(model['age']) + "\n[B]Gender:[/B] " + model['gender'].title() + "\n[B]Orientation:[/B] " + model['sexPreference'].title() + "\n\n[B]Country:[/B] " + countries[model['countryCode']] + "\n[B]Language:[/B] " + lang + "\n\n[B]Broadcast type:[/B] " + model['broadcastType'].title() + "\n[B]Broadcast time:[/B] " + str(model['broadcastTime']) + "\n[B]Viewers:[/B] " + str(model['viewers']) + "\n\n[B]Source:[/B] " + model['source'].title() + " (" + str(model['resolution']) + ")" + "\n\n[B]Room topic:[/B] " + model['statusMessage'].title()
 
-        utils.addDownLink(model['username'], model['hlsPreviewUrl'], 282, model['snapshotImageLink'], info, noDownload=True)
+        utils.addDownLink(model['username'], model['hlsPreviewUrl'], 282, model['snapshotImageLink'], info)
     if len(model_list['users'])== 60:
-            npage = page + 1        
+            npage = page + 1
             url = url.replace('&page='+str(page),'&page='+str(npage))
-            utils.addDir('Next Page ('+str(npage)+')', url, 281, '', npage)        
+            utils.addDir('Next Page ('+str(npage)+')', url, 281, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('282', ['url', 'name'])
-def Playvid(url, name):
+@utils.url_dispatcher.register('282', ['url', 'name'], ['download'])
+def Playvid(url, name, download=0):
     info = ''
     listhtml = utils.getHtml('https://www.cam4.com/' + name)
     listhtml = listhtml.replace('><','> <')
@@ -100,7 +100,7 @@ def Playvid(url, name):
     videourl = url
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'Plot': info})
+    listitem.setInfo('video', {'Title': name, 'Genre': 'Cam4', 'Plot': info})
     listitem.setProperty("IsPlayable","true")
     if int(sys.argv[1]) == -1:
        pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
@@ -110,3 +110,4 @@ def Playvid(url, name):
     else:
        listitem.setPath(str(videourl))
        xbmcplugin.setResolvedUrl(utils.addon_handle, True, listitem)
+    if utils.addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, name)

@@ -142,7 +142,7 @@ def List(url, page=1):
         videopage = "https://chaturbate.com" + videopage
         info = "\n\n[B]Status:[/B] " + status + "\n\n[B]Gender:[/B] " + genders[gender] + "\n\n[B]Age:[/B] " + age + "\n\n[B]Location:[/B] " + location + "\n\n[B]Activity:[/B] " + activity + "\n\n[B]Room topic:[/B] " + roomtopic
         info = info.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&#39;", "'").replace("&quot;", '"')
-        utils.addDownLink(name, videopage, 222, img, info, noDownload=True)
+        utils.addDownLink(name, videopage, 222, img, info)
     try:
         page = page + 1
         nextp=re.compile('<a href="([^"]+)" class="next', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -181,8 +181,8 @@ def clean_database(showdialog=True):
         pass
 
 
-@utils.url_dispatcher.register('222', ['url', 'name'])
-def Playvid(url, name):
+@utils.url_dispatcher.register('222', ['url', 'name'], ['download'])
+def Playvid(url, name, download=0):
     playmode = int(addon.getSetting('chatplay'))
     chatslow = int(addon.getSetting('chatslow'))
     listhtml = utils.getHtml(url, hdr=cbheaders)
@@ -244,3 +244,5 @@ def Playvid(url, name):
     listitem.setProperty("IsPlayable","true")
     xbmc.Player().play(videourl, listitem)
 
+    username = name.split('[')[0].strip()
+    if addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, username)

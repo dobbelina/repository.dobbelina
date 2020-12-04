@@ -41,14 +41,14 @@ def List(url, page=1):
     try:
         data = utils.getHtml(url + "&page_number=" + str(page))
     except:
-        
+
         return None
     model_list = json.loads(data)
     for camgirl in model_list['Results']:
         img = "http://m1.nsimg.net/media/snap/" + str(camgirl['PerformerId']) + ".jpg"
         performerID = str(camgirl['PerformerId'])
         name = camgirl['Nickname']
-        utils.addDownLink(name, performerID, 518, img, '', noDownload=True)
+        utils.addDownLink(name, performerID, 518, img, '')
     npage = page + 1
     utils.addDir('Next Page (' + str(npage) + ')', url, 516, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -70,17 +70,17 @@ def clean_database(showdialog=True):
     except:
         pass
 
-@utils.url_dispatcher.register('518', ['url', 'name'])
-def Playvid(performerID, name):
+@utils.url_dispatcher.register('518', ['url', 'name'], ['download'])
+def Playvid(performerID, name, download=0):
     response = utils.getHtml("https://streamate.com/ajax/config/?name=" + name + "&sakey=&sk=streamate.com&userid=0&version=2.2.0&ajax=1")
     data = json.loads(response)
-    
+
     host = data['liveservices']['host'] + "/socket.io/?puserid=" + performerID + "&EIO=3&transport=websocket" #24824942
     ws = websocket.WebSocket()
     ws = websocket.create_connection(host)
-    
+
     ws.send('40/live')
-    
+
     quitting = 0
     i = 0
     while quitting == 0:
@@ -99,7 +99,7 @@ def Playvid(performerID, name):
             ws.close()
             utils.notify('Model not in freechat')
             return None
-            
+
         if message == '40/live':
             ws.close()
             quitting=1
@@ -108,7 +108,7 @@ def Playvid(performerID, name):
             j = utils.getHtml(link, ref)
             match = re.compile('location":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(j)
             videourl = match[0]
-        
+
         # match = re.compile('roomInfoUpdate', re.DOTALL | re.IGNORECASE).findall(message)
         # if match:
             # ws.send('42/live,["GetVideoPath",{"nginx":1,"protocol":2,"attempt":1}]')
@@ -122,7 +122,7 @@ def Playvid(performerID, name):
 
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-    listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
+    listitem.setInfo('video', {'Title': name, 'Genre': 'Streamate'})
     listitem.setProperty("IsPlayable","true")
     if int(sys.argv[1]) == -1:
         pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
@@ -134,6 +134,7 @@ def Playvid(performerID, name):
         #listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         #listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
         xbmc.Player().play(videourl, listitem)
+    if utils.addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, name)
 
 @utils.url_dispatcher.register('519', ['url'])
 def Search(url):

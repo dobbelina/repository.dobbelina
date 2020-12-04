@@ -309,10 +309,7 @@ def downloadVideo(url, name):
     def clean_filename(s):
         if not s:
             return ''
-        badchars = '\\/:*?\"<>|\''
-        for c in badchars:
-            s = s.replace(c, '')
-        return s
+        return re.sub(r'(?u)[^-\w.]', '_', s)
 
     download_path = addon.getSetting('download_path')
     if download_path == '':
@@ -325,7 +322,7 @@ def downloadVideo(url, name):
             pass
     if download_path != '':
         dp = xbmcgui.DialogProgress()
-        name = name.split("[")[0]
+        name = re.sub(r"\[COLOR.+?\/COLOR\]", '', name).strip()
         dp.create("Ultimate Whitecream Download",name[:50])
         tmp_file = tempfile.mktemp(dir=download_path, suffix=".mp4")
         tmp_file = xbmc.makeLegalFilename(tmp_file)
@@ -336,10 +333,10 @@ def downloadVideo(url, name):
             if downloaded:
                 vidfile = xbmc.makeLegalFilename(download_path + clean_filename(name) + ".mp4")
                 try:
-                  os.rename(tmp_file, vidfile)
-                  return vidfile
+                    os.rename(tmp_file, vidfile)
+                    return vidfile
                 except:
-                  return tmp_file
+                    return tmp_file
             else: raise StopDownloading('Stopped Downloading')
         except:
             while os.path.exists(tmp_file):
@@ -1213,6 +1210,45 @@ def PLAYVIDEO(url, name, download=None, regex='''(?:src|SRC|href|HREF)=\s*["']([
     Exists for compatiblity with old site plug-ins."""
     vp = VideoPlayer(name, download, regex)
     vp.play_from_site_link(url, url)
+
+@url_dispatcher.register('914', ["url", "name"])
+def dwnld_stream(url, name):
+    download_path = addon.getSetting('download_path')
+    if download_path == '':
+        try:
+            download_path = xbmcgui.Dialog().browse(0, "Download Path", 'myprograms', '', False, False)
+            addon.setSetting(id='download_path', value=download_path)
+            if not os.path.exists(download_path):
+                os.mkdir(download_path)
+        except:
+            pass
+
+    ffmpeg_location = addon.getSetting("ffmpeg_location")
+    if ffmpeg_location == '':
+        try:
+            ffmpeg_location = xbmcgui.Dialog().browse(0, "ffmpeg Location", 'myprograms', '', False, False)
+            addon.setSetting(id='ffmpeg_location', value=ffmpeg_location)
+            if not os.path.isfile(download_path + 'ffmpeg.exe'):
+                notify('Could not find ffmpeg!', download_path + 'ffmpeg.exe')
+                return
+        except: pass
+
+    cmd = ffmpeg_location + 'ffmpeg -i "' + url + '" -vcodec copy -acodec copy "' + download_path + name + time.strftime("%Y%m%d-%H%M%S") + '.mkv"'
+    import subprocess
+    SW_HIDE = 0
+    info = subprocess.STARTUPINFO()
+    info.dwFlags = subprocess.STARTF_USESHOWWINDOW
+    info.wShowWindow = SW_HIDE
+    proc = subprocess.Popen(cmd, shell=False, startupinfo=info)
+    xbmc.log('Process started at ' + str(time.time()), xbmc.LOGNOTICE)
+    xbmc.log('[myUWC] Process playing ' + cmd, xbmc.LOGNOTICE)
+    time.sleep(10)
+    while xbmc.Player().isPlaying():
+        xbmc.log('[myUWC] Process playing ' + xbmc.Player().getPlayingFile(), xbmc.LOGNOTICE)
+        time.sleep(5)
+    proc.kill()
+    xbmc.log('Process ended at ' + str(time.time()), xbmc.LOGNOTICE)
+
 
 @url_dispatcher.register('998', ["url", "name"])
 def enSite(url, name):

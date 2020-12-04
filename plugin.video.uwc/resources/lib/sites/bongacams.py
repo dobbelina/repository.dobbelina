@@ -42,14 +42,14 @@ def List(url):
     try:
         data = utils.getHtml(url)
     except:
-        
+
         return None
     model_list = json.loads(data)
     for camgirl in model_list:
         img = 'https:' + camgirl['profile_images']['thumbnail_image_big_live']
         username = camgirl['username']
         name = camgirl['display_name']
-        utils.addDownLink(name, username, 524, img, '', noDownload=True)
+        utils.addDownLink(name, username, 524, img, '')
 
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -70,8 +70,8 @@ def clean_database(showdialog=True):
     except:
         pass
 
-@utils.url_dispatcher.register('524', ['url', 'name'])
-def Playvid(username, name):
+@utils.url_dispatcher.register('524', ['url', 'name'], ['download'])
+def Playvid(username, name, download=0):
     try:
        postRequest = {'method' : 'getRoomData', 'args[]' : 'false', 'args[]' : str(username)}
        response = utils.postHtml('http://bongacams.com/tools/amf.php', form_data=postRequest,headers={'X-Requested-With' : 'XMLHttpRequest'},compression=False)
@@ -82,7 +82,7 @@ def Playvid(username, name):
     amf_json = json.loads(response)
 
     if amf_json['localData']['videoServerUrl'].startswith("//mobile"):
-       videourl = 'https:' + amf_json['localData']['videoServerUrl'] + '/hls/stream_' + username + '.m3u8'  
+       videourl = 'https:' + amf_json['localData']['videoServerUrl'] + '/hls/stream_' + username + '.m3u8'
     else:
        videourl = 'https:' + amf_json['localData']['videoServerUrl'] + '/hls/stream_' + username + '/playlist.m3u8'
 
@@ -98,3 +98,4 @@ def Playvid(username, name):
     else:
         listitem.setPath(str(videourl))
         xbmcplugin.setResolvedUrl(utils.addon_handle, True, listitem)
+    if utils.addon.getSetting("dwnld_stream")=="true" or download==1: utils.dwnld_stream(videourl, username)

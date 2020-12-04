@@ -17,12 +17,13 @@
 '''
 
 import re
-
-import xbmcplugin
+import time
+import requests
+import xbmcplugin, xbmcgui, xbmc
 from resources.lib import utils
 
 siteurl = 'https://porndoe.com'
-    
+
 @utils.url_dispatcher.register('720')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl+'/categories?sort=alpha',723,'','')
@@ -38,8 +39,8 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('img  data-src="([^"]+)".+?alt="([^"]+)".+?<span class="txt">([^<]+)</span>.+?<span class="-mm-icon (.+?)"></span>.+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, name, duration, ico, videopage in match:
+    match = re.compile('data-title="([^"]+)".+?data-src="([^"]+)".+?href="([^"]+)".+?<span class="txt">([^<]+)</span>.+?<span class="-mm-icon (.+?)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for name, img, videopage, duration, ico in match:
 	if not videopage.startswith('http'): videopage = siteurl + videopage
         name = utils.cleantext(name)
         if ico == 'mm_icon-hd':
@@ -62,26 +63,62 @@ def List(url):
 
 @utils.url_dispatcher.register('722', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
-    videopage = utils.getHtml(url, '')
-    embeded = re.compile('<link itemprop="embedURL" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    embededpage = utils.getHtml(embeded, url)
-    videos = re.compile('<source[^=]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(embededpage)
-    videourl = videos[-1].split('?')[0]
-    if not videourl:
+    videopage = utils.getHtml(url, referer=url)
+    embeded = re.compile('<link itemprop="embedURL" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if embeded:
+        embededpage = utils.getHtml(embeded[0], url)
+        videos = re.compile('<source[^=]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(embededpage)
+        videourl = videos[-1].split('?')[0].split('|')[0]
+    else:
+        videourl = re.compile('itemprop="contentUrl" content="(.+?)"', re.DOTALL | re.IGNORECASE).findall(videopage)
+        if videourl:
+            videourl = videourl[0]
+        else:
+            videourl = re.compile('video src="(.+?)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    xbmc.Player().play(videourl)
+
+    if '480p' in videourl:
+        u = videourl.replace('-480p-1000', '-720p-hd-2500')
+        try:
+            conn = urllib.request.urlopen(u)
+            if download==None:
+                xbmc.Player().play(u)
+            else:
+                utils.downloadVideo(u, name)
+            return
+        except: pass
+
+    elif '240p' in videourl:
+        u = videourl.replace('-240p-400', '-720p-hd-2500')
+        try:
+            conn = urllib.request.urlopen(u)
+            if download==None:
+                xbmc.Player().play(u)
+            else:
+                utils.downloadVideo(u, name)
+            return
+        except: pass
+    try:
+        conn = urllib.request.urlopen(videourl)
+        if download==None:
+            xbmc.Player().play(videourl)
+        else:
+            utils.downloadVideo(videourl, name)
         return
-    utils.playvid(videourl, name, download)
-
-
+    except: pass
 
 
 @utils.url_dispatcher.register('723', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('data-src="([^"]+)".+?href="([^"]+)">.+?class="txt">([^<]+)<.+?class="count">(\(\d+\))</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    #match = re.compile('data-src="([^"]+)".+?href="([^"]+)">.+?class="txt">([^<]+)<.+?class="count">(\(\d+\))</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('data-src="([^"]+)".+?href="(/category/.+?)" title="([^"]+)".+?class="count">(.+?)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for img, catpage, name, count in match:
+        if not '/category/' in catpage: continue
+        if 'Premium HD' in name: continue
         name = utils.cleantext(name.strip()) + " [COLOR deeppink]" + utils.cleantext(count) + "[/COLOR]"
 	catpage = siteurl + catpage
-        utils.addDir(name, catpage, 721, img, 2)    
+        utils.addDir(name, catpage, 721, img, 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -93,7 +130,7 @@ def Channels(url):
     for catpage, img, name, rank in match:
         name = utils.cleantext(name.strip())
 	catpage = siteurl + catpage
-        utils.addDir(name, catpage, 721, img, 2)    
+        utils.addDir(name, catpage, 721, img, 2)
     try:
         next_page = re.compile('"page next">.+? href="([^"]+)"><span><span class="pager-next-label">Next<', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
         page_nr = re.findall('\d+', next_page)[-1]
@@ -101,7 +138,6 @@ def Channels(url):
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
-
 
 
 @utils.url_dispatcher.register('724', ['url'], ['keyword'])
@@ -123,4 +159,3 @@ def SearchChannel(url, keyword=None):
         title = keyword.replace(' ','+')
         searchUrl = searchUrl + title
         Channels(searchUrl)
-
