@@ -1,14 +1,38 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.36
+Ultimate Whitecream addon update	Version 1.2.37
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-PornTrex/JavBangers favorites fix
+Added: PeekVids
 
-Beeg improvements
+Added: Hentaidude
 
-Fixed download PornHD
+Added: CartoonPornVideos
 
-Fixed: ParadiseHill
+Updated: PornDoe
+
+PornHD download fix
+
+Cams streams download option added,
+
+You need to d/l ffmpeg binary to use 
+
+this feature, and then go into settings 
+
+and adjust download path and path to
+
+ffmpeg.If you set "Download stream" to 
+
+true, d/l will start automatically when
+
+playing the stream, if set to false
+
+download can be started from contextual
+
+menu "Download video".file name is the
+
+name of the model+datetime, container
+
+is mkv.
 
 
 ---
