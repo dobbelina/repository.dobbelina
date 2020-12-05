@@ -1236,9 +1236,11 @@ def dwnld_stream(url, name):
     cmd = ffmpeg_location + 'ffmpeg -i "' + url + '" -vcodec copy -acodec copy "' + download_path + name + time.strftime("%Y%m%d-%H%M%S") + '.mkv"'
     import subprocess
     SW_HIDE = 0
-    info = subprocess.STARTUPINFO()
-    info.dwFlags = subprocess.STARTF_USESHOWWINDOW
-    info.wShowWindow = SW_HIDE
+    info = None
+    if os.name == 'nt':
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = SW_HIDE
     proc = subprocess.Popen(cmd, shell=False, startupinfo=info)
     xbmc.log('Process started at ' + str(time.time()), xbmc.LOGNOTICE)
     xbmc.log('[myUWC] Process playing ' + cmd, xbmc.LOGNOTICE)
