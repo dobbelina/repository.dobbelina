@@ -28,7 +28,8 @@ from resources.lib import utils
 @utils.url_dispatcher.register('480')
 def Main():
 	utils.addDir('[COLOR red]Refresh naked.com images[/COLOR]','',483,'',Folder=False)
-	List('https://www.naked.com/live/girls/')
+	#List('https://www.naked.com/live/girls/')
+	List('https://www.naked.com/?tpl=index2&model=json')
 	xbmcplugin.endOfDirectory(utils.addon_handle)
 
 def cleanname(s):
@@ -49,8 +50,9 @@ def List(url):
 	except:		
 		return None
 
-	model_list = re.compile('live clearfix model-wrapper.*?data-model-id=(.*?)data-model-name=(.*?)data-model-seo-name=(.*?)data.*?data-video-host=(.*?)data.*?data-live-image-src=(.*?)data.*?End Live', re.DOTALL | re.IGNORECASE).findall(data)
-	for model_id, model, seo_name, videohost, img in model_list:
+	models = re.compile('"video_host":.*?"(.+?)".*?"model_id":.*?"(.+?)".+?"image".*?"(.+?)".+?"model_name".*?"(.+?)","model_seo_name".*?"(.+?)".+?"sample_long_id".*?"(.+?)"', re.DOTALL | re.IGNORECASE).findall(data)
+
+	for videohost, model_id, img, model, seo_name, long_id in models:
 		img = 'https:'+img if img.startswith('//') else img
                 img = cleanname(img)
                 name = cleanname(model)
@@ -88,7 +90,7 @@ def Playvid(url, name):
                 print (model_list)
 	        for model_id, model, seo_name, videohost, img in model_list:
 			if seo_nameurl in seo_name:
-	        		videourl = 'https://manifest.vscdns.com/chunklist.m3u8?model_id=' + cleanname(model_id) + '&host=' + cleanname(videohost) + '&provider=level3&secure=true'
+	        		videourl = 'https://manifest.vscdns.com/chunklist.m3u8?model_id=' + cleanname(model_id) + '&host=' + cleanname(videohost) + '&provider=highwinds&secure=true'
 
 		iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
