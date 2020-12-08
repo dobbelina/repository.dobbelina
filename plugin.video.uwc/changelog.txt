@@ -1,3 +1,7 @@
+Version 1.2.38
+Fixed: naked.com
+Download issues resolved
+
 Version 1.2.37
 Added: PeekVids
 Added: Hentaidude
