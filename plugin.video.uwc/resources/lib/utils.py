@@ -309,7 +309,7 @@ def downloadVideo(url, name):
     def clean_filename(s):
         if not s:
             return ''
-        return re.sub(r'(?u)[^-\w.]', '_', s)
+        return re.sub(r'(?u)[^-\w.]', ' ', s)
 
     download_path = addon.getSetting('download_path')
     if download_path == '':
@@ -523,7 +523,7 @@ def getHtml3(url):
 	# response = urlopen(req, timeout=60)
 	# data = response.read()
 	# response.close()
-	return data	
+	return data
 def getHtml4(url):
 	headok = {
 		'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0',
@@ -532,9 +532,9 @@ def getHtml4(url):
 		'X-Requested-With': 'XMLHttpRequest',}
 	data = requests.get(url,headers=headok,verify=False).json()
 
-	return data		
+	return data
 
-def getHtml5(url):	
+def getHtml5(url):
 	headersy = {
 		'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
 		'Accept': '*/*',
@@ -543,22 +543,22 @@ def getHtml5(url):
 		'X-Requested-With': 'XMLHttpRequest',
 		'DNT': '1',
 		'Connection': 'keep-alive',
-	}	
-	
+	}
+
 	sess=requests.session()
 	#UA      = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36'
 	#sess.headers=headersy
-	data=sess.get(url,headers=headersy,verify=False).content	
-	
-	
-	
+	data=sess.get(url,headers=headersy,verify=False).content
+
+
+
 	#data = requests.get(url,headers=headersy,verify=False,timeout=160).content
 	# response = urlopen(req, timeout=60)
 	# data = response.read()
 	# response.close()
-	return data		
-	
-	
+	return data
+
+
 def getVideoLink(url, referer, hdr=None, data=None):
     if not hdr:
         req2 = Request(url, data, headers)
@@ -981,7 +981,7 @@ def selector(dialog_name, select_from, dont_ask_valid=False, sort_by=None, rever
     '''
     Shows a dialog where the user can choose from the values provided
     Returns the value of the selected key, or None if no selection was made
-    
+
     Usage:
         dialog_name = title of the dialog shown
         select_from = a list or a dictionary which contains the options
@@ -1075,7 +1075,7 @@ class VideoPlayer():
             if direct_links:
                 if 'function/0/' in direct_links[0]:
                     licensecode = re.compile("license_code:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).search(html).group(1)
-                    direct_links[0] = decryptHash(direct_links[0], licensecode, '16')           
+                    direct_links[0] = decryptHash(direct_links[0], licensecode, '16')
                 selected = 'https:' + direct_links[0] if direct_links[0].startswith('//') else direct_links[0]
                 self.progress.update(70, "", "", "Playing from direct link")
                 self.play_from_direct_link(selected)
@@ -1088,7 +1088,7 @@ class VideoPlayer():
             self.play_from_link_list(scraped_sources)
         if not self.direct_regex and not self.regex:
             raise ValueError("No regular expression specified")
-            
+
 
     @_cancellable
     def play_from_link_list(self, links):
@@ -1236,9 +1236,11 @@ def dwnld_stream(url, name):
     cmd = ffmpeg_location + 'ffmpeg -i "' + url + '" -vcodec copy -acodec copy "' + download_path + name + time.strftime("%Y%m%d-%H%M%S") + '.mkv"'
     import subprocess
     SW_HIDE = 0
-    info = subprocess.STARTUPINFO()
-    info.dwFlags = subprocess.STARTF_USESHOWWINDOW
-    info.wShowWindow = SW_HIDE
+    info = None
+    if os.name == 'nt':
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = SW_HIDE
     proc = subprocess.Popen(cmd, shell=False, startupinfo=info)
     xbmc.log('Process started at ' + str(time.time()), xbmc.LOGNOTICE)
     xbmc.log('[myUWC] Process playing ' + cmd, xbmc.LOGNOTICE)
