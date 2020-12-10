@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.37"
+       version="1.2.38"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -26,23 +26,9 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.37[/B]
-Added: PeekVids
-Added: Hentaidude
-Added: CartoonPornVideos
-Updated: PornDoe
-PornHD download fix
-Cams streams download option added,
-You need to d/l ffmpeg binary to use 
-this feature, and then go into settings 
-and adjust download path and path to
-ffmpeg.If you set "Download stream" to 
-true, d/l will start automatically when
-playing the stream, if set to false
-download can be started from contextual
-menu "Download video".file name is the
-name of the model+datetime, container
-is mkv.
+        <news>[B]Version 1.2.38[/B]
+Fixed: naked.com
+Download issues resolved
 </news>
     </extension>
 </addon>
