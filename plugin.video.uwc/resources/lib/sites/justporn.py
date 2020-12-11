@@ -47,7 +47,7 @@ def List(url):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile('div style="background.+?href="(.+?)" title="(.+?)">.+?<img src="(.+?)".+?style="position', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
@@ -61,7 +61,7 @@ def List(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('244', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('244', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:

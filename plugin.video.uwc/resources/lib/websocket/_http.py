@@ -158,7 +158,7 @@ def _wrap_sni_socket(sock, sslopt, hostname, check_hostname):
 def _ssl_socket(sock, user_sslopt, hostname):
     sslopt = dict(cert_reqs=ssl.CERT_REQUIRED)
     sslopt.update(user_sslopt)
-    
+
     certPath = os.path.join(
         os.path.dirname(__file__), "cacert.pem")
     if os.path.isfile(certPath) and user_sslopt.get('ca_certs', None) == None:
@@ -199,7 +199,7 @@ def _tunnel(sock, host, port, auth):
     if status != 200:
         raise WebSocketProxyException(
             "failed CONNECT via proxy status: %r" % status)
-    
+
     return sock
 
 def read_headers(sock):

@@ -57,7 +57,7 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(videourl, 'https://daftsex.com/')
     if utils.addon.getSetting('daftsexresolver') == '0':
         server =''
-        try:	
+        try:
             match = re.compile('id: "([^"]+)_([^"]+)".+:"(\d+)\.([^"]+)"}.+?server:\s*?"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
             (id1, id2, res, extra, server) =  match
             s = list(server)

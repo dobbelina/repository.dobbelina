@@ -32,7 +32,7 @@ sitelist = ['https://www.poldertube.nl/', 'https://www.12milf.com/', 'https://ww
 def NLTUBES(url, page=1):
     siteurl = sitelist[page]
     if page == 1:
-        utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories/',103,'', page)    
+        utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories/',103,'', page)
     else:
         utils.addDir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categorieen/',103,'', page)
     utils.addDir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=',104,'', page)
@@ -95,7 +95,7 @@ def NLCAT(url, page=1):
     siteurl = sitelist[page]
     link = utils.getHtml3(url)
 
-    if page == 1:    
+    if page == 1:
         tags = re.compile('href="(https://www.12milf.com/c/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(link)
         for caturl, catname in tags:
             if siteurl not in caturl: caturl = siteurl + caturl

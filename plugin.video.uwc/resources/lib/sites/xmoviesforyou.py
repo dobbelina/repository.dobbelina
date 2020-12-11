@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'https://xmoviesforyou.com/'
-    
+
 @utils.url_dispatcher.register('750')
 def Main():
     utils.addDir('[COLOR hotpink]Category[/COLOR]',siteurl,755,'','')

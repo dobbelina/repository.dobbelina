@@ -63,7 +63,7 @@ def List(url):
         utils.addDownLink(name, base_url + videopage, play_mode, img, '')
     try:
         nextp=re.compile('<li class="active"><a>.+?</a></li><li><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        utils.addDir('Next Page', base_url + nextp[0], list_mode)        
+        utils.addDir('Next Page', base_url + nextp[0], list_mode)
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 

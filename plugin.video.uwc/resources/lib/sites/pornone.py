@@ -60,12 +60,12 @@ def Playvid(url, name, download=None):
 	videourl = re.compile('video id="pornone-video-player".*?<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
 	if download == 1:
 		utils.downloadVideo(videourl, name)
-	else:    
+	else:
 	#	xbmc.Player().play(str(videourl))
 		iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 		listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
-		xbmc.Player().play(videourl, listitem)		
+		xbmc.Player().play(videourl, listitem)
 
 @utils.url_dispatcher.register('503', ['url'])
 def Categories(url):
@@ -77,7 +77,7 @@ def Categories(url):
         name = utils.cleantext(name) + "[COLOR deeppink] " + videos + "[/COLOR]"
         utils.addDir(name, catpage, 501, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
+
 @utils.url_dispatcher.register('504', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url

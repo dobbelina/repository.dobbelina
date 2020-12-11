@@ -29,7 +29,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.pornhd.com/search?search=', 873, '', '')
     utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://www.pornhd.com/category', 874, '', '')
     utils.addDir('[COLOR hotpink]Channels[/COLOR]', 'https://www.pornhd.com/channel', 875, '', '')
-    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]', 'https://www.pornhd.com/pornstars', 876, '', '')    
+    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]', 'https://www.pornhd.com/pornstars', 876, '', '')
 
     List('https://www.pornhd.com/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -54,7 +54,7 @@ def List(url):
     try:
         nextp = re.compile('<span class="pagination-link is-current".+?href="(.+?)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0].replace('&amp;', '&')
         utils.addDir('Next Page (' + nextp.split('page=')[1] + ')', nextp, 871, '')
-    except: pass            
+    except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -65,7 +65,7 @@ def Playvid(url, name, download=None):
     except urllib2.HTTPError as e:
         utils.notify(name, e)
         return None
-    except: 
+    except:
         return None
     videoArray = re.compile('source src="(.+?)".+?label=\'(.+?)\'', re.DOTALL | re.IGNORECASE).findall(listhtml)
     choice = xbmcgui.Dialog().select('Select resolution', [item[1] for item in videoArray])
@@ -80,7 +80,7 @@ def Playvid(url, name, download=None):
     listitem.setInfo('video', {'Title': name, 'Genre': 'PornHD'})
     if download == 1:
 	utils.downloadVideo(videourl, name)
-    else:    
+    else:
         xbmc.Player().play(videourl, listitem)
 
 

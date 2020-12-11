@@ -21,7 +21,7 @@ import re
 
 import xbmcplugin
 from resources.lib import utils
-  
+
 
 @utils.url_dispatcher.register('410')
 def Main():
@@ -35,7 +35,7 @@ def List(url):
     try:
         html = utils.getHtml(url, '')
     except:
-       
+
         return None
     match = re.compile(r'data-id="\d+" title="([^"]+)" href="([^"]+)".*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for name, videopage, img in match:
@@ -59,7 +59,7 @@ def Categories(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('<li.+?class=".+?menu-item-object-post_tag.+?"><a href="(.+?)">(.+?)</a></li>').findall(cathtml)
     for catpage, name in match:
-        utils.addDir(name, catpage, 411, '')    
+        utils.addDir(name, catpage, 411, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

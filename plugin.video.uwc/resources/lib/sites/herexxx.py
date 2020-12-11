@@ -37,7 +37,7 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-        
+
     match = re.compile('class="video".+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)".+?class="duration"><strong>([^<]+)<\/strong>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, hd, duration in match:
         name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " +  duration + "[/COLOR]"
@@ -47,9 +47,9 @@ def List(url):
     try:
         nextp, page = re.compile('href="([^"]+\D(\d+)/??)" class="prevnext" title="Go to next page!"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         utils.addDir('Next Page (' + page +')', siteurl + nextp, 531,'')
-        
+
 #        <a href="/search/video/?s=dance&page=2" class="prevnext" title="Go to next page!">
-        
+
     except:
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)

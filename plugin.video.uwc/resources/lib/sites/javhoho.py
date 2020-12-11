@@ -43,7 +43,7 @@ def Main():
     utils.addDir('[COLOR hotpink]Laos Porn[/COLOR]','https://javhoho.com/category/free-laos-porn/',311,'','')
     utils.addDir('[COLOR hotpink]Myanmar Porn[/COLOR]','https://javhoho.com/category/free-myanmar-porn/',311,'','')
     utils.addDir('[COLOR hotpink]Taiwan Porn[/COLOR]','https://javhoho.com/category/free-taiwan-porn/',311,'','')
-    utils.addDir('[COLOR hotpink]Virtual Reality Porn[/COLOR]','https://javhoho.com/category/free-jav-vr-virtual-reality/',311,'','')    
+    utils.addDir('[COLOR hotpink]Virtual Reality Porn[/COLOR]','https://javhoho.com/category/free-jav-vr-virtual-reality/',311,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://javhoho.com/search/',314,'','')
     #List('https://javhoho.com/all-movies-free-jav-uncensored-censored-asian-porn-korean/')
     List('https://javhoho.com/')
@@ -56,7 +56,7 @@ def List(url):
     except:
         utils.kodilog('site error')
         return None
-    match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)       
+    match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         utils.addDownLink(name, videopage, 312, img, '')
@@ -87,7 +87,7 @@ def Cat(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('<a class="item" href="([^"]+)" title="([^"]+)">.+?src="([^"]+)".+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, img, videos in match:
-        name = name + " [COLOR deeppink]" + videos + "[/COLOR]"    
+        name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
         utils.addDir(name, catpage, 311, img)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -136,7 +136,7 @@ def Playvid(url, name, download=None):
         videoRUs = sorted(videoRU, key = lambda x: int(x[0][:-1]), reverse = True)
         choice = xbmcgui.Dialog().select('Select resolution', [str(item[0]) for item in videoRUs])
         videourl = videoRUs[choice][1]
-    
+
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
     listitem.setInfo('video', {'Title': name, 'Genre': 'JAVhoho'})
@@ -159,7 +159,7 @@ def Playvid(url, name, download=None):
         links.insert(0,u)
     vp.play_from_link_list(links)
     return
-    
+
     # hqplayer = re.compile('<iframe src="(https://javhoho.com/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
 # #    hqplayer = links[0]
     # utils.kodilog(hqplayer)
@@ -169,7 +169,7 @@ def Playvid(url, name, download=None):
     # playerhtml = utils.getHtml(link)
 # #    utils.kodilog(playerhtml)
 
-    # vp.progress.update(40, "", "Loading video page", "")    
+    # vp.progress.update(40, "", "Loading video page", "")
     # packed = re.compile('(eval\(function\(p,a,c,k,e,d\).+?)\s*</script>', re.DOTALL | re.IGNORECASE).findall(playerhtml)[0]
     # utils.kodilog("packed: " + packed)
     # unpacked = utils.unpack(packed)
@@ -178,4 +178,4 @@ def Playvid(url, name, download=None):
     # videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(unpacked)[0]
     # vp.progress.update(60, "", "Loading video page", "")
     # vp.play_from_direct_link(videolink) # + '|Referer=' + videolink)
-    
+

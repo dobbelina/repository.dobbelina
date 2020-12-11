@@ -41,7 +41,7 @@ except:
 conn.close()
 
 
-@utils.url_dispatcher.register('901')  
+@utils.url_dispatcher.register('901')
 def List():
     if utils.addon.getSetting("chaturbate") == "true":
         cleanchat(False)
@@ -66,7 +66,7 @@ def List():
         return
 
 
-@utils.url_dispatcher.register('900', ['fav','favmode','name','url','img'])  
+@utils.url_dispatcher.register('900', ['fav','favmode','name','url','img'])
 def Favorites(fav, favmode, name, url, img):
     if fav == "add":
         existing_favorite = select_favorite(url)

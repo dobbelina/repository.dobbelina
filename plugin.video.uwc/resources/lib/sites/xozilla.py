@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'https://www.xozilla.com'
-    
+
 @utils.url_dispatcher.register('770')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl+'/categories/',773,'','')
@@ -98,7 +98,7 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, '')
     match = re.compile('Download:(.+?)<\/div>', re.DOTALL | re.IGNORECASE).findall(videopage)
     srcs = re.compile('href="([^"]+)".+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(match[0])
-    sources =  {}	
+    sources =  {}
     for videourl, quality in srcs:
         if videourl:
             sources[quality] = videourl

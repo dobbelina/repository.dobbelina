@@ -60,7 +60,7 @@ def PTList(url, page=1, onelist=None):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-        
+
     if '>Log in<' in listhtml:
         html = login(url)
         if html:
@@ -69,8 +69,8 @@ def PTList(url, page=1, onelist=None):
         if cookie.domain == '.porntrex.com' and cookie.name == 'PHPSESSID':
             utils.addon.setSetting(id='session', value = cookie.value)
         if cookie.domain == '.porntrex.com' and cookie.name == 'kt_member':
-            utils.addon.setSetting(id='kt_member', value = cookie.value)    
-        
+            utils.addon.setSetting(id='kt_member', value = cookie.value)
+
 #   Changed regex current 19.01.22
     match = re.compile ('data-item-id=.*?href="([^"]+)".*?data-src="([^"]+)"(.*?)clock-o"></i>([^<]+)<.*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
 #   Changed var order 19.01.22
@@ -111,7 +111,7 @@ def PTList(url, page=1, onelist=None):
         newimg = str(imgint) + '.jpg'
 
         img = img.replace('1.jpg', newimg)
-        
+
         context = None
         if utils.addon.getSetting('pt_user'):
             ctxadd = (sys.argv[0] +
@@ -122,7 +122,7 @@ def PTList(url, page=1, onelist=None):
                 "?mode=" + str('56') +
                 "&url=" + urllib.quote_plus(videopage) +
                 "&fav=del")
-            context = [('[COLOR deeppink]Add to PORNTREX favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'), 
+            context = [('[COLOR deeppink]Add to PORNTREX favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'),
                        ('[COLOR deeppink]Delete from PORNTREX favorites[/COLOR]', 'xbmc.RunPlugin('+ctxdel+')')]
         utils.addDownLink(name, videopage, 52, img, '', context=context)
     if not onelist:
@@ -165,7 +165,7 @@ def JHList(url, page=1, onelist=None):
         if cookie.domain == '.javbangers.com' and cookie.name == 'PHPSESSID':
             utils.addon.setSetting(id='session', value = cookie.value)
         if cookie.domain == '.javbangers.com' and cookie.name == 'kt_member':
-            utils.addon.setSetting(id='kt_member', value = cookie.value)    
+            utils.addon.setSetting(id='kt_member', value = cookie.value)
 
     match = re.compile('class="video-item.*?href="([^"]+)" title="([^"]+)".*?original="([^"]+)"(.*?)clock-o"></i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, hd, duration in match:
@@ -202,7 +202,7 @@ def JHList(url, page=1, onelist=None):
                 "?mode=" + str('56') +
                 "&url=" + urllib.quote_plus(videopage) +
                 "&fav=del")
-            context = [('[COLOR deeppink]Add to JAVBANGERS favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'), 
+            context = [('[COLOR deeppink]Add to JAVBANGERS favorites[/COLOR]', 'xbmc.RunPlugin('+ctxadd+')'),
                        ('[COLOR deeppink]Delete from JAVBANGERS favorites[/COLOR]', 'xbmc.RunPlugin('+ctxdel+')')]
         utils.addDownLink(name, videopage, 52, img, '', context=context)
 
@@ -260,7 +260,7 @@ def PTPlayvid(url, name, download=None):
     if 'video is a private video' in videopage:
         utils.notify('PRIVATE VIDEO','Add an account in settings to watch private videos!')
         return
-        
+
     if 'video_url_text' not in videopage:
         videourl = re.compile("video_url: '([^']+)'", re.DOTALL | re.IGNORECASE).search(videopage).group(1)
     else:

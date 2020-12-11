@@ -58,7 +58,7 @@ def List(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('214', ['url'], ['keyword'])      
+@utils.url_dispatcher.register('214', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -83,8 +83,8 @@ def Cat(url):
         page_nr = [x for x in next_page.split('/') if x.isdigit()][0]
         utils.addDir('Next Page (' + page_nr + ')', siteurl + next_page, 213,'')
     except:
-        pass           
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+        pass
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('212', ['url', 'name'], ['download'])

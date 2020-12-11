@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'http://www.perfectgirls.net/'
-    
+
 @utils.url_dispatcher.register('710')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.perfectgirls.net/',713,'','')
@@ -39,7 +39,7 @@ def List(url):
     except:
         return None
     match = re.compile('class="list__item_link">.+?href="([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?<time>(.*?)</time>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    
+
     for videopage, name, img, duration in match:
 	videopage = siteurl + videopage
         name = utils.cleantext(name)
@@ -66,7 +66,7 @@ def Categories(url):
     match = re.compile('class="header-submenu__item_link" href="([^"]+)">([^<]+)</a></li>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name.strip())
-        utils.addDir(name, siteurl + catpage, 711, '', 2)    
+        utils.addDir(name, siteurl + catpage, 711, '', 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

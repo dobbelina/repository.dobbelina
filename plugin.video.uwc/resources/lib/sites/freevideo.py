@@ -68,7 +68,7 @@ def List(url):
     'image_ultra_2x="([^"]+)".*?'
     'duration">.*?([\w:]+).*?'
     '(?:quality">.*?(\w+).*?)?'
-    '<h5 class="video__description">([^<]+)', 
+    '<h5 class="video__description">([^<]+)',
     re.DOTALL | re.IGNORECASE).findall(listhtml)
 
     for videopage, img, duration, quality, name in match:
@@ -80,11 +80,11 @@ def List(url):
         name = name + " " + quality + "[COLOR deeppink]" + duration + "[/COLOR]"
 
         utils.addDownLink(name, videopage, 962, img, '')
-    
+
     match = re.compile('<a href="([^"]+)" class="pagination__next">', re.DOTALL | re.IGNORECASE).search(listhtml)
     if(match):
         utils.addDir('Next Page', match.group(1), 961, '', 1)
-    
+
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('962', ['url', 'name'], ['download'])
@@ -114,9 +114,9 @@ def Cat(url):
 
     match = re.compile('<a href="([^"]+)" class="category">.*?'
     'data-original="([^"]+)".*?'
-    'category__description">(.*?)</h5>', 
+    'category__description">(.*?)</h5>',
     re.DOTALL | re.IGNORECASE).findall(cathtml)
-    
+
     for videopage, img, name in match:
         utils.addDir(name, videopage, 961, img, 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -134,9 +134,9 @@ def Search(url, keyword=None):
 def Pornstars(url):
     listhtml = get_content(url)
 
-    match = re.compile('Label="([^"]+)"><picture>.*?min-width: 1600px.*?srcset="([^"]+)"', 
+    match = re.compile('Label="([^"]+)"><picture>.*?min-width: 1600px.*?srcset="([^"]+)"',
     re.DOTALL | re.IGNORECASE).findall(listhtml)
-    
+
     for name, img in match:
         formattedName = name.lower().replace(' ', '-')
         utils.addDir(name, 'https://freevideo.cz/vase-videa/kategorie/' + formattedName, 961, img, 1)

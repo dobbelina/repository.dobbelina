@@ -50,7 +50,7 @@ def datoporn_list(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('673', ['url']) 
+@utils.url_dispatcher.register('673', ['url'])
 def datoporn_cat(url):
     listhtml = utils.getHtml(url)
     match = re.compile('class="item" href="([^"]+)" title="([^"]+)">.+?class="thumb" src="([^"]+)".+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)

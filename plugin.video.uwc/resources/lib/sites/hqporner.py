@@ -21,7 +21,7 @@ import re
 import xbmcplugin
 import xbmcgui
 from resources.lib import utils
- 
+
 
 @utils.url_dispatcher.register('150')
 def HQMAIN():
@@ -34,12 +34,12 @@ def HQMAIN():
 
 @utils.url_dispatcher.register('151', ['url'])
 def HQLIST(url):
-	
+
     try:
         link = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('class="box feature">\s*<a href="([^"]+)".+?src="([^"]+)" alt="([^"]+)".+?class="icon fa-clock-o meta-data">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(link)  
+    match = re.compile('class="box feature">\s*<a href="([^"]+)".+?src="([^"]+)" alt="([^"]+)".+?class="icon fa-clock-o meta-data">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(link)
     for url, img, name, duration in match:
         name = utils.cleantext(name).capitalize() + " [COLOR deeppink]" + duration + "[/COLOR]"
         videourl = "https://www.hqporner.com" + url
@@ -65,7 +65,7 @@ def HQCAT(url):
         caturl = "https://www.hqporner.com" + caturl
         #catimg = "https://www.hqporner.com" + catimg
         if catimg.startswith('//'):
-            catimg = 'https:' + catimg + '|verifypeer=false'        
+            catimg = 'https:' + catimg + '|verifypeer=false'
         utils.addDir(catname,caturl,151,catimg)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -91,7 +91,7 @@ def HQPLAY(url, name, download=None):
 	if re.search('bemywife', iframeurl, re.DOTALL | re.IGNORECASE):
 		videourl = getBMW(iframeurl)
 	elif re.search('mydaddy', iframeurl, re.DOTALL | re.IGNORECASE):
-		videourl = getBMW(iframeurl)        
+		videourl = getBMW(iframeurl)
 	elif re.search('5\.79', iframeurl, re.DOTALL | re.IGNORECASE):
 		videourl = getIP(iframeurl)
 	elif re.search('flyflv', iframeurl, re.DOTALL | re.IGNORECASE):

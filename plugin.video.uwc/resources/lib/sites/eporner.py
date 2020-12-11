@@ -23,7 +23,7 @@ import xbmcplugin, xbmcgui, xbmc
 from resources.lib import utils
 
 siteurl = 'https://www.eporner.com'
-    
+
 @utils.url_dispatcher.register('540')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl + '/cats/',543,'','')
@@ -52,7 +52,7 @@ def List(url):
     try:
         if '/recent/' in url:
             nextp, page = re.compile("href='(/(\d+)/[^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        else: 
+        else:
             nextp, page = re.compile("href='([^']+/(\d+)/)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         utils.addDir('Next Page (' + page +')', siteurl + nextp, 541,'')
     except:
@@ -154,7 +154,7 @@ def Search(url, keyword=None):
         utils.searchDir(url, 544)
     else:
         title = keyword.replace(' ','+')
-        searchUrl = searchUrl + title 
+        searchUrl = searchUrl + title
         List(searchUrl)
 
 

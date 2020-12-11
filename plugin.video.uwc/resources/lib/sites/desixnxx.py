@@ -44,7 +44,7 @@ def List(url):
     try:
         nextp = re.compile('class="current".+?href=[\"\'](.+?)[\"\']').findall(listhtml)
         utils.addDir('Next Page', 'http://desixnxx2.net' + nextp[0], 851, '')
-    except: pass        
+    except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

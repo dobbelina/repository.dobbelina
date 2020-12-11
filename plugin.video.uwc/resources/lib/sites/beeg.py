@@ -115,7 +115,7 @@ def BGList(url):
 def BGPlayvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
-    
+
     videopage = utils.getHtml(url)
     vp.progress.update(50, "", "Loading video page", "")
     list = {}
@@ -128,14 +128,14 @@ def BGPlayvid(url, name, download=None):
     videourl = videourl.replace("{DATA_MARKERS}","data=pc_GB__" + str(bgversion) + '_')
     if not videourl.startswith("http"): videourl = "https:" + videourl
 
-    vp.progress.update(75, "", "Loading video page", "")    
+    vp.progress.update(75, "", "Loading video page", "")
     vp.play_from_direct_link(videourl)
 
 
 @utils.url_dispatcher.register('83', ['url'])
 def BGTag(url):
     caturl = utils.getHtml5(url)
-    tags = re.compile('{"tag":"(.+?)","videos":(.+?)}', re.DOTALL | re.IGNORECASE).findall(caturl)  
+    tags = re.compile('{"tag":"(.+?)","videos":(.+?)}', re.DOTALL | re.IGNORECASE).findall(caturl)
     for tag,count in tags:
         videolist = "https://api.beeg.com/api/v6/" + bgversion + "/index/tag/0/pc?tag=" + urllib.quote(tag.encode("utf8").lower())
         name = tag.encode("utf8")

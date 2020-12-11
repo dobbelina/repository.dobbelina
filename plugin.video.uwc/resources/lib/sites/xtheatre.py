@@ -25,7 +25,7 @@ from resources.lib import utils
 addon = utils.addon
 
 sortlistxt = [addon.getLocalizedString(30022), addon.getLocalizedString(30023), addon.getLocalizedString(30024),
-            addon.getLocalizedString(30025)]   
+            addon.getLocalizedString(30025)]
 
 
 @utils.url_dispatcher.register('20')
@@ -33,7 +33,7 @@ def XTMain():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://xtheatre.org/categories/',22,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://xtheatre.org/page/1/?s=',24,'','')
     Sort = '[COLOR hotpink]Current sort:[/COLOR] ' + sortlistxt[int(addon.getSetting("sortxt"))]
-    utils.addDir(Sort, '', 25, '', '')    
+    utils.addDir(Sort, '', 25, '', '')
     XTList('https://xtheatre.org/category/movies/page/1/',1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -85,7 +85,7 @@ def XTList(url, page=1):
         desc = utils.cleantext(desc)
         utils.addDownLink(name, videopage, 23, img, desc)
     if re.search('<link rel="next"', listhtml, re.DOTALL | re.IGNORECASE):
-        npage = page + 1        
+        npage = page + 1
         next_url = original_url.replace('/page/' + str(page) + '/' , '/page/' + str(npage) + '/')
         utils.addDir('Next Page ('+str(npage)+')', next_url, 21, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -95,10 +95,10 @@ def XTList(url, page=1):
 def XTVideo(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")
-    html = utils.getHtml(url, url)   
+    html = utils.getHtml(url, url)
     if 'strdef.world' in html:
         links = vp._check_suburls(html, url)
-        select = {}       
+        select = {}
         for i, link in enumerate(links, start = 1):
             if 'strdef.world' in link:
                 req = urllib2.Request(link,'',utils.headers)
@@ -112,8 +112,8 @@ def XTVideo(url, name, download=None):
             return
         videourl = videourl.replace('woof.tube','verystream.com')
         vp.play_from_link_to_resolve(videourl)
-    else:   
-        vp.play_from_html(html)  
+    else:
+        vp.play_from_html(html)
 
 
 def getXTSortMethod():
@@ -122,4 +122,4 @@ def getXTSortMethod():
                    2: 'views',
                    3: 'likes'}
     sortvalue = addon.getSetting("sortxt")
-    return sortoptions[int(sortvalue)]    
+    return sortoptions[int(sortvalue)]

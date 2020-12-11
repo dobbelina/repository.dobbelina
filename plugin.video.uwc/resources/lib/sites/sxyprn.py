@@ -45,13 +45,13 @@ def yourporn_main():
 @utils.url_dispatcher.register('651', ['url', 'page'], ['section'])
 def yourporn_list(url, page=None, section=None):
     listhtml = utils.getHtml(url)
-    
-    if '>Nothing Found. See More...<' in listhtml: 
+
+    if '>Nothing Found. See More...<' in listhtml:
         utils.notify('SEARCH','Nothing Found.')
         return
 
     videos = listhtml.split("div class='post_el_small'")
-    
+
     for video in videos:
         match = re.compile("href='([^']+)' title='([^']+)'>", re.DOTALL | re.IGNORECASE).findall(video)
         if match:
@@ -65,7 +65,7 @@ def yourporn_list(url, page=None, section=None):
                     img = ''
             else:
                 img = ''
-                
+
             if "class='duration_small'" in video:
                 duration = re.compile(">([\d\?:]+)<", re.DOTALL | re.IGNORECASE).findall(video)[0]
             else:
@@ -83,7 +83,7 @@ def yourporn_list(url, page=None, section=None):
                 hd = ''
             if duration == '??':
                 duration = 'Prepairing new video. Please wait'
-                
+
             if 'http://' in title or 'https://' in title:
                 videourls = re.compile("(http.+?)(?:\s|'|$)", re.DOTALL | re.IGNORECASE).findall(title)
                 videourl = '|'.join(videourls) + '@'
@@ -92,15 +92,15 @@ def yourporn_list(url, page=None, section=None):
             name = utils.cleantext(name) + hd + " [COLOR deeppink]" + duration + "[/COLOR]"
             img = make_url(img)
             videourl = make_url(videourl)
-        
-            utils.addDownLink(name, videourl, 652, img, '')            
+
+            utils.addDownLink(name, videourl, 652, img, '')
     try:
         next_page = re.compile("<a href='([^']+)' class='tdn'><div class='next", re.DOTALL | re.IGNORECASE).search(listhtml).group(1)
         next_page = make_url(next_page)
         utils.addDir('Next Page' , next_page, 651, '')
     except:
         pass
-    
+
     if 'popular' in url or 'orgasm' in url:
         m = re.search('/(\d+)$', url)
         if m:
@@ -113,7 +113,7 @@ def yourporn_list(url, page=None, section=None):
             else:
                 next_page = url + '/' + '30'
         utils.addDir('Next Page' , next_page, 651, '')
-    
+
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -166,7 +166,7 @@ def ssut51(str):
 def yourporn_play(url, name, download=None):
 
     vp = utils.VideoPlayer(name, download = download)
-    vp.progress.update(25, "", "Playing video", "")        
+    vp.progress.update(25, "", "Playing video", "")
     if url.endswith('@'):
         urls = url[:-1]
         urls = urls.split('|')
@@ -191,7 +191,7 @@ def yourporn_play(url, name, download=None):
             else:
                 videourl = videourl.replace('/cdn/','/cdn8/')
             videourl = make_url(videourl)
-            vp.progress.update(75, "", "Playing video", "")        
+            vp.progress.update(75, "", "Playing video", "")
             vp.play_from_direct_link(videourl)
 
 

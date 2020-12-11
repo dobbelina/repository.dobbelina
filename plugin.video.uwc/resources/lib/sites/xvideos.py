@@ -25,7 +25,7 @@ siteurl = 'https://www.xvideos.com'
 hdr = dict(utils.headers)
 hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
 
-    
+
 @utils.url_dispatcher.register('790')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl,793,'','')
@@ -92,8 +92,8 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, hdr=hdr)
     videopage1 = re.compile('iframe src=&quot;(.+?)&quot;', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     html = utils.getHtml(videopage1, url)
-#   best quality    
-    srcs = re.compile("html5player.setVideo(HLS.*?)\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)                          
+#   best quality
+    srcs = re.compile("html5player.setVideo(HLS.*?)\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)
 #   select quality
 #    srcs = re.compile("html5player.setVideo(HLS|UrlLow|UrlHigh)\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)
     sources = {}

@@ -55,7 +55,7 @@ def pl_list(url):
         pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('623', ['url']) 
+@utils.url_dispatcher.register('623', ['url'])
 def pl_cat(url):
     listhtml = utils.getHtml(url, 'https://porns.land/')
     match = re.compile('<div class="category".*?href="([^"]+)".*?data-original="([^"]+)".*?alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -64,7 +64,7 @@ def pl_cat(url):
         utils.addDir(name, catpage, 621, img, 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('624', ['url']) 
+@utils.url_dispatcher.register('624', ['url'])
 def pl_channels(url):
     listhtml = utils.getHtml(url, 'https://porns.land/')
     match = re.compile('<div class="serie".*?href="([^"]+)".*?data-original="([^"]+)".*?<h2>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -92,7 +92,7 @@ def pl_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     videopage = utils.getHtml(url, '')
     match = re.compile('label: "([^"]+)",.*?file: "([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    sources =  {}	
+    sources =  {}
     for quality, videourl in match:
         if videourl:
             sources[quality] = videourl

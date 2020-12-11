@@ -44,7 +44,7 @@ def List(url):
     for videopage, img, other, name in match1:
         name = utils.cleantext(name)
         if 'uncensored' in other:
-            name = name + " [COLOR orange]Uncensored[/COLOR]"        
+            name = name + " [COLOR orange]Uncensored[/COLOR]"
         utils.addDownLink(name, videopage, 462, img, '')
     try:
         page = re.compile('page_no=(\d+)', re.DOTALL | re.IGNORECASE).findall(url)[0]
@@ -87,8 +87,8 @@ def Categories(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('/tag/([^/]+)/" cla[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
-        catpage = "http://hentaihaven.org/ajax.php?action=pukka_infinite_scroll&page_no=1&grid_params=infinite_scroll=on&infinite_page=2&infinite_more=true&current_page=taxonomy&front_page_cats=&inner_grid%5Buse_inner_grid%5D=on&inner_grid%5Btax%5D=post_tag&inner_grid%5Bterm_id%5D=53&inner_grid%5Bdate%5D=&search_query=&tdo_tag=" + catpage + "&sort=date" 
-        utils.addDir(name, catpage, 461, '')    
+        catpage = "http://hentaihaven.org/ajax.php?action=pukka_infinite_scroll&page_no=1&grid_params=infinite_scroll=on&infinite_page=2&infinite_more=true&current_page=taxonomy&front_page_cats=&inner_grid%5Buse_inner_grid%5D=on&inner_grid%5Btax%5D=post_tag&inner_grid%5Bterm_id%5D=53&inner_grid%5Bdate%5D=&search_query=&tdo_tag=" + catpage + "&sort=date"
+        utils.addDir(name, catpage, 461, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -99,5 +99,5 @@ def A2Z(url):
     for catpage, name, img, other in match:
         if 'uncensored' in other:
             name = name + " [COLOR hotpink]Uncensored[/COLOR]"
-        utils.addDir(name, catpage, 461, img)    
+        utils.addDir(name, catpage, 461, img)
     xbmcplugin.endOfDirectory(utils.addon_handle)

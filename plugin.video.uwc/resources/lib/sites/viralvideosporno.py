@@ -65,7 +65,7 @@ def EXList(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('764', ['url'], ['keyword'])      
+@utils.url_dispatcher.register('764', ['url'], ['keyword'])
 def EXSearch(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -83,7 +83,7 @@ def EXCat(url):
     for catpage, name in sorted(match, key=lambda x: x[1]):
         catpage = 'http:' + catpage
         utils.addDir(utils.cleantext(name), catpage, 761, '')
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('762', ['url', 'name'], ['download'])

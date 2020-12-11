@@ -37,16 +37,16 @@ def animeidhentai_list(url):
     except Exception as e:
         return None
     match = re.compile(r'article class=.+?entry-title">([^<]+)<(.+?)/header.+?src="??([^"\s]+jpg)"??\s.+?href="??([^"\s]+)"??\s', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if match: 
+    if match:
         for name, other, img, video in match:
             if 'uncensored' in name.lower():
                 name = re.sub('Uncensored', ' [COLOR hotpink]Uncensored[/COLOR]', name, flags=re.IGNORECASE)
             else:
                 if 'uncensored' in other.lower():
-                    name = name + " [COLOR hotpink]Uncensored[/COLOR]" 
+                    name = name + " [COLOR hotpink]Uncensored[/COLOR]"
             utils.addDownLink(utils.cleantext(name), video, 662, img, '')
     else:
-        match = re.compile('div class="result-item".*?<a href="([^"]+)">.*?<img\s*src="([^"]+)"\s*alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)       
+        match = re.compile('div class="result-item".*?<a href="([^"]+)">.*?<img\s*src="([^"]+)"\s*alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
         for video, img, name in match:
             if 'uncensored' in name.lower():
                 name = name.replace('Uncensored',' [COLOR hotpink]Uncensored[/COLOR]')

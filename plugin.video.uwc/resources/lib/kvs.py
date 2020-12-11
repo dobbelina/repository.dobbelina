@@ -36,9 +36,9 @@ def decryptHash(videoUrl, licenseCode, hashRange):
             hash = n
         videoUrlPart[7] = hash + nonConvertHash
         videoUrlPart.pop(0)
-        videoUrlPart.pop(0)        
-        result = '/'.join(videoUrlPart)   
-    return result        
+        videoUrlPart.pop(0)
+        result = '/'.join(videoUrlPart)
+    return result
 
 
 def calcSeed(licenseCode, hashRange):
@@ -54,6 +54,6 @@ def calcSeed(licenseCode, hashRange):
         for h in range (1,5):
             n =  int(licenseCode[g2 + h]) + int(str(fi)[g2])
             if n>=i:
-                n -= i	
+                n -= i
             m = m + str(n)
     return m

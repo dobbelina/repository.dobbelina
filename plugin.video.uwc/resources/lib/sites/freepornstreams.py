@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'http://freepornstreams.org'
-    
+
 @utils.url_dispatcher.register('740')
 def Main():
 #    utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl,743,'','')
@@ -78,8 +78,8 @@ def Categories(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('href="([^"]+)" rel="tag">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
-        name = utils.cleantext(name) 
-        utils.addDir(name, catpage, 741, '', 2)    
+        name = utils.cleantext(name)
+        utils.addDir(name, catpage, 741, '', 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

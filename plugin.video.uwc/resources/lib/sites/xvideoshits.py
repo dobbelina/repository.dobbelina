@@ -22,7 +22,7 @@ import xbmcplugin
 import xbmc
 from resources.lib import utils
 
-    
+
 @utils.url_dispatcher.register('700')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.xvideoshits.com/networks/',703,'','')
@@ -60,18 +60,18 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "", "Loading video page", "")
     html = utils.getHtml(url, url)
     html = html.replace('oload.website', 'oload.stream')
-    vp.play_from_html(html)  
+    vp.play_from_html(html)
 
 
 @utils.url_dispatcher.register('703', ['url'])
 def Categories(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('class="thumbInside".*?href="([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?alt="([^"]+)".*?>(\d+) Videos<', re.DOTALL | re.IGNORECASE).findall(cathtml)
- 
+
 
     for catpage, name, img, alt, count in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip()) + " [COLOR deeppink]" + count.strip() + " videos[/COLOR]   "
-        utils.addDir(name, catpage, 701, img, 2)    
+        utils.addDir(name, catpage, 701, img, 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

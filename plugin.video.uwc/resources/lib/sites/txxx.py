@@ -40,7 +40,7 @@ def Main(url, page=0):
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',site + '/api/json/categories/14400/str.all.json', 383, '', '')
     if page in [0, 3]:
         utils.addDir('[COLOR hotpink]Channels[/COLOR]',site + '/api/json/channels/14400/str/latest-updates/80/..1.json', 385, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]',site + '/api/videos.php?params=259200/str/relevance/60/search..1.all..day&sort=latest-updates&date=day&type=all&s=', 384, '', '')    
+    utils.addDir('[COLOR hotpink]Search[/COLOR]',site + '/api/videos.php?params=259200/str/relevance/60/search..1.all..day&sort=latest-updates&date=day&type=all&s=', 384, '', '')
     List(site + '/api/json/videos/86400/str/latest-updates/60/..1.all..day.json')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
@@ -56,7 +56,7 @@ def List(url):
 
     listjson = utils.getHtml(url, url)
     js = json.loads(listjson)
-    
+
     if "videos" in js.keys():
         for video in js["videos"]:
             videopage = site + "/videos/" + video["video_id"] + "/" + video["dir"] + "/"
@@ -86,7 +86,7 @@ def List(url):
 
 
 
-@utils.url_dispatcher.register('384', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('384', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -109,7 +109,7 @@ def Categories(url):
         catpage = site + "/api/json/videos/86400/str/latest-updates/60/categories.{}.1.all..day.json".format(catpage)
         name = cat["title"]
         vids = cat["total_videos"]
-        vids = ' [COLOR deeppink]{} videos[/COLOR]'.format(vids).encode("UTF-8") 
+        vids = ' [COLOR deeppink]{} videos[/COLOR]'.format(vids).encode("UTF-8")
         name = name.encode("UTF-8")
         name += vids
         utils.addDir(name, catpage, 381, '', '')
@@ -136,26 +136,26 @@ def Channels(url):
             name = name.encode("UTF-8")
             img = chan["img"]
             utils.addDir(name, catpage, 381, img, '')
-            
+
         npage = page + 1
         url = url.replace('.'+str(page)+'.', '.'+str(npage)+'.')
         utils.addDir('Next Page (' + str(page) + ')', url, 385, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
 
 
 
-@utils.url_dispatcher.register('382', ['url', 'name'], ['download'])    
+
+@utils.url_dispatcher.register('382', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     site = url.split('/video')[0]
     vp = utils.VideoPlayer(name, download = download)
-    vp.progress.update(25, "", "Playing video", "")        
+    vp.progress.update(25, "", "Playing video", "")
     videolink = GetTxxxVideo(url, site)
     if videolink.startswith('/'):
         videolink = site + videolink
-    vp.progress.update(40, "", "Playing video", "")    
+    vp.progress.update(40, "", "Playing video", "")
     vp.play_from_direct_link(videolink)
-    
+
 def GetTxxxVideo(videopage, site):
     id = videopage.split('/')[-3]
     vidpage = site + "/api/videofile.php?video_id={}&lifetime=8640000".format(id)
@@ -165,7 +165,7 @@ def GetTxxxVideo(videopage, site):
     for key in replacemap:
         vidurl = vidurl.replace(replacemap[key], key)
     vidurl = base64.b64decode(vidurl)
-    return vidurl + "|Referer=" + vidpage    
+    return vidurl + "|Referer=" + vidpage
 
 
 # def GetTxxxVideo(vidpage):
@@ -178,7 +178,7 @@ def GetTxxxVideo(videopage, site):
     # vidcontent = utils.getHtml(posturl, referer=vidpage, data={'param': data})
     # vidurl = re.search('video_url":"([^"]+)', vidcontent).group(1)
     # replacemap = {'M':'\u041c', 'A':'\u0410', 'B':'\u0412', 'C':'\u0421', 'E':'\u0415', '=':'~', '+':'.', '/':','}
-    
+
     # for key in replacemap:
         # vidurl = vidurl.replace(replacemap[key], key)
 
@@ -193,12 +193,12 @@ def GetTxxxVideo(videopage, site):
 	vp.progress.update(25, "", "Loading video page", "")
 	html = utils.getHtml(url, '')
 	videourl = re.compile('video_url="([^"]+)"').findall(html)[0]
-	videourl += re.compile('video_url\+="([^"]+)"').findall(html)[0]	
+	videourl += re.compile('video_url\+="([^"]+)"').findall(html)[0]
 	partes = videourl.split('||')
 	videourl = decode_url(partes[0])
 	videourl = re.sub('/get_file/\d+/[0-9a-z]{32}/', partes[1], videourl)
 	videourl += '&' if '?' in videourl else '?'
-	videourl += 'lip=' + partes[2] + '&lt=' + partes[3]	
+	videourl += 'lip=' + partes[2] + '&lt=' + partes[3]
 	vp.play_from_direct_link(videourl)
 
 def decode_url(txt):
@@ -207,7 +207,7 @@ def decode_url(txt):
 	# En las dos siguientes líneas, ABCEM ocupan 2 bytes cada letra! El replace lo deja en 1 byte. !!!!: АВСЕМ (10 bytes) ABCEM (5 bytes)
 	txt = re.sub('[^АВСЕМA-Za-z0-9\.\,\~]', '', txt)
 	txt = txt.replace('А', 'A').replace('В', 'B').replace('С', 'C').replace('Е', 'E').replace('М', 'M')
-	
+
 	while n < len(txt):
 		a = _0x52f6x15.index(txt[n])
 		n += 1
@@ -217,13 +217,13 @@ def decode_url(txt):
 		n += 1
 		d = _0x52f6x15.index(txt[n])
 		n += 1
-	
+
 		a = a << 2 | b >> 4
 		b = (b & 15) << 4 | c >> 2
 		e = (c & 3) << 6 | d
 		reto += chr(a)
 		if c != 64: reto += chr(b)
 		if d != 64: reto += chr(e)
-	
+
 	return urllib.unquote(reto)
 """

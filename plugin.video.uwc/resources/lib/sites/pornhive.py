@@ -41,7 +41,7 @@ def PHList(url):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile(r'anel-img">\s+<a href="([^"]+)">\s+<img.*?data-src="([^"]+)".*?alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
@@ -54,7 +54,7 @@ def PHList(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('74', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('74', ['url'], ['keyword'])
 def PHSearch(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -72,7 +72,7 @@ def PHCat(url):
     match = re.compile(r'panel-img">\s+<A href="([^"]+)".*?alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         utils.addDir(name, catpage, 71, '')
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('72', ['url', 'name'], ['download'])

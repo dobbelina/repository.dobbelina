@@ -34,7 +34,7 @@ def List(url):
     try:
         listhtml = utils.getHtml(url)
     except:
-        
+
         return None
     match = re.compile('class="item.+?href="([^"]+)" title="([^"]+)".+?data-original="([^"]+)".+?class="duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, duration in match:
@@ -71,7 +71,7 @@ def Cat(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('<a class="item" href="([^"]+)" title="([^"]+)">.+?src="([^"]+)".+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, img, videos in match:
-        name = name + " [COLOR deeppink]" + videos + "[/COLOR]"    
+        name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
         utils.addDir(name, catpage, 191, img)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 

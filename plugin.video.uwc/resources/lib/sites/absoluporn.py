@@ -24,7 +24,7 @@ import xbmcplugin
 import xbmcgui
 from resources.lib import utils
 
-@utils.url_dispatcher.register('300')  
+@utils.url_dispatcher.register('300')
 def Main():
     utils.addDir('[COLOR hotpink]Top Rated[/COLOR]','http://www.absoluporn.com/en/wall-note-1.html',301,'','')
     utils.addDir('[COLOR hotpink]Most Viewed[/COLOR]','http://www.absoluporn.com/en/wall-main-1.html',301,'','')
@@ -34,12 +34,12 @@ def Main():
     List('http://www.absoluporn.com/en/wall-date-1.html')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('301', ['url'])  
+@utils.url_dispatcher.register('301', ['url'])
 def List(url):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile('thumb-main-titre"><a href="..([^"]+)".*?title="([^"]+)".*?src="([^"]+)".*?<div class="thumb-info">(.*?)time">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videourl, name, img, hd, duration in match:
@@ -59,24 +59,24 @@ def List(url):
         nextp=re.compile(r'<span class="text16">\d+</span> <a href="..([^"]+)"').findall(listhtml)[0]
         nextp = nextp.replace(" ","%20")
         utils.addDir('Next Page', 'http://www.absoluporn.com' + nextp, 301,'')
-    except: pass    
+    except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('302', ['url', 'name'], ['download'])  
+@utils.url_dispatcher.register('302', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
 	videopage = utils.getHtml(url, '')
 	videourl=re.compile('source src="(.+?)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
 	videourl+='|verifypeer=false'
 	if download == 1:
 		utils.downloadVideo(videourl, name)
-	else:    
+	else:
 		xbmc.Player().play(str(videourl))
 		#iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		#listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 		#listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
-		#xbmc.Player().play(videourl, listitem)		
+		#xbmc.Player().play(videourl, listitem)
 
-@utils.url_dispatcher.register('303', ['url'])  
+@utils.url_dispatcher.register('303', ['url'])
 def Cat(url):
 	cathtml = utils.getHtml(url, '')
 	match = re.compile("gories(.*?)titre18", re.DOTALL | re.IGNORECASE).findall(cathtml)
@@ -86,7 +86,7 @@ def Cat(url):
 		utils.addDir(name, catpage, 301, '', '')
 	xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('304', ['url'], ['keyword'])  
+@utils.url_dispatcher.register('304', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:

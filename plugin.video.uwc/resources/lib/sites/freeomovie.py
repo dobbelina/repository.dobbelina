@@ -24,19 +24,19 @@ from resources.lib import utils
 
 progress = utils.progress
 
-@utils.url_dispatcher.register('370') 
+@utils.url_dispatcher.register('370')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','https://www.freeomovie.to/', 373, '', '')
-    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.freeomovie.to/?s=', 374, '', '')    
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.freeomovie.to/?s=', 374, '', '')
     List('https://www.freeomovie.to/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('371', ['url']) 
+@utils.url_dispatcher.register('371', ['url'])
 def List(url):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile('<h2><a href="([^"]+)".*?title="([^"]+)">.+?class="rmbd" src="([^"]+)".+? width="', re.DOTALL).findall(listhtml)
     for videopage, name, img in match:
@@ -50,7 +50,7 @@ def List(url):
     except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('374', ['url'], ['keyword'])     
+@utils.url_dispatcher.register('374', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -61,17 +61,17 @@ def Search(url, keyword=None):
         print "Searching URL: " + searchUrl
         List(searchUrl)
 
-@utils.url_dispatcher.register('373', ['url']) 
+@utils.url_dispatcher.register('373', ['url'])
 def Cat(url):
     listhtml = utils.getHtml(url, '')
-    match0 = re.compile('<h2>Categories(.+?)<div id="enhancedtextwidget-11"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]	
+    match0 = re.compile('<h2>Categories(.+?)<div id="enhancedtextwidget-11"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     match = re.compile('<a href="(.+?)"\s+title=".+?">(.+?)<', re.DOTALL | re.IGNORECASE).findall(match0)
     for catpage, name in match:
         name = utils.cleantext(name)
         utils.addDir(name, catpage, 371, '', '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-@utils.url_dispatcher.register('372', ['url', 'name'], ['download'])   
+@utils.url_dispatcher.register('372', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, '<a href="([^"]+)"target="myIframe"','')
     vp.play_from_site_link(url, url)

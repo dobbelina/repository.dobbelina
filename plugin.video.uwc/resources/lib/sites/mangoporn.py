@@ -29,8 +29,8 @@ def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]', 'https://mangoporn.net/', 803, '', '')
     utils.addDir('[COLOR hotpink]Years[/COLOR]', 'https://mangoporn.net/', 804, '', '')
     utils.addDir('[COLOR hotpink]Studios[/COLOR]', 'https://mangoporn.net/', 805, '', '')
-    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]', 'https://mangoporn.net/', 806, '', '')    
-    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://mangoporn.net/search/', 807, '', '') 
+    utils.addDir('[COLOR hotpink]Pornstars[/COLOR]', 'https://mangoporn.net/', 806, '', '')
+    utils.addDir('[COLOR hotpink]Search[/COLOR]', 'https://mangoporn.net/search/', 807, '', '')
     List('https://mangoporn.net/genres/featured-movies/')
 
 
@@ -72,7 +72,7 @@ def url_decode(str):
             result = url_decode(base64.b64decode(re.search('/goto/(.+)', str).group(1)))
         except:
             result = str
-    return result 
+    return result
 
 @utils.url_dispatcher.register('802', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
@@ -111,7 +111,7 @@ def Categories(url):
     match = re.compile('href="(https://mangoporn.net/genres/[^"]+)">([^<]+)</a> <i>([^<]+)</i>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, count in match:
         name = utils.cleantext(name) + "[COLOR hotpink] (" + count + ")[/COLOR]"
-        utils.addDir(name, catpage, 801, '')    
+        utils.addDir(name, catpage, 801, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('804', ['url'])
@@ -120,8 +120,8 @@ def Years(url):
     match = re.compile('href="(https://mangoporn.net/year/[^"]+)">(\d+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
-        utils.addDir(name, catpage, 801, '')    
-    xbmcplugin.endOfDirectory(utils.addon_handle)    
+        utils.addDir(name, catpage, 801, '')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('805', ['url'])
 def Studio(url):
@@ -129,18 +129,18 @@ def Studio(url):
     match = re.compile('a href="(https://mangoporn.net/adult/studios/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
-        utils.addDir(name, catpage, 801, '')    
-    xbmcplugin.endOfDirectory(utils.addon_handle)    
-    
+        utils.addDir(name, catpage, 801, '')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
+
 @utils.url_dispatcher.register('806', ['url'])
 def Pornstars(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile('a href="(https://mangoporn.net/adult/pornstar/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
-        utils.addDir(name, catpage, 801, '')    
-    xbmcplugin.endOfDirectory(utils.addon_handle)    
-    
+        utils.addDir(name, catpage, 801, '')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
+
 @utils.url_dispatcher.register('807', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url

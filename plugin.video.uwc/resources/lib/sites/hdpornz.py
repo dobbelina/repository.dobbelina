@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'https://hdpornz.biz'
-    
+
 @utils.url_dispatcher.register('950')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl,953,'','')
@@ -68,8 +68,8 @@ def Categories(url):
     print "CatHTML: " + cathtml
     match = re.compile('href=\'(.*?)\'>(.*?)</a>', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
-        name = utils.cleantext(name) 
-        utils.addDir(name, catpage, 951, '', 2)    
+        name = utils.cleantext(name)
+        utils.addDir(name, catpage, 951, '', 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 @utils.url_dispatcher.register('954', ['url'], ['keyword'])

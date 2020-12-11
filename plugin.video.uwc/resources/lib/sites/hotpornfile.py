@@ -59,7 +59,7 @@ def List(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('554', ['url'], ['keyword'])      
+@utils.url_dispatcher.register('554', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -76,10 +76,10 @@ def Cat(url):
     match = re.compile('href="([^"]+/category/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     cats = []
     for catpage, name in match:
-        if not name in cats: 
+        if not name in cats:
             utils.addDir(utils.cleantext(name), catpage, 551, '')
             cats.append(name)
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('552', ['url', 'name'], ['download'])
@@ -93,7 +93,7 @@ def Playvid(url, name, download=None):
         videourl1 = utils.getHtml(videourl, url)
         packed = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(videourl1)[0]
         unpacked = utils.unpack(packed)
-        vp.progress.update(75, "", "Loading video page", "")    
+        vp.progress.update(75, "", "Loading video page", "")
         source = re.search('src:"([^"]+)"', unpacked)
         if source:
             vp.play_from_direct_link(source.group(1))

@@ -23,7 +23,7 @@ import xbmcplugin
 import xbmcgui
 from resources.lib import utils
 
-    
+
 @utils.url_dispatcher.register('40')
 def NFMain():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]','http://www.nudeflix.com/browse',44,'','')
@@ -48,14 +48,14 @@ def NFList(url,page=1):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile('href="([^"]+)" class="link">[^"]+?"([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         videopage = 'http://www.nudeflix.com' + videopage
         utils.addDir(name, videopage, 42, img, '')
     if re.search("<strong>next &raquo;</strong>", listhtml, re.DOTALL | re.IGNORECASE):
-        npage = page + 1        
+        npage = page + 1
         url = url.replace('page='+str(page),'page='+str(npage))
         utils.addDir('Next Page ('+str(npage)+')', url, 41, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -70,7 +70,7 @@ def NFScenes(url):
         name = 'Scene ' + str(scenecount)
         sceneurl = sceneurl.replace("&amp;","&")
         scenecount = scenecount + 1
-        utils.addDownLink(name, sceneurl, 43, img, desc)        
+        utils.addDownLink(name, sceneurl, 43, img, desc)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

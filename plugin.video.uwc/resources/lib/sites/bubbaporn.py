@@ -49,7 +49,7 @@ def TPList(url, page=0):
         name = name + " [COLOR deeppink]" + duration + "[/COLOR]"
         utils.addDownLink(name, videourl, 92, thumb, '')
 
-    npage = page + 1        
+    npage = page + 1
     url = url.replace('page='+str(page),'page='+str(npage))
     utils.addDir('Next Page ('+str(npage)+')', url, 91, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
@@ -89,15 +89,15 @@ def TPPornstars(url, page=1):
     for img, title, psurl, videos in pornstars:
         psurl = psurl.replace('/pornstar','')
         psurl = "https://www.bubbaporn.com/ajax/show_pornstar" + psurl + "?page=1"
-        title = title + " [COLOR deeppink]" + videos + "[/COLOR]" 
-        utils.addDir(title, psurl, 91, img, 1)     
+        title = title + " [COLOR deeppink]" + videos + "[/COLOR]"
+        utils.addDir(title, psurl, 91, img, 1)
     npage = page + 1
     url = url.replace('page='+str(page),'page='+str(npage))
-    utils.addDir('Next Page ('+str(npage)+')', url, 95, '', npage)        
+    utils.addDir('Next Page ('+str(npage)+')', url, 95, '', npage)
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
 
-@utils.url_dispatcher.register('94', ['url'], ['keyword'])  
+
+@utils.url_dispatcher.register('94', ['url'], ['keyword'])
 def TPSearch(url, keyword=None):
     searchUrl = url
     if not keyword:

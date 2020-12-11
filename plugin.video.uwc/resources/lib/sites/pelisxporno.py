@@ -39,7 +39,7 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('id="video.+?img src="([^"]+)".+?href="([^"]+)" rel="bookmark" title="([^"]+)".+?class="duration" align="right">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)    
+    match = re.compile('id="video.+?img src="([^"]+)".+?href="([^"]+)" rel="bookmark" title="([^"]+)".+?class="duration" align="right">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name, duration in match:
         name = utils.cleantext(name) + "[COLOR deeppink] " + duration + "[/COLOR]"
         utils.addDownLink(name, videopage, 142, img, '')
@@ -69,7 +69,7 @@ def Categories(url):
     match1 = re.compile('href="([^"]+)[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(match[0])
     for catpage, name in match1:
         utils.addDir(name, catpage, 141, '')
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('142', ['url', 'name'], ['download'])
@@ -87,7 +87,7 @@ def Playvid(url, name, download=None):
             html = utils.getHtml(link, url)
             videolink = re.compile('MDCore.vsrc = "([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
             if not videolink.startswith("http"): videolink = "https:" + videolink
-            links[str(i) + ': ' + 'mixdrop.co'] = videolink 
+            links[str(i) + ': ' + 'mixdrop.co'] = videolink
     videourl = utils.selector('Select link', links, dont_ask_valid=False)
     if not videourl:
         return

@@ -76,7 +76,7 @@ def ypp_list(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('693', ['url']) 
+@utils.url_dispatcher.register('693', ['url'])
 def ypp_cat(url):
     listhtml = utils.getHtml(url)
     match = re.compile('"letter-block__item".*?<a href="([^"]+)" class="letter-block__link">.*?<span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)

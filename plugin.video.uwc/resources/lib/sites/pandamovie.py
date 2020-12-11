@@ -36,11 +36,11 @@ def List(url):
         utils.addDownLink(utils.cleantext(title), url1, 602, img, '')
     #try:
     #match=re.compile('''/page/(.+?)''', re.DOTALL | re.IGNORECASE).findall(url)
-    #if match: 
+    #if match:
     thisP = url.split('/')[-1]
     match = re.compile('rel=\'nofollow\' href=\'(.+?)\'', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if match: 
-        baseUrl = match[-1].split('/') 
+    if match:
+        baseUrl = match[-1].split('/')
         totalPages = baseUrl[-1]
     else:
         baseUrl = url.split('/')
@@ -137,11 +137,11 @@ def ListHD(url):
         utils.addDownLink(utils.cleantext(title), url1.strip(), 602, img, '')
     #try:
     match=re.compile('/page/(.+?)', re.DOTALL | re.IGNORECASE).findall(url)
-    if match: 
+    if match:
         thisP = match[0]
         match = re.compile('rel=\'nofollow\' href=\'(.+?)\'', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        if match: 
-            baseUrl = match[0].split('/') 
+        if match:
+            baseUrl = match[0].split('/')
             totalPages = baseUrl[-1]
         else:
             baseUrl = url.split('/')

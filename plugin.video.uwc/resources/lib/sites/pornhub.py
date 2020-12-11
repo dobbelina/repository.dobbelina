@@ -47,7 +47,7 @@ def List(url):
 		if hd.find('HD') > 0:
 			hd = " [COLOR orange]HD[/COLOR] "
 		else:
-			hd = " "            
+			hd = " "
 		name = utils.cleantext(name)
 		name = name + hd + "[COLOR deeppink]" + duration + "[/COLOR]"
 		utils.addDownLink(name, 'https://www.pornhub.com' + videopage, 392, img, '')
@@ -58,7 +58,7 @@ def List(url):
 	xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('394', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('394', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -82,7 +82,7 @@ def Categories(url):
 	xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('392', ['url', 'name'], ['download'])    
+@utils.url_dispatcher.register('392', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "", "Loading video page", "")

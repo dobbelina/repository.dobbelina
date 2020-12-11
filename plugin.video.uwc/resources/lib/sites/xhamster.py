@@ -77,7 +77,7 @@ def select_quality(url):
             Main()
         else:
             List(url)
-    
+
 @utils.url_dispatcher.register('511', ['url'])
 def select_duration(url):
     global xhamster_duration
@@ -115,7 +115,7 @@ def List(url, NoFilter=False):
         # possibly no results with the filters applied, still show a directory to let the user change the filters
         xbmcplugin.endOfDirectory(utils.addon_handle)
         return
-    
+
     match0 = re.compile('<head>(.*?)</head>.*?index-videos.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(response)
     header_block = match0[0][0]
     main_block = match0[0][1]
@@ -144,10 +144,10 @@ def List(url, NoFilter=False):
 @utils.url_dispatcher.register('507', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    response = utils.getHtml(url, hdr=xhamster_headers)    
+    response = utils.getHtml(url, hdr=xhamster_headers)
 #    match = get_xhamster_link(response)
     vp.progress.update(25, "", "Loading video page", "")
-    
+
     match = re.compile('"sources":{"mp4":{([^}]+)},', re.DOTALL | re.IGNORECASE).findall(response)
     match0 = re.compile('"([^"]+)":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match[0])
     links = {}
@@ -167,7 +167,7 @@ def Categories(url):
     for url, name in match:
         utils.addDir(name, url, 506, '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
+
 @utils.url_dispatcher.register('509', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
@@ -186,7 +186,7 @@ def get_xhamster_link(html):
             break
     else:
         return None
-    try:        
+    try:
         xjson = json.loads(jsonline)
         highest_quality_source = xjson["xplayerSettings"]["sources"]['standard']["mp4"][0]#[-1]
         links = (highest_quality_source["url"], highest_quality_source["fallback"])

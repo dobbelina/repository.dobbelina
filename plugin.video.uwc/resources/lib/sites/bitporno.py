@@ -45,12 +45,12 @@ def List(url):
             utils.notify('No results!')
         return
     for videopage, img, name in match:
-        if not '/v/' in videopage: continue 
+        if not '/v/' in videopage: continue
         utils.addDownLink(name.replace('</div>', '').strip(), 'https://www.bitporno.com' + videopage, 862, img, '')
     try:
         nextp = re.compile('class="pages-active".+?href="(.+?)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
         utils.addDir('Next Page', 'https://www.bitporno.com' + nextp[0], 861, '')
-    except: pass            
+    except: pass
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -61,7 +61,7 @@ def Playvid(url, name, download=None):
     except urllib2.HTTPError as e:
         utils.notify(name, e)
         return None
-    except: 
+    except:
         return None
     videourl = re.compile('file: "(.+?)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     iconimage = xbmc.getInfoImage("ListItem.Thumb")

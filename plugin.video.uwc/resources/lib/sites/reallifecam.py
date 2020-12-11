@@ -77,7 +77,7 @@ def Cat(url, page=0):
         if catpage.startswith('/'): catpage = siteurl + catpage
         name = name.strip().title() + " [COLOR deeppink]" + videos + "[/COLOR]"
         utils.addDir(utils.cleantext(name), catpage, 231, '', page)
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('232', ['url', 'name'], ['download'])
@@ -90,14 +90,14 @@ def Playvid(url, name, download=None):
     refurl = re.compile('<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     vp.progress.update(50, "", "Loading video page", "")
     utils.kodilog(refurl)
-    refpage = utils.getHtml(refurl)  
+    refpage = utils.getHtml(refurl)
 #    videourl = re.compile('JuicyCodes.Run\(([^\)]+)\)', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
     videourl = re.compile('>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
 #    videourl = videourl.replace('"+"','').replace('"','')
 #    videourl = base64.b64decode(videourl)
 
     videourl = utils.unpack(videourl)
-    utils.kodilog(videourl)    
+    utils.kodilog(videourl)
     videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
 #    list = {}
 #    for url, quality in videolinks:

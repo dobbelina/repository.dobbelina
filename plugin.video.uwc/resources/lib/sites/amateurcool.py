@@ -51,15 +51,15 @@ def List(url):
 @utils.url_dispatcher.register('492', ['url', 'name'], ['download'])
 def Playvid(videourl, name, download=None):
 
-	
+
 	if download == 1:
 		utils.downloadVideo(videourl, name)
-	else:    
+	else:
 	#	xbmc.Player().play(str(videourl))
 		iconimage = xbmc.getInfoImage("ListItem.Thumb")
 		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 		listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
-		xbmc.Player().play(videourl, listitem)		
+		xbmc.Player().play(videourl, listitem)
 
 
 @utils.url_dispatcher.register('493', ['url'])
@@ -72,7 +72,7 @@ def Categories(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('494', ['url'], ['keyword'])  
+@utils.url_dispatcher.register('494', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:

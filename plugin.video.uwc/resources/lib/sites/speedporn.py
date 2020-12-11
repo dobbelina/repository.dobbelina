@@ -50,7 +50,7 @@ def List(url):
         utils.addDir('Next Page (' + str(page_nr) + ')', next_page, 781, '')
     except:
         pass
-        
+
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 

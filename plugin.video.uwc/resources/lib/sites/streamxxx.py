@@ -67,7 +67,7 @@ def List(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('174', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('174', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:

@@ -91,18 +91,18 @@ def Cat(url):
     match = re.compile('<li class="cat-item[^>]+><a href="([^"]+)" >([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         utils.addDir(utils.cleantext(name), catpage, 261, '')
-    xbmcplugin.endOfDirectory(utils.addon_handle)   
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('262', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download) #, regex="<a href='([^']+)'[^>]+>Watch Online")
     vp.progress.update(25, "", "Loading video page", "")
-    
+
     page = utils.getHtml(url, '')
     match = re.compile('data-fo="([^"]+)"\s*data-id="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(page)
     blocks = re.compile('\[data-id="([^"]+)"\]\{display:block;\}', re.DOTALL | re.IGNORECASE).findall(page)
-    
+
     posturl = 'https://ipornovideos.com/wp-content/themes/twentyten/ajax.php'
     hdr = utils.headers
     hdr['X-Requested-With'] = 'XMLHttpRequest'

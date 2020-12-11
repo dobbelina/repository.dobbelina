@@ -22,7 +22,7 @@ import xbmc
 import xbmcplugin
 import xbmcgui
 from resources.lib import utils
- 
+
 progress = utils.progress
 
 
@@ -32,7 +32,7 @@ def P00Main():
     utils.addDir('[COLOR hotpink]Top Rated[/COLOR]','https://www.porn00.org/top-rated/',61,'','')
     utils.addDir('[COLOR hotpink]Search[/COLOR]','https://www.porn00.org/search/',68,'','')
     PAQList('https://www.porn00.org/page/1/',1)
-    xbmcplugin.endOfDirectory(utils.addon_handle)    
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('61', ['url'], ['page'])
@@ -42,7 +42,7 @@ def PAQList(url, page=1, onelist=None):
     for videopage, name, img, duration in match:
         duration = duration.strip()
         name = utils.cleantext(name) + " [COLOR deeppink]" + duration + "[/COLOR]"
-        utils.addDownLink(name, videopage, 62, img, '')    
+        utils.addDownLink(name, videopage, 62, img, '')
     if not onelist:
         try:
             nextp=re.compile('class="next"><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml).group(1)
@@ -63,7 +63,7 @@ def PPlayvid(url, name, download=None):
  #       alternatives = re.compile('div id="alternatives".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
  #       for alternative in alternatives:
  #           videopage += utils.getHtml(alternative)
- #       links = {}    
+ #       links = {}
  #       videolinks = re.compile('iframe.+?src="([^"]+)" width', re.DOTALL | re.IGNORECASE).findall(videopage)
  #       for link in videolinks:
  #           if vp.resolveurl.HostedMediaFile(link) and 'www.porn00.org' not in link:
@@ -74,7 +74,7 @@ def PPlayvid(url, name, download=None):
  #               for (vlink, title) in srcs:
  #                   links['direct ' + title] = vlink + '|Referer=' + link
  #       videourl = utils.selector('Select link', links, dont_ask_valid=False, reverse=True)
- #      vp.progress.update(75, "", "Loading video page", "")    
+ #      vp.progress.update(75, "", "Loading video page", "")
     vp = utils.VideoPlayer(name, download,'', "video_alt_url: '([^']+)'")
     videohtml = utils.getHtml(url)
     vp.play_from_html(videohtml)
@@ -88,7 +88,7 @@ def PCat(url):
         videolist = videolist + "/1/"
         utils.addDir(name, videolist, 61, '', 1)
     xbmcplugin.endOfDirectory(utils.addon_handle)
-    
+
 @utils.url_dispatcher.register('68', ['url'], ['keyword'])
 def PSearch(url, keyword=None):
     searchUrl = url

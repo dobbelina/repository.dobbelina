@@ -75,7 +75,7 @@ def List(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('134', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('134', ['url'], ['keyword'])
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
@@ -117,7 +117,7 @@ def Categories(url):
         utils.addDir('Next Page', nextp, 135,'')
     except:
         pass
-    xbmcplugin.endOfDirectory(utils.addon_handle) 
+    xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('136', ['url'])
@@ -151,7 +151,7 @@ def Playvid(url, name, download=None):
             choice = xbmcgui.Dialog().select('Select Playlink',[link[0] for link in sources], preselect=2)
             if choice != -1:
                 selected = sources[choice][1]
-                listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage="DefaultVideo.png") 
+                listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage="DefaultVideo.png")
                 listitem.setInfo('video', {'Title': name, 'Genre': 'XvideoSpanish'})
                 #xbmc.Player().play(selected, listitem)
     elif 'xhamster' in embeded:

@@ -53,7 +53,7 @@ def XTCList(url):
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
-@utils.url_dispatcher.register('204', ['url'], ['keyword'])    
+@utils.url_dispatcher.register('204', ['url'], ['keyword'])
 def XTCSearch(url, keyword=None):
     searchUrl = url
     if not keyword:

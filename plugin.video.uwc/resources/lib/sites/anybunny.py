@@ -22,7 +22,7 @@ import xbmc
 import xbmcplugin
 import xbmcgui
 from resources.lib import utils
-    
+
 
 @utils.url_dispatcher.register('320')
 def Main():
@@ -33,13 +33,13 @@ def Main():
     List('http://anybunny.com/new/?p=1')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
-    
+
 @utils.url_dispatcher.register('321', ['url'])
 def List(url):
     try:
         listhtml = utils.getHtml(url, '')
     except:
-        
+
         return None
     match = re.compile(r"<a class='nuyrfe' href='([^']+).*?src='([^']+)' id=\d+ alt='([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:

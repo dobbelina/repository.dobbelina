@@ -61,7 +61,7 @@ def WXFTPS(url):
 	for tpsurl, name in match:
 		tpsurl = tpsurl + 'page/1/'
 		utils.addDir(name, tpsurl, 11, '', 1)
-	xbmcplugin.endOfDirectory(utils.addon_handle)    
+	xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 @utils.url_dispatcher.register('14', ['url'], ['keyword'])

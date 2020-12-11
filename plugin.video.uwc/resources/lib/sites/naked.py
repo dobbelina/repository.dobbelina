@@ -47,7 +47,7 @@ def List(url):
 		clean_database(False)
 	try:
 		data = utils.getHtml(url, '')
-	except:		
+	except:
 		return None
 
 	models = re.compile('"video_host":.*?"(.+?)".*?"model_id":.*?"(.+?)".+?"image".*?"(.+?)".+?"model_name".*?"(.+?)","model_seo_name".*?"(.+?)".+?"sample_long_id".*?"(.+?)"', re.DOTALL | re.IGNORECASE).findall(data)
@@ -83,7 +83,7 @@ def clean_database(showdialog=True):
 @utils.url_dispatcher.register('482', ['url', 'name'])
 def Playvid(url, name):
 	listhtml = utils.getHtml(url, '')
-	namex=name.replace(' ','-').lower()      
+	namex=name.replace(' ','-').lower()
 	try:
                 seo_nameurl=url.split('=')[1]
 	        model_list = re.compile('live clearfix model-wrapper.*?data-model-id=(.*?)data-model-name=(.*?)data-model-seo-name=(.*?)data.*?data-video-host=(.*?)data.*?data-live-image-src=(.*?)data.*?End Live', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -107,6 +107,6 @@ def Playvid(url, name):
 			iconimage = xbmc.getInfoImage("ListItem.Thumb")
 			listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 			listitem.setInfo('video', {'Title': name, 'Genre': 'Porn'})
-			xbmc.Player().play(match, listitem)	
+			xbmc.Player().play(match, listitem)
 	except:
 		utils.notify('Oh oh','Couldn\'t find a playable webcam link')

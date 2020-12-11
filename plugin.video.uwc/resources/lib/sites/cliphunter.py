@@ -22,7 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 
 siteurl = 'https://www.cliphunter.com'
-    
+
 @utils.url_dispatcher.register('730')
 def Main():
     utils.addDir('[COLOR hotpink]Categories[/COLOR]',siteurl + '/categories/',733,'','')
@@ -77,7 +77,7 @@ def Categories(url):
     for catpage, name, img in match:
 	catpage = catpage.replace(' ','%20')
         name = utils.cleantext(name.strip())
-        utils.addDir(name, siteurl + catpage, 731, img, 2)    
+        utils.addDir(name, siteurl + catpage, 731, img, 2)
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
