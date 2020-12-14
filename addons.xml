@@ -46,7 +46,15 @@ Download issues resolved
     </extension>
     <extension point="xbmc.addon.metadata">
         <summary>Unofficial Addons for Kodi</summary>
-        <description>For Ultimate Whitecream Updates</description>
+		<description>For Ultimate Whitecream Updates
+
+Please visit
+https://github.com/dobbelina/repository.dobbelina/issues
+for support!
+
+Kodi is a registered trademark of the XBMC Foundation. We are not connected to or in any other way affiliated with Kodi, Team Kodi, or the XBMC Foundation.</description>
+<disclaimer>The owners and submitters to this repository do not host or distribute any of the content displayed by these addons nor do they have any affiliation with the content providers.</disclaimer>
+<forum>https://github.com/dobbelina/repository.dobbelina/issues</forum>
         <platform>all</platform>
     </extension>
 </addon>
