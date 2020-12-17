@@ -1,3 +1,6 @@
+Version 1.2.39
+Fixed: Desixnxx
+
 Version 1.2.38
 Fixed: naked.com
 Download issues resolved
