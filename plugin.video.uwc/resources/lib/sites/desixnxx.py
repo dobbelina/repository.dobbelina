@@ -1,7 +1,6 @@
 '''
     Ultimate Whitecream
     Copyright (C) 2015 Whitecream
-    Copyright (C) 2015 anton40
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,9 +37,9 @@ def List(url):
     except:
         return None
 
-    match = re.compile('<li class="thumi".+?duration2">([^"]+)<.+?href="([^"]+)" title="([^"]+)".+?data-src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<li class="thumi".+?duration2">([^"]+)<.+?href="([^"]+)" title="([^"]+)".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for duration, videopage, name, img in match:
-        utils.addDownLink('[COLOR hotpink]' + duration.replace('</div>', '') + '[/COLOR] ' + name, 'http://desixnxx2.net' + videopage, 852, img, '')
+        utils.addDownLink('[COLOR hotpink]' + duration.replace('</div>', '') + '[/COLOR] ' + utils.cleantext(name), 'http://desixnxx2.net' + videopage, 852, img, '')
     try:
         nextp = re.compile('class="current".+?href=[\"\'](.+?)[\"\']').findall(listhtml)
         utils.addDir('Next Page', 'http://desixnxx2.net' + nextp[0], 851, '')
