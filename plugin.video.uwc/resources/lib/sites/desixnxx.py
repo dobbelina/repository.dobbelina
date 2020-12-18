@@ -32,18 +32,24 @@ def Main():
 
 @utils.url_dispatcher.register('851', ['url'])
 def List(url):
+    baseUrl = 'http://desixnxx2.net' if 'desixnxx2' in url else ''
     try:
         listhtml = utils.getHtml(url, '')
     except:
         return None
 
-    match = re.compile('<li class="thumi".+?duration2">([^"]+)<.+?href="([^"]+)" title="([^"]+)".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<li class="thumi".+?duration2">([^"]+)<.+?href="([^"]+)" title="([^"]+)".+?src="([^"]+)"',
+                       re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if 'masalaseen' in url:
+        match = re.compile('<li class="thumi".+?duration">([^"]+)<.+?href="([^"]+)" title="([^"]+)".+?src="([^"]+)"',
+                           re.DOTALL | re.IGNORECASE).findall(listhtml)
     for duration, videopage, name, img in match:
-        utils.addDownLink('[COLOR hotpink]' + duration.replace('</div>', '') + '[/COLOR] ' + utils.cleantext(name), 'http://desixnxx2.net' + videopage, 852, img, '')
+        utils.addDownLink('[COLOR hotpink]' + duration.replace('</div>', '').strip() + '[/COLOR] ' + utils.cleantext(name),
+                          baseUrl + videopage, 852, img, '')
     try:
-        nextp = re.compile('class="current".+?href=[\"\'](.+?)[\"\']').findall(listhtml)
-        utils.addDir('Next Page', 'http://desixnxx2.net' + nextp[0], 851, '')
-    except: pass
+        nextp = re.compile('current".+?href=[\"\'](.+?)[\"\']').findall(listhtml)
+        utils.addDir('Next Page', baseUrl + nextp[0], 851, '')
+    except: pass        
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -53,7 +59,7 @@ def Playvid(url, name, download=None):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    videourl = re.compile("<source src='(.+?)'", re.DOTALL | re.IGNORECASE).findall(listhtml)[0].strip()
+    videourl = re.compile("<source src=[\'\"](.+?)[\'\"]", re.DOTALL | re.IGNORECASE).findall(listhtml)[0].strip()
     iconimage = xbmc.getInfoImage("ListItem.Thumb")
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 
@@ -72,3 +78,9 @@ def Search(url, keyword=None):
         searchUrl = searchUrl + title
         List(searchUrl)
 
+
+@utils.url_dispatcher.register('855')
+def Main():
+    utils.addDir('[COLOR hotpink]Search[/COLOR]','https://masalaseen.com/page/1/?paged=1&s=', 853, '', '')
+    List('https://masalaseen.com/page/1/')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
