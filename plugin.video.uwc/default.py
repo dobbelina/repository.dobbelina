@@ -106,7 +106,6 @@ def INDEXS():
     utils.addDir('[COLOR hotpink]PeekVids[/COLOR]','https://www.peekvids.com/',890,os.path.join(imgDir, 'peekvids.png'),'')
     utils.addDir('[COLOR hotpink]One list, to watch them all[/COLOR]','',5,'',1)
 
-
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
 @utils.url_dispatcher.register('2')
@@ -149,7 +148,8 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]xHamster[/COLOR]','https://xhamster.com/',505,os.path.join(imgDir, 'xhamster.png'),'')
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
     utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
-    utils.addDir('[COLOR hotpink]Desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
+    utils.addDir('[COLOR hotpink]desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
+    utils.addDir('[COLOR hotpink]Masalaseen[/COLOR]','https://masalaseen.com/page/1/',855,os.path.join(imgDir, 'desixnxx.png'),'')
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
