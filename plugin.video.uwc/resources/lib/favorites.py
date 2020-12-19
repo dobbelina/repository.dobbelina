@@ -55,7 +55,7 @@ def List():
         if utils.addon.getSetting('favsort') == 'true':
             c.execute("SELECT * FROM favorites order by name")
         else:
-            c.execute("SELECT * FROM favorites")
+            c.execute("select * from favorites order by ROWID DESC")
         for (name, url, mode, img) in c.fetchall():
             utils.addDownLink(name, url, int(mode), img, '', '', 'del')
         conn.close()
