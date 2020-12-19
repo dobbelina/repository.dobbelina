@@ -94,7 +94,7 @@ def Favorites(fav, favmode, name, url, img):
         xbmc.executebuiltin('Container.Refresh')
     elif fav == "move_to_end":
         move_fav_to_end(url)
-        utils.notify('Favorite moved', 'Video moved to end of the list')
+        utils.notify('Favorite moved', 'Video moved to top of the list')
         xbmc.executebuiltin('Container.Refresh')
 
 

@@ -662,7 +662,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
             "&mode=" + str('900') +
             "&img=" + urllib.quote_plus(iconimage) +
             "&name=" + urllib.quote_plus(name))
-        contextMenuItems.append(('[COLOR hotpink]Move favorite to end[/COLOR]', 'xbmc.RunPlugin(' + favorite_move_to_end + ')'))
+        contextMenuItems.append(('[COLOR hotpink]Move favorite to top[/COLOR]', 'xbmc.RunPlugin(' + favorite_move_to_end + ')'))
     if not noDownload:
         contextMenuItems.append(('[COLOR hotpink]Download Video[/COLOR]', 'xbmc.RunPlugin(' + dwnld + ')'))
     liz.addContextMenuItems(contextMenuItems, replaceItems=False)
