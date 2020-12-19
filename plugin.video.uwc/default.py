@@ -149,7 +149,7 @@ def INDEXT():
     utils.addDir('[COLOR hotpink]xVideos[/COLOR]','https://xvideos.com/',790,os.path.join(imgDir, 'xvideos.png'),'')
     utils.addDir('[COLOR hotpink]redTube[/COLOR]','https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&page=1&ordering=newest',590,os.path.join(imgDir, 'RedTube.jpg'),'')
     utils.addDir('[COLOR hotpink]Desixnxx[/COLOR]','http://desixnxx2.net/last-added/',850,os.path.join(imgDir, 'desixnxx.png'),'')
-    utils.addDir('[COLOR hotpink]Masalaseen[/COLOR]','https://masalaseen.com/page/1/',855,os.path.join(imgDir, 'desixnxx.png'),'')
+    utils.addDir('[COLOR hotpink]Masalaseen[/COLOR]','https://masalaseen.com/page/1/',855,os.path.join(imgDir, 'masalaseen.png'),'')
 
     xbmcplugin.endOfDirectory(utils.addon_handle, cacheToDisc=False)
 
