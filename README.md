@@ -1,10 +1,12 @@
 # Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.38
+Ultimate Whitecream addon update	Version 1.2.39
 <img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
 
-Fixed: naked.com
+Fixed: Desixnxx
 
-Download issues resolved
+Added: Masalaseen
+
+Changed: Favorites move to top
 
 
 ---

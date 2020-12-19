@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.38"
+       version="1.2.39"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,9 +25,10 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.38[/B]
-Fixed: naked.com
-Download issues resolved
+        <news>[B]Version 1.2.39[/B]
+Fixed: Desixnxx
+Added: Masalaseen
+Changed: Favorites move to top
 </news>
     </extension>
 </addon>

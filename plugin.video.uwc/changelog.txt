@@ -1,6 +1,7 @@
 Version 1.2.39
 Fixed: Desixnxx
 Added: Masalaseen
+Changed: Favorites move to top
 
 Version 1.2.38
 Fixed: naked.com
