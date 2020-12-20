@@ -1241,7 +1241,7 @@ def dwnld_stream(url, name):
         info = subprocess.STARTUPINFO()
         info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         info.wShowWindow = SW_HIDE
-    proc = subprocess.Popen(cmd, shell=False, startupinfo=info)
+    proc = subprocess.Popen(cmd, shell=True, startupinfo=info)
     xbmc.log('Process started at ' + str(time.time()), xbmc.LOGNOTICE)
     xbmc.log('[myUWC] Process playing ' + cmd, xbmc.LOGNOTICE)
     time.sleep(10)
