@@ -92,7 +92,7 @@ def Favorites(fav, favmode, name, url, img):
         delFav(url)
         utils.notify('Favorite deleted', 'Video removed from the list')
         xbmc.executebuiltin('Container.Refresh')
-    elif fav == "move_to_end":
+    elif fav == "move_to_top":
         move_fav_to_end(url)
         utils.notify('Favorite moved', 'Video moved to top of the list')
         xbmc.executebuiltin('Container.Refresh')
