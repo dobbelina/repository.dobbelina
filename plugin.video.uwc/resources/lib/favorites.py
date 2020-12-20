@@ -93,7 +93,7 @@ def Favorites(fav, favmode, name, url, img):
         utils.notify('Favorite deleted', 'Video removed from the list')
         xbmc.executebuiltin('Container.Refresh')
     elif fav == "move_to_top":
-        move_fav_to_end(url)
+        move_fav_to_top(url)
         utils.notify('Favorite moved', 'Video moved to top of the list')
         xbmc.executebuiltin('Container.Refresh')
 
@@ -144,7 +144,7 @@ def delete_duplicates():
     conn.close()
 
 
-def move_fav_to_end(url):
+def move_fav_to_top(url):
     delete_duplicates()
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
