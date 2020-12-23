@@ -33,7 +33,10 @@ addon = utils.addon
 
 
 def BGVersion():
-    bgpage = utils.getHtml('https://beeg.com','')
+    try:
+        bgpage = utils.getHtml('https://beeg.com','')
+    except:
+        return None
     jsversion = re.compile(r"link href=(\/js\/app.+?.js) rel", re.DOTALL | re.IGNORECASE).findall(bgpage)[0]
     bgversion = re.compile(r'service-worker\.js\?version=\"\).concat\(\"(.+?)\"', re.DOTALL | re.IGNORECASE).findall(utils.getHtml('https://beeg.com' + jsversion, ''))[0]
     bgsavedversion = addon.getSetting('bgversion')
