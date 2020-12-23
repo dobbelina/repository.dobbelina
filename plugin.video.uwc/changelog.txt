@@ -1,3 +1,6 @@
+Version 1.2.41
+Updated: Beeg
+
 Version 1.2.40
 Download ffmpeg issue resolved
 
