@@ -33,7 +33,10 @@ addon = utils.addon
 
 
 def BGVersion():
-    bgpage = utils.getHtml('https://beeg.com','')
+    try:
+        bgpage = utils.getHtml('https://beeg.com','')
+    except:
+        return None
     jsversion = re.compile(r"link href=(\/js\/app.+?.js) rel", re.DOTALL | re.IGNORECASE).findall(bgpage)[0]
     bgversion = re.compile(r'service-worker\.js\?version=\"\).concat\(\"(.+?)\"', re.DOTALL | re.IGNORECASE).findall(utils.getHtml('https://beeg.com' + jsversion, ''))[0]
     bgsavedversion = addon.getSetting('bgversion')
@@ -41,10 +44,9 @@ def BGVersion():
         addon.setSetting('bgversion',bgversion)
     return str(bgversion)
 
-bgversion = BGVersion()
 @utils.url_dispatcher.register('80')
 def BGMain():
-
+    bgversion = BGVersion()
     bgversion = addon.getSetting('bgversion')
     utils.addDir('[COLOR hotpink]Channels[/COLOR]','https://api.beeg.com/api/v6/'+bgversion+'/channels',84,'','')
     utils.addDir('[COLOR hotpink]People[/COLOR]','https://api.beeg.com/api/v6/'+bgversion+'/people',85,'','')
