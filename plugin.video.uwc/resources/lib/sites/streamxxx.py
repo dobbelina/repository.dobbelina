@@ -36,6 +36,8 @@ def Main():
 
 @utils.url_dispatcher.register('175')
 def MainMovies():
+    utils.addDir('[COLOR hotpink]Search Overall[/COLOR]','http://streamxxx.tv/?s=', 174, '', '')
+    utils.addDir('[COLOR hotpink]Search Scenes[/COLOR]','http://streamxxx.tv/?cat=5562&s=', 174, '', '')
     List('http://streamxxx.tv/category/movies-xxx/')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
