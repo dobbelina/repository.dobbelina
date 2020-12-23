@@ -127,7 +127,7 @@ def BGPlayvid(url, name, download=None):
     videourl = utils.selector('Select quality', list, dont_ask_valid=True,  sort_by=lambda x: int(x[:-1]), reverse=True)
     if not videourl:
         return
-    videourl = videourl.replace("{DATA_MARKERS}","data=pc_GB__" + str(bgversion) + '_')
+    videourl = videourl.replace("{DATA_MARKERS}","data=pc_GB__" + str(addon.getSetting('bgversion')) + '_')
     if not videourl.startswith("http"): videourl = "https:" + videourl
 
     vp.progress.update(75, "", "Loading video page", "")
@@ -139,7 +139,7 @@ def BGTag(url):
     caturl = utils.getHtml5(url)
     tags = re.compile('{"tag":"(.+?)","videos":(.+?)}', re.DOTALL | re.IGNORECASE).findall(caturl)
     for tag,count in tags:
-        videolist = "https://api.beeg.com/api/v6/" + bgversion + "/index/tag/0/pc?tag=" + urllib.quote(tag.encode("utf8").lower())
+        videolist = "https://api.beeg.com/api/v6/" + str(addon.getSetting('bgversion')) + "/index/tag/0/pc?tag=" + urllib.quote(tag.encode("utf8").lower())
         name = tag.encode("utf8")
         name = name.title() +' [COLOR deeppink]' + count + '[/COLOR]'
         utils.addDir(name, videolist, 81, '')
@@ -158,7 +158,7 @@ def BGChannel(url):
         videos = str(channel['videos'])
         name = channel['ps_name'] + ' [COLOR orange]' + videos + '[/COLOR] '
         about = channel['ps_about']
-        svid = 'https://api.beeg.com/api/v6/' + bgversion + '/index/channel/0/pc?channel=' + ch
+        svid = 'https://api.beeg.com/api/v6/' + str(addon.getSetting('bgversion')) + '/index/channel/0/pc?channel=' + ch
         img = 'https://thumbs.beeg.com/channels/' + str(channel['id']) + '.png'
         utils.addDir(name, svid, 81, img, desc=about)
     npage = 2
@@ -166,7 +166,8 @@ def BGChannel(url):
     if '?offset=' in url:
         offset = int(url.split('?offset=')[-1]) + 100
         npage = offset / 100 + 1
-    utils.addDir('Next Page (' + str(npage) + ')','https://api.beeg.com/api/v6/'+bgversion+'/channels?offset=' + str(offset),84,'','')
+    utils.addDir('Next Page (' + str(npage) + ')','https://api.beeg.com/api/v6/'+str(addon.getSetting('bgversion'))
+                 +'/channels?offset=' + str(offset),84,'','')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
@@ -181,12 +182,13 @@ def BGPeople(url):
         name = person['name']
         img = 'https://thumbs.beeg.com/img/cast/' + str(person['id']) + '.png'
         videos = person['videos']
-        url = 'https://api.beeg.com/api/v6/' + bgversion + '/index/people/0/pc?search_mode=code&people=' + person['code']
+        url = 'https://api.beeg.com/api/v6/' + str(addon.getSetting('bgversion')) + '/index/people/0/pc?search_mode=code&people=' + person['code']
         utils.addDir(name +' [COLOR deeppink]' + str(videos) + '[/COLOR]', url, 81, img)
     npage = 2
     offset = 100
     if '?offset=' in url:
         offset = int(url.split('?offset=')[-1]) + 100
         npage = offset / 100 + 1
-    utils.addDir('Next Page (' + str(npage) + ')','https://api.beeg.com/api/v6/'+bgversion+'/people?offset=' + str(offset),85,'','')
+    utils.addDir('Next Page (' + str(npage) + ')','https://api.beeg.com/api/v6/'+str(addon.getSetting('bgversion'))
+                 +'/people?offset=' + str(offset),85,'','')
     xbmcplugin.endOfDirectory(utils.addon_handle)
