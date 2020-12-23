@@ -41,10 +41,9 @@ def BGVersion():
         addon.setSetting('bgversion',bgversion)
     return str(bgversion)
 
-bgversion = BGVersion()
 @utils.url_dispatcher.register('80')
 def BGMain():
-
+    bgversion = BGVersion()
     bgversion = addon.getSetting('bgversion')
     utils.addDir('[COLOR hotpink]Channels[/COLOR]','https://api.beeg.com/api/v6/'+bgversion+'/channels',84,'','')
     utils.addDir('[COLOR hotpink]People[/COLOR]','https://api.beeg.com/api/v6/'+bgversion+'/people',85,'','')
