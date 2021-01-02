@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.41"
+       version="1.2.42"
        provider-name="Whitecream, holisticdioxide">
     <requires>
+	    <import addon="plugin.video.cumination" />
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.resolveurl" version="5.0.00"/>
         <import addon="script.module.resolveurl.xxx" version="2.0.01"/>
@@ -25,9 +26,12 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.41[/B]
-Updated: Beeg
-Updated: StreamXXX
+        <news>[B]Version 1.2.42[/B]
+Welcome to Cumination!
+Matrix and Leia compatible release
+Backup favorites from UWC can be imported.
+
+Happy New Year From Team Cumination!
 </news>
     </extension>
 </addon>

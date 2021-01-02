@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.1">
+    <requires>
+        <!-- <import addon="xbmc.python" version="3.0.0" /> -->
+        <import addon="script.module.six" />
+        <import addon="script.module.kodi-six" />
+        <import addon="script.module.resolveurl" version="5.0.00" />
+        <import addon="script.module.resolveurl.xxx" version="2.0.1" />
+        <import addon="script.module.websocket" version="0.50.0" />
+        <import addon="script.module.requests" optional="true" />
+    </requires>
+    <extension library="default.py" point="xbmc.python.pluginsource">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <license>GPL 2.0</license>
+        <summary lang="en_GB">Cumination, the culmination of adult sites on Kodi</summary>
+        <description lang="en_GB">Cumination, the culmination of adult sites on Kodi</description>
+		<disclaimer lang="en_GB">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the sites offered. Click on About from the contextmenu on each site to check for contact details.</disclaimer>
+		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.jpg</fanart>
+		</assets>
+        <news>[B]Version 1.1.1 2021 Jan 2[/B]
+            Matrix and Leia compatible release
+        </news>
+    </extension>
+</addon>
+
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.41"
+       version="1.2.42"
        provider-name="Whitecream, holisticdioxide">
     <requires>
+	    <import addon="plugin.video.cumination" />
         <import addon="xbmc.python" version="2.1.0"/>
         <import addon="script.module.resolveurl" version="5.0.00"/>
         <import addon="script.module.resolveurl.xxx" version="2.0.01"/>
@@ -26,14 +56,17 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.41[/B]
-Updated: Beeg
-Updated: StreamXXX
+        <news>[B]Version 1.2.42[/B]
+Welcome to Cumination!
+Matrix and Leia compatible release
+Backup favorites from UWC can be imported.
+
+Happy New Year From Team Cumination!
 </news>
     </extension>
 </addon>
 
-<addon id="repository.dobbelina" name="[COLOR pink]Dobbelina Repository[/COLOR]" version="1.0.2" provider-name="dobbelina">
+<addon id="repository.dobbelina" name="[COLOR pink]Dobbelina Repository[/COLOR]" version="1.0.3" provider-name="dobbelina">
     <extension point="xbmc.addon.repository" name="[COLOR pink]Dobbelina Repository[/COLOR]">
     <dir>
         <info compressed="false">https://raw.githubusercontent.com/Gujal00/smrzips/master/addons.xml</info>
@@ -46,7 +79,7 @@ Updated: StreamXXX
     </extension>
     <extension point="xbmc.addon.metadata">
         <summary>Unofficial Addons for Kodi</summary>
-		<description>For Ultimate Whitecream Updates
+		<description>For Cumination Updates
 Please visit
 https://github.com/dobbelina/repository.dobbelina/issues
 for support!

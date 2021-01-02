@@ -1,10 +1,16 @@
-# Ultimate Whitecream
-Ultimate Whitecream addon update	Version 1.2.41
-<img src="https://user-images.githubusercontent.com/46063764/66117262-87761100-e5d4-11e9-9b97-4f04f2ac1d08.png" width="300" align="right">
+# Cumination
+Ultimate Whitecream addon update	Version 1.2.42
+<img src="https://user-images.githubusercontent.com/46063764/103461711-a9eb6280-4d20-11eb-983b-516b022cbbf5.png" width="300" align="right">
 
-Updated: Beeg
+Cumination release
 
-Updated: StreamXXX
+Welcome to Cumination!
+
+Matrix and Leia compatible release
+
+Backup favorites from UWC can be imported.
+
+Happy New Year From Team Cumination
 
 
 ---
@@ -13,7 +19,7 @@ All credit to the fantastic people at reddit who has provided the fixes, and esp
 
 and Whitecream & holisticdioxide who are the original author/s of the addon.
 
-For auto-updates, download repository.dobbelina-1.0.2.zip here https://dobbelina.github.io
+For auto-updates, download repository.dobbelina-1.0.3.zip here https://dobbelina.github.io
 
 **Please post in the "Issues" section if you can contribute to fix broken**
 

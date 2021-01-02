@@ -1,0 +1,42 @@
+[B]Version 1.1.1[/B]
+New release 2021-01-02
+Fix Pin entry
+Streamate check model status
+
+[B]Version 1.1.0[/B]
+Python2 and 3 compliant code
+Works on Kodi Matrix Alpha 3 and above
+
+[B]Version 1.0.6[/B]
+
+
+[B]Version 1.0.5[/B]
+Added setting a startup pin
+Added set a default view (accessed by contextmenu)
+Fixed sites
+
+[B]Version 1.0.4[/B]
+Added Indian Porn videos
+Added Javhihi, Javmoe
+Added Lavaliva, Lunarlive
+Added TVPE
+Added Webcamshows
+Added Wildside
+Fixed Porntrex
+Fixed Tubepornclassic
+Fixed HQporner
+
+[B]Version 1.0.3[/B]
+Fixed yourporn
+Fixed xvideospanish
+Fixed chaturbate rtmp and added search
+
+
+[B]Version 1.0.2[/B]
+Fixed a couple of sites
+
+[B]Version 1.0.1[/B]
+Fixed error with nltubes
+
+[B]Version 1.0.0[/B]
+Initial public release
