@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.1">
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.2">
     <requires>
-        <!-- <import addon="xbmc.python" version="3.0.0" /> -->
         <import addon="script.module.six" />
         <import addon="script.module.kodi-six" />
         <import addon="script.module.resolveurl" version="5.0.00" />
@@ -23,9 +22,6 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.1.1 2021 Jan 2[/B]
-            Matrix and Leia compatible release
-        </news>
     </extension>
 </addon>
 
