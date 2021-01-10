@@ -1,5 +1,5 @@
 # Cumination
-Ultimate Whitecream addon update	Version 1.2.42
+Ultimate Whitecream addon update	Version 1.2.43
 <img src="https://user-images.githubusercontent.com/46063764/103461711-a9eb6280-4d20-11eb-983b-516b022cbbf5.png" width="300" align="right">
 
 Cumination release
