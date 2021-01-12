@@ -1,8 +1,7 @@
-[B]Version 1.1.2[/B]
-Initial public release
-Fixed: Notifications
-Fixed: Keywords from UWC backup 
-Fixed: Adding Chaturbate categories to custom lists
-Fixed: pornhub next page on search
-Removed: k18 website
-Changed: Reversed order of keywords and favorites
+[B]Version 1.1.3[/B]
+Fixed: Cambro pagination
+Added: Caching of webpages, defaults to 4 hours
+Added: MyFreeCams
+Fixed: Custom site uninstall
+Fixed: Beeg
+Fixed: Porntrex/Javbanger website too slow message
