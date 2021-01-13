@@ -6,6 +6,7 @@
         <import addon="script.module.kodi-six" />
         <import addon="script.module.resolveurl" version="5.0.00" />
         <import addon="script.module.resolveurl.xxx" version="2.0.1" />
+        <import addon="script.common.plugin.cache" />
         <import addon="script.module.websocket" version="0.50.0" />
         <import addon="script.module.requests" optional="true" />
     </requires>
