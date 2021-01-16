@@ -40,7 +40,7 @@ def List(url):
     except:
 
         return None
-    match = re.compile('<div class="entry-content">.*?<img src="([^"]+)".*?<a href="([^"]+)" class="more-link">.+?<span class="screen-reader-text">([^"]+)</span>', re.DOTALL | re.IGNORECASE).findall(html)
+    match = re.compile('<div class="entry-content">.*?data-lazy-src="([^"]+)".*?<a href="([^"]+)" class="more-link">.+?<span class="screen-reader-text">([^"]+)</span>', re.DOTALL | re.IGNORECASE).findall(html)
     for img, videopage, name in match:
         name = utils.cleantext(name)
         if 'Siterip' in name or 'Ubiqfile' in name or 'manyvids' in name:
