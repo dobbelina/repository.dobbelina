@@ -1,7 +1,5 @@
-[B]Version 1.1.3[/B]
-Fixed: Cambro pagination
-Added: Caching of webpages, defaults to 4 hours
-Added: MyFreeCams
-Fixed: Custom site uninstall
-Fixed: Beeg
-Fixed: Porntrex/Javbanger website too slow message
+[B]Version 1.1.4[/B]
+  - Beeg: add long names as plot in listing
+  - Fix Aagmaal
+  - Remove caching on cam sites
+  - Porntrex & Javbangers: logout: confirmation dialog added when deleting stored username/password
