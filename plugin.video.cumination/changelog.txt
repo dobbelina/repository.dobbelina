@@ -1,5 +1,4 @@
-[B]Version 1.1.4[/B]
-  - Beeg: add long names as plot in listing
-  - Fix Aagmaal
-  - Remove caching on cam sites
-  - Porntrex & Javbangers: logout: confirmation dialog added when deleting stored username/password
+[B]Version 1.1.5[/B]
+added: eporner
+added: xvideos
+Fix contextmenu episode lookup for Hanime.tv
