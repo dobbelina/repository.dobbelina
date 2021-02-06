@@ -10,7 +10,6 @@ Matrix and Leia compatible release
 
 Backup favorites from UWC can be imported.
 
-Happy New Year From Team Cumination
 
 
 ---

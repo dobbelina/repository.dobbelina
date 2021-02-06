@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.43"
+       version="1.2.44"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -25,8 +25,8 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.43[/B]
-Removed Cumination dependency
+        <news>[B]Version 1.2.44[/B]
+Fixed thumbnails for xxxstreams.org
 </news>
     </extension>
 </addon>
