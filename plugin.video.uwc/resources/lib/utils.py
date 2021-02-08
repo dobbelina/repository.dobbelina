@@ -808,13 +808,14 @@ def streamdefence(html):
     return streamdefence(decoded)
 
 
-def searchDir(url, mode, page=None):
+def searchDir(url, mode, page=None, alphabet=None):
     addDir('[COLOR hotpink]Add Keyword[/COLOR]', url, 902, uwcimage('uwc-search.png'), '', mode, Folder=False)
+    addDir('[COLOR hotpink]Alphabetical[/COLOR]', url, 920, uwcimage('uwc-search.png'), '', mode)
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
     try:
-        if addon.getSetting('searchsort') == 'true':
-            c.execute("SELECT * FROM keywords order by keyword")
+        if alphabet:
+            c.execute("SELECT * FROM keywords WHERE keyword LIKE ? ORDER BY keyword ASC", (alphabet.lower() + '%', ))
         else:
             c.execute("SELECT * FROM keywords")
         for (keyword,) in c.fetchall():
@@ -824,6 +825,16 @@ def searchDir(url, mode, page=None):
         pass
     xbmcplugin.endOfDirectory(addon_handle)
 
+@url_dispatcher.register('920', ['url', 'channel'], ['keyword'])
+def alphabeticalSearch(url, channel, keyword=None):
+    if keyword:
+        searchDir(url, channel, page=None, alphabet=keyword)
+    else:
+        for c in string.ascii_uppercase:
+            name = '[COLOR deeppink]' + c + '[/COLOR]'
+            addDir(name, url, 920, uwcimage('uwc-search.png'), '', channel, keyword=c)
+        xbmcplugin.endOfDirectory(addon_handle)	
+	
 @url_dispatcher.register('902', ['url', 'channel'])
 def newSearch(url, channel):
     vq = _get_keyboard(heading="Searching for...")
