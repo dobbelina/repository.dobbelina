@@ -29,8 +29,11 @@ import sqlite3
 import base64
 import gzip
 import json
+import string
+
 from kodi_six import xbmc, xbmcplugin, xbmcgui, xbmcvfs
 from resources.lib import random_ua, cloudflare, strings
+from resources.lib.basics import addDir, searchDir, cum_image
 from functools import wraps
 from resources.lib.url_dispatcher import URL_Dispatcher
 import StorageServer
@@ -705,6 +708,17 @@ def newSearch(url, channel):
 def clearSearch():
     delallKeyword()
     xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def alphabeticalSearch(url, channel, keyword=None):
+    if keyword:
+        searchDir(url, channel, page=None, alphabet=keyword)
+    else:
+        for c in string.ascii_uppercase:
+            name = '[COLOR deeppink]' + c + '[/COLOR]'
+            addDir(name, url, "utils.alphabeticalSearch", cum_image('cum-search.png'), '', channel, keyword=c)
+        eod()
 
 
 def addKeyword(keyword):
