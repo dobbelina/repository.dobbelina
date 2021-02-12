@@ -8,7 +8,7 @@ Welcome to Cumination!
 
 Matrix and Leia compatible release
 
-Backup favorites from UWC can be imported.
+Backup favorites from UWC can be imported
 
 
 
