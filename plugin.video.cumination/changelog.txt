@@ -1,4 +1,2 @@
-[B]Version 1.1.5[/B]
-added: eporner
-added: xvideos
-Fix contextmenu episode lookup for Hanime.tv
+[B]Version 1.1.6[/B]
+Added keyword alphabetical sorting
