@@ -12,8 +12,6 @@ assignees: ''
 - [ ] Cumination Bug
 - [ ] Ultimate Whitecream Bug
 
-<!-- You can erase any parts of this template not applicable to your Issue. -->
-
 ### Bug reports:
 
 Please replace this line with a brief summary of your issue 
