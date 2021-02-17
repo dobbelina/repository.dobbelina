@@ -60,7 +60,8 @@ convertdict = {23: 'xtheatre.XTVideo',
                762: 'viralvideosporno.Playvid',
                782: 'speedporn.Playvid',
                922: 'hentaidude.hentaidude_play',
-               932: 'cpv.Playvid'}
+               932: 'cpv.Playvid',
+               812: 'netflixporno.Playvid'}
 
 
 def convertfav(backupdata):
