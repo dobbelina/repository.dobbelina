@@ -1,4 +1,4 @@
-<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.5">
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.6">
     <requires>
         <import addon="script.module.six" />
         <import addon="script.module.kodi-six" />
@@ -16,10 +16,10 @@
         <license>GPL 2.0</license>
         <summary lang="en_GB">Cumination, the culmination of adult sites on Kodi</summary>
         <description lang="en_GB">Cumination, the culmination of adult sites on Kodi</description>
-		<disclaimer lang="en_GB">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the sites offered. Click on About from the contextmenu on each site to check for contact details.</disclaimer>
-		<assets>
-			<icon>icon.png</icon>
-			<fanart>fanart.jpg</fanart>
-		</assets>
+        <disclaimer lang="en_GB">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the sites offered. Click on About from the contextmenu on each site to check for contact details.</disclaimer>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
     </extension>
 </addon>
