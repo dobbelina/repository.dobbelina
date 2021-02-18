@@ -92,16 +92,18 @@ def PTList(url, page=1):
                           + "?mode=" + str('porntrex.PTCheck_pornstars')
                           + "&url=" + urllib_parse.quote_plus(videopage))
             contextmenu.append(('[COLOR deeppink]Add pornstar to subscriptions[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-            contextadd = (utils.addon_sys
-                          + "?mode=" + str('porntrex.ContextMenu')
-                          + "&url=" + urllib_parse.quote_plus(videopage)
-                          + "&fav=add")
-            contextmenu.append(('[COLOR violet]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
-            contextdel = (utils.addon_sys
-                          + "?mode=" + str('porntrex.ContextMenu')
-                          + "&url=" + urllib_parse.quote_plus(videopage)
-                          + "&fav=del")
-            contextmenu.append(('[COLOR violet]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
+            if 'my_favourite_videos' in url:
+                contextdel = (utils.addon_sys
+                              + "?mode=" + str('porntrex.ContextMenu')
+                              + "&url=" + urllib_parse.quote_plus(videopage)
+                              + "&fav=del")
+                contextmenu.append(('[COLOR violet]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
+            else:
+                contextadd = (utils.addon_sys
+                              + "?mode=" + str('porntrex.ContextMenu')
+                              + "&url=" + urllib_parse.quote_plus(videopage)
+                              + "&fav=add")
+                contextmenu.append(('[COLOR violet]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
 
         contexturl = (utils.addon_sys
                       + "?mode=" + str('porntrex.PTCheck_tags')

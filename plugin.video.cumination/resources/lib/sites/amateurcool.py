@@ -1,6 +1,7 @@
 '''
     Cumination
     Copyright (C) 2015 Whitecream
+    Copyright (C) 2021 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,26 +21,32 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite("amateurcool", "[COLOR hotpink]Amateur Cool[/COLOR]", "https://www.amateurcool.com",
-                 "amateurcool.png", 'amateurcool')
+site = AdultSite("amateurcool", "[COLOR hotpink]Amateur Cool[/COLOR]", "https://www.amateurcool.com/", "amateurcool.png", 'amateurcool')
 
 
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}/channels/'.format(site.url), 'Categories', site.img_cat)
-    List('{0}/most-recent/'.format(site.url))
+    List('{0}most-recent/'.format(site.url))
     utils.eod()
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'data-video="([^"]+).+?img\s*src="([^"]+)"\s*alt="(.+?)".+?<span>(.+?)\s*Video</span>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name, duration in match:
-        name = utils.cleantext(name + ' [COLOR deeppink]' + duration + '[/COLOR]')
-        site.add_download_link(name, videopage, 'Playvid', img, '')
-
-    nextp = re.search(r'''class="pagination.+?href='([^']+)'\s*class="next">''', listhtml, re.DOTALL)
+    videos = listhtml.split('item__inner')
+    videos.pop(0)
+    for video in videos:
+        if '>Photos<' in video:
+            continue
+        match = re.compile(r'href="([^"]+)"\s*title="([^"]+)".+?duration.+?item__stat-label">([\d:]+)<(.+?)img src="([^""]+)"', re.DOTALL | re.IGNORECASE).findall(video)
+        if match:
+            videopage, name, duration, hd, img = match[0]
+            hd = ' [COLOR orange]HD[/COLOR]' if '>HD<' in hd else ''
+            name = utils.cleantext(name + hd + ' [COLOR deeppink]' + duration + '[/COLOR]')
+            videopage = 'https:' + videopage if videopage.startswith('//') else videopage
+            site.add_download_link(name, videopage, 'Playvid', img, '')
+    nextp = re.search(r"title='Next' href='([^']+)'", videos[-1], re.DOTALL)
     if nextp:
         site.add_dir('Next Page', url[:url.rfind('/') + 1] + nextp.group(1), 'List', site.img_next)
 
@@ -49,13 +56,20 @@ def List(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.play_from_direct_link(url)
+    vp.play_from_site_link(url)
 
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, '')
-    match = re.compile('class="item nb".+?href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, catimg, name in match:
-        site.add_dir(name, catpage, 'List', catimg)
+    cathtml = utils._getHtml(site.url + 'filter/videos', url)
+    cats = cathtml.split('citem__link')
+    cats.pop(0)
+    cats.pop(0)
+    for cat in cats:
+        match = re.compile('href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cat)
+        if match:
+            catpage, catimg, name = match[0]
+            catpage = 'https:' + catpage if catpage.startswith('//') else catpage
+            catimg = 'https:' + catimg if catimg.startswith('//') else catimg
+            site.add_dir(name, catpage, 'List', catimg)
     utils.eod()

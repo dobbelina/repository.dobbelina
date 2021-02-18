@@ -19,6 +19,7 @@ import os
 import sqlite3
 import json
 import websocket
+import math
 from resources.lib import utils
 from resources.lib import favorites
 from resources.lib.adultsite import AdultSite
@@ -30,7 +31,7 @@ site = AdultSite('streamate', '[COLOR hotpink]streamate.com[/COLOR]', 'http://ww
 def Main():
     site.add_dir('[COLOR red]Refresh streamate.com images[/COLOR]', '', 'clean_database', '', Folder=False)
     site.add_dir('[COLOR hotpink]Search + Fav add[/COLOR]', 'https://www.streamate.com/cam/', 'Search', site.img_search)
-    List('http://api.naiadsystems.com/search/v1/list?results_per_page=100')
+    List('https://member.naiadsystems.com/search/v3/performers?domain=streamate.com&from=0&size=100&filters=gender:f,ff,mf,tm2f,g%3Bonline:true&genderSetting=f')
     utils.eod()
 
 
@@ -39,18 +40,26 @@ def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
     try:
-        data = utils._getHtml(url + "&page_number=" + str(page))
+        headers = {"platform": "SCP",
+                   "smtid": "ffffffff-ffff-ffff-ffff-ffffffffffffG0000000000000",
+                   "smeid": "ffffffff-ffff-ffff-ffff-ffffffffffffG0000000000000",
+                   "smvid": "ffffffff-ffff-ffff-ffff-ffffffffffffG0000000000000",
+                   "User-Agent": utils.USER_AGENT}
+        data = utils._getHtml(url, headers=headers)
     except:
         return None
     model_list = json.loads(data)
-    for camgirl in model_list['Results']:
-        img = "http://m1.nsimg.net/media/snap/{0}.jpg".format(camgirl['PerformerId'])
-        status = 'HD' if camgirl['HD'] else ''
-        name = "{0} [COLOR deeppink][{1}][/COLOR] {2}".format(camgirl['Nickname'], camgirl['Age'], status)
-        subject = '{0}[CR][COLOR deeppink]Location: [/COLOR]{1}'.format(utils.cleantext(camgirl['Headline']), camgirl['Country'])
-        site.add_download_link(name, '{0}$${1}'.format(camgirl['Nickname'], camgirl['PerformerId']), 'Playvid', img, subject, noDownload=True)
-    npage = page + 1
-    site.add_dir('Next Page (' + str(npage) + ')', url, 'List', site.img_next, npage)
+    total_models = model_list.get('totalResultCount')
+    for camgirl in model_list['performers']:
+        img = "http://m1.nsimg.net/media/snap/{0}.jpg".format(camgirl['id'])
+        status = 'HD' if camgirl['highDefinition'] else ''
+        name = "{0} [COLOR deeppink][{1}][/COLOR] {2}".format(camgirl['nickname'], camgirl['age'], status)
+        subject = '{0}[CR][COLOR deeppink]Location: [/COLOR]{1}'.format(utils.cleantext(camgirl['headlineMessage']), camgirl['country'])
+        site.add_download_link(name, '{0}$${1}'.format(camgirl['nickname'], camgirl['id']), 'Playvid', img, subject, noDownload=True)
+    if total_models > page * 100:
+        url = re.sub(r"&from=\d+", "&from={0}".format(page * 100), url)
+        lastpg = math.ceil(total_models / 100)
+        site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(page, lastpg), url, 'List', site.img_next, page + 1)
     utils.eod()
 
 

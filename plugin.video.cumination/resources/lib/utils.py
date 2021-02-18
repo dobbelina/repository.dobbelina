@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from resources.lib.basics import addon, cuminationicon, cookiePath, favoritesdb, addon_handle, eod, addon_sys  # noqa
+from resources.lib.basics import addon, cuminationicon, cookiePath, favoritesdb, addon_handle, eod, addon_sys, keys  # noqa
 import six
 from six.moves import urllib_request, urllib_parse, urllib_error, http_cookiejar, html_parser
 import ssl
@@ -29,7 +29,6 @@ import sqlite3
 import base64
 import gzip
 import json
-import string
 
 from kodi_six import xbmc, xbmcplugin, xbmcgui, xbmcvfs
 from resources.lib import random_ua, cloudflare, strings
@@ -715,8 +714,9 @@ def alphabeticalSearch(url, channel, keyword=None):
     if keyword:
         searchDir(url, channel, page=None, alphabet=keyword)
     else:
-        for c in string.ascii_uppercase:
-            name = '[COLOR deeppink]' + c + '[/COLOR]'
+        key_list = keys()
+        for c, count in sorted(key_list.items()):
+            name = '[COLOR deeppink]{}[/COLOR] [COLOR lightpink]({})[/COLOR]'.format(c, count)
             addDir(name, url, "utils.alphabeticalSearch", cum_image('cum-search.png'), '', channel, keyword=c)
         eod()
 

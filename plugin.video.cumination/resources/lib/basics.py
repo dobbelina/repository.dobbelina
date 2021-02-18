@@ -257,8 +257,13 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
 
 
 def searchDir(url, mode, page=None, alphabet=None):
-    addDir('[COLOR hotpink]Add Keyword[/COLOR]', url, 'utils.newSearch', cum_image('cum-search.png'), '', mode, Folder=False)
-    addDir('[COLOR hotpink]Alphabetical[/COLOR]', url, 'utils.alphabeticalSearch', cum_image('cum-search.png'), '', mode)
+    if not alphabet:
+        addDir('[COLOR hotpink]Add Keyword[/COLOR]', url, 'utils.newSearch', cum_image('cum-search.png'), '', mode, Folder=False)
+        addDir('[COLOR hotpink]Alphabetical[/COLOR]', url, 'utils.alphabeticalSearch', cum_image('cum-search.png'), '', mode)
+        if addon.getSetting('keywords_sorted') == 'true':
+            addDir('[COLOR hotpink]Unsorted Keywords[/COLOR]', url, 'utils.setUnsorted', cum_image('cum-search.png'), '', mode, Folder=False)
+        else:
+            addDir('[COLOR hotpink]Sorted Keywords[/COLOR]', url, 'utils.setSorted', cum_image('cum-search.png'), '', mode, Folder=False)
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
 
@@ -266,14 +271,34 @@ def searchDir(url, mode, page=None, alphabet=None):
         if alphabet:
             c.execute("SELECT * FROM keywords WHERE keyword LIKE ? ORDER BY keyword ASC", (alphabet.lower() + '%', ))
         else:
-            c.execute("SELECT * FROM keywords ORDER BY rowid DESC")
+            if addon.getSetting('keywords_sorted') == 'true':
+                c.execute("SELECT * FROM keywords ORDER by keyword")
+            else:
+                c.execute("SELECT * FROM keywords ORDER BY rowid DESC")
         for (keyword,) in c.fetchall():
+            keyword = keyword if six.PY3 else keyword.encode('utf8')
             name = '[COLOR deeppink]' + urllib_parse.unquote_plus(keyword) + '[/COLOR]'
             addDir(name, url, mode, cum_image('cum-search.png'), page=page, keyword=keyword)
     except:
         pass
     conn.close()
     eod()
+
+
+def keys():
+    ret = {}
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT substr(upper(keyword),1,1) AS letter, count(keyword) AS count FROM keywords
+                     GROUP BY substr(upper(keyword),1,1)
+                     ORDER BY keyword""")
+        for (letter, count) in c.fetchall():
+            ret[letter] = count
+    except:
+        pass
+    conn.close()
+    return ret
 
 
 def clean_temp():

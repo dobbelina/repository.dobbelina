@@ -18,7 +18,6 @@
 
 import re
 import base64
-import xbmcplugin, xbmcgui
 from six.moves import urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -28,14 +27,15 @@ progress = utils.progress
 
 site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https://netflixporno.net/', 'https://netflixporno.net/wp-content/uploads/2018/04/netflixporno-1.png', 'netflixporno')
 
+
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]','https://netflixporno.net/search/', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]New Release[/COLOR]','https://netflixporno.net/genre/new-release/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]XXX Scenes[/COLOR]','https://netflixporno.net/genre/clips-scenes/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Parody Movies[/COLOR]','https://netflixporno.net/genre/parodies/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]','https://netflixporno.net/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]','https://netflixporno.net/', 'Studios', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', 'https://netflixporno.net/search/', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]New Release[/COLOR]', 'https://netflixporno.net/genre/new-release/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]XXX Scenes[/COLOR]', 'https://netflixporno.net/genre/clips-scenes/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Parody Movies[/COLOR]', 'https://netflixporno.net/genre/parodies/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://netflixporno.net/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', 'https://netflixporno.net/', 'Studios', site.img_cat)
     List('https://netflixporno.net/')
     utils.eod()
 
@@ -51,11 +51,12 @@ def List(url):
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, '')
-    try:
-        nextp=re.compile('<a class="next page-numbers" href="(.+?)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        nextp = nextp[0].replace("&#038;", "&")
+
+    nextp = re.compile('<a class="next page-numbers" href="(.+?)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if nextp:
+        nextp = nextp.group(1).replace("&#038;", "&")
         site.add_dir('Next Page', nextp, 'List', site.img_next)
-    except: pass
+
     utils.eod()
 
 
@@ -65,7 +66,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ','+')
+        title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
         utils.kodilog("NetFlixPorno Searching URL: " + searchUrl)
         List(searchUrl)
@@ -82,6 +83,7 @@ def Categories(url):
     for catpage, name in match:
         site.add_dir(name, catpage, 'List', site.img_cat)
     utils.eod()
+
 
 @site.register()
 def Studios(url):
@@ -117,7 +119,7 @@ def Playvid(url, name, download=None):
     except urllib_error.URLError as e:
         utils.notify(e)
         return
-#    html = re.compile('<center><!-- Display player -->(.+?)<center>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    # html = re.compile('<center><!-- Display player -->(.+?)<center>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     srcs = re.compile('<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for title, src in srcs:
         title = utils.cleantext(title)
@@ -127,9 +129,9 @@ def Playvid(url, name, download=None):
         if vp.resolveurl.HostedMediaFile(src).valid_url():
             links[title] = src
         if 'mangovideo' in src:
-            title = title.replace(' - ','')
+            title = title.replace(' - ', '')
             html = utils.getHtml(src)
-            murl = re.compile("video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)[0]
+            murl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)[0]
             if murl.startswith('function/'):
                 license = re.findall(r"license_code:\s*'([^']+)", html)[0]
                 murl = kvs_decode(murl, license)
