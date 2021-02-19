@@ -405,7 +405,7 @@ def get_cookies():
 
 @site.register()
 def PTModelsAZ():
-    for i in range(65,91):
+    for i in range(65, 91):
         url = '{0}/models/?mode=async&function=get_block&block_id=list_models_models_list&section={1}&sort_by=title&from=1'.format(site.url, chr(i))
         site.add_dir(chr(i), url, 'PTModels', '', 1)
     utils.eod()
@@ -420,7 +420,7 @@ def PTModels(url, page=1):
         if img.startswith('//'):
             img = 'https:' + img
             img = img.replace(' ', '%20')
-        id = img.split('/')[5] if not 'no-image-model' in img else None
+        id = img.split('/')[5] if 'no-image-model' not in img else None
         name = name + '[COLOR deeppink] ' + videos + '[/COLOR]'
         if ptlogged and id:
             contexturl = (utils.addon_sys

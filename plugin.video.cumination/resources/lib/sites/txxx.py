@@ -26,6 +26,8 @@ site1 = AdultSite('tubepornclassic', '[COLOR hotpink]TubePornClassic[/COLOR]', '
 site2 = AdultSite('voyeurhit', '[COLOR hotpink]VoyeurHit[/COLOR]', 'https://voyeurhit.com/', 'voyeurhit.png', 'voyeurhit')
 site3 = AdultSite('hclips', '[COLOR hotpink]HClips[/COLOR]', 'https://hclips.com/', 'hclips.png', 'hclips')
 site4 = AdultSite('hdzog', '[COLOR hotpink]HD Zog[/COLOR]', 'https://hdzog.com/', 'hdzog.png', 'hdzog')
+site5 = AdultSite('vjav', '[COLOR hotpink]Vjav[/COLOR]', 'https://vjav.com/', 'vjav.png', 'vjav')
+site6 = AdultSite('shemalez', '[COLOR hotpink]ShemaleZ[/COLOR]', 'https://shemalez.com/', 'shemalez.png', 'shemalez')
 
 
 def getBaselink(url):
@@ -39,6 +41,10 @@ def getBaselink(url):
         siteurl = site3.url
     elif 'hdzog.com' in url:
         siteurl = site4.url
+    elif 'vjav.com' in url:
+        siteurl = site5.url
+    elif 'shemalez.com' in url:
+        siteurl = site6.url
     return siteurl
 
 
@@ -47,12 +53,14 @@ def getBaselink(url):
 @site2.register(default_mode=True)
 @site3.register(default_mode=True)
 @site4.register(default_mode=True)
+@site5.register(default_mode=True)
+@site6.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
-    if any(x in siteurl for x in ['hclips', 'hdzog', 'txxx']):
+    if any(x in siteurl for x in ['hclips', 'hdzog', 'txxx', 'shemalez']):
         site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels', 'Channels')
-    if any(x in siteurl for x in ['hdzog', 'txxx', 'tubepornclassic']):
+    if any(x in siteurl for x in ['hdzog', 'txxx', 'tubepornclassic', 'vjav', 'shemalez']):
         site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models', 'Models')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search.', 'Search', site.img_search)
     List(siteurl + 'latest-updates')
@@ -163,25 +171,35 @@ def Channels(url, page=1):
 def Models(url, page=1):
     siteurl, url = url.rsplit('/', 1)
     siteurl += '/'
+    letter = '' if url == 'models' else url.lower()
     page = 1 if not page else page
-    aurl = '{0}api/json/{1}/86400/str/filt........../most-popular/80/{2}.json'.format(siteurl, url, page)
+    gender = 'she' if 'shemalez' in siteurl else 'str'
+    pagesize = 80
+    aurl = '{0}api/json/models/86400/{1}/filt.{2}........./most-popular/{3}/{4}.json'.format(siteurl, gender, letter, pagesize, page)
     jdata = json.loads(utils.getHtml(aurl, siteurl))
-    for item in jdata.get(url, []):
-        catpage = '{0}.{1}'.format(url[:-1], item.get('dir'))
+    if url == 'models':
+        site.add_dir('[COLOR violet]Alphabet[/COLOR]', siteurl, 'Letters', site.img_next, page=1)
+
+    for item in jdata.get('models', []):
+        catpage = 'model.{}'.format(item.get('dir'))
         name = item.get('title') if utils.PY3 else item.get('title').encode('utf-8')
         videos = " [COLOR deeppink](" + item.get('statistics').get('videos') + " videos)[/COLOR]"
         name = name + videos if utils.PY3 else (name.decode('utf-8') + videos).encode('utf-8')
         site.add_dir(name, siteurl + catpage, 'List', item.get('img'), page=1)
 
-    if int(jdata.get('total_count', '0')) - (80 * page) > 0:
+    if int(jdata.get('total_count', '0')) - (pagesize * page) > 0:
         page += 1
-        last_page = -(-int(jdata.get('total_count')) // 80)
+        last_page = -(-int(jdata.get('total_count')) // pagesize)
         site.add_dir('> Next Page ({}/{})'.format(str(page), str(last_page)), siteurl + url, 'Models', site.img_next, page=page)
-        if page + 5 < last_page:
-            page += 4
-            site.add_dir('>> Page {}'.format(str(page)), siteurl + url, 'Models', site.img_next, page=page)
-
     utils.eod()
+
+
+@site.register()
+def Letters(url):
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    letter = utils.selector('Select letter', letters)
+    if letter:
+        Models(url + letter, page=1)
 
 
 @site.register()
