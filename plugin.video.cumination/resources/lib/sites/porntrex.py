@@ -28,10 +28,13 @@ site = AdultSite('porntrex', '[COLOR hotpink]PornTrex[/COLOR]', 'https://www.por
 
 getinput = utils._get_keyboard
 ptlogged = 'true' in utils.addon.getSetting('ptlogged')
+lengthChoices = {'All': '', '0-10 min': 'ten-min/', '10-30 min': 'ten-thirty-min/', '30+': 'thirty-all-min/'}
+ptlength = utils.addon.getSetting("ptlength") or 'All'
 
 
 @site.register(default_mode=True)
 def PTMain():
+    site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(ptlength), '', 'PTLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'PTCat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'PTSearch', site.img_search)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_cat)
@@ -43,9 +46,19 @@ def PTMain():
         site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions'.format(site.url), 'PTSubscriptions')
         site.add_dir('[COLOR violet]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
         site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
-    ptlist = PTList('{0}latest-updates/'.format(site.url), 1)
+    ptlist = PTList('{0}latest-updates/{1}'.format(site.url, lengthChoices[ptlength]), 1)
     if not ptlist:
         utils.eod()
+
+
+
+@site.register()
+def PTLength():
+    input = utils.selector('Select Length', lengthChoices.keys())
+    if input:
+        ptlength = input
+        utils.addon.setSetting('ptlength', ptlength)
+        xbmc.executebuiltin('Container.Refresh')
 
 
 @site.register()
@@ -195,7 +208,8 @@ def PTCat(url):
     for catpage, name, img, videos in sorted(match, key=lambda x: x[1]):
         if img.startswith('//'):
             img = 'https:' + img
-        catpage = catpage + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+        catpage += lengthChoices[ptlength]
+        catpage += '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
         name = name + '[COLOR deeppink] ' + videos + '[/COLOR]'
         site.add_dir(name, catpage, 'PTList', img, 1)
     utils.eod()
@@ -209,6 +223,7 @@ def PTSearch(url, keyword=None):
     else:
         searchUrl += keyword.replace(' ', '%20')
         searchUrl += '/latest-updates/'
+        searchUrl += lengthChoices[ptlength]
         PTList(searchUrl, 1)
 
 
