@@ -51,7 +51,6 @@ def PTMain():
         utils.eod()
 
 
-
 @site.register()
 def PTLength():
     input = utils.selector('Select Length', lengthChoices.keys())
@@ -122,7 +121,7 @@ def PTList(url, page=1):
                       + "?mode=" + str('porntrex.PTCheck_tags')
                       + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup tags[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-        site.add_download_link(name, videopage, 'PTPlayvid', img, '', contextm=contextmenu)
+        site.add_download_link(name, videopage, 'PTPlayvid', img, name, contextm=contextmenu)
     if re.search('<li class="next">', listhtml, re.DOTALL | re.IGNORECASE):
         search = False
         if not page:
