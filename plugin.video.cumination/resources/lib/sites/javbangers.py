@@ -136,7 +136,7 @@ def List(url, page=1):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name)
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     hdr = dict(utils.base_hdrs)
