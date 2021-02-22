@@ -89,7 +89,7 @@ def hanime_list(url='', search='', page=0):
                       + "?mode=" + str('hanime.hanime_eps')
                       + "&url=" + urllib_parse.quote_plus(videoid))
         contextmenu = ('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contexturl + ')')
-        site.add_download_link(name, videoid, 'hanime_play', img, plot, contextm=contextmenu, fanart=fanart)
+        site.add_download_link(name, videoid, 'hanime_play', img, plot, noDownload=True, contextm=contextmenu, fanart=fanart)
 
     if 'nbPages' in hits:
         totalp = hits['nbPages']
