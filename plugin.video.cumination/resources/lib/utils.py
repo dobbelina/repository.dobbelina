@@ -298,7 +298,7 @@ def downloadVideo(url, name):
             pass
     if download_path != '':
         dp = xbmcgui.DialogProgress()
-        name = name.split("[")[0]
+        name = re.sub(r'\[COLOR.+?\/COLOR\]', '', name).strip()
         dp.create(i18n('cum_dnld'), name[:50])
         tmp_file = tempfile.mktemp(dir=download_path, suffix=".mp4")
         tmp_file = xbmc.makeLegalFilename(tmp_file) if PY2 else xbmcvfs.makeLegalFilename(tmp_file)

@@ -35,13 +35,17 @@ def List(url, page=0):
         response = utils.postHtml(url, form_data=postRequest, headers={}, compression=False)
     except:
         return None
-    match = re.compile(r'class="video-item">.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+).+?time">([^<]+)', re.DOTALL | re.IGNORECASE).findall(response)
-    for video, img, name, length in match:
-        video = site.url + video
-        name = utils.cleantext(name) + ' [COLOR hotpink]' + length + '[/COLOR]'
-        site.add_download_link(name, video, 'Playvid', img, '')
+    videos = response.split('class="video-item"')
+    videos.pop(0)
+    for video in videos:
+        match = re.compile(r'href="([^"]+).+?url\(\'([^\']+)\'\).+?video-time">([^<]+)<.+?setTitle\(this\);">([^<]*)<', re.DOTALL | re.IGNORECASE).findall(video)
+        if match:
+            videourl, img, length, name = match[0]
+            videourl = site.url + videourl
+            name = utils.cleantext(name) + ' [COLOR hotpink]' + length + '[/COLOR]'
+            site.add_download_link(name, videourl, 'Playvid', img, '')
     npage = page + 1
-    site.add_dir('Next Page (' + str(npage) + ')', url, 'List', site.img_next, npage)
+    site.add_dir('Next Page (' + str(npage + 1) + ')', url, 'List', site.img_next, npage)
     utils.eod()
 
 
@@ -73,5 +77,5 @@ def Categories(url):
     for caturl, img, name in sorted(match, key=lambda x: x[2]):
         caturl = site.url[:-1] + caturl
         img = site.url[:-1] + img
-        site.add_dir(name, caturl, 'List', img, 1)
+        site.add_dir(name, caturl, 'List', img, 0)
     utils.eod()
