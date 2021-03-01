@@ -40,13 +40,13 @@ def List(url):
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="muestra-escena".+?ClickVideo\((\d+).+?data-src="([^"]+)".+?alt="([^"]+)".+?class="ico-minutos sprite"></span>\s*([^<]+)(.*?)/a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, duration, hd in match:
-        hd = '[COLOR orange] HD[/COLOR]' if 'hd sprite' in hd else ''
+        hd = 'HD' if 'hd sprite' in hd else ''
         duration = duration.split(' ')[0] if 'm' in duration else duration.split(' ')[0] + ':00'
-        name = utils.cleantext(name) + hd + "[COLOR deeppink] " + duration + "[/COLOR] "
+        name = utils.cleantext(name)
         videopage = '{0}embed/{1}/'.format(site.url, videopage)
         if img.startswith('//'):
             img = 'https:' + img
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
     nextp = re.compile(r'class="btn-pagination"\s*itemprop="name"\s*href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:

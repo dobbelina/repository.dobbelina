@@ -36,11 +36,11 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'class="item.+?href="([^"]+).+?original="([^"]+).+?le">\s*([^<]+).+?on">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name, duration in match:
+    match = re.compile(r'class="item.+?href="([^"]+).+?original="([^"]+)(.+?)le">\s*([^<]+).+?on">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, hd, name, duration in match:
+        hd = 'HD' if 'class="is-hd"' in hd else ''
         name = utils.cleantext(name.strip())
-        name += ' [COLOR deeppink]({0})[/COLOR]'.format(duration)
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
     npage = re.search(r'class="next.+?href="([^"]+)', listhtml, re.DOTALL | re.IGNORECASE)
     if npage:

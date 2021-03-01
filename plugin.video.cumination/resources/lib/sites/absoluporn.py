@@ -22,8 +22,7 @@ import xbmcplugin
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('absoluporn', '[COLOR hotpink]AbsoluPorn[/COLOR]', "http://www.absoluporn.com/en", "absoluporn.gif",
-                 'absoluporn')
+site = AdultSite('absoluporn', '[COLOR hotpink]AbsoluPorn[/COLOR]', "http://www.absoluporn.com/en", "absoluporn.gif", 'absoluporn')
 
 
 @site.register(default_mode=True)
@@ -43,11 +42,12 @@ def List(url):
     for videourl, name, img, hd, duration in match:
         name = utils.cleantext(name)
         if 'hd' in hd:
-            name += " [COLOR yellow]FULLHD[/COLOR] " if 'full' in hd else " [COLOR orange]HD[/COLOR] "
+            hd = 'FULLHD' if 'full' in hd else 'HD'
+        else:
+            hd = ''
         videopage = site.url[:-3] + videourl
         videopage = videopage.replace(" ", "%20")
-        name += "[COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
     nextp = re.compile(r'<span class="text16">\d+</span> <a href="..([^"]+)"').search(listhtml)
     if nextp:

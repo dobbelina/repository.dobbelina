@@ -62,11 +62,11 @@ def List(url):
 
     match = re.compile(r'video-item".+?href="([^"]+)"\s*title="([^"]+).+?src="([^"]+).+?duration">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, name2 in match:
-        name = utils.cleantext(name) + ' [COLOR cyan]({})[/COLOR]'.format(name2)
+        name = utils.cleantext(name)
         if not img.startswith('http'):
             img = 'http:' + img
         videopage = siteurl + videopage
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=name2)
 
     pgurl = None
     pagination = re.search(r'a\s*href="([^"]+)[^>]+>View\s*more', listhtml, re.DOTALL)

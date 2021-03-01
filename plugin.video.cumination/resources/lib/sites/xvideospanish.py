@@ -41,10 +41,10 @@ def List(url):
     main = re.compile('<main.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     match = re.compile(r'<article.+?href="([^"]+).+?data-src="([^"]+).+?duration">(?:<i.*?i>)?([^<]*).+?header">\s*(?:<span>)?([^<]+)', re.DOTALL | re.IGNORECASE).findall(main)
     for videopage, img, duration, name in match:
-        name = utils.cleantext(name) + " [COLOR deeppink]{0}[/COLOR]".format(duration)
+        name = utils.cleantext(name)
         videopage = videopage.replace('xvideos-español', 'xn--xvideos-espaol-1nb')
         img = img.replace('xvideos-español', 'xn--xvideos-espaol-1nb')
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     np = re.compile(r'class="pagination".+?current".+?href="([^"]+).+?>(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

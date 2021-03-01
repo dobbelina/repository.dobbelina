@@ -48,6 +48,14 @@ msgctxt "#30008"
 msgid "Enable custom view types"
 msgstr ""
 
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr ""
+
 msgctxt "#30011"
 msgid "Select Sort method for Scenes"
 msgstr ""

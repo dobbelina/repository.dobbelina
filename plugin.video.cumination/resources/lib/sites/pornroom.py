@@ -36,8 +36,8 @@ def pornroom_list(url):
     listhtml = re.compile(r'(<main.+?</main>)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|data-src)="([^"]+).+?clock-o">(?:</i>\s)?([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img, duration in match:
-        name = utils.cleantext(name) + " [COLOR deeppink]{0}[/COLOR]".format(duration)
-        site.add_download_link(name, video, 'pornroom_play', img, name)
+        name = utils.cleantext(name)
+        site.add_download_link(name, video, 'pornroom_play', img, name, duration=duration)
 
     np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

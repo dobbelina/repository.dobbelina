@@ -35,16 +35,13 @@ def xfreehd_list(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'''class="well\s*well-sm.+?href="([^"]+).+?src="(.+?).\s*title[^>]+>(.+?)duration-new">\s*([^\s]+).+?title-new.+?>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, hd, duration, name in match:
-        if '>HD<' in hd:
-            hd = " [COLOR orange]HD[/COLOR] "
-        else:
-            hd = " "
+        hd = 'HD' if '>HD<' in hd else ''
         if 'data-src' in img:
             img = img.split('data-src="')[1]
         else:
             img = site.url[:-1] + img
-        name = utils.cleantext(name) + hd + "[COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, site.url[:-1] + video, 'xfreehd_play', img, '')
+        name = utils.cleantext(name)
+        site.add_download_link(name, site.url[:-1] + video, 'xfreehd_play', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

@@ -43,8 +43,7 @@ def TPList(url):
             thumb = 'http:' + thumb
         name = utils.cleantext(name)
         videourl = site.url[:-1] + videourl
-        name = name + " [COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, videourl, 'TPPlayvid', thumb, '')
+        site.add_download_link(name, videourl, 'TPPlayvid', thumb, '', duration=duration)
     p = re.search(r'<a\s*href="([^"]+)"\s*class="btn-pagination">Next', listhtml, re.DOTALL | re.IGNORECASE)
     if p:
         purl = site.url[:-1] + p.group(1)

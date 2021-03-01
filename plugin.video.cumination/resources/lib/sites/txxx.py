@@ -88,7 +88,7 @@ def List(url, page=1):
 
     for item in jdata.get('videos'):
         name = item.get('title') if utils.PY3 else item.get('title').encode('utf-8')
-        duration = " [COLOR deeppink]" + item.get('duration') + "[/COLOR]"
+        duration = item.get('duration')
 
         hd = False
         if "props" in item.keys():
@@ -100,12 +100,9 @@ def List(url, page=1):
             if "HD" in item["categories"].split(','):
                 hd = True
 
-        if hd:
-            hd = " [COLOR orange]HD[/COLOR] "
-            name = name + hd if utils.PY3 else (name.decode('utf-8') + hd).encode('utf-8')
-
-        name = name + duration if utils.PY3 else (name.decode('utf-8') + duration).encode('utf-8')
-        site.add_download_link(name, siteurl + item.get('video_id'), 'Playvid', item.get('scr'), name)
+        hd = 'HD' if hd else ''
+        name = utils.cleantext(name)
+        site.add_download_link(name, siteurl + item.get('video_id'), 'Playvid', item.get('scr'), name, duration=duration, quality=hd)
 
     if int(jdata.get('total_count')) - (60 * page) > 0:
         page += 1

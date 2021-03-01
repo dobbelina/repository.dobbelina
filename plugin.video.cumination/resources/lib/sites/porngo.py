@@ -43,8 +43,8 @@ def List(url):
             hd_text = '4K '
         else:
             hd_text = ''
-        name = '{0} [COLOR orange]{1}[COLOR deeppink]{2}[/COLOR]'.format(utils.cleantext(name), hd_text, duration)
-        site.add_download_link(name, video, 'Play', img, name)
+        name = utils.cleantext(name)
+        site.add_download_link(name, video, 'Play', img, name, duration=duration, quality=hd_text)
 
     next_page = re.compile(r'''class="pagination.+?href="([^"]+)">Next''').search(listhtml)
     if next_page:

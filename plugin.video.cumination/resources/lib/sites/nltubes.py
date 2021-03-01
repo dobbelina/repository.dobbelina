@@ -55,12 +55,15 @@ def NLVIDEOLIST(url):
     link = utils.getHtml(url, '')
     if "0 video found" in link or "Nothing found" in link:
         return
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)(.+?)tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
-    for surl, name, img, hd, duration in match:
+    match = re.compile(r'<article(.+?)href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)(.+?)tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
+    for hd1, surl, name, img, hd2, duration in match:
         surl = surl if surl.startswith('http') else siteurl + surl
-        hd = " [COLOR orange]HD[/COLOR] " if '>HD<' in hd else " "
-        name = "{0} {1}[COLOR deeppink]({2})[/COLOR]".format(utils.cleantext(name), hd, duration)
-        site.add_download_link(name, surl, 'NLPLAYVID', img, name)
+        if 'tag-hd-porno' in hd1 or '>HD<' in hd2:
+            hd = "HD"
+        else:
+            hd = ""
+        name = utils.cleantext(name)
+        site.add_download_link(name, surl, 'NLPLAYVID', img, name, duration=duration, quality=hd)
     nextp = re.compile(r'''class="pagination.+?class="current".+?href=['"]([^"']+)''', re.DOTALL | re.IGNORECASE).search(link)
     if nextp:
         nextp = nextp.group(1)

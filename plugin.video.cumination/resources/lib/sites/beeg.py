@@ -57,15 +57,14 @@ def BGList(url):
     for video in jdata['videos']:
         if video["duration"]:
             m, s = divmod(video["duration"], 60)
-            duration = ' [COLOR deeppink]{:d}:{:02d}[/COLOR]'.format(m, s)
+            duration = '{:d}:{:02d}'.format(m, s)
         else:
             duration = ''
-        quality = ' [COLOR orange]{}[/COLOR]'.format(video["quality"]) if video["quality"] else ''
+        quality = video["quality"] if video["quality"] else ''
 
         name = video['title']
         if not name:
             name = video['ps_name']
-        name = name + quality + duration
         name = name if utils.PY3 else name.encode('utf8')
 
         img = 'https://img.beeg.com/400x225/' + video['thumbs'][0]['image']
@@ -83,9 +82,9 @@ def BGList(url):
                 etxt = '{:d}:{:02d}'.format(m, s)
                 videopage = '{0}&s={1}&e={2}&p={3}'.format(videopage, start, end, pid)
                 name_thumb = '{}[COLOR blue] part {} ({} - {})[/COLOR]'.format(name, str(i + 1), stxt, etxt)
-                site.add_download_link(name_thumb, videopage, 'BGPlayvid', img, '')
+                site.add_download_link(name_thumb, videopage, 'BGPlayvid', img, name, duration=duration, quality=quality)
         else:
-            site.add_download_link(name, videopage, 'BGPlayvid', img, name)
+            site.add_download_link(name, videopage, 'BGPlayvid', img, name, duration=duration, quality=quality)
 
     page = re.compile(r'/index/[^/]+/(\d+)/', re.DOTALL | re.IGNORECASE).findall(url)[0]
     page = int(page)

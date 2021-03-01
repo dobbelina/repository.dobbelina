@@ -66,7 +66,7 @@ def eod(handle=addon_handle, cache=True):
     xbmcplugin.endOfDirectory(handle, cacheToDisc=cache)
 
 
-def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None):
+def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration=None, quality=None):
     contextMenuItems = []
     favtext = "Remove from" if fav == 'del' else "Add to"  # fav == 'add' or 'del'
     u = (sys.argv[0]
@@ -88,7 +88,34 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     ok = True
     if not iconimage:
         iconimage = cuminationicon
+    if duration:
+        if addon.getSetting('duration_in_name') == 'true':
+            duration = " [COLOR deeppink]" + duration + "[/COLOR]"
+            name = name + duration if six.PY3 else (name.decode('utf-8') + duration).encode('utf-8')
+        else:
+            secs = None
+            try:
+                duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace(' ', '').replace('IN', '0').strip()
+                if ':' in duration:
+                    if duration.endswith(':'):
+                        duration += '0'
+                    secs = sum(int(x) * 60 ** i for i, x in enumerate(reversed(duration.split(':'))))
+                elif duration.isdigit():
+                    secs = int(duration)
+                if secs is None and len(duration) > 0:
+                    xbmc.log("@@@@Cumination: Duration format error: " + str(duration), xbmc.LOGERROR)
+            except:
+                xbmc.log("@@@@Cumination: Duration format error: " + str(duration), xbmc.LOGERROR)
+    width = None
+    if quality:
+        if addon.getSetting('quality_in_name') == 'true':
+            quality = " [COLOR orange]" + quality + "[/COLOR]"
+            name = name + quality if six.PY3 else (name.decode('utf-8') + quality).encode('utf-8')
+        else:
+            width, height = resolution(quality)
     liz = xbmcgui.ListItem(name)
+    if duration and addon.getSetting('duration_in_name') != 'true':
+        liz.setInfo(type="Video", infoLabels={"Duration": secs})
     liz.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
     if not fanart:
         fanart = os.path.join(rootDir, 'fanart.jpg')
@@ -101,7 +128,10 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
         liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
     else:
         liz.setInfo(type="Video", infoLabels={"Title": name})
-    video_streaminfo = {'codec': 'h264'}
+    if width:
+        video_streaminfo = {'codec': 'h264', 'width': width, 'height': height}
+    else:
+        video_streaminfo = {'codec': 'h264'}
     liz.addStreamInfo('video', video_streaminfo)
     if contextm:
         if isinstance(contextm, list):
@@ -151,6 +181,27 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     liz.addContextMenuItems(contextMenuItems, replaceItems=False)
     ok = xbmcplugin.addDirectoryItem(handle=addon_handle, url=u, listitem=liz, isFolder=False)
     return ok
+
+
+def resolution(quality):
+    resolution = (None, None)
+    try:
+        if quality.lower().endswith('p'):
+            quality = quality[:-1]
+        if quality.isdigit():
+            resolution = (int(quality) * 16 // 9, quality)
+        resolutions = {'SD': (640, 480), 'HD': (1280, 720), 'FULLHD': (1920, 1080), 'FHD': (1920, 1080), '2K': (2560, 1440), '4K': (3840, 2160), 'UHD': (3840, 2160), '8K': (7680, 4320)}
+        for x in resolutions.keys():
+            if x in quality.upper():
+                quality = x
+                break
+        if quality.upper() in resolutions.keys():
+            resolution = resolutions[quality]
+        if len(quality) > 0 and resolution == (None, None):
+            xbmc.log("@@@@Cumination: Quality format error: " + str(quality), xbmc.LOGERROR)
+    except:
+        xbmc.log("@@@@Cumination: Quality format error: " + str(quality), xbmc.LOGERROR)
+    return resolution
 
 
 def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True, about=None,

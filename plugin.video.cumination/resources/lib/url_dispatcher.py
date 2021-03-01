@@ -66,9 +66,9 @@ class URL_Dispatcher(object):
         addDir(name, url, mode, iconimage, page, channel, section, keyword, Folder, about,
                custom, list_avail, listitem_id, custom_list, contextm)
 
-    def add_download_link(self, name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None):
+    def add_download_link(self, name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration=None, quality=None):
         mode = self.get_full_mode(mode)
-        addDownLink(name, url, mode, iconimage, desc, stream, fav, noDownload, contextm, fanart)
+        addDownLink(name, url, mode, iconimage, desc, stream, fav, noDownload, contextm, fanart, duration, quality)
 
     def search_dir(self, url, mode, page=None):
         mode = self.get_full_mode(mode)

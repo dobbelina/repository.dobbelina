@@ -39,9 +39,9 @@ def v7_list(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'''cell\s*video-listing.+?url\("([^"]+).+?ico-p'>([^<]+).+?ico-t'>([^<]+).+?href='([^']+)'\s*>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, hd, duration, videopage, name in match:
-        hd = ' [COLOR orange]HD[/COLOR] ' if 'HD' in hd else ' '
-        name = utils.cleantext(name) + hd + duration.strip()
-        site.add_download_link(name, videopage, 'v7_play', img, name)
+        hd = 'HD' if 'HD' in hd else ''
+        name = utils.cleantext(name)
+        site.add_download_link(name, videopage, 'v7_play', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'class="next"\s*href\s*="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

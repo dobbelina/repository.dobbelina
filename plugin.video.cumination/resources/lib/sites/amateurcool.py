@@ -42,10 +42,10 @@ def List(url):
         match = re.compile(r'href="([^"]+)"\s*title="([^"]+)".+?duration.+?item__stat-label">([\d:]+)<(.+?)img src="([^""]+)"', re.DOTALL | re.IGNORECASE).findall(video)
         if match:
             videopage, name, duration, hd, img = match[0]
-            hd = ' [COLOR orange]HD[/COLOR]' if '>HD<' in hd else ''
-            name = utils.cleantext(name + hd + ' [COLOR deeppink]' + duration + '[/COLOR]')
+            hd = 'HD' if '>HD<' in hd else ''
+            name = utils.cleantext(name)
             videopage = 'https:' + videopage if videopage.startswith('//') else videopage
-            site.add_download_link(name, videopage, 'Playvid', img, '')
+            site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
     nextp = re.search(r"title='Next' href='([^']+)'", videos[-1], re.DOTALL)
     if nextp:
         site.add_dir('Next Page', url[:url.rfind('/') + 1] + nextp.group(1), 'List', site.img_next)

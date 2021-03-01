@@ -41,8 +41,8 @@ def List(url):
         return None
     match = re.compile('<article.+?href="([^"]+).+?src="([^"]+).+?tion">([^<]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name2, name in match:
-        name = '{0} [COLOR cyan]({1})[/COLOR]'.format(utils.cleantext(name), name2)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        name = utils.cleantext(name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=name2)
 
     url = re.compile("""pagination-nav'.+?href="([^"]+)">Next<""", re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:

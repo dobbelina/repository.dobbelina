@@ -6,6 +6,8 @@
         <setting id="chaturbate" label="30003" type="bool" default="false" />
         <setting id="paradisehill" label="30004" type="bool" default="false" />
         <setting id="posterfanart" label="30005" type="bool" default="false" />
+        <setting id="quality_in_name" label="30009" type="bool" default="true" />
+        <setting id="duration_in_name" label="30010" type="bool" default="true" />
         <setting id="download_path" type="folder" source="video" label="30052"  option="writeable" default=""/>
         <setting id="setpin" type="action" label="30028" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=pin.SetPin)" />
     </category>

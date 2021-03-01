@@ -48,8 +48,8 @@ def List(url):
     listhtml = utils.getHtml(url, '')
     match = re.compile(r'class="post">.*?src="([^"]+).*?href="([^"]+)[^>]+>([^<]+).+?tion"[^\d]+([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name, duration in match:
-        name = "{0} [COLOR deeppink]({1})[/COLOR]".format(utils.cleantext(name), duration)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        name = utils.cleantext(name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     nextp = re.compile(r'<a\s*class="nextpostslink"\s*rel="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:

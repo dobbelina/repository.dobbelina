@@ -38,12 +38,9 @@ def List(url):
     match = re.compile(r'class="video">.+?href="([^"]+)".+?"time">([^<]+).+?class="hd([^<]+)</span>.+?src="([^"]+)"\s*alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, duration, hd, img, name in match:
         name = utils.cleantext(name)
-        if hd.find('is-hd') > 0:
-            hd = " [COLOR orange]HD[/COLOR] "
-        else:
-            hd = " "
-        name = "{0}{1}[COLOR deeppink]{2}[/COLOR]".format(utils.cleantext(name), hd, duration)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        hd = 'HD' if hd.find('is-hd') > 0 else ''
+        name = utils.cleantext(name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
     np = re.compile('<link rel="next" href="(.+?)">').search(listhtml)
     if np:
         site.add_dir('Next Page', np.group(1), 'List', site.img_next)

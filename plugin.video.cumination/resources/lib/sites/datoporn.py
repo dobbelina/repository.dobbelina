@@ -34,11 +34,12 @@ def datoporn_main():
 @site.register()
 def datoporn_list(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''class="item.+?href="([^"]+).+?al="([^"]+).+?le">([^<]+).+?on">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, img, name, duration in match:
+    match = re.compile(r'''class="item.+?href="([^"]+).+?al="([^"]+)(.+?)le">([^<]+).+?on">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for video, img, hd, name, duration in match:
         duration = duration.strip()
-        name = utils.cleantext(name.strip()) + " [COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, video, 'datoporn_play', img, '')
+        hd = 'HD' if '>HD<' in hd else ''
+        name = utils.cleantext(name.strip())
+        site.add_download_link(name, video, 'datoporn_play', img, name, duration=duration, quality=hd)
 
     r = re.compile(r'''class="pagination.+?class="next"><a\s*href="([^"]+)[^\n]+(\d+)">''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if r:

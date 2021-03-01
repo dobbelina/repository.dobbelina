@@ -200,16 +200,16 @@ def List(channel, section, page=0):
                        re.DOTALL | re.IGNORECASE).findall(urldata)
     for url, name, hd, img, duration in match:
         if 'full' in hd:
-            hd = " [COLOR yellow]FULLHD[/COLOR] "
+            hd = "[COLOR yellow]FULLHD[/COLOR]"
         elif '4k' in hd:
-            hd = " [COLOR red]4K[/COLOR] "
+            hd = "[COLOR red]4K[/COLOR]"
         elif 'hd' in hd:
-            hd = " [COLOR orange]HD[/COLOR] "
+            hd = "[COLOR orange]HD[/COLOR]"
         else:
-            hd = " "
+            hd = ""
         url = site.url[:-1] + url
-        name = name.replace(u'\u2019', "'") + hd + "[COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, url, 'Playvid', img, name)
+        name = name.replace(u'\u2019', "'")
+        site.add_download_link(name, url, 'Playvid', img, name, duration=duration, quality=hd)
         i += 1
     if i >= maxresult and channel:
         page += 1

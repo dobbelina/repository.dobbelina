@@ -40,10 +40,9 @@ def List(url):
     for priv, video, name, img, duration, hd in match:
         if 'private' in priv:
             continue
-        hd = ' [COLOR orange]HD[/COLOR]' if '>HD<' in hd else ''
+        hd = 'HD' if '>HD<' in hd else ''
         name = utils.cleantext(name)
-        name = name + hd + " [COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, video, 'Playvid', img, name)
+        site.add_download_link(name, video, 'Playvid', img, name, duration=duration, quality=hd)
 
     nextp = re.compile(r':(\d+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if nextp:

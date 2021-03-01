@@ -39,9 +39,9 @@ def List(url):
     main_block = match0[0][1]
     match = re.compile('thumb-image-container" href="([^"]+)".*?<i class="thumb-image-container__icon([^>]+)>.*?src="([^"]+)".*?alt="([^"]+)".*?duration">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(main_block)
     for video, hd, img, name, length in match:
-        hd = ' [COLOR orange]HD[/COLOR]' if 'hd' in hd else ''
-        name = utils.cleantext(name) + hd + ' [COLOR hotpink]' + length + '[/COLOR]'
-        site.add_download_link(name, video, 'Playvid', img, name)
+        hd = 'HD' if 'hd' in hd else ''
+        name = utils.cleantext(name)
+        site.add_download_link(name, video, 'Playvid', img, name, duration=length, quality=hd)
 
     np = re.compile(r'<a\s+data-page="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(response)
     if np:

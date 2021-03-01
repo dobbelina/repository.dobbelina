@@ -54,12 +54,10 @@ def List(url):
     match = re.compile(r'div id="video.+?href="([^"]+)".+?data-src="([^"]+)"(.+?)title="([^"]+)">.+?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, res, name, duration in match:
         match = re.search(r'mark">(.+?)<', res)
-        res = ' [COLOR orange]{}[/COLOR]'.format(match.group(1)) if match else ''
-        duration = ' [COLOR deeppink]{}[/COLOR]'.format(duration)
-        name = utils.cleantext(name) + res + duration
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img)
+        res = match.group(1) if match else ''
+        name = utils.cleantext(name)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=res)
     npage = re.compile(r'href="([^"]+)" class="no-page next-page', re.DOTALL | re.IGNORECASE).findall(listhtml)
-#    npage = re.compile(r'class="active".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if npage:
         npage = npage[0].replace('&amp;', '&')
         np = re.findall(r'\d+', npage)[-1]

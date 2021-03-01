@@ -41,8 +41,8 @@ def List(url):
         listhtml = r.group(0)
     match = re.compile(r'class="item.+?href="([^"]+).+?nal="([^"]+).+?le">\s*([^<]+).+?on">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, duration in match:
-        name = "{0} [COLOR deeppink]({1})[/COLOR]".format(utils.cleantext(name.strip()), duration)
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+        name = utils.cleantext(name.strip())
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:

@@ -44,11 +44,11 @@ def List(url):
         name = re.findall(r'class="n">(?:<strong>[^<]+</strong>)?\s*(?:<strong>[^<]+</strong>)?([^<]+)', info)[0]
         duration = re.findall(r'class="l">([^<]+)', info)[0]
         if '"h"' in info:
-            hd = " [COLOR orange]{0}[/COLOR] ".format(re.findall(r'class="h">([^<]+)', info)[0])
+            hd = re.findall(r'class="h">([^<]+)', info)[0]
         else:
-            hd = " "
-        name = utils.cleantext(name) + hd + "[COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name)
+            hd = ""
+        name = utils.cleantext(name)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
     nextp = re.compile('<li class="active"><a>.+?</a></li><li><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         site.add_dir('Next Page', site.url[:-1] + nextp.group(1), 'List', site.img_next)

@@ -39,13 +39,9 @@ def List(url):
     main_block = re.compile(r'videos\s*search-video-thumbs.*?">(.*?)<div\s*class="reset">', re.DOTALL).findall(listhtml)[0]
     match = re.compile(r'class="pcVideoListItem.+?data-thumb_url\s*=\s*"([^"]+).+?tion">([^<]+)(.*?)</div.+?href="([^"]+).+?>\s*(.+?)\s*<', re.DOTALL).findall(main_block)
     for img, duration, hd, videopage, name in match:
-        if 'HD' in hd:
-            hd = " [COLOR orange]HD[/COLOR] "
-        else:
-            hd = " "
+        hd = 'HD' if 'HD' in hd else ''
         name = utils.cleantext(name)
-        name = name + hd + "[COLOR deeppink]" + duration + "[/COLOR]"
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'<li\s*class="page_next"><a\s*href="([^"]+)"\s*class="orangeButton">Next', re.DOTALL).search(listhtml)
     if np:

@@ -68,11 +68,8 @@ def List(url, page=1):
 
     match = re.compile(r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for private, videopage, name, img, hd, name2 in match:
-        if '>HD<' in hd:
-            hd = ' [COLOR orange]HD[/COLOR]'
-        else:
-            hd = ''
-        name = utils.cleantext(name) + '{0} [COLOR cyan]({1})[/COLOR]'.format(hd, name2)
+        hd = 'HD' if '>HD<' in hd else ''
+        name = utils.cleantext(name)
         if 'private' in private.lower():
             if not jblogged:
                 continue
@@ -94,7 +91,7 @@ def List(url, page=1):
             contextmenu = [('[COLOR violet]Add to JB favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'),
                            ('[COLOR violet]Delete from JB favorites[/COLOR]', 'RunPlugin(' + contextdel + ')')]
 
-        site.add_download_link(name, videopage, 'Playvid', img, '', contextm=contextmenu)
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=name2, quality=hd)
 
     if re.search(r'<li\s*class="next"><a', listhtml, re.DOTALL | re.IGNORECASE):
         lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)

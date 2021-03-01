@@ -42,8 +42,8 @@ def pornvibe_list(url):
         hd = '[COLOR orange] HD[/COLOR]' if 'HD' in hd else ''
         d = re.search(r'<span>([\d:]+)</span>', duration)
         duration = d.group(1) if d else ''
-        name = utils.cleantext(name) + hd + "[COLOR deeppink] " + duration + "[/COLOR]"
-        site.add_download_link(name, video, 'pornvibe_play', img, name)
+        name = utils.cleantext(name)
+        site.add_download_link(name, video, 'pornvibe_play', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'class="pagination".+?current"[^!]+?href="([^"]+).+?>(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

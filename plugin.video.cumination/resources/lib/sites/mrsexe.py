@@ -46,8 +46,8 @@ def List(url):
     for qual, videopage, img, duration, name in items:
         if img.startswith('//'):
             img = 'http:' + img
-        name = "{0}[COLOR orange]{1} [COLOR deeppink]({2})[/COLOR]".format(utils.cleantext(name.strip()), qual.upper(), duration)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, '')
+        name = utils.cleantext(name.strip())
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=qual)
 
     nextp = re.compile(r'<li\s*class="arrow"><a\s*href="(.+?)">suivant').search(match[0])
     if nextp:

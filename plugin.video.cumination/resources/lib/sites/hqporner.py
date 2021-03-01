@@ -43,11 +43,10 @@ def HQLIST(url):
     match = re.compile(r'<a\s*href="([^"]+)"\s*class="image\s*featured\s*non.+?src="([^"]+)"\s*alt="([^"]+).+?data">(\d[^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
     for url, img, name, duration in match:
         name = utils.cleantext(name).title()
-        name += ' [COLOR deeppink]({0})[/COLOR]'.format(duration)
         videourl = urllib_parse.quote(site.url + url, safe=':/')
         if img.startswith('//'):
             img = 'https:' + img
-        site.add_download_link(name, videourl, 'HQPLAY', img, '')
+        site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration)
     try:
         nextp = re.compile('<a href="([^"]+)"[^>]+>Next', re.DOTALL | re.IGNORECASE).findall(link)
         nextp = "https://www.hqporner.com" + nextp[0]

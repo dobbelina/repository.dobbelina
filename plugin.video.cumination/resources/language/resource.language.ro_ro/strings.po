@@ -48,6 +48,14 @@ msgctxt "#30008"
 msgid "Enable custom view types"
 msgstr "Activeaza vizualizare personalizata"
 
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr "Calitate adăugată la numele videoclipului"
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr "Durata adăugată la numele videoclipului"
+
 msgctxt "#30011"
 msgid "Select Sort method for Scenes"
 msgstr "Alege metoda de sortare pentru scene"

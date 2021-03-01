@@ -42,13 +42,13 @@ def List(url, page=0):
         if match:
             videourl, img, length, name = match[0]
             videourl = site.url + videourl
-            longname = utils.cleantext(name) + ' [COLOR hotpink]' + length + '[/COLOR]'
+            name = utils.cleantext(name)
             shortname = re.sub(r'\[[^\]]+\]', '', name)
+            shortname = re.sub(r'\([^\)]+\)', '', shortname)
             shortname = re.sub(r'\[[^\]]+$', '', shortname)
             shortname = re.sub(r' - \w+ \d+, \d+.*$', '', shortname)
-            name = shortname if shortname else name
-            name = utils.cleantext(name) + ' [COLOR hotpink]' + length + '[/COLOR]'
-            site.add_download_link(name, videourl, 'Playvid', img, longname)
+            shortname = shortname if shortname else name
+            site.add_download_link(shortname, videourl, 'Playvid', img, name, duration=length)
     npage = page + 1
     site.add_dir('Next Page (' + str(npage + 1) + ')', url, 'List', site.img_next, npage)
     utils.eod()

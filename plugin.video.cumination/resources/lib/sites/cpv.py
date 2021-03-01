@@ -38,9 +38,9 @@ def List(url):
     match = re.compile(r'''class="item".+?src="([^"]+)[^>]+>(.*?)time">([^<]+).+?playME\('([^']+).+?video-title[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, hd, duration, vid, name in match:
         hd = 'HD' if 'HD' in hd else ''
-        name = "{0} [COLOR orange]{1} [COLOR deeppink]({2})[/COLOR]".format(utils.cleantext(name), hd, duration)
+        name = utils.cleantext(name)
         vidurl = '{0}embed/{1}'.format(site.url, vid)
-        site.add_download_link(name, vidurl, 'Playvid', img, name)
+        site.add_download_link(name, vidurl, 'Playvid', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'class="pagination\s*_767p.+?class="active">\d+</a>&nbsp;<a\shref="([^"]+)">(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

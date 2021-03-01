@@ -87,7 +87,7 @@ def PTList(url, page=1):
             hd = "[COLOR yellow]4K[/COLOR] "
         else:
             hd = ""
-        name = "{0}{1} {2}[COLOR deeppink]{3}[/COLOR]".format(private, name, hd, duration)
+        name = "{0}{1}".format(private, name)  # , hd, duration)
         if img.startswith('//'):
             img = 'https:' + img
         elif img.startswith('/'):
@@ -121,7 +121,7 @@ def PTList(url, page=1):
                       + "?mode=" + str('porntrex.PTCheck_tags')
                       + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup tags[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-        site.add_download_link(name, videopage, 'PTPlayvid', img, name, contextm=contextmenu)
+        site.add_download_link(name, videopage, 'PTPlayvid', img, name, contextm=contextmenu, duration=duration, quality=hd)
     if re.search('<li class="next">', listhtml, re.DOTALL | re.IGNORECASE):
         search = False
         if not page:

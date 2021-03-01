@@ -48,8 +48,8 @@ def List(url):
         match = re.compile(r'Quality"><span>(.+?)<.+? href="([^"]+)".+?src="(http[^"]+)".+?href.+?>(.+?)<.+?title="Duration">([^"]+)<\/', re.DOTALL | re.IGNORECASE).findall(vid)
         if match:
             hd, videopage, img, name, duration = match[0]
-            name = utils.cleantext(name) + "[COLOR orange] " + hd + "[COLOR deeppink] " + duration + "[/COLOR]"
-            site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, '')
+            name = utils.cleantext(name)
+            site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
     nextp = re.compile(r"href='([^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(vids[-1])
     if nextp:
         nextp = nextp[0]
