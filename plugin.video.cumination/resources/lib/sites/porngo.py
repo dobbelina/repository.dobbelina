@@ -49,7 +49,9 @@ def List(url):
     next_page = re.compile(r'''class="pagination.+?href="([^"]+)">Next''').search(listhtml)
     if next_page:
         next_page = site.url[:-1] + next_page.group(1)
-        site.add_dir('Next Page... ({0})'.format(next_page.split('/')[-2]), next_page, 'List', site.img_next)
+        lp = re.compile(r'''/(\d+)/\D+>Last''').search(listhtml)
+        lp = '/' + lp.group(1) if lp else ''
+        site.add_dir('Next Page... ({0}{1})'.format(next_page.split('/')[-2], lp), next_page, 'List', site.img_next)
 
     utils.eod()
 
@@ -66,7 +68,7 @@ def Cat(url):
 @site.register()
 def Search(url, keyword=None):
     if not keyword:
-        site.search_dir(url, 'search')
+        site.search_dir(url, 'Search')
     else:
         url = "{0}{1}/".format(url, keyword.replace(' ', '+'))
         List(url)

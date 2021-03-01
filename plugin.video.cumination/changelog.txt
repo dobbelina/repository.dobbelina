@@ -1,8 +1,3 @@
-[B]Version 1.1.7[/B]
-Txxx network sites: added alphabet filter for models
-added: vjav.com
-added: shemalez.com
-download fixed for: porntrex, javbangers, daftsex
-added: xmoviesforyou
-fixed: downloaded file name
+[B]Version 1.1.8[/B]
 fixed: daftsex
+fixed: porngo search
