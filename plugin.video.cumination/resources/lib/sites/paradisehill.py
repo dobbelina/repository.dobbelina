@@ -39,13 +39,13 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, '')
-    match = re.compile(r'class="item\s.+?href="([^"]+).+?name">([^<]+).+?src.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml = utils.getHtml(url, site.url)
+    match = re.compile(r'class="item\s.+?href="([^"]+).+?name">([^<]+).+?src=.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
         img = site.url[:-1] + img
         videopage = site.url[:-1] + videopage
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+        site.add_download_link(name, videopage, 'Playvid', img, name)
     pagination = re.search(r'(<ul\s*class="pagination".+?/ul>)', listhtml, re.DOTALL | re.IGNORECASE)
     if pagination:
         npage = re.search(r'class="next"><a\s*href="([^"]+)"\s*data-page="(\d+)"', pagination.group(1))
@@ -59,7 +59,7 @@ def List(url):
 
 @site.register()
 def Cat(url):
-    cathtml = utils.getHtml(url, '')
+    cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="item".+?href="([^"]+).+?span>([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name, img in match:
         img = site.url[:-1] + img
@@ -81,13 +81,13 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    playall = True if utils.addon.getSetting("paradisehill") == "true" else ''
-    videopage = utils.getHtml(url, '')
+    playall = True if utils.addon.getSetting("paradisehill") == "true" else False
+    videopage = utils.getHtml(url, site.url)
     videos = re.compile(r'href="([^"]+)">(Part\s*\d*)', re.DOTALL | re.IGNORECASE).findall(videopage)
     if len(videos) < 1:
         videos = re.compile(r'<source[^\n]+src="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
 
-    if playall == '':
+    if not playall:
         if len(videos) > 1:
             videolist = []
             for _, pname in videos:
@@ -97,17 +97,17 @@ def Playvid(url, name, download=None):
                 return
             videourl = videos[videopart][0]
             if videourl.startswith('//'):
-                videourl = 'http:' + videourl
+                videourl = 'https:' + videourl
             name = '{0} - {1}'.format(name, videos[videopart][1])
         else:
             videourl = videos[0][0]
         if videourl.startswith('//'):
-            videourl = 'http:' + videourl
+            videourl = 'https:' + videourl
         videourl = videourl + '|Referer={}'.format(url)
 
-    if download == 1 and playall == '':
+    if download == 1 and not playall:
         if videourl.startswith('//'):
-            videourl = 'http:' + videourl
+            videourl = 'https:' + videourl
         utils.downloadVideo(videourl, name)
     else:
         iconimage = xbmc.getInfoImage("ListItem.Thumb")
@@ -122,13 +122,13 @@ def Playvid(url, name, download=None):
                 listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
                 listitem.setProperty("IsPlayable", "true")
                 if videourl.startswith('//'):
-                    videourl = 'http:' + videourl
+                    videourl = 'https:' + videourl
                 videourl = "{0}|Referer={1}".format(videourl, url)
                 pl.add(videourl, listitem)
                 listitem = ''
             xbmc.Player().play(pl)
         else:
             if videourl.startswith('//'):
-                videourl = 'http:' + videourl
+                videourl = 'https:' + videourl
             vp = utils.VideoPlayer(name)
             vp.play_from_direct_link(videourl)

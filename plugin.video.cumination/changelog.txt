@@ -2,3 +2,4 @@
 fixed: daftsex
 fixed: porngo search
 Added the possibility to display the duration and quality of the video using the ListItem properties (selectable in settings, default is duration and quality added to filename).
+fixed: paradisehill covers
