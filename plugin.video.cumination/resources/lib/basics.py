@@ -95,7 +95,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
         else:
             secs = None
             try:
-                duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace(' ', '').replace('IN', '0').strip()
+                duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace(' ', '').replace('IN', '0').replace('::', ':').strip()
                 if ':' in duration:
                     if duration.endswith(':'):
                         duration += '0'
