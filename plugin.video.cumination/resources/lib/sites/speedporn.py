@@ -89,14 +89,21 @@ def Playvid(url, name, download=None):
     for title, src in srcs:
         title = utils.cleantext(title)
         title = title.split(' on ')[-1]
-
         if 'mangovideo' in src:
-            html = utils.getHtml(src)
-            murl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)[0]
-            if murl.startswith('function/'):
-                license = re.findall(r"license_code:\s*'([^']+)", html)[0]
-                murl = kvs_decode(murl, license)
-            links[title] = murl
+            html = utils.getHtml(src, url)
+            if '=' in src:
+                src = src.split('=')[-1]
+            murl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)
+            if murl:
+                if murl[0].startswith('function/'):
+                    license = re.findall(r"license_code:\s*'([^']+)", html)[0]
+                    murl = kvs_decode(murl[0], license)
+            else:
+                murl = re.compile(r'action=[^=]+=([^\?]+)/\?download', re.DOTALL | re.IGNORECASE).findall(html)
+                if murl:
+                    murl = murl[0]
+            if murl:
+                links[title] = murl
         elif vp.resolveurl.HostedMediaFile(src).valid_url():
             links[title] = src
     videourl = utils.selector('Select server', links, setting_valid=False)
