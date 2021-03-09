@@ -29,7 +29,7 @@ site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hen
 def hentaidude_main():
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + '/tag/uncensored/page/1/?orderby=date', 'hentaidude_list', site.img_cat, 1)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/page/1/?s=', 'hentaidude_search', site.img_search)
-    hentaidude_list(site.url + '/page/1/?vidtype=uncensored&orderby=date')
+    hentaidude_list(site.url + '/page/1/?orderby=date')
 
 
 @site.register()
@@ -47,7 +47,7 @@ def hentaidude_list(url, page=1):
         site.add_download_link(name, video, 'hentaidude_play', img, name, contextm=contextmenu)
     if 'Next &rsaquo;' in listhtml:
         npage = page + 1
-        url = url.replace('/' + str(page) + '/', '/' + str(npage) + '/')
+        url = url.replace('/{0}/'.format(page), '/{0}/'.format(npage))
         site.add_dir('Next Page', url, 'hentaidude_list', site.img_next, npage)
 
     utils.eod()
