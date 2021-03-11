@@ -66,7 +66,7 @@ def eod(handle=addon_handle, cache=True):
     xbmcplugin.endOfDirectory(handle, cacheToDisc=cache)
 
 
-def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration=None, quality=None):
+def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
     contextMenuItems = []
     favtext = "Remove from" if fav == 'del' else "Add to"  # fav == 'add' or 'del'
     u = (sys.argv[0]
@@ -84,7 +84,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                 + "&favmode=" + str(mode)
                 + "&mode=" + str('favorites.Favorites')
                 + "&img=" + urllib_parse.quote_plus(iconimage)
-                + "&name=" + urllib_parse.quote_plus(name))
+                + "&name=" + urllib_parse.quote_plus(name)
+                + "&duration=" + duration
+                + "&quality=" + quality)
     ok = True
     if not iconimage:
         iconimage = cuminationicon
@@ -149,7 +151,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                                 + "&favmode=" + str(mode)
                                 + "&mode=" + str('favorites.Favorites')
                                 + "&img=" + urllib_parse.quote_plus(iconimage)
-                                + "&name=" + urllib_parse.quote_plus(name))
+                                + "&name=" + urllib_parse.quote_plus(name)
+                                + "&duration=" + urllib_parse.quote_plus(duration)
+                                + "&quality=" + urllib_parse.quote_plus(quality))
         contextMenuItems.append(('[COLOR hotpink]Move favorite to Top[/COLOR]', 'RunPlugin(' + favorite_move_to_end + ')'))
         favorite_move_up = (sys.argv[0]
                             + "?url=" + urllib_parse.quote_plus(url)
@@ -157,7 +161,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                             + "&favmode=" + str(mode)
                             + "&mode=" + str('favorites.Favorites')
                             + "&img=" + urllib_parse.quote_plus(iconimage)
-                            + "&name=" + urllib_parse.quote_plus(name))
+                            + "&name=" + urllib_parse.quote_plus(name)
+                            + "&duration=" + urllib_parse.quote_plus(duration)
+                            + "&quality=" + urllib_parse.quote_plus(quality))
         contextMenuItems.append(('[COLOR hotpink]Move favorite Up[/COLOR]', 'RunPlugin(' + favorite_move_up + ')'))
         favorite_move_down = (sys.argv[0]
                               + "?url=" + urllib_parse.quote_plus(url)
@@ -165,7 +171,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                               + "&favmode=" + str(mode)
                               + "&mode=" + str('favorites.Favorites')
                               + "&img=" + urllib_parse.quote_plus(iconimage)
-                              + "&name=" + urllib_parse.quote_plus(name))
+                              + "&name=" + urllib_parse.quote_plus(name)
+                              + "&duration=" + urllib_parse.quote_plus(duration)
+                              + "&quality=" + urllib_parse.quote_plus(quality))
         contextMenuItems.append(('[COLOR hotpink]Move favorite Down[/COLOR]', 'RunPlugin(' + favorite_move_down + ')'))
 
     if not noDownload:

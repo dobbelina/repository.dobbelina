@@ -21,6 +21,7 @@ import datetime
 import os
 
 import xbmc
+import six
 from resources.lib import basics
 from resources.lib import utils
 from resources.lib.url_dispatcher import URL_Dispatcher
@@ -34,11 +35,19 @@ favoritesdb = basics.favoritesdb
 conn = sqlite3.connect(favoritesdb)
 c = conn.cursor()
 try:
-    c.executescript("CREATE TABLE IF NOT EXISTS favorites (name, url, mode, image);")
+    c.executescript("CREATE TABLE IF NOT EXISTS favorites (name, url, mode, image, duration, quality);")
     c.executescript("CREATE TABLE IF NOT EXISTS keywords (keyword);")
     c.executescript("CREATE TABLE IF NOT EXISTS custom_sites (author, name, title, url, image, about, version, installed_at, enabled, module_file);")
     c.executescript("CREATE TABLE IF NOT EXISTS custom_lists (name);")
     c.executescript("CREATE TABLE IF NOT EXISTS custom_listitems (name, url, mode, image, list_id);")
+
+    c.execute('PRAGMA table_info(favorites);')
+    res = c.fetchall()
+    if len(res) == 4:
+        addColumn = "ALTER TABLE favorites ADD COLUMN duration"
+        c.execute(addColumn)
+        addColumn = "ALTER TABLE favorites ADD COLUMN quality"
+        c.execute(addColumn)
 except:
     pass
 conn.close()
@@ -57,8 +66,10 @@ def List():
             c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY ROWID DESC) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1")
         else:
             c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY ROWID DESC) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL")
-        for (name, url, mode, img) in c.fetchall():
-            basics.addDownLink(name, url, mode, img, '', '', 'del')
+        for (name, url, mode, img, duration, quality) in c.fetchall():
+            duration = '' if duration is None else duration
+            quality = '' if quality is None else quality
+            basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
         conn.close()
         utils.eod(utils.addon_handle)
     except:
@@ -68,13 +79,14 @@ def List():
 
 
 @url_dispatcher.register()
-def Favorites(fav, favmode, name, url, img):
+def Favorites(fav, favmode, name, url, img, duration='', quality=''):
     if fav == "add":
         existing_favorite = select_favorite(url)
         if existing_favorite:
-            if existing_favorite[0] == name and existing_favorite[3] == img and existing_favorite[2] == favmode:
+            if existing_favorite[0] == name and existing_favorite[3] == img and existing_favorite[2] == favmode and existing_favorite[4] == duration and existing_favorite[5] == quality:
                 utils.notify('Favorite already exists', 'Video already in favorites')
             else:
+                question = 'it'
                 if existing_favorite[2] != favmode:
                     question = 'it'
                 if existing_favorite[0] != name:
@@ -86,10 +98,10 @@ def Favorites(fav, favmode, name, url, img):
                 if utils.dialog.yesno('Video already in favorites',
                                       'This video is already in the favorites with the title[CR]'
                                       '{0}[CR]Update {1}?'.format(existing_favorite[0], question)):
-                    update_favorite(favmode, name, url, img)
+                    update_favorite(favmode, name, url, img, duration, quality)
                     utils.notify('Favorite updated', 'Video updated')
         else:
-            addFav(favmode, name, url, img)
+            addFav(favmode, name, url, img, duration, quality)
             utils.notify('Favorite added', 'Video added to the favorites')
     elif fav == "del":
         delFav(url)
@@ -119,20 +131,20 @@ def select_favorite(url):
     return row
 
 
-def update_favorite(mode, name, url, img):
+def update_favorite(mode, name, url, img, duration, quality):
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    c.execute("UPDATE favorites set name = ?, image = ?, mode = ? where url = ?", (name, img, mode, url))
+    c.execute("UPDATE favorites set name = ?, image = ?, mode = ?, duration = ?, quality = ? where url = ?", (name, img, mode, duration, quality, url))
     conn.commit()
     conn.close()
 
 
-def addFav(mode, name, url, img):
+def addFav(mode, name, url, img, duration, quality):
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    c.execute("INSERT INTO favorites VALUES (?,?,?,?)", (name, url, mode, img))
+    c.execute("INSERT INTO favorites VALUES (?,?,?,?,?,?)", (name, url, mode, img, duration, quality))
     conn.commit()
     conn.close()
 
@@ -239,7 +251,7 @@ def backup_fav():
     conn.text_factory = str
     c = conn.cursor()
     c.execute("SELECT * FROM favorites")
-    favorites = [{"name": name, "url": url, "mode": mode, "img": img} for (name, url, mode, img) in c.fetchall()]
+    favorites = [{"name": name, "url": url, "mode": mode, "img": img, "duration": duration, "quality": quality} for (name, url, mode, img, duration, quality) in c.fetchall()]
     if not favorites:
         progress.close()
         utils.notify("Favorites empty", "No favorites to back up")
@@ -304,13 +316,16 @@ def restore_fav():
     skipped = 0
     for favorite in favorites:
         if select_favorite(favorite["url"]):
-            utils.kodilog('{} is already in favorites, skipping'.format(favorite["url"]))
+            u = favorite["url"] if six.PY3 else favorite["url"].encode('utf8')
+            utils.kodilog('{} is already in favorites, skipping'.format(u))
             skipped += 1
         elif favorite["mode"].startswith('custom_') and favorite["mode"].split('.')[0] not in custom_sites:
             utils.kodilog('{} is not installed, skipping'.format(favorite["mode"].split('.')[0]))
             skipped += 1
         else:
-            addFav(favorite["mode"], favorite["name"], favorite["url"], favorite["img"])
+            duration = favorite["duration"] if "duration" in favorite.keys() else ""
+            quality = favorite["quality"] if "quality" in favorite.keys() else ""
+            addFav(favorite["mode"], favorite["name"], favorite["url"], favorite["img"], duration, quality)
             added += 1
     xbmc.executebuiltin('Container.Refresh')
     utils.dialog.ok("Restore complete",
