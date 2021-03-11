@@ -38,10 +38,10 @@ def List(url, page=0):
     videos = response.split('class="video-item')
     videos.pop(0)
     for video in videos:
-        match = re.compile(r'href="([^"]+).+?url\(\'([^\']+)\'\).+?video-time">([^<]+)<.+?setTitle\(this\);">([^<]*)<', re.DOTALL | re.IGNORECASE).findall(video)
+        match = re.compile(r'video([^"]+)".+?thumb="([^"]+)".+?video-time">([^<]+)<.+?video-title.+?">([^<]*)<', re.DOTALL | re.IGNORECASE).findall(video)
         if match:
             videourl, img, length, name = match[0]
-            videourl = site.url + videourl
+            videourl = site.url + 'watch/' + videourl
             name = utils.cleantext(name)
             shortname = re.sub(r'\[[^\]]+\]', '', name)
             shortname = re.sub(r'\([^\)]+\)', '', shortname)
