@@ -28,6 +28,7 @@ import tempfile
 import sqlite3
 import base64
 import gzip
+from resources.lib.brotlidecpy import decompress
 import json
 
 from kodi_six import xbmc, xbmcplugin, xbmcgui, xbmcvfs
@@ -62,15 +63,10 @@ cj = http_cookiejar.LWPCookieJar(TRANSLATEPATH(cookiePath))
 Request = urllib_request.Request
 
 handlers = [urllib_request.HTTPBasicAuthHandler(), urllib_request.HTTPHandler(), urllib_request.HTTPSHandler()]
-
-if (2, 7, 8) < sys.version_info:
-    try:
-        ssl_context = ssl.create_default_context()
-        ssl_context.check_hostname = False
-        ssl_context.verify_mode = ssl.CERT_NONE
-        handlers += [urllib_request.HTTPSHandler(context=ssl_context)]
-    except:
-        pass
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+handlers.append(urllib_request.HTTPSHandler(context=ssl_context))
 
 
 def kodilog(logvar, level=LOGINFO):
@@ -413,13 +409,17 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None):
             xbmc.log(str(e), xbmc.LOGDEBUG)
             return ''
 
-        if response.info().get('Content-Encoding', '').lower() == 'gzip':
+        cencoding = response.info().get('Content-Encoding', '')
+        if cencoding.lower() == 'gzip':
             buf = six.BytesIO(response.read())
             f = gzip.GzipFile(fileobj=buf)
             result = f.read()
             f.close()
         else:
             result = response.read()
+
+        if cencoding.lower() == 'br':
+            result = decompress(result)
 
         encoding = None
         content_type = response.headers.get('content-type', '')

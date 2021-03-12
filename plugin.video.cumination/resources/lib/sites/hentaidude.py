@@ -22,24 +22,24 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.com', "https://hentaidude.com/wp-content/themes/awp/images/logo.png", "hentaidude")
+site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.com/', "https://hentaidude.com/wp-content/themes/awp/images/logo.png", "hentaidude")
 
 
 @site.register(default_mode=True)
 def hentaidude_main():
-    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + '/tag/uncensored/page/1/?orderby=date', 'hentaidude_list', site.img_cat, 1)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/page/1/?s=', 'hentaidude_search', site.img_search)
-    hentaidude_list(site.url + '/page/1/?orderby=date')
+    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'tag/uncensored/page/1/?orderby=date', 'hentaidude_list', site.img_cat, 1)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'page/1/?s=', 'hentaidude_search', site.img_search)
+    hentaidude_list(site.url + 'page/1/?orderby=date')
 
 
 @site.register()
 def hentaidude_list(url, page=1):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'<a title="([^"]+)".*?href="([^"]+)".*?data-src="([^"]+)(.*?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for name, video, img, other in match:
         name = utils.cleantext(name)
         if 'uncensored' in other.lower() or 'uncensored' in name.lower():
-            name = name + " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
+            name += " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
         contexturl = (utils.addon_sys
                       + "?mode=" + str('hentaidude.hentaidude_eps')
                       + "&url=" + urllib_parse.quote_plus(video))
@@ -65,7 +65,7 @@ def hentaidude_search(url, keyword=None):
 
 @site.register()
 def hentaidude_play(url, name, download=None):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, site.url)
     matches = re.compile(r"id:\s*'([^']+)',\s*nonce:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
     if matches:
         posturl = site.url + '/wp-admin/admin-ajax.php'
@@ -83,8 +83,8 @@ def hentaidude_play(url, name, download=None):
 
 @site.register()
 def hentaidude_eps(url):
-    listhtml = utils.getHtml(url)
-    if 'More Episodes From This Serie:' in listhtml:
+    listhtml = utils.getHtml(url, site.url)
+    if 'More Episodes From This Series:' in listhtml:
         episodes = re.findall(r"""href='([^']+)'\s*class="dudep".*?<p>([^<]+)""", listhtml, re.DOTALL | re.IGNORECASE)
         if episodes:
             eps = {}
