@@ -18,15 +18,17 @@
 '''
 
 import re
+from six.moves import urllib_parse
+from xbmc import executebuiltin
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('xxxstreams', '[COLOR hotpink]XXX Streams (eu)[/COLOR]', 'https://xxxstreams.eu/', 'xxxstreams.png', 'xxxstreams')
+site = AdultSite('xxxstreams', '[COLOR hotpink]XXX Streams (watch)[/COLOR]', 'https://xxxstreams.watch/', 'xxxstreams.png', 'xxxstreams')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Most popular searches[/COLOR]', site.url, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
@@ -34,11 +36,17 @@ def Main():
 
 @site.register()
 def List(url):
-    html = utils.getHtml(url, '')
+    html = utils.getHtml(url, site.url)
     match = re.compile(r'data-id="\d+"\s*title="([^"]+)"\s*href="([^"]+)".*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for name, videopage, img in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        sitename = name.split()[0]
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('xxxstreams.Searchsite')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Search {}[/COLOR]'.format(sitename.strip()), 'RunPlugin(' + contexturl + ')'))
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
     nextp = re.compile(r"""'pages'>([^<]+).+?link"?\s*rel="next"\s*href="([^"]+)""", re.DOTALL | re.IGNORECASE).search(html)
     if nextp:
@@ -54,11 +62,25 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, '')
-    match = re.compile('<li.+?class=".+?menu-item-object-post_tag.+?"><a href="(.+?)">(.+?)</a></li>').findall(cathtml)
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile('<li><a href="([^"]+?)">([^<]+?)</a></li>').findall(cathtml)
     for catpage, name in match:
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
+
+
+@site.register()
+def Searchsite(url):
+    html = utils.getHtml(url, site.url)
+    result = re.findall('(?si)<h4>Tags:</h4><a href="([^"]+?)" rel="tag">', html)[0]
+    if result:
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('xxxstreams.List')
+                      + "&url=" + urllib_parse.quote_plus(result))
+        executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No site tag found for this video')
+        return
 
 
 @site.register()

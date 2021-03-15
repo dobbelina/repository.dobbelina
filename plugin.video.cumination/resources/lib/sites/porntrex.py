@@ -41,14 +41,20 @@ def PTMain():
     if not ptlogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', '', Folder=False)
     elif ptlogged:
-        ptuser = utils.addon.getSetting('ptuser')
-        site.add_dir('[COLOR hotpink]Subscription videos[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_videos_videos_from_my_subscriptions&sort_by=&from_my_subscriptions_videos=1'.format(site.url), 'PTList', page=1)
-        site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions'.format(site.url), 'PTSubscriptions')
-        site.add_dir('[COLOR violet]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
-        site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Porntrex account (favorites, subscriptions)[/COLOR]', '', 'PTAccount', '')
     ptlist = PTList('{0}latest-updates/{1}'.format(site.url, lengthChoices[ptlength]), 1)
     if not ptlist:
         utils.eod()
+
+
+@site.register()
+def PTAccount():
+    ptuser = utils.addon.getSetting('ptuser')
+    site.add_dir('[COLOR hotpink]Subscription videos[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_videos_videos_from_my_subscriptions&sort_by=&from_my_subscriptions_videos=1'.format(site.url), 'PTList', page=1)
+    site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions'.format(site.url), 'PTSubscriptions')
+    site.add_dir('[COLOR violet]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
+    site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
+    utils.eod()
 
 
 @site.register()
@@ -267,6 +273,9 @@ def PTLogin(logged=True):
                 utils.addon.setSetting('ptpass', '')
             utils.addon.setSetting('ptlogged', 'false')
             utils._getHtml(site.url + 'logout/')
+            contexturl = (utils.addon_sys
+                          + "?mode=" + str('porntrex.PTMain'))
+            xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     if logged:
         xbmc.executebuiltin('Container.Refresh')
     else:
