@@ -44,7 +44,7 @@ def List(url):
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img)
-    next_page = re.compile(r'<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if next_page:
         next_page = next_page[0]
         page_nr = re.findall(r'\d+', next_page)[-1]
