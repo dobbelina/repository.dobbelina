@@ -40,7 +40,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile('<article.+?href="([^"]+).+?>([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<article.+?href="([^"]+).+?>([^<]+).+?data-lazy-src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
@@ -80,5 +80,5 @@ def Cat(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex=r'a\s*href="([^"]+)"\s*rel="nofollow', direct_regex=None)
+    vp = utils.VideoPlayer(name, download=download, regex=r'href="([^"]+)"\s*target="_blank"\s*rel="nofollow', direct_regex=None)
     vp.play_from_site_link(url, url)

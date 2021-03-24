@@ -45,7 +45,8 @@ def Main():
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
 
     if female:
-        site.add_dir('[COLOR hotpink]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', bu + 'tags/f/', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Female[/COLOR]', bu + 'new-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Female[/COLOR]', bu + 'teen-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Female[/COLOR]', bu + '18to21-cams/female/?page=1', 'List', '', '')
@@ -60,7 +61,8 @@ def Main():
         site.add_dir('[COLOR hotpink]Asian Cams - Female[/COLOR]', bu + 'asian-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Other Region Cams - Female[/COLOR]', bu + 'other-region-cams/female/?page=1', 'List', '', '')
     if couple:
-        site.add_dir('[COLOR hotpink]Couple[/COLOR]', bu + 'couple-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Couple[/COLOR]', bu + 'couple-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Couple[/COLOR]', bu + 'tags/c/', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Couple[/COLOR]', bu + 'new-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Couple[/COLOR]', bu + 'teen-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Couple[/COLOR]', bu + '18to21-cams/couple/?page=1', 'List', '', '')
@@ -75,7 +77,8 @@ def Main():
         site.add_dir('[COLOR hotpink]Asian Cams - Couple[/COLOR]', bu + 'asian-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Other Region Cams - Couple[/COLOR]', bu + 'other-region-cams/couple/?page=1', 'List', '', '')
     if male:
-        site.add_dir('[COLOR hotpink]Male[/COLOR]', bu + 'male-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Male[/COLOR]', bu + 'male-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Male[/COLOR]', bu + 'tags/m/', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Male[/COLOR]', bu + 'new-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Male[/COLOR]', bu + 'teen-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Male[/COLOR]', bu + '18to21-cams/male/?page=1', 'List', '', '')
@@ -90,7 +93,8 @@ def Main():
         site.add_dir('[COLOR hotpink]Asian Cams - Male[/COLOR]', bu + 'asian-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Other Region Cams - Male[/COLOR]', bu + 'other-region-cams/male/?page=1', 'List', '', '')
     if trans:
-        site.add_dir('[COLOR hotpink]Transsexual[/COLOR]', bu + 'transsexual-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Transsexual[/COLOR]', bu + 'transsexual-cams/?page=1', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Transsexual[/COLOR]', bu + 'tags/s/', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Transsexual[/COLOR]', bu + 'new-cams/transsexual/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Transsexual[/COLOR]', bu + 'teen-cams/transsexual/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Transsexual[/COLOR]', bu + '18to21-cams/transsexual/?page=1', 'List', '', '')
@@ -131,7 +135,7 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?<div[^>]+>([^<]+)</div>.+?href[^>]+>([^<]+)<.+?age[^>]+>([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?<div[^>]+>([^<]+)</div>.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, status, name, age, subject, location, duration in match:
         name = utils.cleantext(name.strip())
         age = utils.cleantext(age.strip())
@@ -233,4 +237,16 @@ def topCams(url):
         subject = subject + 'Watching: ' + str(iTop['viewers'])
         site.add_download_link(iTop['room_user'], bu + iTop['room_user'] + '/', 'Playvid',
                                iTop['image_url'], subject, noDownload=True)
+    utils.eod()
+
+
+@site.register()
+def Tags(url):
+    link = utils.getHtml(url, '')
+    tags = re.compile('<span class="tag">.*?<a href="([^"]+)" title="([^"]+)".+?rooms">([^<]+)<.*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(link)
+    tags = sorted(tags, key=lambda x: x[1])
+    for tagurl, tagname, rooms, tagimg in tags:
+        tagurl = bu + tagurl
+        tagname += ' [COLOR hotpink][' + rooms + '][/COLOR]'
+        site.add_dir(tagname, tagurl, 'List', tagimg, 1)
     utils.eod()
