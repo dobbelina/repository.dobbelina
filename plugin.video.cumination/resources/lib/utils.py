@@ -620,8 +620,12 @@ def parse_query(query):
 
 
 def cleantext(text):
-    h = html_parser.HTMLParser()
-    text = h.unescape(text) if PY3 else h.unescape(text.decode('utf8')).encode('utf8')
+    if PY3:
+        import html
+        text = html.unescape(text)
+    else:
+        h = html_parser.HTMLParser()
+        text = h.unescape(text.decode('utf8')).encode('utf8')
     text = text.replace('&amp;', '&')
     text = text.replace('&apos;', "'")
     text = text.replace('&lt;', '<')
