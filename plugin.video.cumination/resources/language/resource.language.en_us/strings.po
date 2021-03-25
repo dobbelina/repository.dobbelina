@@ -548,6 +548,18 @@ msgctxt "#30470"
 msgid "About"
 msgstr ""
 
+msgctxt "#30500"
+msgid "Set content type"
+msgstr ""
+
+msgctxt "#30501"
+msgid "movies"
+msgstr ""
+
+msgctxt "#30502"
+msgid "videos"
+msgstr ""
+
 msgctxt "#33001"
 msgid "Error loading custom site"
 msgstr ""

@@ -18,7 +18,7 @@
 """
 
 import re
-from six.moves import urllib_parse
+from six.moves import urllib_parse, urllib_error
 from random import randint
 import xbmc
 from resources.lib import utils
@@ -51,7 +51,7 @@ def PTMain():
 def PTAccount():
     ptuser = utils.addon.getSetting('ptuser')
     site.add_dir('[COLOR hotpink]Subscription videos[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_videos_videos_from_my_subscriptions&sort_by=&from_my_subscriptions_videos=1'.format(site.url), 'PTList', page=1)
-    site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions'.format(site.url), 'PTSubscriptions')
+    site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions&sort_by=added_date&from_my_subscriptions=1'.format(site.url), 'PTSubscriptions')
     site.add_dir('[COLOR violet]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
     site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
     utils.eod()
@@ -70,7 +70,13 @@ def PTLength():
 def PTList(url, page=1):
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
-    listhtml = utils.getHtml(url, site.url, headers=hdr)
+    try:
+        listhtml = utils.getHtml(url, site.url, headers=hdr)
+    except urllib_error.HTTPError as e:
+        if e.code == 403:
+            if PTLogin(False):
+                hdr['Cookie'] = get_cookies()
+                listhtml = utils.getHtml(url, site.url, headers=hdr)
     if ptlogged and ('>Log in<' in listhtml):
         if PTLogin(False):
             hdr['Cookie'] = get_cookies()
@@ -283,7 +289,8 @@ def PTLogin(logged=True):
 
 
 @site.register()
-def PTSubscriptions(url):
+def PTSubscriptions(url, page=1):
+    suburl = url
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     listhtml = utils._getHtml(url, site.url, headers=hdr)
@@ -303,6 +310,12 @@ def PTSubscriptions(url):
             contextmenu = ('[COLOR deeppink]Unsubscribe[/COLOR]', 'RunPlugin(' + contexturl + ')')
         url = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
         site.add_dir(name, url, 'PTList', img, 1, contextm=contextmenu)
+    if len(results) == 11:
+        if not page:
+            page = 1
+        npage = page + 1
+        suburl = suburl.replace('from_my_subscriptions=' + str(page), 'from_my_subscriptions=' + str(npage))
+        site.add_dir('Next Page', suburl, 'PTSubscriptions', site.img_next, npage)
     utils.eod()
 
 

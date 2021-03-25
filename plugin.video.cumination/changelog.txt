@@ -1,4 +1,8 @@
 [B]Version 1.1.10[/B]
 fixed: speedporn pagination
 fixed: freepornstreams
+fixed: xxxstreams (watch)
 chaturbate - added tags
+porntrex - put account stuff in subfolder
+Porntrex - pagination for subscribed models
+settings - change content type from movies to video (get wall view with titles)

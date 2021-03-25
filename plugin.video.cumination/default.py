@@ -34,7 +34,9 @@ from resources.lib.sites import *  # noqa
 
 socket.setdefaulttimeout(60)
 
-xbmcplugin.setContent(basics.addon_handle, 'movies')
+addon = basics.addon
+content = 'movies' if addon.getSetting('content') == '0' else 'videos'
+xbmcplugin.setContent(basics.addon_handle, content)
 addon = xbmcaddon.Addon()
 TRANSLATEPATH = xbmcvfs.translatePath if six.PY3 else xbmc.translatePath
 progress = utils.progress
