@@ -516,6 +516,18 @@ msgctxt "#30470"
 msgid "About"
 msgstr "Despre"
 
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Setați tipul de conținut"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr "filme"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "videoclipuri"
+
 msgctxt "#33001"
 msgid "Error loading custom site"
 msgstr "Eroare la incarcare site personalizat"

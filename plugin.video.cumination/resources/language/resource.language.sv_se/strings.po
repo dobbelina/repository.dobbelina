@@ -548,6 +548,18 @@ msgctxt "#30470"
 msgid "About"
 msgstr "Om"
 
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Ställ in innehållstyp"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr  "filmer"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "videor"
+
 msgctxt "#33001"
 msgid "Error loading custom site"
 msgstr "Fel vid inläsning av anpassad webbplats"

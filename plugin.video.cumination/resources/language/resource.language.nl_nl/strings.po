@@ -548,6 +548,18 @@ msgctxt "#30470"
 msgid "About"
 msgstr "Over"
 
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Stel inhoudstype in"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr "films"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "video's"
+
 msgctxt "#33001"
 msgid "Error loading custom site"
 msgstr "Fout bij laden van aangepaste site"
