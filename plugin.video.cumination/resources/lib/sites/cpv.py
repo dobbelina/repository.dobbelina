@@ -35,11 +35,13 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'''class="item".+?src="([^"]+)[^>]+>(.*?)time">([^<]+).+?playME\('([^']+).+?video-title[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, hd, duration, vid, name in match:
+    # match = re.compile(r'''class="item".+?src="([^"]+)[^>]+>(.*?)time">([^<]+).+?playME\('([^']+).+?video-title[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'''class="item".+?src="([^"]+)[^>]+>(.*?)time">([^<]+).+?playME\('([^']+).+?href="([^"]+)[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    # for img, hd, duration, vid, name in match:
+    for img, hd, duration, vid, vidurl, name in match:
         hd = 'HD' if 'HD' in hd else ''
         name = utils.cleantext(name)
-        vidurl = '{0}embed/{1}'.format(site.url, vid)
+        # vidurl = '{0}embed/{1}'.format(site.url, vid)
         site.add_download_link(name, vidurl, 'Playvid', img, name, duration=duration, quality=hd)
 
     np = re.compile(r'class="pagination\s*_767p.+?class="active">\d+</a>&nbsp;<a\shref="([^"]+)">(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
@@ -84,11 +86,16 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     videopage = utils.getHtml(url, site.url)
-    sources = re.compile(r'file:\s*"([^"]+)",\s*label:\s*"([^\s]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
-    if sources:
-        sources = {label: source for source, label in sources}
-        videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
-        if videourl:
-            vp.play_from_direct_link(videourl)
+    # sources = re.compile(r'file:\s*"([^"]+)",\s*label:\s*"([^\s]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
+    # if sources:
+    #     sources = {label: source for source, label in sources}
+    #     videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
+    #     if videourl:
+    #         vp.play_from_direct_link(videourl)
+    # else:
+    #     return
+    source = re.compile(r'file:\s*"([^"]+)",\s*type:\s*"([^"\s]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+    if source:
+        vp.play_from_direct_link(source.group(1))
     else:
         return
