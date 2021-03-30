@@ -145,16 +145,16 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                 contextMenuItems.append(contextm)
     contextMenuItems.append(('[COLOR hotpink]' + favtext + ' favorites[/COLOR]', 'RunPlugin(' + favorite + ')'))
     if fav == 'del':
-        favorite_move_to_end = (sys.argv[0]
+        favorite_move_to_top = (sys.argv[0]
                                 + "?url=" + urllib_parse.quote_plus(url)
-                                + "&fav=" + 'move_to_end'
+                                + "&fav=" + 'move_to_top'
                                 + "&favmode=" + str(mode)
                                 + "&mode=" + str('favorites.Favorites')
                                 + "&img=" + urllib_parse.quote_plus(iconimage)
                                 + "&name=" + urllib_parse.quote_plus(name)
                                 + "&duration=" + urllib_parse.quote_plus(duration)
                                 + "&quality=" + urllib_parse.quote_plus(quality))
-        contextMenuItems.append(('[COLOR hotpink]Move favorite to Top[/COLOR]', 'RunPlugin(' + favorite_move_to_end + ')'))
+        contextMenuItems.append(('[COLOR hotpink]Move favorite to Top[/COLOR]', 'RunPlugin(' + favorite_move_to_top + ')'))
         favorite_move_up = (sys.argv[0]
                             + "?url=" + urllib_parse.quote_plus(url)
                             + "&fav=" + 'move_up'
@@ -175,6 +175,16 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                               + "&duration=" + urllib_parse.quote_plus(duration)
                               + "&quality=" + urllib_parse.quote_plus(quality))
         contextMenuItems.append(('[COLOR hotpink]Move favorite Down[/COLOR]', 'RunPlugin(' + favorite_move_down + ')'))
+        favorite_move_to_bottom = (sys.argv[0]
+                                   + "?url=" + urllib_parse.quote_plus(url)
+                                   + "&fav=" + 'move_to_bottom'
+                                   + "&favmode=" + str(mode)
+                                   + "&mode=" + str('favorites.Favorites')
+                                   + "&img=" + urllib_parse.quote_plus(iconimage)
+                                   + "&name=" + urllib_parse.quote_plus(name)
+                                   + "&duration=" + urllib_parse.quote_plus(duration)
+                                   + "&quality=" + urllib_parse.quote_plus(quality))
+        contextMenuItems.append(('[COLOR hotpink]Move favorite to Bottom[/COLOR]', 'RunPlugin(' + favorite_move_to_bottom + ')'))
 
     if not noDownload:
         contextMenuItems.append(('[COLOR hotpink]Download Video[/COLOR]', 'RunPlugin(' + dwnld + ')'))

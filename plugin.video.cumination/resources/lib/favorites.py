@@ -106,19 +106,19 @@ def Favorites(fav, favmode, name, url, img, duration='', quality=''):
     elif fav == "del":
         delFav(url)
         utils.notify('Favorite deleted', 'Video removed from the list')
-        xbmc.executebuiltin('Container.Refresh')
-    elif fav == "move_to_end":
-        move_fav_to_end(url)
+    elif fav == "move_to_top":
+        move_fav_to_top(url)
         utils.notify('Favorite moved', 'Video moved to top of the list')
-        xbmc.executebuiltin('Container.Refresh')
     elif fav == "move_down":
         move_fav_down(url)
         utils.notify('Favorite moved', 'Video moved down')
-        xbmc.executebuiltin('Container.Refresh')
     elif fav == "move_up":
         move_fav_up(url)
         utils.notify('Favorite moved', 'Video moved up')
-        xbmc.executebuiltin('Container.Refresh')
+    elif fav == "move_to_bottom":
+        move_fav_to_bottom(url)
+        utils.notify('Favorite moved', 'Video moved to the bottom of the list')
+    xbmc.executebuiltin('Container.Refresh')
 
 
 def select_favorite(url):
@@ -152,6 +152,7 @@ def addFav(mode, name, url, img, duration, quality):
 def delFav(url):
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
+    conn.text_factory = str
     c.execute("DELETE FROM favorites WHERE url = ?", (url,))
     conn.commit()
     conn.close()
@@ -167,9 +168,10 @@ def delete_duplicates():
     conn.close()
 
 
-def move_fav_to_end(url):
+def move_fav_to_top(url):
     delete_duplicates()
     conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
     c = conn.cursor()
     c.execute("UPDATE favorites SET rowid = (SELECT MAX(rowid) FROM favorites) + 1 WHERE url = ?", (url,))
     conn.commit()
@@ -179,6 +181,7 @@ def move_fav_to_end(url):
 def move_fav_down(url):
     delete_duplicates()
     conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
     c = conn.cursor()
     sql = '''DROP TABLE IF EXISTS tmp;
 CREATE TEMP TABLE tmp AS
@@ -202,6 +205,7 @@ DROP TABLE IF EXISTS tmp;'''.format(url)
 def move_fav_up(url):
     delete_duplicates()
     conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
     c = conn.cursor()
     sql = '''DROP TABLE IF EXISTS tmp;
 CREATE TEMP TABLE tmp AS
@@ -220,6 +224,16 @@ DROP TABLE IF EXISTS tmp;'''.format(url)
     conn.commit()
     conn.close()
     xbmc.executebuiltin('Container.Refresh')
+
+
+def move_fav_to_bottom(url):
+    delete_duplicates()
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE favorites SET rowid = (SELECT MIN(rowid) FROM favorites) - 1 WHERE url = ?", (url,))
+    conn.commit()
+    conn.close()
 
 
 @url_dispatcher.register()
