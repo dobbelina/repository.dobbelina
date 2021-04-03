@@ -20,38 +20,60 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import xbmc
 
-site = AdultSite('spankbang', '[COLOR hotpink]SpankBang[/COLOR]', 'https://spankbang.com/', 'spankbang.png',
-                 'spankbang')
-
-progress = utils.progress
+site = AdultSite('spankbang', '[COLOR hotpink]SpankBang[/COLOR]', 'https://spankbang.com/', 'spankbang.png', 'spankbang')
+filterQ = utils.addon.getSetting("spankbang_quality") or 'All'
+filterL = utils.addon.getSetting("spankbang_length") or 'All'
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 's/', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'pornstars_alphabet', 'Models_alphabet', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 's/', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Quality: [/COLOR] [COLOR orange]{}[/COLOR]'.format(filterQ), '', 'FilterQ', '', Folder=False)
+    site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{}[/COLOR]'.format(filterL), '', 'FilterL', '', Folder=False)
     List(site.url + 'new_videos/1/')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    filtersQ = {'All': '', '4k': 'uhd', '1080p': 'fhd', '720p': 'hd'}
+    filtersL = {'All': '', '10+min': 10, '20+min': 20, '40+min': 40}
+    if '?' in url:
+        url = url.split('?')[0]
+    url += '?q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
     listhtml = re.compile(r'<main(.*?)</main>', re.DOTALL).findall(listhtml)[0]
-    match = re.compile(r'class="video-item\s*".+?href="([^"]+).+?data-src="([^"]+).+?(<p.+?</p>)', re.DOTALL).findall(listhtml)
-    for videopage, img, info in match:
-        name = re.findall(r'class="n">(?:<strong>[^<]+</strong>)?\s*(?:<strong>[^<]+</strong>)?([^<]+)', info)[0]
-        duration = re.findall(r'class="l">([^<]+)', info)[0]
-        if '"h"' in info:
-            hd = re.findall(r'class="h">([^<]+)', info)[0]
-        else:
-            hd = ""
-        name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
-    nextp = re.compile('<li class="active"><a>.+?</a></li><li><a href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    videos = listhtml.split('class="video-item')
+    for video in videos:
+        match = re.compile(r'href="([^"]+).+?data-src="([^"]+)"(.+)', re.DOTALL).findall(video)
+        if match:
+            videopage, img, info = match[0]
+            info = info.replace('<strong>', '').replace('</strong>', '')
+            duration = ''
+            hd = ''
+            name = ''
+            if 'class="l"' in info:
+                duration = info.split('class="l">')[-1].split('<')[0]
+            if 'class="h"' in info:
+                hd = info.split('class="h">')[-1].split('<')[0]
+            if 'class="n"' in info:
+                name = info.split('class="n">')[-1].split('<')[0]
+            name = utils.cleantext(name)
+            site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
+    nextp = re.compile(r'href="([^"]+)">&raquo', re.DOTALL | re.IGNORECASE).search(videos[-1])
     if nextp:
-        site.add_dir('Next Page', site.url[:-1] + nextp.group(1), 'List', site.img_next)
+        nextp = nextp.group(1)
+        np = re.findall(r'/(\d+)/', nextp)[-1]
+        lp = re.compile(r'>(\d+)<[^"]+class="next"><', re.DOTALL | re.IGNORECASE).findall(videos[-1])
+        if lp:
+            lp = '/' + lp[0]
+        else:
+            lp = ''
+        site.add_dir('Next Page({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
     utils.eod()
 
 
@@ -76,6 +98,27 @@ def Categories(url):
 
 
 @site.register()
+def Models_alphabet(url):
+    cathtml = utils.getHtml(url, '')
+    cathtml = cathtml.split('<ul class="alphabets">')[-1].split('</ul>')[0]
+    match = re.compile(r'<li><a href="([^"]+)".*?>([^<]+)<', re.DOTALL).findall(cathtml)
+    for catpage, name in match:
+        site.add_dir(name, site.url[:-1] + catpage, 'Models', '', '')
+    utils.eod()
+
+
+@site.register()
+def Models(url):
+    cathtml = utils.getHtml(url, '')
+    cathtml = cathtml.split('<ul class="list">')[-1].split('</ul>')[0]
+    match = re.compile(r'<li><a href="([^"]+)".*?>([^<]+)<.+?svg>([\s\d]+)</span', re.DOTALL).findall(cathtml)
+    for catpage, name, videos in match:
+        name = name + '[COLOR hotpink]{}[/COLOR]'.format(videos)
+        site.add_dir(name, site.url[:-1] + catpage, 'List', '', '')
+    utils.eod()
+
+
+@site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
@@ -87,3 +130,21 @@ def Playvid(url, name, download=None):
             sources[quality] = videourl
     videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
     vp.play_from_direct_link(videourl.replace(r'\u0026', '&'))
+
+
+@site.register()
+def FilterQ():
+    filters = {'All': 1, '4k': 2, '1080p': 3, '720p': 4}
+    f = utils.selector('Select resolution', filters.keys(), sort_by=lambda x: filters[x])
+    if f:
+        utils.addon.setSetting('spankbang_quality', f)
+        xbmc.executebuiltin('Container.Refresh')
+
+
+@site.register()
+def FilterL():
+    filters = {'All', '10+min', '20+min', '40+min'}
+    f = utils.selector('Select length', filters, reverse=True)
+    if f:
+        utils.addon.setSetting('spankbang_length', f)
+        xbmc.executebuiltin('Container.Refresh')
