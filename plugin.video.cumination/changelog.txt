@@ -1,5 +1,2 @@
-[B]Version 1.1.11[/B]
-fixed: CPV playback
-favorites: added Move favorite to Bottom in context menu
-fixed: Spankbang
-Spankbang: added Models category + length & quality filters
+[B]Version 1.1.12[/B]
+Added Stripchat webcams
