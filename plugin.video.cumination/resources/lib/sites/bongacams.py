@@ -17,12 +17,10 @@ import os
 import sqlite3
 import json
 import re
-import xbmc, xbmcgui
-import requests
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('bongacams', '[COLOR hotpink]bongacams.com[/COLOR]', 'http://bongacams.com', 'bongacams.png', 'bongacams', True)
+site = AdultSite('bongacams', '[COLOR hotpink]bongacams.com[/COLOR]', 'http://bongacams.com/', 'bongacams.png', 'bongacams', True)
 
 
 @site.register(default_mode=True)
@@ -120,30 +118,27 @@ def Playvid(url, name):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
         postRequest = {'method': 'getRoomData', 'args[]': str(url)}
-        response = utils._postHtml('{0}/tools/amf.php'.format(site.url), form_data=postRequest, headers={'X-Requested-With': 'XMLHttpRequest'}, compression=False)
+        response = utils._postHtml('{0}tools/amf.php'.format(site.url), form_data=postRequest, headers={'X-Requested-With': 'XMLHttpRequest'}, compression=False)
     except:
-        utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
+        utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return None
 
     amf_json = json.loads(response)
-    try:
-        amf = amf_json['localData']['videoServerUrl']
-    except:
-        xbmcgui.Dialog().notification(name, 'Couldn\'t find a playable webcam link', icon=xbmc.getInfoImage("ListItem.Thumb"))
+    if amf_json['performerData']['showType'] == 'private':
+        utils.notify(name, 'Model in private chat', icon='thumb')
+        vp.progress.close()
         return
 
-    if amf_json['localData']['videoServerUrl'].startswith("//mobile"):
-        videourl = 'https:' + amf_json['localData']['videoServerUrl'] + '/hls/stream_' + url + '.m3u8'
+    amf = amf_json.get('localData').get('videoServerUrl', '')
+
+    if amf == '':
+        utils.notify(name, 'Model Offline', icon='thumb')
+        vp.progress.close()
+        return
+    elif amf.startswith("//mobile"):
+        videourl = 'https:' + amf + '/hls/stream_' + url + '.m3u8'
     else:
-        videourl = 'https:' + amf_json['localData']['videoServerUrl'] + '/hls/stream_' + url + '/playlist.m3u8'
-
-    response = requests.get(videourl)
-    if response.status_code !=200:
-        xbmcgui.Dialog().notification(name, 'Couldn\'t find a playable webcam link', icon=xbmc.getInfoImage("ListItem.Thumb"))
-        return
-    if response.status_code == 200 and '#EXT-X-STREAM-INF' not in response.text:
-        xbmcgui.Dialog().notification(name, 'In private chat', icon=xbmc.getInfoImage("ListItem.Thumb"))
-        return
+        videourl = 'https:' + amf + '/hls/stream_' + url + '/playlist.m3u8'
 
     videourl += '|User-Agent={0}'.format(utils.USER_AGENT)
     vp.progress.update(75, "[CR]Found Stream[CR]")
@@ -152,32 +147,18 @@ def Playvid(url, name):
 
 
 @site.register()
-def Refresh():
-    xbmc.executebuiltin('Container.Refresh')
-
-
-@site.register()
 def List2(url):
     site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'Refresh', '', '', noDownload=True)
     if utils.addon.getSetting("online_only") == "true":
-        url = url + '/?online_only=1'
+        url = url + '?online_only=1'
         site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
     else:
         site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    sess = requests.session()
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-        'Accept': '*/*',
-        'Accept-Language': 'pl,en-US;q=0.7,en;q=0.3',
-        'Referer': url,
-        'X-Requested-With': 'XMLHttpRequest',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-    }
-    data = sess.get(url, headers=headers, verify=False).content
+    headers = {'X-Requested-With': 'XMLHttpRequest'}
+    data = utils._getHtml(url, site.url, headers=headers)
     match = re.compile('class="top_ranks(.+?)class="title_h3', re.I | re.M | re.S).findall(data)
     if not match:
         match = re.compile('class="top_others(.+?)class="title_h3', re.I | re.M | re.S).findall(data)
@@ -189,28 +170,20 @@ def List2(url):
         site.add_download_link(name, url[1:], 'Playvid', 'https:' + img, '')
     utils.eod()
 
+
 @site.register()
 def List3(url):
     site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'Refresh', '', '', noDownload=True)
     if utils.addon.getSetting("online_only") == "true":
-        url = url + '/?online_only=1'
+        url = url + '?online_only=1'
         site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
     else:
         site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    sess = requests.session()
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:64.0) Gecko/20100101 Firefox/64.0',
-        'Accept': '*/*',
-        'Accept-Language': 'pl,en-US;q=0.7,en;q=0.3',
-        'Referer': url,
-        'X-Requested-With': 'XMLHttpRequest',
-        'DNT': '1',
-        'Connection': 'keep-alive',
-    }
-    data = sess.get(url, headers=headers, verify=False).content
+    headers = {'X-Requested-With': 'XMLHttpRequest'}
+    data = utils._getHtml(url, site.url, headers=headers)
     match = re.compile('class="top_ranks(.+?)trs_actions', re.I | re.M | re.S).findall(data)
     match = re.compile('class="top_thumb".+?href="([^"]+)".+?src="([^"]+)".+?class="mn_lc">(.+?)</span>', re.I | re.M | re.S).findall(match[0])
     for url, img, name in match:
@@ -220,10 +193,16 @@ def List3(url):
         site.add_download_link(name, url[1:], 'Playvid', 'https:' + img, '')
     utils.eod()
 
+
+@site.register()
+def Refresh():
+    utils.Refresh()
+
+
 @site.register()
 def online(url):
     if utils.addon.getSetting("online_only") == "true":
         utils.addon.setSetting("online_only", "false")
     else:
         utils.addon.setSetting("online_only", "true")
-    xbmc.executebuiltin('Container.Refresh')
+    utils.Refresh()

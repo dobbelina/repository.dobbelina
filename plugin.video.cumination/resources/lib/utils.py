@@ -322,10 +322,16 @@ def downloadVideo(url, name):
                     pass
 
 
-def notify(header=None, msg='', duration=5000):
+def notify(header=None, msg='', duration=5000, icon=None):
     if header is None:
         header = 'Cumination'
-    dialog.notification(header, msg, cuminationicon, duration, False)
+    if icon is None:
+        icon = cuminationicon
+    elif icon == 'thumb':
+        icon = xbmc.getInfoImage("ListItem.Thumb")
+    elif not icon.startswith('http'):
+        icon = cuminationicon
+    dialog.notification(header, msg, icon, duration, False)
 
 
 @url_dispatcher.register()
@@ -337,6 +343,10 @@ def setview():
     addon.setSetting('customview', 'true')
     viewName = xbmc.getInfoLabel('Container.Viewmode')
     notify(i18n('dflt_view_set'), '{0} {1}'.format(i18n('dflt_set'), viewName))
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def Refresh():
     xbmc.executebuiltin('Container.Refresh')
 
 
@@ -394,8 +404,10 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None):
             if type(data) != str:
                 data = urllib_parse.urlencode(data)
             data = data if PY2 else six.b(data)
-        if not headers:
+        if headers is None:
             headers = base_hdrs
+        if 'User-Agent' not in headers.keys():
+            headers.update({'User-Agent': USER_AGENT})
 
         req = Request(url, data, headers)
         if len(referer) > 1:
@@ -571,6 +583,19 @@ def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoC
         return None
 
     return data
+
+
+def checkUrl(url, headers={}):
+    if 'User-Agent' not in headers.keys():
+        headers.update({'User-Agent': USER_AGENT})
+    req = Request(url, headers=headers)
+    req.get_method = lambda: 'HEAD'
+    try:
+        response = urlopen(req, timeout=60)
+        code = response.code
+    except urllib_error.HTTPError as e:
+        code = e.code
+    return code == 200
 
 
 def getHtml2(url):
