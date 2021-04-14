@@ -56,7 +56,7 @@ def List(url):
 @utils.url_dispatcher.register('852', ['url', 'name'], ['download'])
 def Playvid(url, name, download=None):
     try:
-        listhtml = utils.getHtml(url, '')
+        listhtml = utils.getHtml3(url, '')
     except:
         return None
     videourl = re.compile("<source src=[\'\"](.+?)[\'\"]", re.DOTALL | re.IGNORECASE).findall(listhtml)[0].strip()
@@ -64,7 +64,7 @@ def Playvid(url, name, download=None):
     listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
 
     listitem.setInfo('video', {'Title': name, 'Genre': 'desixnxx'})
-    xbmc.Player().play(videourl, listitem)
+    xbmc.Player().play(videourl + '|verifypeer=false', listitem)
 
 
 
