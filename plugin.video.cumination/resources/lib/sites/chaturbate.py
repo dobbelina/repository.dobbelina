@@ -22,6 +22,7 @@ import sqlite3
 from six.moves import urllib_parse
 import six
 import json
+import random
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -43,6 +44,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Look for Model[/COLOR]', bu, 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
+    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
 
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
@@ -249,4 +251,26 @@ def Tags(url):
         tagurl = bu + tagurl
         tagname += ' [COLOR hotpink][' + rooms + '][/COLOR]'
         site.add_dir(tagname, tagurl, 'List', tagimg, 1)
+    utils.eod()
+
+
+@site.register()
+def onlineFav(url):
+    wmArray = ["C9m5N", "tfZSl", "jQrKO", "5XO2a", "WXomN", "zM6MR", "Lb2aB", "cIbs3", "zM6MR", "mnzQo", "N6TZA"]
+    chaturbate_url = 'https://chaturbate.com/affiliates/api/onlinerooms/?format=json&wm=' + random.choice(wmArray)
+    data_chat = utils.getHtml(chaturbate_url, '')
+    model_list = json.loads(data_chat)
+
+    conn = sqlite3.connect(utils.favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='chaturbate.Playvid'")
+    result = c.fetchall()
+    c.close()
+
+    for (name, url, image) in result:
+        model = [item for item in model_list if item["username"] in name]
+        if model:
+            image = model[0]["image_url"]
+            site.add_download_link(name, url, 'Playvid', image, model[0]["room_subject"].encode('ascii', 'ignore'), noDownload=True)
     utils.eod()
