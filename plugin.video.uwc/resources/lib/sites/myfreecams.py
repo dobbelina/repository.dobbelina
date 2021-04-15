@@ -21,6 +21,7 @@ import re
 import sys
 import random
 import urllib
+import os
 
 try:
     import simplejson
@@ -35,36 +36,32 @@ from resources.lib import websocket
 
 @utils.url_dispatcher.register('270')
 def Main():
-    List('https://www.myfreecams.com/')
+    utils.addDir('[COLOR hotpink]TAGS[/COLOR]', 'https://www.myfreecams.com/php/model_tags.php?vcc=1545329519', 273,
+                 os.path.join(utils.imgDir, 'uwc-next.png'), '')
+    List('https://www.myfreecams.com/php/model_explorer.php?get_contents=1&page=1')
 
 
 @utils.url_dispatcher.register('271', ['url'])
 def List(url):
     try:
-        listhtml = utils.getHtml2(url)
+        llist = utils.getHtml2(url)
+        res = re.compile("avatar_border src=(.+?) .+?:19px;'>(.+?)<.+?<X>(.+?)<X>", re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(llist)
     except:
         return None
 
-    match = re.compile('<div class=slm_c>.+?<a href="([^"]+)".+?src="([^"]+)".+?style=".+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for urk,img,name in match:
-        url = name
-        name = utils.cleantext(name)
-        #img = img + 'jpg'
-        #url = img[32:-17]
-        img = img.replace('90x90','300x300')
-        #if len(url) == 7:
-        #    url = '10' + url
-        #else:
-        #    url = '1' + url
-
-        utils.addDownLink(name, url, 272, img, '')
+    for img, name, plot in res:
+        img = img.replace('100x100','300x300')
+        utils.addDownLink(name, name, 272, img, plot)
+    utils.addDir('[COLOR hotpink]Next page[/COLOR]', url[:-1] + str(int(url[-1]) + 1), 271, os.path.join(utils.imgDir, 'uwc-next.png'), '')
     xbmcplugin.endOfDirectory(utils.addon_handle)
 
 
 
 
-@utils.url_dispatcher.register('272', ['url', 'name'], ['download'])
-def Playvid(url, name, download=0):
+
+@utils.url_dispatcher.register('272', ['url', 'name'], ['check', 'download'])
+def Playvid(url, name, check=False, download=0):
+    global CAMGIRLPLOT
     global MFC_SERVERS
     MFC_SERVERS = {}
 
@@ -118,6 +115,7 @@ def read_model_data(m):
     global CAMGIRLSERVER
     global CAMGIRLCHANID
     global CAMGIRLUID
+    global CAMGIRLPLOT
     global PHASE
 
     global MFC_SERVERS
@@ -127,6 +125,7 @@ def read_model_data(m):
 
     usr = ''
     msg = fc_decode_json(m)
+    CAMGIRLPLOT = ''
     try:
         sid=msg['sid']
         level  = msg['lv']
@@ -196,15 +195,21 @@ def myfreecam_start(url):
 #        utils.kodilog(host)
         ws = websocket.WebSocket()
         ws = websocket.create_connection(host)
-        ws.send("hello fcserver\n\0")
+
+        ws.send("fcsws_20180422\n\0")
         ws.send("1 0 0 20071025 0 guest:guest\n\0")
-    except:
-        xbmc.log('fucked')
+    except Exception as e:
+        xbmc.log('myUWC - MyFreeCams WS connect error- [' + e.message + '] ', xbmc.LOGNOTICE)
+
         return ''
     rembuf=""
     quitting = 0
     while quitting == 0:
-        sock_buf =  ws.recv()
+        try:
+            sock_buf =  ws.recv()
+        except:
+            utils.kodilog('myUWC - ' + url + ' - MyFreeCams Error receiving from websocket')
+            return
         sock_buf=rembuf+sock_buf
         rembuf=""
         while True:
@@ -243,3 +248,34 @@ def myfreecam_start(url):
         return Url
     else:
         pass
+
+@utils.url_dispatcher.register('273', ['url'])
+def tagsList(url):
+    url = 'https://www.myfreecams.com/php/model_tags.php?get_tags=1&tag_sort=&word_source=tags&display_style=list&member_mode=0&style_override=&night_mode=0&0.057073103870574515'
+
+    page = utils.getHtml2(url)
+    res = re.compile("g_oTags.SelectTag\(\'selected_field\',\'(.+?)\'.+?10px.+?>(.+?)<", re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(page)
+    # xbmcgui.Dialog().textviewer('TAGS', str(res))
+    for item, models in res:
+        url = 'https://www.myfreecams.com/php/model_tags.php?get_users=1&selected_field={field}&display_style=list&word_source=tags&member_mode=0&style_override=&sort=&page=1&stand_alone=true&night_mode=0&0.39258079289014247'.format(field = urllib.quote_plus(item))
+        utils.addDir(item + ' - ' + models, url, 274, '', '')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
+    # uurl =  'https://www.myfreecams.com/php/model_tags.php?get_users=1&selected_field=sexy&display_style=list&word_source=tags&member_mode=0&style_override=&sort=&page=1&stand_alone=true&night_mode=0&0.8154651658335239'
+    # res = re.compile("javascript:g_oTags.SelectTag\('selected_field','(.+?)'", re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(page)
+    # 'https://www.myfreecams.com/php/model_tags.php?get_users=1&selected_field=cook&display_style=list&word_source=tags&member_mode=0&style_override=&sort=&page=1&stand_alone=true&night_mode=0&0.39258079289014247'
+    pass
+
+@utils.url_dispatcher.register('274', ['url'])
+def tagsListDir(url):
+    page = utils.getHtml2(url)
+    res = re.compile("avatar_border src=(.+?) .+?:19px;'>(.+?)<",
+                     re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(page)
+    if not res:
+        return
+    for img, name in res:
+        img = img.replace('\\/', '/').replace('100x100','300x300')
+        utils.addDownLink(name, name, 272, img, '', noDownload=True)
+    # utils.addDir('[COLOR hotpink]Next page[/COLOR]', url[:-1] + str(int(url[-1]) + 1), 271, os.path.join(utils.imgDir, 'uwc-next.png'), '')
+    xbmcplugin.endOfDirectory(utils.addon_handle)
+
+    pass
