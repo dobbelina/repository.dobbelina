@@ -327,6 +327,7 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
 
 def searchDir(url, mode, page=None, alphabet=None):
     if not alphabet:
+        addDir('[COLOR hotpink]One time search[/COLOR]', url, 'utils.oneSearch', cum_image('cum-search.png'), page=page, channel=mode, Folder=False)
         addDir('[COLOR hotpink]Add Keyword[/COLOR]', url, 'utils.newSearch', cum_image('cum-search.png'), '', mode, Folder=False)
         addDir('[COLOR hotpink]Alphabetical[/COLOR]', url, 'utils.alphabeticalSearch', cum_image('cum-search.png'), '', mode)
         if addon.getSetting('keywords_sorted') == 'true':

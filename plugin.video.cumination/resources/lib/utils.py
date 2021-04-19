@@ -346,7 +346,8 @@ def setview():
     xbmc.executebuiltin('Container.Refresh')
 
 
-def Refresh():
+@url_dispatcher.register()
+def refresh():
     xbmc.executebuiltin('Container.Refresh')
 
 
@@ -720,6 +721,19 @@ def setSorted():
 def setUnsorted():
     addon.setSetting('keywords_sorted', 'false')
     xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def oneSearch(url, page, channel):
+    vq = _get_keyboard(heading=i18n('srch_for'))
+    if not vq:
+        return False, 0
+    keyword = urllib_parse.quote_plus(vq)
+    searchcmd = (sys.argv[0] +
+         "?url=" + urllib_parse.quote_plus(url) +
+         "&mode=" + str(channel) +
+         "&keyword=" + keyword)
+    xbmc.executebuiltin('Container.Update('+searchcmd+')')
 
 
 @url_dispatcher.register()

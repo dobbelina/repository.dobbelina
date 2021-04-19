@@ -104,13 +104,8 @@ def Playvid(url, name):
 
 
 @site.register()
-def Refresh():
-    utils.Refresh()
-
-
-@site.register()
 def List2(url):
-    site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'Refresh', '', '', noDownload=True)
+    site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'utils.refresh', '', '', noDownload=True)
     if utils.addon.getSetting("online_only") == "true":
         url = url + '/?online_only=1'
         site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
@@ -136,7 +131,7 @@ def List2(url):
 
 @site.register()
 def List3(url):
-    site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'Refresh', '', '', noDownload=True)
+    site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'utils.refresh', '', '', noDownload=True)
     if utils.addon.getSetting("online_only") == "true":
         url = url + '/?online_only=1'
         site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
@@ -164,4 +159,4 @@ def online(url):
         utils.addon.setSetting("online_only", "false")
     else:
         utils.addon.setSetting("online_only", "true")
-    utils.Refresh()
+    utils.refresh()
