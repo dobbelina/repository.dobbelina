@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.11">
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.12">
     <requires>
         <import addon="script.module.six" />
         <import addon="script.module.kodi-six" />
@@ -28,7 +28,7 @@
 
 <addon id="plugin.video.uwc"
        name="Ultimate Whitecream"
-       version="1.2.45"
+       version="1.2.46"
        provider-name="Whitecream, holisticdioxide">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
@@ -52,8 +52,11 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.jpg</fanart>
 		</assets>
-        <news>[B]Version 1.2.45[/B]
-Added keyword alphabetical sorting
+        <news>[B]Version 1.2.46[/B]
+Chaturbate fixed
+Myfreecams fixed
+Desixnxx fixed
+FINALE RELEASE, CUMINATION FROM HERE ON
 </news>
     </extension>
 </addon>
