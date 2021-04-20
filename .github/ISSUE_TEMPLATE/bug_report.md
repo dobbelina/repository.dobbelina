@@ -7,11 +7,6 @@ assignees: ''
 
 ---
 
-# Please fill in below:
-
-- [ ] Cumination Bug
-- [ ] Ultimate Whitecream Bug
-
 ### Bug reports:
 
 Please replace this line with a brief summary of your issue 
