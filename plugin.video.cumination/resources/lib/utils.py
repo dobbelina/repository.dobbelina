@@ -729,11 +729,13 @@ def oneSearch(url, page, channel):
     if not vq:
         return False, 0
     keyword = urllib_parse.quote_plus(vq)
-    searchcmd = (sys.argv[0] +
-         "?url=" + urllib_parse.quote_plus(url) +
-         "&mode=" + str(channel) +
-         "&keyword=" + keyword)
-    xbmc.executebuiltin('Container.Update('+searchcmd+')')
+    searchcmd = (
+        sys.argv[0]
+        + "?url=" + urllib_parse.quote_plus(url)
+        + "&mode=" + str(channel)
+        + "&keyword=" + keyword
+    )
+    xbmc.executebuiltin('Container.Update(' + searchcmd + ')')
 
 
 @url_dispatcher.register()
