@@ -24,31 +24,35 @@ from resources.lib import utils
 import websocket
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('myfreecams', '[COLOR hotpink]MyFreeCams[/COLOR]', 'https://www.myfreecams.com', 'myfreecams.jpg', 'myfreecams', True)
+site = AdultSite('myfreecams', '[COLOR hotpink]MyFreeCams[/COLOR]', 'https://www.myfreecams.com/', 'myfreecams.jpg', 'myfreecams', True)
 MFC_SERVERS = {}
 
 
 @site.register(default_mode=True)
 def Main():
-    List('https://www.myfreecams.com/')
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'php/model_tags.php?vcc=1545329519', 'Tags', '')
+    List(site.url + 'php/model_explorer.php?get_contents=1&page=1')
 
 
 @site.register()
-def List(url):
-    listhtml = utils._getHtml2(url)
-    match = re.compile(r'<div\s*class=slm_c>.+?<a\s*href="([^"]+)".+?src="([^"]+)".+?style=".+?>(.+?)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for _, img, name in match:
-        url = name
-        name = utils.cleantext(name)
-        img = img.replace('90x90', '300x300')
-        site.add_download_link(name, url, 'Playvid', img, name, noDownload=True)
+def List(url, page=1):
+    listhtml = utils._getHtml(url)
+    res = re.compile(r"avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
+
+    for img, name, plot in res:
+        img = img.replace('100x100', '300x300')
+        site.add_download_link(name, name, 'Playvid', img, utils.cleantext(plot), noDownload=True)
+
+    if len(res) >= 50:
+        page += 1
+        site.add_dir('Next Page... [COLOR hotpink]({0})[/COLOR]'.format(page), url[:-1] + str(page), 'List', site.img_next, page)
     utils.eod()
 
 
 @site.register()
 def Playvid(url, name):
     global MFC_SERVERS
-    serverlist = utils.getHtml2('https://app.myfreecams.com/server')
+    serverlist = utils.getHtml('https://app.myfreecams.com/server')
     jsonlist = json.loads(serverlist)
     MFC_SERVERS['WZOBSSERVERS'] = jsonlist["wzobs_servers"]
     MFC_SERVERS['H5SERVERS'] = jsonlist["h5video_servers"]
@@ -60,6 +64,30 @@ def Playvid(url, name):
         vp.play_from_direct_link(videourl)
     else:
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
+
+
+@site.register()
+def Tags(url):
+    url = site.url + 'php/model_tags.php?get_tags=1&tag_sort=&word_source=tags&display_style=list&member_mode=0'
+
+    page = utils._getHtml(url)
+    res = re.compile(r"g_oTags.SelectTag\('selected_field','(.+?)'.+?10px.+?>(.+?)<", re.IGNORECASE | re.MULTILINE | re.DOTALL).findall(page)
+
+    for item, models in res:
+        url = site.url + 'php/model_tags.php?get_users=1&selected_field={0}&display_style=list'.format(urllib_parse.quote_plus(item)) \
+            + '&word_source=tags&member_mode=0&page=1&stand_alone=true'
+        site.add_dir('{0} [COLOR hotpink]{1}[/COLOR]'.format(item, models), url, 'TagsList', '', '')
+    utils.eod()
+
+
+@site.register()
+def TagsList(url):
+    page = utils._getHtml(url)
+    res = re.compile(r"avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+)", re.IGNORECASE | re.DOTALL).findall(page)
+    for img, name in res:
+        img = img.replace('\\/', '/').replace('100x100', '300x300')
+        site.add_download_link(name, name, 'Playvid', img, name, noDownload=True)
+    utils.eod()
 
 
 # from iptvplayer
@@ -93,11 +121,11 @@ def read_model_data(m):
 
     usr = ''
     msg = fc_decode_json(m)
-    try:
-        sid = msg['sid']
-        level = msg['lv']
-    except:
-        return
+    # try:
+    #     sid = msg['sid']
+    #     level = msg['lv']
+    # except:
+    #     return
 
     vs = msg['vs']
 
@@ -160,11 +188,10 @@ def myfreecam_start(url):
         ws = websocket.create_connection(host)
         ws.send("hello fcserver\n\0")
         ws.send("1 0 0 20071025 0 guest:guest\n\0")
-    except:
-        import traceback
-        traceback.print_exc()
-        utils.kodilog('fucked')
+    except Exception as e:
+        utils.kodilog('MyFreeCams WS connect error [{0}]'.format(e.message))
         return ''
+
     rembuf = ""
     quitting = 0
     while quitting == 0:

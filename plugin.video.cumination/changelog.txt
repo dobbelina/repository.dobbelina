@@ -1,4 +1,2 @@
-[B]Version 1.1.12[/B]
-Added Stripchat webcams
-Chaturbate Added Online Favorites
-One time Search function added
+[B]Version 1.1.13[/B]
+MyFreeCams - Add Pagination & Tags

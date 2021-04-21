@@ -110,23 +110,6 @@ def Main():
         site.add_dir('[COLOR hotpink]Philippines Cams - Transsexual[/COLOR]', bu + 'philippines-cams/transsexual/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Asian Cams - Transsexual[/COLOR]', bu + 'asian-cams/transsexual/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Other Region Cams - Transsexual[/COLOR]', bu + 'other-region-cams/transsexual/?page=1', 'List', '', '')
-    # new
-    # site.add_dir('[COLOR hotpink]New Cams[/COLOR]', bu + 'new-cams/?page=1', 'List', '', '')
-    # age
-    # site.add_dir('[COLOR hotpink]Teen Cams (18+)[/COLOR]', bu + 'teen-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]18 to 21 Cams[/COLOR]', bu + '18to21-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]20 to 30 Cams[/COLOR]', bu + '20to30-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]30 to 50 Cams[/COLOR]', bu + '30to50-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]Mature Cams (50+)[/COLOR]', bu + 'mature-cams/?page=1', 'List', '', '')
-    # status
-    # site.add_dir('[COLOR hotpink]HD Cams[/COLOR]', bu + 'hd-cams/?page=1', 'List', '', '')
-    # region
-    # site.add_dir('[COLOR hotpink]North American Cams[/COLOR]', bu + 'north-american-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]South American Cams[/COLOR]', bu + 'south-american-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]Euro Russian Cams[/COLOR]', bu + 'euro-russian-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]Philippines Cams[/COLOR]', bu + 'philippines-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]Asian Cams[/COLOR]', bu + 'asian-cams/?page=1', 'List', '', '')
-    # site.add_dir('[COLOR hotpink]Other Region Cams[/COLOR]', bu + 'other-region-cams/?page=1', 'List', '', '')
 
     utils.eod()
 
@@ -272,5 +255,5 @@ def onlineFav(url):
         model = [item for item in model_list if item["username"] in name]
         if model:
             image = model[0]["image_url"]
-            site.add_download_link(name, url, 'Playvid', image, model[0]["room_subject"].encode('ascii', 'ignore'), noDownload=True)
+            site.add_download_link(name, url, 'Playvid', image, utils.cleantext(model[0]["room_subject"]), noDownload=True)
     utils.eod()
