@@ -1,2 +1,4 @@
 [B]Version 1.1.13[/B]
 MyFreeCams - Add Pagination & Tags
+xhamster - fixed
+xhamster - category selection moved to context menu

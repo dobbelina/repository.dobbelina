@@ -128,7 +128,9 @@ def Playvid(url, name, download=None):
     for quality, videourl in srcs:
         if videourl:
             sources[quality] = videourl
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+    videourl = utils.prefquality(sources, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+    if not videourl:
+        return
     vp.play_from_direct_link(videourl.replace(r'\u0026', '&'))
 
 

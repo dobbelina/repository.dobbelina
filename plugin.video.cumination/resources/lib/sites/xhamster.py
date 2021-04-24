@@ -24,29 +24,54 @@ site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamste
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories - Straight[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Categories - Gay[/COLOR]', site.url + 'gay/categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Categories - Shemale[/COLOR]', site.url + 'shemale/categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search.php?q=', 'Search', site.img_search)
-    List(site.url)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    List(site.url + 'newest')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    url = url.replace('/gay/', '/').replace('/shemale/', '/').replace('?straight=', '')
+    cat = get_category()
+    if '/search/' in url:
+        if 'orientations' not in url:
+            url += '&orientations=straight' if '?' in url else '?orientations=straight'
+        url = re.sub(r'orientations=[^&]+', 'orientations=' + cat, url)
+    else:
+        if cat == 'straight':
+            url += '?straight='
+        else:
+            url = url.replace(site.url, site.url + cat + '/')
+
     response = utils.getHtml(url, site.url)
-    match0 = re.compile('<head>(.*?)</head>.*?index-videos.*?>(.*?)<footer>', re.DOTALL | re.IGNORECASE).findall(response)
-    main_block = match0[0][1]
-    match = re.compile('thumb-image-container" href="([^"]+)".*?<i class="thumb-image-container__icon([^>]+)>.*?src="([^"]+)".*?alt="([^"]+)".*?duration">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(main_block)
-    for video, hd, img, name, length in match:
-        hd = 'HD' if 'hd' in hd else ''
-        name = utils.cleantext(name)
-        site.add_download_link(name, video, 'Playvid', img, name, duration=length, quality=hd)
+    if 'data-video-id="' in response:
+        videos = response.split('data-video-id="')
+        videos.pop(0)
+        for video in videos:
+            match = re.compile(r'"(.+)src="([^"]+)".+?duration>([^<]+)<.+?href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+            if match:
+                (hd, img, length, videolink, name) = match[0]
+                if 'icon--uhd' in hd:
+                    hd = '4k'
+                elif 'icon--hd' in hd:
+                    hd = 'HD'
+                else:
+                    hd = ''
+                name = utils.cleantext(name)
+                context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
+                contextmenu = [('[COLOR violet]Category[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_category()), 'RunPlugin(' + context_category + ')')]
+                site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
-    np = re.compile(r'<a\s+data-page="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(response)
-    if np:
-        site.add_dir('Next Page', np.group(1), 'List', site.img_next)
-
+        nextp = re.compile(r'data-page="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videos[-1])
+        if nextp:
+            nextp = nextp[0].replace('&#x3D;', '=').replace('&amp;', '&')
+            np = re.findall(r'\d+', nextp)[-1]
+            lp = re.compile(r'>([\d,]+)<\D+?class="next"', re.DOTALL | re.IGNORECASE).findall(videos[-1])
+            lp = '/' + lp[0] if lp else ''
+            site.add_dir('Next Page (' + np + lp + ')', nextp, 'List', site.img_next)
+    else:
+        utils.notify('Cumination', 'No video found.')
     utils.eod()
 
 
@@ -59,12 +84,40 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories(url):
+    cat = get_category()
+    if cat == 'gay':
+        url = url.replace('/categories', '/gay/categories')
+    elif cat == 'shemale':
+        url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    match0 = re.compile('<div class="letter-blocks page">(.*?)<footer>', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    match = re.compile('<a href="(.+?)" >([^<]+)<').findall(match0[0])
+    cathtml = cathtml.split('class="alphabet"')[-1].split('class="letter-blocks page"')[0]
+    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    for url, name in match:
+        site.add_dir(name.strip(), url, 'CategoriesA', '')
+    utils.eod()
+
+
+@site.register()
+def CategoriesA(url):
+    cathtml = utils.getHtml(url, site.url)
+    cathtml = cathtml.split('class="letter-blocks page"')[-1].split('class="search"')[0]
+    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url + '/newest', 'List', '')
     utils.eod()
+
+
+@site.register()
+def ContextCategory():
+    categories = {'straight': 1, 'gay': 2, 'shemale': 3}
+    cat = utils.selector('Select category', categories.keys(), sort_by=lambda x: categories[x])
+    if cat:
+        utils.addon.setSetting('xhamstercat', cat)
+        utils.refresh()
+
+
+def get_category():
+    return utils.addon.getSetting('xhamstercat') if utils.addon.getSetting('xhamstercat') else 'straight'
 
 
 @site.register()
@@ -74,5 +127,5 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '_')
-        searchUrl = searchUrl + title
+        searchUrl = searchUrl + title + '?orientations=' + get_category()
         List(searchUrl)
