@@ -109,17 +109,18 @@ def Channels(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, '', 'Download:.+?href="([^"]+)"')
-
+    vp = utils.VideoPlayer(name, download)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, '')
-    match = re.compile(r'Download:(.+?)<\/div>', re.DOTALL | re.IGNORECASE).findall(videopage)
-    srcs = re.compile('href="([^"]+)".+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(match[0])
+
+    srcs = re.compile(r"video_(?:alt_|)url:\s*'([^']+)'.+?video_(?:alt_|)url_text:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(videopage)
     sources = {}
     for videourl, quality in srcs:
         if videourl:
             sources[quality] = videourl
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: int(x.split('x')[0]), reverse=True)
+    videourl = utils.prefquality(sources, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
     if videourl:
+        vp.progress.update(75, "[CR]Loading video page[CR]")
         vp.play_from_direct_link(videourl)
 
 
