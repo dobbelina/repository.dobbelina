@@ -805,7 +805,6 @@ def backup_keywords():
     if not path:
         return
     import json
-    import gzip
     import datetime
     progress.update(25, i18n('read_db'))
     conn = sqlite3.connect(favoritesdb)
@@ -825,17 +824,32 @@ def backup_keywords():
         return
     progress.update(75, i18n('write_bkup'))
     filename = "cumination-keywords_" + time + '.bak'
-    try:
-        if PY3:
-            with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
-                json.dump(backup_content, fav_file)
-        else:
-            with gzip.open(path + filename, "wb") as fav_file:
-                json.dump(backup_content, fav_file)
-    except IOError:
-        progress.close()
-        notify(i18n('invalid_path'), i18n('write_permission'))
-        return
+    compressbackup = True if addon.getSetting("compressbackup") == "true" else False
+    if compressbackup:
+        import gzip
+        try:
+            if PY3:
+                with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with gzip.open(path + filename, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+        except IOError:
+            progress.close()
+            notify(i18n('invalid_path'), i18n('write_permission'))
+            return
+    else:
+        try:
+            if PY3:
+                with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with gzip.open(path + filename, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+        except IOError:
+            progress.close()
+            notify(i18n('invalid_path'), i18n('write_permission'))
+            return
     progress.close()
     dialog.ok(i18n('bkup_complete'), "{0} {1}".format(i18n('bkup_file'), path + filename))
 
@@ -858,21 +872,38 @@ def restore_keywords():
     if not path:
         return
     import json
-    import gzip
-    try:
-        if PY3:
-            with gzip.open(path, "rt", encoding="utf-8") as fav_file:
-                backup_content = json.load(fav_file)
-        else:
-            with gzip.open(path, "rb") as fav_file:
-                backup_content = json.load(fav_file)
+    compressbackup = True if addon.getSetting("compressbackup") == "true" else False
+    if compressbackup:
+        import gzip
+        try:
+            if PY3:
+                with gzip.open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with gzip.open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
 
-    except (ValueError, IOError):
-        notify(i18n('error'), i18n('invalid_bkup'))
-        return
-    if not backup_content["meta"]["type"] in ("cumination-keywords", "uwc-keywords"):
-        notify(i18n('error'), i18n('invalid_bkup'))
-        return
+        except (ValueError, IOError):
+            notify(i18n('error'), i18n('invalid_bkup'))
+            return
+        if not backup_content["meta"]["type"] in ("cumination-keywords", "uwc-keywords"):
+            notify(i18n('error'), i18n('invalid_bkup'))
+            return
+    else:
+        try:
+            if PY3:
+                with gzip.open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with gzip.open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
+
+        except (ValueError, IOError):
+            notify(i18n('error'), i18n('invalid_bkup'))
+            return
+        if not backup_content["meta"]["type"] in ("cumination-keywords", "uwc-keywords"):
+            notify(i18n('error'), i18n('invalid_bkup'))
+            return
     keywords = backup_content["data"]
     if not keywords:
         notify(i18n('error'), i18n('empty_bkup'))

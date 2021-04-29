@@ -208,6 +208,10 @@ msgctxt "#30114"
 msgid "Trans"
 msgstr ""
 
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr ""
+
 msgctxt "#30201"
 msgid "Backup favorites"
 msgstr ""

@@ -37,6 +37,7 @@
         <setting label="30058" />
     </category>
     <category label="30059">
+        <setting id="compressbackup" label="30200" type="bool" default="true" />
         <setting type="lsep" label="30060" />
         <setting id="backup_favorites" type="action" label="30201" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.backup_fav)" />
         <setting id="restore_favorites" type="action" label="30202" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.restore_fav)" />

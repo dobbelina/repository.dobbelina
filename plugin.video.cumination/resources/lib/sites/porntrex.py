@@ -84,8 +84,8 @@ def PTList(url, page=1):
         else:
             return None
 
-    match = re.compile(r'class="video-.+?data-src="([^"]+)".+?/ul>(.+?)title.+?class="quality">([^<]+).+?clock-o"></i>\s*([^<]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, private, hd, duration, videopage, name in match:
+    match = re.compile(r'class="video-.+?data-src="([^"]+)".+?/ul>(.+?)title.+?class="quality">([^<]+).+?clock-o"></i>\s*([^<]+).+?href="([^"]+).+?>([^<]+)</a>.+?li>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, private, hd, duration, videopage, name, age in match:
         name = utils.cleantext(name)
         if 'private' in private.lower():
             if not ptlogged:
@@ -133,7 +133,8 @@ def PTList(url, page=1):
                       + "?mode=" + str('porntrex.PTCheck_tags')
                       + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup tags[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-        site.add_download_link(name, videopage, 'PTPlayvid', img, name, contextm=contextmenu, duration=duration, quality=hd)
+        plot = '{}\n{}'.format(name, age)
+        site.add_download_link(name, videopage, 'PTPlayvid', img, plot, contextm=contextmenu, duration=duration, quality=hd)
     if re.search('<li class="next">', listhtml, re.DOTALL | re.IGNORECASE):
         search = False
         if not page:

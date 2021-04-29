@@ -3,3 +3,5 @@ MyFreeCams - Add Pagination & Tags
 xhamster - fixed
 xhamster - category selection moved to context menu
 xozilla - fixed
+hanime - fixed images
+Backup files - option to compress or not

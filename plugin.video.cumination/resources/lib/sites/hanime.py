@@ -82,8 +82,8 @@ def hanime_list(url='', search='', page=0):
         if video['is_censored'] is False:
             name = name + " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
         videoid = video['slug']
-        img = video['cover_url'].replace('https://', 'https://i1.wp.com/').replace('highwinds-cdn.com', 'droidbuzz.top')
-        fanart = video['poster_url'].replace('https://', 'https://i1.wp.com/').replace('highwinds-cdn.com', 'droidbuzz.top')
+        img = video['cover_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
+        fanart = video['poster_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
         plot = video['description'].replace('<p>', '').replace('</p>', '')
         contexturl = (utils.addon_sys
                       + "?mode=" + str('hanime.hanime_eps')

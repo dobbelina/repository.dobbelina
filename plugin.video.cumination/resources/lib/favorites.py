@@ -258,7 +258,6 @@ def backup_fav():
     if not path:
         return
     import json
-    import gzip
     import datetime
     progress.update(25, "Reading database")
     conn = sqlite3.connect(favoritesdb)
@@ -278,17 +277,32 @@ def backup_fav():
         return
     progress.update(75, "Writing backup file")
     filename = "cumination-favorites_" + time + '.bak'
-    try:
-        if utils.PY3:
-            with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
-                json.dump(backup_content, fav_file)
-        else:
-            with gzip.open(path + filename, "wb") as fav_file:
-                json.dump(backup_content, fav_file)
-    except IOError:
-        progress.close()
-        utils.notify("Error: invalid path", "Do you have permission to write to the selected folder?")
-        return
+    compressbackup = True if utils.addon.getSetting("compressbackup") == "true" else False
+    if compressbackup:
+        import gzip
+        try:
+            if utils.PY3:
+                with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with gzip.open(path + filename, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+        except IOError:
+            progress.close()
+            utils.notify("Error: invalid path", "Do you have permission to write to the selected folder?")
+            return
+    else:
+        try:
+            if utils.PY3:
+                with open(path + filename, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with open(path + filename, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+        except IOError:
+            progress.close()
+            utils.notify("Error: invalid path", "Do you have permission to write to the selected folder?")
+            return
     progress.close()
     utils.dialog.ok("Backup complete", "Backup file: {}".format(path + filename))
 
@@ -299,17 +313,30 @@ def restore_fav():
     if not path:
         return
     import json
-    import gzip
-    try:
-        if utils.PY3:
-            with gzip.open(path, "rt", encoding="utf-8") as fav_file:
-                backup_content = json.load(fav_file)
-        else:
-            with gzip.open(path, "rb") as fav_file:
-                backup_content = json.load(fav_file)
-    except (ValueError, IOError):
-        utils.notify("Error", "Invalid backup file")
-        return
+    compressbackup = True if utils.addon.getSetting("compressbackup") == "true" else False
+    if compressbackup:
+        import gzip
+        try:
+            if utils.PY3:
+                with gzip.open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with gzip.open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
+        except (ValueError, IOError):
+            utils.notify("Error", "Invalid backup file")
+            return
+    else:
+        try:
+            if utils.PY3:
+                with open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
+        except (ValueError, IOError):
+            utils.notify("Error", "Invalid backup file")
+            return
     if not backup_content["meta"]["type"] == "cumination-favorites":
         if backup_content["meta"]["type"] == "uwc-favorites":
             from resources.lib.convertfav import convertfav
