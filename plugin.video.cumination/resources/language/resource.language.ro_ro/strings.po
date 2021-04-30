@@ -208,6 +208,10 @@ msgctxt "#30114"
 msgid "Trans"
 msgstr "Trans"
 
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Comprimă fișiere de rezervă"
+
 msgctxt "#30201"
 msgid "Backup favorites"
 msgstr "Salveaza favoritele"

@@ -208,6 +208,10 @@ msgctxt "#30114"
 msgid "Trans"
 msgstr "Transseksueel"
 
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Back-upbestanden comprimeren"
+
 msgctxt "#30201"
 msgid "Backup favorites"
 msgstr "Back-up favorieten"
