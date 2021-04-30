@@ -26,26 +26,25 @@ site = AdultSite("animeid", "[COLOR hotpink]Animeid Hentai[/COLOR]", "https://an
 
 @site.register(default_mode=True)
 def animeidhentai_main():
-    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', '{0}/hentai/on-uncensored/'.format(site.url), 'animeidhentai_list', site.img_cat)
+    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', '{0}/genre/hentai-uncensored/'.format(site.url), 'animeidhentai_list', site.img_cat)
+    site.add_dir('[COLOR hotpink]Genres[/COLOR]', '{0}/search/'.format(site.url), 'animeidhentai_genres', site.img_cat)
     site.add_dir('[COLOR hotpink]Previews[/COLOR]', '{0}/genre/preview/'.format(site.url), 'animeidhentai_list', site.img_cat)
     site.add_dir('[COLOR hotpink]Trending[/COLOR]', '{0}/trending/'.format(site.url), 'animeidhentai_list', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}/?s='.format(site.url), 'animeidhentai_search', site.img_search)
-    animeidhentai_list('{0}/genre/2020/'.format(site.url))
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}/search/'.format(site.url), 'animeidhentai_search', site.img_search)
+    animeidhentai_list('{0}/genre/2021/'.format(site.url))
 
 
 @site.register()
 def animeidhentai_list(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'<article.+?title">([^<]+).+?meta">(.+?)</div.+?src="([^"]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for name, other, img, video in match:
-        if 'uncensored' in other.lower() or 'uncensored' in name.lower():
+    match = re.compile(r'<article.+?data-src="(.*?)" alt="([^"]+)".*?lnk-blk" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, name, video in match:
+        if 'uncensored' in name.lower():
             name = name.replace('Uncensored', '') + " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
         site.add_download_link(utils.cleantext(name), video, 'animeidhentai_play', img, name)
-
-    next_page = re.compile(r'href="([^"\s]+)"\s*class="next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    next_page = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if next_page:
         site.add_dir('Next Page', next_page.group(1), 'animeidhentai_list', site.img_next)
-
     utils.eod()
 
 
@@ -57,6 +56,16 @@ def animeidhentai_search(url, keyword=None):
         title = keyword.replace(' ', '+')
         url += title
         animeidhentai_list(url)
+
+
+@site.register()
+def animeidhentai_genres(url):
+    listhtml = utils.getHtml(url)
+    genres = re.findall("(?si)tt-genres.*?years-filter", listhtml)[0]
+    r = re.compile('icr"><span>([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(genres)
+    for genre in sorted(r, key=lambda x: x[0].lower()):
+        site.add_dir(genre, '{0}/genre/{1}/'.format(site.url, genre.replace(' ', '-')), 'animeidhentai_list', site.img_cat)
+    utils.eod()
 
 
 @site.register()

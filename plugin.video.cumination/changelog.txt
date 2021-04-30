@@ -5,3 +5,6 @@ xhamster - category selection moved to context menu
 xozilla - fixed
 hanime - fixed images
 Backup files - option to compress or not
+xhamster - added quality and length filter to context menu
+xhamster - added channels, pornstars, celebrities
+Animeidhentai - fixed
