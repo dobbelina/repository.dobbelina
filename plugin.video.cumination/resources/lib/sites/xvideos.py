@@ -19,8 +19,10 @@
 
 import re
 import xbmc
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import json
 
 site = AdultSite('xvideos', '[COLOR hotpink]xVideos[/COLOR]', 'https://www.xvideos.com/', 'xvideos.png', 'xvideos')
 
@@ -56,7 +58,11 @@ def List(url):
         match = re.search(r'mark">(.+?)<', res)
         res = match.group(1) if match else ''
         name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=res)
+
+        cm_related = (utils.addon_sys + "?mode=" + str('xvideos.ContextRelated') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, contextm=cm, duration=duration, quality=res)
     npage = re.compile(r'href="([^"]+)" class="no-page next-page', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if npage:
         npage = npage[0].replace('&amp;', '&')
@@ -83,7 +89,7 @@ def Category(url):
     cat = utils.selector('Select category', categories.keys())
     if cat:
         utils.addon.setSetting('xvideoscategory', cat)
-        xbmc.executebuiltin('Container.Refresh')
+        utils.refresh()
 
 
 @site.register()
@@ -95,7 +101,7 @@ def Country(url):
         curl = '{}change-country/{}'.format(site.url, countries[country])
         utils._getHtml(curl, site.url)
         utils.clear_cache()
-        xbmc.executebuiltin('Container.Refresh')
+        utils.refresh()
 
 
 @site.register()
@@ -165,3 +171,40 @@ def Search(url, keyword=None):
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
         List(searchUrl)
+
+
+@site.register()
+def ContextRelated(url):
+    contexturl = (utils.addon_sys
+                  + "?mode=" + str('xvideos.ListRelated')
+                  + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
+def ListRelated(url):
+    url = site.url[:-1] + url
+    html = utils.getHtml(url, site.url)
+    jhtml = html.split('video_related=[')[-1].split('];')[0]
+    jdata = json.loads('[' + jhtml + ']')
+    for video in jdata:
+        videopage = video['u']
+        name = utils.cleantext(str(video['t']))
+        namef = utils.cleantext(str(video['tf']))
+        duration = video['d']
+        img = video['i'].replace(r'\/', '/')
+        quality = ''
+        if video['td'] == 1:
+            quality = '1440p'
+        elif video['hp'] == 1:
+            quality = '1080p'
+        elif video['h'] == 1:
+            quality = '720p'
+        elif video['hm'] == 1:
+            quality = '480p'
+        else:
+            quality = '360p'
+        cm_related = (utils.addon_sys + "?mode=" + str('xvideos.ContextRelated') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, namef, contextm=cm, duration=duration, quality=quality)
+    utils.eod()

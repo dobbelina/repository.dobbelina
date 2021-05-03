@@ -97,7 +97,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
         else:
             secs = None
             try:
-                duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace(' ', '').replace('IN', '0').replace('::', ':').strip()
+                duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace('EC', '').replace(' ', '').replace('IN', '0').replace('::', ':').strip()
                 if ':' in duration:
                     if duration.endswith(':'):
                         duration += '0'
@@ -204,16 +204,19 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
 def resolution(quality):
     resolution = (None, None)
     try:
-        if quality.lower().endswith('p'):
+        quality = str(quality).upper()
+
+        if quality.endswith('P'):
             quality = quality[:-1]
         if quality.isdigit():
-            resolution = (int(quality) * 16 // 9, quality)
-        resolutions = {'SD': (640, 480), 'HD': (1280, 720), 'FULLHD': (1920, 1080), 'FHD': (1920, 1080), '2K': (2560, 1440), '4K': (3840, 2160), 'UHD': (3840, 2160), '8K': (7680, 4320)}
+            resolution = (int(quality) * 16 // 9, int(quality))
+        resolutions = {'SD': (640, 480), 'FULLHD': (1920, 1080), 'FHD': (1920, 1080), '2K': (2560, 1440), '4K': (3840, 2160), 'UHD': (3840, 2160), 'HD': (1280, 720), '8K': (7680, 4320)}
         for x in resolutions.keys():
-            if x in quality.upper():
+            if x in quality:
                 quality = x
                 break
-        if quality.upper() in resolutions.keys():
+
+        if quality in resolutions.keys():
             resolution = resolutions[quality]
         if len(quality) > 0 and resolution == (None, None):
             xbmc.log("@@@@Cumination: Quality format error: " + str(quality), xbmc.LOGERROR)
