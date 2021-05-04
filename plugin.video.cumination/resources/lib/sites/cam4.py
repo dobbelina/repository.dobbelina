@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
 import os
 import sqlite3
 import json
@@ -73,8 +72,6 @@ def List(url, page=1):
     cams = json.loads(listhtml).get('users', {})
     for cam in cams:
         name = cam.get('username')
-        videourl = "{0}/{1}".format(site.url, name)
-
         age = cam.get('age')
         if age:
             name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
@@ -98,36 +95,12 @@ def List(url, page=1):
                 subject += '{}, '.format(tag)
             subject = subject[:-2]
 
-        site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True)
+        site.add_download_link(name, cam.get('hlsPreviewUrl'), 'Playvid', img, subject, noDownload=True)
 
     utils.eod()
 
 
 @site.register()
 def Playvid(url, name):
-    playmode = int(utils.addon.getSetting('chatplay'))
-    camhtml = utils._getHtml(url, headers=IOS_UA)
-
-    if playmode == 0:
-        m3u8stream = re.search(r"hlsUrl:\s*'([^']+)", camhtml)
-        if m3u8stream:
-            videourl = '{0}|User-Agent={1}'.format(m3u8stream.group(1), IOS_UA['User-Agent'])
-        else:
-            utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
-            return
-
-    elif playmode == 1:
-        data = re.search(r"flashData:\s*(.*?}),", camhtml)
-        if data:
-            data = json.loads(data.group(1))
-            swfurl = data.get('playerUrl')
-            data = data.get('flashVars')
-            streamserver = data.get('videoAppUrl')
-            modelname = data.get('videoPlayUrl')
-            videourl = "{0} swfUrl={1} pageUrl={2} conn=S:null conn=S: conn=S:{3} playpath={3}".format(streamserver, swfurl, url, modelname)
-        else:
-            utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
-            return
-
     vp = utils.VideoPlayer(name)
-    vp.play_from_direct_link(videourl)
+    vp.play_from_direct_link(url)
