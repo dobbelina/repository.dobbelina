@@ -143,7 +143,6 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
         else:
             if isinstance(contextm, tuple):
                 contextMenuItems.append(contextm)
-    contextMenuItems.append(('[COLOR hotpink]' + favtext + ' favorites[/COLOR]', 'RunPlugin(' + favorite + ')'))
     if fav == 'del':
         favorite_move_to_top = (sys.argv[0]
                                 + "?url=" + urllib_parse.quote_plus(url)
@@ -185,7 +184,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                                    + "&duration=" + urllib_parse.quote_plus(duration)
                                    + "&quality=" + urllib_parse.quote_plus(quality))
         contextMenuItems.append(('[COLOR hotpink]Move favorite to Bottom[/COLOR]', 'RunPlugin(' + favorite_move_to_bottom + ')'))
-
+    contextMenuItems.append(('[COLOR hotpink]' + favtext + ' favorites[/COLOR]', 'RunPlugin(' + favorite + ')'))
     if not noDownload:
         contextMenuItems.append(('[COLOR hotpink]Download Video[/COLOR]', 'RunPlugin(' + dwnld + ')'))
     settings_url = (sys.argv[0]
