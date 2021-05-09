@@ -30,8 +30,8 @@ site = AdultSite('xvideos', '[COLOR hotpink]xVideos[/COLOR]', 'https://www.xvide
 @site.register(default_mode=True)
 def Main():
     categories = {'Straight': '', 'Gay': 'gay/', 'Trans': 'shemale/'}
-    category = utils.addon.getSetting('xvideoscategory') if utils.addon.getSetting('xvideoscategory') else 'Straight'
-    country = utils.addon.getSetting('xvideoscountry') if utils.addon.getSetting('xvideoscountry') else 'USA'
+    category = get_setting('category')
+    country = get_setting('country')
     site.add_dir('[COLOR hotpink]Country: [/COLOR] [COLOR orange]{}[/COLOR]'.format(country), site.url, 'Country', site.img_cat)
     site.add_dir('[COLOR hotpink]Category: [/COLOR] [COLOR orange]{}[/COLOR]'.format(category), site.url, 'Category', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + categories[category], 'Categories', site.img_cat)
@@ -47,20 +47,34 @@ def Main():
 
 @site.register()
 def List(url):
+    url = update_url(url)
     hdr = dict(utils.base_hdrs)
     hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0'
     try:
         listhtml = utils.getHtml(url, headers=hdr)
     except:
         return None
+
+    cm_sortby = (utils.addon_sys + "?mode=" + str('xvideos.ContextSortbyFilter'))
+    cm_date = (utils.addon_sys + "?mode=" + str('xvideos.ContextDateFilter'))
+    cm_length = (utils.addon_sys + "?mode=" + str('xvideos.ContextLengthFilter'))
+    cm_quality = (utils.addon_sys + "?mode=" + str('xvideos.ContextQualityFilter'))
+    cm_filter = [('[COLOR violet]SortBy[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('sortby')), 'RunPlugin(' + cm_sortby + ')'),
+                 ('[COLOR violet]Date[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('date')), 'RunPlugin(' + cm_date + ')'),
+                 ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + cm_length + ')'),
+                 ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + cm_quality + ')')]
+
     match = re.compile(r'div id="video.+?href="([^"]+)".+?data-src="([^"]+)"(.+?)title="([^"]+)">.+?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, res, name, duration in match:
         match = re.search(r'mark">(.+?)<', res)
         res = match.group(1) if match else ''
         name = utils.cleantext(name)
+        img = img.replace('THUMBNUM', '5')
 
         cm_related = (utils.addon_sys + "?mode=" + str('xvideos.ContextRelated') + "&url=" + urllib_parse.quote_plus(videopage))
         cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+        if 'k=' in url or '/tags/' in url or '/c/' in url:
+            cm += cm_filter
 
         site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, contextm=cm, duration=duration, quality=res)
     npage = re.compile(r'href="([^"]+)" class="no-page next-page', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -79,16 +93,35 @@ def List(url):
             npage = url.replace('/{}'.format(old), '/{}'.format(new))
         if not npage.startswith('http'):
             npage = site.url[:-1] + npage
-        site.add_dir('Next Page ({})'.format(np), npage, 'List', site.img_next)
+        lp = re.compile(r'>(\d+)<', re.DOTALL | re.IGNORECASE).findall(listhtml.split('next-page')[0])
+        if lp:
+            lp = '/' + lp[-1]
+        else:
+            ''
+        site.add_dir('Next Page ({}{})'.format(np, lp), npage, 'List', site.img_next)
+    if 'No video match with this search.' in listhtml:
+        site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
     utils.eod()
+
+
+@site.register()
+def ResetFilters():
+    utils.addon.setSetting('xvideosdate', 'anytime')
+    utils.addon.setSetting('xvideoslen', 'all')
+    utils.addon.setSetting('xvideosqual', 'all')
+    utils.refresh()
+    return
 
 
 @site.register()
 def Category(url):
     categories = {'Straight': '', 'Gay': 'gay/', 'Trans': 'shemale/'}
+    oldcat = get_setting('category')
     cat = utils.selector('Select category', categories.keys())
-    if cat:
+    if cat and cat != oldcat:
         utils.addon.setSetting('xvideoscategory', cat)
+        cat = 'straight' if cat == 'Straight' else categories[cat][:-1]
+        utils._getHtml(site.url + 'switch-sexual-orientation/' + cat)
         utils.refresh()
 
 
@@ -106,10 +139,7 @@ def Country(url):
 
 @site.register()
 def Categories(url):
-    try:
-        cathtml = utils.getHtml(url)
-    except:
-        return None
+    cathtml = utils.getHtml(url)
     match = re.compile(r'href="([^"]+)" class="btn btn-default">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
         site.add_dir(name, site.url[:-1] + catpage, 'List', site.img_cat)
@@ -138,7 +168,7 @@ def Pornstars(url):
 
 @site.register()
 def Tags(url):
-    category = utils.addon.getSetting('xvideoscategory') if utils.addon.getSetting('xvideoscategory') else 'Straight'
+    category = get_setting('category')
     try:
         cathtml = utils.getHtml(url)
     except:
@@ -171,6 +201,60 @@ def Search(url, keyword=None):
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
         List(searchUrl)
+
+
+def get_setting(x):
+    ret = ''
+    if x == 'sortby':
+        ret = utils.addon.getSetting('xvideossortby') if utils.addon.getSetting('xvideossortby') else 'relevance'
+    if x == 'date':
+        ret = utils.addon.getSetting('xvideosdate') if utils.addon.getSetting('xvideosdate') else 'anytime'
+    if x == 'length':
+        ret = utils.addon.getSetting('xvideoslen') if utils.addon.getSetting('xvideoslen') else 'all'
+    if x == 'quality':
+        ret = utils.addon.getSetting('xvideosqual') if utils.addon.getSetting('xvideosqual') else 'all'
+    if x == 'country':
+        ret = utils.addon.getSetting('xvideoscountry') if utils.addon.getSetting('xvideoscountry') else 'USA'
+    if x == 'category':
+        ret = utils.addon.getSetting('xvideoscategory') if utils.addon.getSetting('xvideoscategory') else 'Straight'
+    return ret
+
+
+@site.register()
+def ContextSortbyFilter():
+    filters = {'relevance': 1, 'uploaddate': 2, 'rating': 3, 'length': 4, 'views': 5, 'random': 6}
+    cat = utils.selector('Select date', filters.keys(), sort_by=lambda x: filters[x])
+    if cat:
+        utils.addon.setSetting('xvideossortby', cat)
+        utils.refresh()
+
+
+@site.register()
+def ContextDateFilter():
+    filters = {'anytime': 1, 'today': 2, 'week': 3, 'month': 4, '3month': 5, '6month': 6}
+    cat = utils.selector('Select date', filters.keys(), sort_by=lambda x: filters[x])
+    if cat:
+        cat = 'all' if cat == 'Anytime' else cat
+        utils.addon.setSetting('xvideosdate', cat)
+        utils.refresh()
+
+
+@site.register()
+def ContextLengthFilter():
+    filters = {'all': 1, '1-3min': 2, '3-10min': 3, '10min_more': 4, '10-20min': 5, '20min_more': 6}
+    cat = utils.selector('Select length', filters.keys(), sort_by=lambda x: filters[x])
+    if cat:
+        utils.addon.setSetting('xvideoslen', cat)
+        utils.refresh()
+
+
+@site.register()
+def ContextQualityFilter():
+    filters = {'all': 1, 'hd': 2}
+    cat = utils.selector('Select quality', filters.keys(), sort_by=lambda x: filters[x])
+    if cat:
+        utils.addon.setSetting('xvideosqual', cat)
+        utils.refresh()
 
 
 @site.register()
@@ -208,3 +292,58 @@ def ListRelated(url):
         cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
         site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, namef, contextm=cm, duration=duration, quality=quality)
     utils.eod()
+
+
+def update_url(url):
+    sortby = get_setting('sortby')
+    date = get_setting('date')
+    length = get_setting('length')
+    quality = get_setting('quality')
+    if 'k=' in url:
+        if (sortby == 'relevance' and 'sort=' in url) or (sortby != 'relevance' and 'sort=' + sortby not in url):
+            url = re.sub(r'[\?&]sort=[^\?&]+', '', url)
+            url = re.sub(r'[\?&]p=[^\?&]+', '', url)
+            url += '&sort=' + sortby if sortby != 'relevance' else ''
+        if (date == 'anytime' and 'datef=' in url) or (date != 'anytime' and 'datef=' + date not in url):
+            url = re.sub(r'[\?&]datef=[^\?&]+', '', url)
+            url = re.sub(r'[\?&]p=[^\?&]+', '', url)
+            url += '&datef=' + date if date != 'anytime' else ''
+        if (length == 'all' and 'durf=' in url) or (length != 'all' and 'durf=' + length not in url):
+            url = re.sub(r'[\?&]durf=[^\?&]+', '', url)
+            url = re.sub(r'[\?&]p=[^\?&]+', '', url)
+            url += '&durf=' + length if length != 'all' else ''
+        if (quality == 'all' and 'quality=' in url) or (quality != 'all' and 'quality=' + quality not in url):
+            url = re.sub(r'[\?&]quality=[^\?&]+', '', url)
+            url = re.sub(r'[\?&]p=[^\?&]+', '', url)
+            url += '&quality=' + quality if quality != 'all' else ''
+
+    if '/tags/' in url:
+        type = 'tags'
+    elif '/c/' in url:
+        type = 'c'
+    else:
+        type = ''
+
+    if type:
+        if (quality == 'all' and '/q:' in url) or (quality != 'all' and '/q:' + quality not in url):
+            url = re.sub(r'/q:[^/]+', '', url)
+            url = re.sub(r'/\d+$', '', url)
+            if quality != 'all':
+                url = url.replace(site.url + type, site.url + type + '/q:' + quality)
+        if (length == 'all' and '/d:' in url) or (length != 'all' and '/d:' + length not in url):
+            url = re.sub(r'/d:[^/]+', '', url)
+            url = re.sub(r'/\d+$', '', url)
+            if length != 'all':
+                url = url.replace(site.url + type, site.url + type + '/d:' + length)
+        if (date == 'anytime' and '/m:' in url) or (date != 'anytine' and '/m:' + date not in url):
+            url = re.sub(r'/m:[^/]+', '', url)
+            url = re.sub(r'/\d+$', '', url)
+            if date != 'anytime':
+                url = url.replace(site.url + type, site.url + type + '/m:' + date)
+        if (sortby == 'relevance' and '/s:' in url) or (sortby != 'relevance' and '/s:' + sortby not in url):
+            url = re.sub(r'/s:[^/]+', '', url)
+            url = re.sub(r'/\d+$', '', url)
+            if sortby != 'relevance':
+                url = url.replace(site.url + type, site.url + type + '/s:' + sortby)
+
+    return url
