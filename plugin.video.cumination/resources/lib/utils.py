@@ -395,11 +395,11 @@ def PlayStream(name, url):
     return
 
 
-def getHtml(url, referer='', headers=None, NoCookie=None, data=None):
+def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
     return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data)
 
 
-def _getHtml(url, referer='', headers=None, NoCookie=None, data=None):
+def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
     try:
         if data:
             if type(data) != str:
@@ -418,9 +418,12 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None):
         try:
             response = urlopen(req, timeout=30)
         except urllib_error.URLError as e:
-            notify(i18n('oh_oh'), i18n('slow_site'))
-            xbmc.log(str(e), xbmc.LOGDEBUG)
-            return ''
+            if 'return' in error:
+                notify(i18n('oh_oh'), i18n('slow_site'))
+                xbmc.log(str(e), xbmc.LOGDEBUG)
+                return ''
+            elif 'raise' in error:
+                raise
 
         cencoding = response.info().get('Content-Encoding', '')
         if cencoding.lower() == 'gzip':
@@ -470,7 +473,8 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None):
         if e.code == 503 and 'cf-browser-verification' in result:
             result = cloudflare.solve(url, cj, USER_AGENT)
         elif 400 < e.code < 500:
-            notify(i18n('oh_oh'), i18n('not_exist'))
+            if not e.code == 403:
+                notify(i18n('oh_oh'), i18n('not_exist'))
             raise
         else:
             notify(i18n('oh_oh'), i18n('site_down'))

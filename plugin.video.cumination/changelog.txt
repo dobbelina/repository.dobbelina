@@ -2,3 +2,4 @@
 xvideos: added 'related videos' to context menu
 cam4: fixed
 xvideos: added filters for categories, tags and search
+porntrex: 403 fix

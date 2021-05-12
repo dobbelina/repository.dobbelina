@@ -71,7 +71,7 @@ def PTList(url, page=1):
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     try:
-        listhtml = utils.getHtml(url, site.url, headers=hdr)
+        listhtml = utils.getHtml(url, site.url, headers=hdr, error='raise')
     except urllib_error.HTTPError as e:
         if e.code == 403:
             if PTLogin(False):
