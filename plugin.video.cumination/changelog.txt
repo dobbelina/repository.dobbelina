@@ -1,5 +1,3 @@
-[B]Version 1.1.14[/B]
-xvideos: added 'related videos' to context menu
-cam4: fixed
-xvideos: added filters for categories, tags and search
-porntrex: 403 fix
+[B]Version 1.1.15[/B]
+hanime.tv - fix episode lookup from contextmenu on Matrix
+

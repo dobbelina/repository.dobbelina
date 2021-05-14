@@ -149,6 +149,6 @@ def hanime_eps(url):
         selected_episode = utils.selector('Choose episode', eps, show_on_one=True)
         if not selected_episode:
             return
-        hanime_play(selected_episode, eps.keys()[eps.values().index(selected_episode)])
+        hanime_play(selected_episode, [x for x, y in eps.items() if y is selected_episode][0])
     except:
         utils.notify('Notify', 'No other episodes found')
