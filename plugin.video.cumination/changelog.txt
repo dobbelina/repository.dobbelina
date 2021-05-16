@@ -1,3 +1,5 @@
 [B]Version 1.1.15[/B]
 hanime.tv - fix episode lookup from contextmenu on Matrix
-
+speedporn - fixed
+daftsex - fix categories, fix playback
+streamxxx - fix listing

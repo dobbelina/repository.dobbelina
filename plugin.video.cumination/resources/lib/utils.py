@@ -396,7 +396,7 @@ def PlayStream(name, url):
 
 
 def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
-    return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data)
+    return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data, error)
 
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):

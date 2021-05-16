@@ -83,7 +83,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url)
-    videopage = videopage.split('!Display player')[-1]
+    videopage = videopage.split('>Watch Online')[-1]
 
     srcs = re.compile(r'<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
     for title, src in srcs:
@@ -110,6 +110,7 @@ def Playvid(url, name, download=None):
     if not videourl:
         vp.progress.close()
         return
+
     vp.progress.update(90, "[CR]Loading video page[CR]")
     if 'mango' in videourl:
         vp.play_from_direct_link(videourl)
