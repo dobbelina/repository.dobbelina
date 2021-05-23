@@ -69,6 +69,7 @@ def eod(handle=addon_handle, cache=True):
 def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
     contextMenuItems = []
     favtext = "Remove from" if fav == 'del' else "Add to"  # fav == 'add' or 'del'
+    dname = desc == name
     u = (sys.argv[0]
          + "?url=" + urllib_parse.quote_plus(url)
          + "&mode=" + str(mode)
@@ -114,7 +115,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
             quality = " [COLOR orange]" + quality + "[/COLOR]"
             name = name + quality if six.PY3 else (name.decode('utf-8') + quality).encode('utf-8')
         else:
-            width, height = resolution(quality)
+            width, height = get_resolution(quality)
+    if dname:
+        desc = name
     liz = xbmcgui.ListItem(name)
     if duration and addon.getSetting('duration_in_name') != 'true':
         liz.setInfo(type="Video", infoLabels={"Duration": secs})
@@ -200,7 +203,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     return ok
 
 
-def resolution(quality):
+def get_resolution(quality):
     resolution = (None, None)
     try:
         quality = str(quality).upper()
