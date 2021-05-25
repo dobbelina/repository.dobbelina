@@ -20,8 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('pornvibe', '[COLOR hotpink]Pornvibe[/COLOR]', 'https://pornvibe.org/', 'pornvibe.png',
-                 'pornvibe')
+site = AdultSite('pornvibe', '[COLOR hotpink]Pornvibe[/COLOR]', 'https://pornvibe.org/', 'pornvibe.png', 'pornvibe')
 
 
 @site.register(default_mode=True)
@@ -33,7 +32,7 @@ def pornvibe_main():
 
 @site.register()
 def pornvibe_list(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, site.url)
     r = re.compile(r'''<section\s*class="content(.+?)<!--tabs-panel-->''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if r:
         listhtml = r.group(1)
@@ -54,7 +53,7 @@ def pornvibe_list(url):
 
 @site.register()
 def pornvibe_cat(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'''<img src="([^"]+)" alt="([^"]+)">\s+<a href="([^"]+)".*?</h5>\s+<p>([^&]+)&''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name, catpage, count in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip()) + " [COLOR deeppink]" + count.strip() + " videos[/COLOR]"
@@ -74,5 +73,5 @@ def pornvibe_search(url, keyword=None):
 
 @site.register()
 def pornvibe_play(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex=r'''(?is)"player.+?<iframe\s*src="([^"]+)''', direct_regex=None)
-    vp.play_from_site_link(url, url)
+    vp = utils.VideoPlayer(name, download=download, regex=None, direct_regex=r'''<video.+?<source\s*src="([^"]+)''')
+    vp.play_from_site_link(url, site.url)
