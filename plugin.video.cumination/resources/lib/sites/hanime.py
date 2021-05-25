@@ -85,6 +85,8 @@ def hanime_list(url='', search='', page=0):
         img = video['cover_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
         fanart = video['poster_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
         plot = video['description'].replace('<p>', '').replace('</p>', '')
+        tags = ', '.join(sorted(video['tags']))
+        plot = '[COLOR hotpink][I]Tags: {1}[/I][/COLOR]\n\n{0}'.format(plot, tags)
         contexturl = (utils.addon_sys
                       + "?mode=" + str('hanime.hanime_eps')
                       + "&url=" + urllib_parse.quote_plus(videoid))
