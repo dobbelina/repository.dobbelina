@@ -58,7 +58,7 @@ def List(url):
         # if videopage.startswith('/'):
         #     videopage = site.url[:-1] + videopage
         site.add_download_link(name, videopage, 'Playvid', img, info)
-    np = re.compile(r'class="next page-numbers"\s*href=([^\s>]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'class="next page-numbers"\s*href="?([^\s>"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         currpg = re.compile(r'class="page-numbers\s*current">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         lastpg = re.compile(r'>([^<]+)</a></li>\s*<li><a\s*class="next\s*page-numbers"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]

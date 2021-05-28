@@ -80,5 +80,5 @@ def Cat(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex=r'href="([^"]+)"\s*target="_blank"\s*rel="nofollow', direct_regex=None)
+    vp = utils.VideoPlayer(name, download=download, regex=r'href="([^"]+)"(?:\s*target="_blank")?\s*rel="nofollow', direct_regex=None)
     vp.play_from_site_link(url, url)

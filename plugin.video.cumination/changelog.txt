@@ -9,3 +9,5 @@ maxporn - new site
 pornvibe - fix playback
 hanime - added tags to plot
 porndig - fix listing
+freepornstreams - fix link scraping
+streamxxx - fix next page on search
