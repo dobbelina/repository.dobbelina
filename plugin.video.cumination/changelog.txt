@@ -12,3 +12,4 @@ porndig - fix listing
 freepornstreams - fix link scraping
 streamxxx - fix next page on search
 jav.guru - new site
+bitporno - new site
