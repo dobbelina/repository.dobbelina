@@ -102,7 +102,8 @@ def Categories(url):
     cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'<div class="category-wrapper.*?<a href="([^"]+)"\s*?alt="([^"]+)"[^>]+>\s*?<img\s+src=".*?"\s+data-thumb_url="([^"]+)"', re.DOTALL).findall(cathtml)
     for catpage, name, img in match:
-        site.add_dir(name, site.url[:-1] + catpage + "&o=cm" if '?' in catpage else "?o=cm", 'List', img, '')
+        catpage = site.url[:-1] + catpage
+        site.add_dir(name, catpage, 'List', img, '')
     utils.eod()
 
 
