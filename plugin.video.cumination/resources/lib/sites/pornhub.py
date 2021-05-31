@@ -79,7 +79,7 @@ def List(url):
             np = ''
         match = re.compile(r'Showing \d+-\d+\s*of\s*\d+', re.DOTALL).search(listhtml)
         if match:
-            lp = '[COLOR hotpink] ... ' + match[0] + '[/COLOR]'
+            lp = '[COLOR hotpink] ... ' + match.group(0) + '[/COLOR]'
         else:
             lp = ''
         site.add_dir('Next Page ({}){}'.format(np, lp), site.url[:-1] + nextp.group(1).replace('&amp;', '&'), 'List', site.img_next)
