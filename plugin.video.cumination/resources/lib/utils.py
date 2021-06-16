@@ -401,6 +401,8 @@ def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='retu
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
     try:
+        url = urllib_parse.quote(url, ':/%?&=')
+
         if data:
             if type(data) != str:
                 data = urllib_parse.urlencode(data)

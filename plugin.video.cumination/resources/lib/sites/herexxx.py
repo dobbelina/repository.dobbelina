@@ -50,7 +50,6 @@ def Main(url):
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     siteurl = getBaselink(url)
     order = utils.addon.getSetting('heresortorder') if utils.addon.getSetting('heresortorder') else ''
     if not '/' + order in url:
@@ -60,7 +59,6 @@ def List(url):
             pageurl = url + order
     else:
         pageurl = url
-    utils.kodilog(pageurl)
 
     try:
         listhtml = utils.getHtml(pageurl, '')

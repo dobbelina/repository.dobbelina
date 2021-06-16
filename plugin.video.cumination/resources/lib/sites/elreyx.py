@@ -17,7 +17,7 @@
 """
 
 import re
-import os.path
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -41,9 +41,20 @@ def EXList(url):
     match = re.compile(r'<article.+?href="([^"]+).+?data-src="([^"]+).+?<span>([^<]+)', re.DOTALL | re.IGNORECASE).findall(vlist)
     for videopage, img, name in match:
         name = utils.cleantext(name).strip()
-        site.add_download_link(name, videopage, 'EXPlayvid', img, name)
+        sitematch = re.compile(r"\[([^\]]*)\]", re.DOTALL | re.IGNORECASE).findall(name)
+        if sitematch:
+            sitename = sitematch[0]
+            siteurl = 'https://elreyx.co/tag/{}/'.format(sitename.lower())
+            contextmenu = []
+            contexturl = (utils.addon_sys
+                          + "?mode=" + str('elreyx.EXList')
+                          + "&url=" + urllib_parse.quote_plus(siteurl))
+            contextmenu.append(('[COLOR deeppink]Search {}[/COLOR]'.format(sitename.strip()), 'Container.Update(' + contexturl + ')'))
+            site.add_download_link(name, videopage, 'EXPlayvid', img, name, contextm=contextmenu)
+        else:
+            site.add_download_link(name, videopage, 'EXPlayvid', img, name)
 
-    nextp = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).search(vlist)
+    nextp = re.compile('<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
         lp = re.compile(r'href=[^>]+/(\d+)/[^>]+>Last<', re.DOTALL | re.IGNORECASE).search(vlist)
@@ -134,29 +145,4 @@ def EXPornstars(url):
         lp = lp.group(1) if lp else 1
         np = re.findall(r'/\d+/', nextp)[-1].replace('/', '')
         site.add_dir('Next Page ({}/{})'.format(np, lp), nextp, 'EXPornstars', site.img_next)
-    utils.eod()
-
-
-@site.register()
-def EXMovies(url):
-    cathtml = utils.getHtml(url, '')
-    match = re.compile('<div id="movies" class="hidden-xs">(.*?)</div>', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    match1 = re.compile('href="([^"]+)[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(match[0])
-    for catpage, name in match1:
-        site.add_dir(name, catpage, 'EXMoviesList', '')
-    utils.eod()
-
-
-@site.register()
-def EXMoviesList(url):
-    listhtml = utils.getHtml(url, '')
-    match = re.compile('<div class="container_neus">(.*?)<div id="pagination">', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    match1 = re.compile('<a title="([^"]+)" href="([^"]+)".*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(match[0])
-    for name, videopage, img in match1:
-        site.add_download_link(name, videopage, 'EXPlayvid', img, '')
-
-    nextp = re.compile(r"<a\s*href='([^']+)'\s*title='[^']+'>&raquo;</a>", re.DOTALL | re.IGNORECASE).search(listhtml)
-    if nextp:
-        site.add_dir('Next Page', os.path.split(url)[0] + '/' + nextp.group(1), 'EXMoviesList', site.img_next)
-
     utils.eod()
