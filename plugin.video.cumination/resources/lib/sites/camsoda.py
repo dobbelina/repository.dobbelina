@@ -92,16 +92,16 @@ def Playvid(url, name):
     response = utils._getHtml(url)
     data = json.loads(response)
     if "camhouse" in data['stream_name']:
-        videourl = "https://camhouse.camsoda.com/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
+        videourl = "https://camhouse.camsoda.com/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_opus_480p/playlist.m3u8?token=" + data['token']
     elif "enc" in data['stream_name']:
         if len(data['edge_servers']) > 0:
-            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
+            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_opus_480p/playlist.m3u8?token=" + data['token']
         else:
             videourl = ""
             utils.notify('Finished', 'Model gone Offline')
     else:
         if len(data['edge_servers']) > 0:
-            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['stream_name'] + "_h264_aac_480p/index.m3u8?token=" + data['token']
+            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['stream_name'] + "_h264_opus_480p/index.m3u8?token=" + data['token']
         else:
             videourl = ""
             utils.notify('Finished', 'Model gone Offline or Private')
