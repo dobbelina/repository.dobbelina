@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Logfile Mandatory!
 title: ''
 labels: ''
 assignees: ''
@@ -15,3 +15,4 @@ Please replace this line with a brief summary of your issue
 What OS, Device, version etc
 
 Logfile with debugging enabled can be uploaded here: https://paste.kodi.tv/
+Any bugreports without logfile will be deleted.
