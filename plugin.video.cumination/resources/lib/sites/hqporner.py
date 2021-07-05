@@ -29,7 +29,7 @@ def HQMAIN():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + '/porn-categories.php', 'HQCAT', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + '/porn-studios.php', 'HQCAT', '', '')
     site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + '/porn-actress.php', 'HQCAT', '', '')
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/?s=', 'HQSEARCH', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/?q=', 'HQSEARCH', site.img_search)
     HQLIST(site.url + '/hdporn/1')
     utils.eod()
 
@@ -75,7 +75,7 @@ def HQSEARCH(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'HQSEARCH')
     else:
-        title = keyword.replace(' ', '+')
+        title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
         HQLIST(searchUrl)
 

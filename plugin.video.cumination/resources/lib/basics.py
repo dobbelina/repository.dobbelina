@@ -352,7 +352,8 @@ def searchDir(url, mode, page=None, alphabet=None):
                 c.execute("SELECT * FROM keywords ORDER BY rowid DESC")
         for (keyword,) in c.fetchall():
             keyword = keyword if six.PY3 else keyword.encode('utf8')
-            name = '[COLOR deeppink]' + urllib_parse.unquote_plus(keyword) + '[/COLOR]'
+            keyword = urllib_parse.unquote_plus(keyword)
+            name = '[COLOR deeppink]' + keyword + '[/COLOR]'
             addDir(name, url, mode, cum_image('cum-search.png'), page=page, keyword=keyword)
     except:
         pass
