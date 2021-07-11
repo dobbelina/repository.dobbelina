@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('bongacams', '[COLOR hotpink]bongacams.com[/COLOR]', 'http://bongacams.com/', 'bongacams.png', 'bongacams', True)
+site = AdultSite('bongacams', '[COLOR hotpink]bongacams.com[/COLOR]', 'https://bongacams.com/', 'bongacams.png', 'bongacams', True)
 
 
 @site.register(default_mode=True)
@@ -118,12 +118,22 @@ def Playvid(url, name):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
         postRequest = {'method': 'getRoomData', 'args[]': str(url)}
-        response = utils._postHtml('{0}tools/amf.php'.format(site.url), form_data=postRequest, headers={'X-Requested-With': 'XMLHttpRequest'}, compression=False)
+        hdr = utils.base_hdrs
+        hdr['cookie'] = 'bonga20120608=4dc36bf33c316636a744faef8379be54;'
+        hdr['x-ab-split-group'] = 'f2085b5fd8de2b4f7c9542009568798a157a99eeeb710d9679acca6621f17672793720ada24e7a68'
+        # hdr['cookie'] = 'bonga20120608=9f0ccb9f6247f4cf84de24aad90ed2b3;'
+        # hdr['x-ab-split-group'] = '4ca3a4ed6d07245cdce6a81654e63b5ee8889a547aaf7577cdbf0a28147a70fd78bdafa225b5a5ac'
+        hdr['x-requested-with'] = 'XMLHttpRequest'
+        response = utils._postHtml('{0}tools/amf.php'.format(site.url), form_data=postRequest, headers=hdr, compression=False)
     except:
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return None
 
     amf_json = json.loads(response)
+    if amf_json['status'] == 'error':
+        utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
+        return
+
     if amf_json['performerData']['showType'] == 'private':
         utils.notify(name, 'Model in private chat', icon='thumb')
         vp.progress.close()
@@ -142,7 +152,6 @@ def Playvid(url, name):
 
     videourl += '|User-Agent={0}'.format(utils.USER_AGENT)
     vp.progress.update(75, "[CR]Found Stream[CR]")
-    vp = utils.VideoPlayer(name)
     vp.play_from_direct_link(videourl)
 
 
