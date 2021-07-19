@@ -400,96 +400,6 @@ def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='retu
 
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
-    # try:
-    #     url = urllib_parse.quote(url, ':/%?&=')
-
-    #     if data:
-    #         if type(data) != str:
-    #             data = urllib_parse.urlencode(data)
-    #         data = data if PY2 else six.b(data)
-    #     if headers is None:
-    #         headers = base_hdrs
-    #     if 'User-Agent' not in headers.keys():
-    #         headers.update({'User-Agent': USER_AGENT})
-
-    #     req = Request(url, data, headers)
-    #     if len(referer) > 1:
-    #         req.add_header('Referer', referer)
-    #     if data:
-    #         req.add_header('Content-Length', len(data))
-    #     try:
-    #         response = urlopen(req, timeout=30)
-    #     except urllib_error.URLError as e:
-    #         if 'return' in error:
-    #             notify(i18n('oh_oh'), i18n('slow_site'))
-    #             xbmc.log(str(e), xbmc.LOGDEBUG)
-    #             return ''
-    #         elif 'raise' in error:
-    #             raise
-
-    #     cencoding = response.info().get('Content-Encoding', '')
-    #     if cencoding.lower() == 'gzip':
-    #         buf = six.BytesIO(response.read())
-    #         f = gzip.GzipFile(fileobj=buf)
-    #         result = f.read()
-    #         f.close()
-    #     else:
-    #         result = response.read()
-
-    #     if cencoding.lower() == 'br':
-    #         result = decompress(result)
-
-    #     encoding = None
-    #     content_type = response.headers.get('content-type', '')
-    #     if 'charset=' in content_type:
-    #         encoding = content_type.split('charset=')[-1]
-
-    #     if encoding is None:
-    #         epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
-    #         epattern = epattern.encode('utf8') if PY3 else epattern
-    #         r = re.search(epattern, result, re.IGNORECASE)
-    #         if r:
-    #             encoding = r.group(1).decode('utf8') if PY3 else r.group(1)
-    #         else:
-    #             epattern = r'''<meta\s+charset=["']?([^"'>]+)'''
-    #             epattern = epattern.encode('utf8') if PY3 else epattern
-    #             r = re.search(epattern, result, re.IGNORECASE)
-    #             if r:
-    #                 encoding = r.group(1).decode('utf8') if PY3 else r.group(1)
-
-    #     if encoding is not None:
-    #         result = result.decode(encoding.lower(), errors='ignore')
-    #         result = result.encode('utf8') if PY2 else result
-    #     else:
-    #         result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
-
-    #     if not NoCookie:
-    #         # Cope with problematic timestamp values on RPi on OpenElec 4.2.1
-    #         try:
-    #             cj.save(cookiePath, ignore_discard=True)
-    #         except:
-    #             pass
-    #     response.close()
-    # except urllib_error.HTTPError as e:
-    #     result = e.read()
-    #     if e.code == 503 and 'cf-browser-verification' in result:
-    #         result = cloudflare.solve(url, cj, USER_AGENT)
-    #     elif 400 < e.code < 500:
-    #         if not e.code == 403:
-    #             notify(i18n('oh_oh'), i18n('not_exist'))
-    #         raise
-    #     else:
-    #         notify(i18n('oh_oh'), i18n('site_down'))
-    #         raise
-    # except Exception as e:
-    #     if 'SSL23_GET_SERVER_HELLO' in str(e):
-    #         notify(i18n('oh_oh'), i18n('python_old'))
-    #         raise
-    #     else:
-    #         notify(i18n('oh_oh'), i18n('site_down'))
-    #         raise
-    #     return None
-
     url = urllib_parse.quote(url, ':/%?&=')
 
     if data:
@@ -517,7 +427,12 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
             handle = [urllib_request.HTTPSHandler(context=ctx)]
             opener = urllib_request.build_opener(*handle)
-            response = opener.open(req, timeout=30)
+            try:
+                response = opener.open(req, timeout=30)
+            except:
+                # Give up
+                notify(i18n('oh_oh'), i18n('site_down'))
+                raise
         elif 400 < e.code < 500:
             if not e.code == 403:
                 notify(i18n('oh_oh'), i18n('not_exist'))
