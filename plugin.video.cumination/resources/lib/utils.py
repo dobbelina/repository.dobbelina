@@ -876,7 +876,7 @@ def delKeyword(keyword):
     xbmc.log('keyword: ' + keyword)
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
-    c.execute("DELETE FROM keywords WHERE keyword = ?", (keyword,))
+    c.execute("DELETE FROM keywords WHERE keyword = ?", (urllib_parse.quote_plus(keyword),))
     conn.commit()
     conn.close()
     xbmc.executebuiltin('Container.Refresh')

@@ -36,8 +36,8 @@ ptlength = utils.addon.getSetting("ptlength") or 'All'
 def PTMain():
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(ptlength), '', 'PTLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'PTCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'PTSearch', site.img_search)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'PTSearch', site.img_search)
     if not ptlogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', '', Folder=False)
     elif ptlogged:
@@ -52,7 +52,7 @@ def PTAccount():
     ptuser = utils.addon.getSetting('ptuser')
     site.add_dir('[COLOR hotpink]Subscription videos[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_videos_videos_from_my_subscriptions&sort_by=&from_my_subscriptions_videos=1'.format(site.url), 'PTList', page=1)
     site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions&sort_by=added_date&from_my_subscriptions=1'.format(site.url), 'PTSubscriptions')
-    site.add_dir('[COLOR violet]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
+    site.add_dir('[COLOR hotpink]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'PTList', site.img_cat)
     site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
     utils.eod()
 
@@ -121,13 +121,13 @@ def PTList(url, page=1):
                               + "?mode=" + str('porntrex.ContextMenu')
                               + "&url=" + urllib_parse.quote_plus(videopage)
                               + "&fav=del")
-                contextmenu.append(('[COLOR violet]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
+                contextmenu.append(('[COLOR deeppink]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
             else:
                 contextadd = (utils.addon_sys
                               + "?mode=" + str('porntrex.ContextMenu')
                               + "&url=" + urllib_parse.quote_plus(videopage)
                               + "&fav=add")
-                contextmenu.append(('[COLOR violet]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
+                contextmenu.append(('[COLOR deeppink]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
 
         contexturl = (utils.addon_sys
                       + "?mode=" + str('porntrex.PTCheck_tags')
@@ -234,8 +234,7 @@ def PTSearch(url, keyword=None):
         site.search_dir(url, 'PTSearch')
     else:
         searchUrl += keyword.replace(' ', '%20')
-        searchUrl += '/latest-updates/'
-        searchUrl += lengthChoices[ptlength]
+        searchUrl += '/' + lengthChoices[ptlength]
         PTList(searchUrl, 1)
 
 

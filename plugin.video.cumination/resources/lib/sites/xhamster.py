@@ -36,27 +36,36 @@ def Main():
 @site.register()
 def List(url):
     url = update_url(url)
-    response = utils.getHtml(url, site.url)
+
+    context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
+    context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
+    context_quality = (utils.addon_sys + "?mode=" + str('xhamster.ContextQuality'))
+    contextmenu = [('[COLOR violet]Category[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('category')), 'RunPlugin(' + context_category + ')'),
+                   ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
+                   ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + context_quality + ')')]
+
+    try:
+        response = utils.getHtml(url, site.url)
+    except Exception as e:
+        if '404' in str(e):
+            site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=contextmenu)
+            utils.eod()
+        return
+
     if 'data-video-id="' in response:
         videos = response.split('data-video-id="')
         videos.pop(0)
         for video in videos:
-            match = re.compile(r'^(.+)src="([^"]+)".+?duration>([^<]+)<.+?href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+            match = re.compile(r'src="([^"]+)".+?duration>([^<]+)<.+?href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
             if match:
-                (hd, img, length, videolink, name) = match[0]
-                if 'icon--uhd' in hd:
+                (img, length, videolink, name) = match[0]
+                if 'icon--uhd' in video:
                     hd = '4k'
-                elif 'icon--hd' in hd:
+                elif 'icon--hd' in video:
                     hd = 'HD'
                 else:
                     hd = ''
                 name = utils.cleantext(name)
-                context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
-                context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
-                context_quality = (utils.addon_sys + "?mode=" + str('xhamster.ContextQuality'))
-                contextmenu = [('[COLOR violet]Category[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('category')), 'RunPlugin(' + context_category + ')'),
-                               ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
-                               ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + context_quality + ')')]
                 site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
         nextp = re.compile(r'data-page="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videos[-1])
@@ -184,7 +193,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '_')
+        title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title + '?orientations=' + get_setting('category')
         List(searchUrl)
 
@@ -299,3 +308,12 @@ def update_url(url):
         elif length == '40+ min':
             url += '&min-duration=40' if '?' in url else '?min-duration=40'
     return url
+
+
+@site.register()
+def ResetFilters():
+    utils.addon.setSetting('xhamstercat', 'straight')
+    utils.addon.setSetting('xhamsterlen', 'ALL')
+    utils.addon.setSetting('xhamsterqual', 'ALL')
+    utils.refresh()
+    return

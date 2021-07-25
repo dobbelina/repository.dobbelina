@@ -176,7 +176,7 @@ def ContextCountry():
 @site.register()
 def ContextSortby():
     filters = {'Newest': 1, 'Hottest': 2, 'Longest': 3, 'Top Rated': 4, 'Most Viewed': 5, 'Featured Recently/Most Relevant': 6}
-    cat = utils.selector('Select Quality', filters.keys(), sort_by=lambda x: filters[x])
+    cat = utils.selector('Select Sort Order', filters.keys(), sort_by=lambda x: filters[x])
     if cat:
         utils.addon.setSetting('pornhubsortby', cat)
         utils.refresh()
