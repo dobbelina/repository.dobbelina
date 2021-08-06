@@ -39,15 +39,15 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile('<article.+?href="([^"]+).+?src="([^"]+).+?tion">([^<]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<article.+?href="([^"]+).+?(?:src|poster)="([^"]+).+?tion">([^<]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name2, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=name2)
 
-    url = re.compile("""pagination-nav'.+?href="([^"]+)">Next<""", re.DOTALL | re.IGNORECASE).search(listhtml)
+    url = re.compile("""class="pagination".+?href="([^"]+)">Next<""", re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:
-        currpg = re.compile(r"""pagination-nav'.+?class="current">(\d+)""", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        lastpg = re.compile(r"""pagination-nav'.+?(\d+)/'>Last<""", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        currpg = re.compile(r"""class="pagination".+?class="current">(\d+)""", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        lastpg = re.compile(r"""class="pagination".+?(\d+)/'>Last<""", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         pgtxt = 'Currently in Page ({0} of {1})'.format(currpg, lastpg)
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), url.group(1), 'List', site.img_next)
     utils.eod()

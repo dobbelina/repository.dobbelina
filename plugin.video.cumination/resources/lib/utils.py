@@ -430,9 +430,12 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
             try:
                 response = opener.open(req, timeout=30)
             except:
-                # Give up
-                notify(i18n('oh_oh'), i18n('site_down'))
-                raise
+                if 'return' in error:
+                    # Give up
+                    notify(i18n('oh_oh'), i18n('site_down'))
+                    return ''
+                else:
+                    raise
         elif 400 < e.code < 500:
             if not e.code == 403:
                 notify(i18n('oh_oh'), i18n('not_exist'))

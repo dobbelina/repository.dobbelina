@@ -111,11 +111,16 @@ def PTList(url, page=1):
         img = img.replace(' ', '%20')
         img = img + '|Referer=' + url
         contextmenu = []
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('porntrex.PTCheck_pornstars')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Lookup pornstars[/COLOR]', 'RunPlugin(' + contexturl + ')'))
         if ptlogged:
-            contexturl = (utils.addon_sys
-                          + "?mode=" + str('porntrex.PTCheck_pornstars')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-            contextmenu.append(('[COLOR deeppink]Add pornstar to subscriptions[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+            if '/models' in url:
+                contexturl = (utils.addon_sys
+                              + "?mode=" + str('porntrex.PTSubscribe_pornstar')
+                              + "&url=" + urllib_parse.quote_plus(url))
+                contextmenu.append(('[COLOR deeppink]Subscribe to pornstar[/COLOR]', 'RunPlugin(' + contexturl + ')'))        
             if 'my_favourite_videos' in url:
                 contextdel = (utils.addon_sys
                               + "?mode=" + str('porntrex.ContextMenu')
@@ -357,33 +362,41 @@ def PTCheck_pornstars(url):
         for url, model in matches:
             model = model.strip()
             pornstars[model] = url
-        selected_model = utils.selector('Choose model to add', pornstars, sort_by=lambda x: x[1], show_on_one=True)
+        selected_model = utils.selector('Choose model to view', pornstars, sort_by=lambda x: x[1], show_on_one=True)
         if not selected_model:
             return
-
-        try:
-            modelhtml = utils.getHtml(selected_model)
-        except:
-            return None
-        id = re.findall(r'(?si)data-subscribe-to="model" data-id="(\d+)"', modelhtml)[0]
-        if id:
-            success = PTSubscribe_pornstar(selected_model, id)
-            if success:
-                utils.notify('Success', 'Pornstar added successfull to your subscriptions')
+            
+        modelurl = selected_model + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('porntrex.PTList')
+                      + "&url=" + urllib_parse.quote_plus(modelurl))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+        
     else:
         utils.notify('Notify', 'No tagged pornstars found in this video')
     return
 
 
 @site.register()
-def PTSubscribe_pornstar(url, id, what='subscribe'):
+def PTSubscribe_pornstar(url, id=None, what='subscribe'):
+    if not id:
+        url2 = url.split('?')[0]
+        try:
+            modelhtml = utils.getHtml(url2)
+        except:
+            return None
+        id = re.findall(r'(?si)data-subscribe-to="model" data-id="(\d+)"', modelhtml)[0]
+
+    url = url2 if '?' in url else url
     url = url + '/' if not url.endswith('/') else url
+    
     suburl = '%s?mode=async&format=json&action=subscribe&subscribe_model_id=%s' % (url, id)
     if what == 'unsubscribe':
         suburl = suburl.replace('subscribe', 'unsubscribe')
     response = utils._getHtml(suburl, url)
     if 'success' in response.lower():
         success = True
+        utils.notify('Success', 'Pornstar added successfull to your subscriptions')
     else:
         if what == 'unsubscribe':
             utils.notify('Failure', 'Failure removing the pornstar from your subscriptions')
