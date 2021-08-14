@@ -1,6 +1,7 @@
 '''
     Cumination
     Copyright (C) 2015 Whitecream
+    Copyright (C) 2021 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,192 +17,106 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
 import json
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import random
 
 addon = utils.addon
-site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/api/v6/", "bg.png", "beeg")
-
-
-def BGVersion():
-    page = utils.getHtml(site.url[:-7], '')
-    bgurl = site.url[:-8] + re.compile(r'<script\ssrc="?([^>"]+)"?></script></body>', re.DOTALL | re.IGNORECASE).findall(page)[0]
-    bgpage = utils.getHtml(bgurl, site.url[:-7])
-    bgversion = re.compile(r'version="\)\.concat\("([^"]+)', re.DOTALL | re.IGNORECASE).findall(bgpage)[0]
-    bgsavedversion = addon.getSetting('bgversion')
-    if bgversion != bgsavedversion:
-        addon.setSetting('bgversion', bgversion)
+site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "beeg.png", "beeg")
 
 
 @site.register(default_mode=True)
 def BGMain():
-    BGVersion()
-    bgversion = addon.getSetting('bgversion')
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + bgversion + '/tags', 'BGCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + bgversion + '/channels', 'BGChnl', site.img_cat)
-    site.add_dir('[COLOR hotpink]Porn Stars[/COLOR]', site.url + bgversion + '/people', 'BGPpl', site.img_cat)
-    # site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + bgversion + '/index/main/0/pc?query=', 'BGSearch', site.img_search)
-    BGList(site.url + bgversion + '/index/main/0/pc')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://store.externulls.com/tags/top', 'BGCat', site.img_cat)
+    BGList('https://store.externulls.com/facts/index?limit=48&offset=0', 1)
     utils.eod()
 
 
 @site.register()
-def BGList(url):
-    bgversion = addon.getSetting('bgversion')
-    listjson = utils.getHtml(url, site.url[:-7])
+def BGList(url, page=1):
+    listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
 
-    for video in jdata['videos']:
-        if video["duration"]:
-            m, s = divmod(video["duration"], 60)
+    for video in jdata:
+        tag = video["tags"][0]["tg_name"] if video["tags"] else ''
+        name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
+        name = name if utils.PY3 else name.encode('utf8')
+        story = video["file"]["stuff"]["sf_story"] if "sf_story" in video["file"]["stuff"] else ''
+        if "fl_duration" in video["file"]:
+            m, s = divmod(video["file"]["fl_duration"], 60)
             duration = '{:d}:{:02d}'.format(m, s)
         else:
             duration = ''
-        quality = video["quality"] if video["quality"] else ''
 
-        name = video['title']
-        if not name:
-            name = video['ps_name']
-        name = name if utils.PY3 else name.encode('utf8')
+        h = video["file"]["fl_height"]
+        w = video["file"]["fl_width"]
+        quality = str(h) + 'p' if "fl_height" in video["file"] else ''
+        th_size = '480x' + str((480 * h) // w)
+        plot = tag + ' - ' + name + '[CR]' + story
 
-        img = 'https://img.beeg.com/400x225/' + video['thumbs'][0]['image']
-        videopage = '{0}{1}/video/{2}?v=2'.format(site.url, bgversion, video['svid'])
-
-        if video["full"] == 0:
-            for i, thumb in enumerate(sorted(video["thumbs"], key=lambda x: x["start"])):
-                pid = thumb['pid']
-                img = "https://img.beeg.com/400x225/" + thumb['image']
-                start = thumb['start']
-                end = thumb['end']
-                m, s = divmod(start, 60)
-                stxt = '{:d}:{:02d}'.format(m, s)
-                m, s = divmod(end, 60)
-                etxt = '{:d}:{:02d}'.format(m, s)
-                videopage = '{0}&s={1}&e={2}&p={3}'.format(videopage, start, end, pid)
-                name_thumb = '{}[COLOR blue] part {} ({} - {})[/COLOR]'.format(name, str(i + 1), stxt, etxt)
-                site.add_download_link(name_thumb, videopage, 'BGPlayvid', img, name, duration=duration, quality=quality)
+        fc_facts = video["fc_facts"]
+        thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
+        videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
+        if "set_id" in video["file"]:
+            img = 'https://thumbs-015.externulls.com/sets/{0}/thumbs/{0}-{1}.jpg?size={2}'.format(str(video["file"]["set_id"]).zfill(5), thumb.zfill(4), th_size)
         else:
-            site.add_download_link(name, videopage, 'BGPlayvid', img, name, duration=duration, quality=quality)
-
-    page = re.compile(r'/index/[^/]+/(\d+)/', re.DOTALL | re.IGNORECASE).findall(url)[0]
-    page = int(page)
-    pages = jdata['pages']
-    npage = page + 1
-    if npage < pages:
-        nextp = url.replace('/%s/' % page, '/%s/' % npage)
-        site.add_dir('Next Page... (Curently in %s of %s)' % (npage, pages), nextp, 'BGList', site.img_next)
-
+            img = 'https://thumbs-015.externulls.com/videos/{0}/{1}.jpg?size={2}'.format(str(video["fc_file_id"]), thumb, th_size)
+        parts = ''
+        if len(fc_facts) > 1:
+            parts = '[COLOR blue] ({} parts)[/COLOR]'.format(len(fc_facts))
+            for fc_fact in fc_facts:
+                if "fc_start" not in fc_fact:
+                    parts = ''
+        name += parts
+        site.add_download_link(name, videopage, 'BGPlayvid', img, plot, duration=duration, quality=quality)
+    if len(jdata) == 48:
+        if not page:
+            page = 1
+        npage = url.split('offset=')[0] + 'offset=' + str(page * 48)
+        site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'BGList', site.img_next, page=page + 1)
     utils.eod()
 
 
 @site.register()
 def BGPlayvid(url, name, download=None):
-    bgversion = addon.getSetting('bgversion')
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videopage = utils.getHtml(url, site.url)
-    videopage = json.loads(videopage)
-    videourls = {}
+    listjson = utils.getHtml(url, site.url)
+    jdata = json.loads(listjson)
 
-    if videopage["240p"]:
-        videourls.update({"240p": videopage["240p"]})
-    if videopage["480p"]:
-        videourls.update({"480p": videopage["480p"]})
-    if videopage["720p"]:
-        videourls.update({"720p": videopage["720p"]})
-    if videopage["1080p"]:
-        videourls.update({"1080p": videopage["1080p"]})
-    if videopage["2160p"]:
-        videourls.update({"2160p": videopage["2160p"]})
-    videourl = utils.prefquality(videourls, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
-
-    if not videourl:
-        return
-
-    DATA_MARKERS = 'data=pc_XX__{}_'.format(bgversion)
-    videourl = videourl.format(DATA_MARKERS=DATA_MARKERS)
-    if videourl.startswith("//"):
-        videourl = "https:" + videourl
-
-    vp.play_from_direct_link(videourl)
+    if "resources" in jdata["file"]:
+        videos = jdata["file"]["resources"]
+    else:
+        links = {}
+        for i, fc_fact in enumerate(jdata["fc_facts"]):
+            start = fc_fact["fc_start"]
+            end = fc_fact["fc_end"]
+            m, s = divmod(start, 60)
+            stxt = '{:d}:{:02d}'.format(m, s)
+            m, s = divmod(end, 60)
+            etxt = '{:d}:{:02d}'.format(m, s)
+            part = ' part {} ({} - {})'.format(str(i + 1), stxt, etxt)
+            links[part] = fc_fact["resources"]
+        videos = utils.selector('Select part:', links)
+    videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+    key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+    if key:
+        vp.progress.update(75, "[CR]Loading video page[CR]")
+        videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
+        vp.play_from_direct_link(videourl)
 
 
 @site.register()
 def BGCat(url):
-    bgversion = addon.getSetting('bgversion')
-    caturl = utils.getHtml2(url)
-    cats = json.loads(caturl)['tags']
-    for cat in cats:
-        videolist = '{0}{1}/index/tag/0/pc?tag={2}'.format(site.url, bgversion, urllib_parse.quote(cat['tag']))
-        title = cat['tag'].title() if utils.PY3 else cat['tag'].title().encode('utf8')
-        name = title + ' [COLOR hotpink](%s videos)[/COLOR]' % cat['videos']
-        site.add_dir(name, videolist, 'BGList', '')
+    listjson = utils.getHtml(url, site.url)
+    jdata = json.loads(listjson)
+    # for cat in jdata:
+    for cat in sorted(jdata, key=lambda x: x["tg_name"]):
+        name = cat["tg_name"]
+        slug = cat["tg_slug"]
+        thumbs = random.choice(cat["thumbs"]) if "thumbs" in cat else ''
+        img = 'https://thumbs-015.externulls.com/tags/{}/to.jpg?size=480x480'.format(thumbs) if thumbs else ''
+        caturl = 'https://store.externulls.com/facts/tag?slug={}&limit=48&offset=0'.format(slug)
+        site.add_dir(name, caturl, 'BGList', img)
     utils.eod()
-
-
-@site.register()
-def BGChnl(url):
-    bgversion = addon.getSetting('bgversion')
-    caturl = utils.getHtml2(url)
-    cats = json.loads(caturl)['channels']
-    for cat in cats:
-        videolist = '{0}{1}/index/channel/0/pc?channel={2}'.format(site.url, bgversion, urllib_parse.quote(cat['channel']))
-        title = cat['channel'].title() if utils.PY3 else cat['channel'].title().encode('utf8')
-        name = title + ' [COLOR hotpink]({0} videos)[/COLOR]'.format(cat['videos'])
-        if cat['image']:
-            image = 'https://thumbs.beeg.com/channels/{0}.png'.format(cat['id'])
-        else:
-            image = 'https://beeg.com/img/channel-placeholder.bab27720.png'
-        site.add_dir(name, videolist, 'BGList', image)
-
-    if len(cats) == 100:
-        if '?' in url:
-            url, offset = url.split('?')
-            offset = int(offset.split('=')[-1])
-        else:
-            offset = 0
-        url = url.split('?')[0] + '?offset={0}'.format(offset + 100)
-        site.add_dir('Next Page...', url, 'BGChnl', site.img_next)
-
-    utils.eod()
-
-
-@site.register()
-def BGPpl(url):
-    bgversion = addon.getSetting('bgversion')
-    caturl = utils.getHtml2(url)
-    cats = json.loads(caturl)['people']
-    for cat in cats:
-        videolist = '{0}{1}/index/people/0/pc?search_mode=code&people={2}'.format(site.url, bgversion, urllib_parse.quote(cat['code']))
-        title = cat['name'] if utils.PY3 else cat['name'].encode('utf8')
-        name = title + ' [COLOR hotpink]({0} videos)[/COLOR]'.format(cat['videos'])
-        if cat['image']:
-            image = 'https://thumbs.beeg.com/img/cast/{0}.png'.format(cat['id'])
-        else:
-            image = 'https://beeg.com/img/user-placeholder.39f16436.jpg'
-        site.add_dir(name, videolist, 'BGList', image)
-
-    if len(cats) == 100:
-        if '?' in url:
-            url, offset = url.split('?')
-            offset = int(offset.split('=')[-1])
-        else:
-            offset = 0
-        url = url.split('?')[0] + '?offset={0}'.format(offset + 100)
-        site.add_dir('Next Page...', url, 'BGPpl', site.img_next)
-
-    utils.eod()
-
-
-@site.register()
-def BGSearch(url, keyword=None):
-    searchUrl = url
-    if not keyword:
-        site.search_dir(url, 'BGSearch')
-    else:
-        title = urllib_parse.quote_plus(keyword)
-        searchUrl = searchUrl + title
-        BGList(searchUrl)
