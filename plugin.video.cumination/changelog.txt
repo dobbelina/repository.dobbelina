@@ -1,2 +1,3 @@
 [B]Version 1.1.22[/B]
 beeg - fixed
+txxx sites - fixed categories

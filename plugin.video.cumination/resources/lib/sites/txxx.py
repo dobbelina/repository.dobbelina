@@ -127,7 +127,7 @@ def Search(url, keyword=None):
 def Categories(url):
     siteurl, url = url.rsplit('/', 1)
     siteurl += '/'
-    aurl = '{0}api/json/{1}/14400/all.json'.format(siteurl, url)
+    aurl = '{0}api/json/{1}/14400/str.all.en.json'.format(siteurl, url)
     jdata = json.loads(utils.getHtml(aurl, siteurl))
     for item in sorted(jdata.get(url), key=lambda x: x.get('title')):
         catpage = '{0}.{1}'.format(url, item.get('dir'))
