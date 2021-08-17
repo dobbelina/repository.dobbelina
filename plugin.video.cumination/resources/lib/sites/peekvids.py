@@ -27,7 +27,7 @@ site = AdultSite('peekvids', '[COLOR hotpink]PeekVids[/COLOR]', 'https://www.pee
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels', 'Channels', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'sq?q=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'videos?q=', 'Search', site.img_search)
     List(site.url + 'Trending-Porn')
 
 
@@ -84,6 +84,7 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         url = "{0}{1}/".format(url, keyword.replace(' ', '+'))
+        utils.kodilog(url)
         List(url)
 
 
