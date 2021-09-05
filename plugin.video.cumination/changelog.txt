@@ -4,3 +4,4 @@ beeg - python 2 compatibility fix
 aagmaal - playback fix
 reallifecam.to - added
 voyeur-house.to - added
+porntrex - thumbnails & pagination fix
