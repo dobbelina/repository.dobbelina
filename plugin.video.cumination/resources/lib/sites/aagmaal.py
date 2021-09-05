@@ -69,7 +69,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
     videourl = ''
-    ldiv = re.compile(r"<p>(<.+?</a>)</p>", re.DOTALL | re.IGNORECASE).findall(videopage)
+    ldiv = re.compile(r"<p>(.+?</a>)</p>", re.DOTALL | re.IGNORECASE).findall(videopage)
     if ldiv:
         links = re.compile(r'''href="(https?://([^/]+)[^"]+)"\s*class="external''', re.DOTALL | re.IGNORECASE).findall(ldiv[-1])
         if links:

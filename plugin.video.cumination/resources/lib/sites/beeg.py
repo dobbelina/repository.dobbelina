@@ -40,9 +40,11 @@ def BGList(url, page=1):
 
     for video in jdata:
         tag = video["tags"][0]["tg_name"] if video["tags"] else ''
+        tag = tag if utils.PY3 else tag.encode('utf8')
         name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
         name = name if utils.PY3 else name.encode('utf8')
         story = video["file"]["stuff"]["sf_story"] if "sf_story" in video["file"]["stuff"] else ''
+        story = story if utils.PY3 else story.encode('utf8')
         if "fl_duration" in video["file"]:
             m, s = divmod(video["file"]["fl_duration"], 60)
             duration = '{:d}:{:02d}'.format(m, s)
@@ -99,12 +101,13 @@ def BGPlayvid(url, name, download=None):
             part = ' part {} ({} - {})'.format(str(i + 1), stxt, etxt)
             links[part] = fc_fact["resources"]
         videos = utils.selector('Select part:', links)
-    videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
-    key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
-    if key:
-        vp.progress.update(75, "[CR]Loading video page[CR]")
-        videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
-        vp.play_from_direct_link(videourl)
+    if videos:
+        videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+        key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+        if key:
+            vp.progress.update(75, "[CR]Loading video page[CR]")
+            videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
+            vp.play_from_direct_link(videourl)
 
 
 @site.register()

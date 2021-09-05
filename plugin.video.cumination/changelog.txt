@@ -1,3 +1,6 @@
 [B]Version 1.1.23[/B]
 Fix camsoda audio
-
+beeg - python 2 compatibility fix
+aagmaal - playback fix
+reallifecam.to - added
+voyeur-house.to - added
