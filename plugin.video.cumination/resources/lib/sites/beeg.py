@@ -70,6 +70,12 @@ def BGList(url, page=1):
             for fc_fact in fc_facts:
                 if "fc_start" not in fc_fact:
                     parts = ''
+
+        if len(fc_facts) == 1 and "fc_start" in fc_facts[0] and "fc_end" in fc_facts[0]:
+            min_start, sec_start = divmod(fc_facts[0]["fc_start"], 60)
+            min_end, sec_end = divmod(fc_facts[0]["fc_end"], 60)
+            parts = '[COLOR blue] ({:d}:{:02d} - {:d}:{:02d})[/COLOR]'.format(min_start, sec_start, min_end, sec_end)
+
         name += parts
         site.add_download_link(name, videopage, 'BGPlayvid', img, plot, duration=duration, quality=quality)
     if len(jdata) == 48:

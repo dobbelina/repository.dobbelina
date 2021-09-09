@@ -95,7 +95,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url)
-    refurl = re.compile('<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    refurl = re.compile(r'class="video-embedded">\s*<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
     vp.progress.update(50, "[CR]Loading video page[CR]")
     refpage = utils.getHtml(refurl)
     if '/playerz/' in refurl:

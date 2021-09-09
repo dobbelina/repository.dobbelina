@@ -50,10 +50,14 @@ def List(url):
         desc = re.sub(r"<.+?>", "", desc, 0, re.MULTILINE)
         desc = utils.cleantext(desc)
         site.add_download_link(name, videopage, 'Playvid', img, desc)
-    np = re.compile(r'''id="pagination".+?href='([^']+)[^>]+>(?:<span.+?span>)?\s*&raquo''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'''id="pagination".+?href=['"]([^'"]+)[^>]+>(?:<span.+?span>)?\s*&raquo''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        nextp = 'https:' + np.group(1) if np.group(1).startswith('//') else np.group(1)
-        page_number = nextp.split('/')[-2]
+        nextp = np.group(1)
+        if nextp.startswith('//'):
+            nextp = 'https:' + nextp
+        elif not nextp.startswith('http'):
+            nextp = site.url + nextp
+        page_number = re.search(r'.+[/-](\d+)[/.]?', nextp).group(1)
         site.add_dir('Next Page (' + page_number + ')', nextp, 'List', site.img_next)
     utils.eod()
 
