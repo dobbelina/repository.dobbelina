@@ -1,5 +1,7 @@
 [B]Version 1.1.24[/B]
 Fix Pagination in channels and search in viralvideosporno
 reallifecam - fixed playback
-begg - updated video names for incomplete videos
+beeg - updated video names for incomplete videos
 erogarga - added
+beeg - fixed
+beeg - added related videos to context menu

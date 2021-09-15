@@ -18,9 +18,11 @@
 '''
 
 import json
+import xbmc
+import random
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-import random
+from six.moves import urllib_parse
 
 addon = utils.addon
 site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "beeg.png", "beeg")
@@ -28,8 +30,8 @@ site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "be
 
 @site.register(default_mode=True)
 def BGMain():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://store.externulls.com/tags/top', 'BGCat', site.img_cat)
-    BGList('https://store.externulls.com/facts/index?limit=48&offset=0', 1)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://store.externulls.com/tag/facts/tags?get_original=true&slug=index', 'BGCat', site.img_cat)
+    BGList('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
     utils.eod()
 
 
@@ -39,10 +41,18 @@ def BGList(url, page=1):
     jdata = json.loads(listjson)
 
     for video in jdata:
-        tag = video["tags"][0]["tg_name"] if video["tags"] else ''
+        tag = ''
+        slug = ''
+        fc_facts = video["fc_facts"]
+        for f in fc_facts:
+            for t in f["tags"]:
+                if t["is_owner"]:
+                    tag = t["tg_name"]
+                    slug = t["tg_slug"]
         tag = tag if utils.PY3 else tag.encode('utf8')
         name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
         name = name if utils.PY3 else name.encode('utf8')
+        name = '[COLOR lightblue]{} [/COLOR]{}'.format(tag, name)
         story = video["file"]["stuff"]["sf_story"] if "sf_story" in video["file"]["stuff"] else ''
         story = story if utils.PY3 else story.encode('utf8')
         if "fl_duration" in video["file"]:
@@ -57,7 +67,6 @@ def BGList(url, page=1):
         th_size = '480x' + str((480 * h) // w)
         plot = tag + ' - ' + name + '[CR]' + story
 
-        fc_facts = video["fc_facts"]
         thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
         videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
         if "set_id" in video["file"]:
@@ -77,13 +86,29 @@ def BGList(url, page=1):
             parts = '[COLOR blue] ({:d}:{:02d} - {:d}:{:02d})[/COLOR]'.format(min_start, sec_start, min_end, sec_end)
 
         name += parts
-        site.add_download_link(name, videopage, 'BGPlayvid', img, plot, duration=duration, quality=quality)
+
+        cm_related = (utils.addon_sys + "?mode=" + str('beeg.ContextRelated') + "&slug=" + urllib_parse.quote_plus(slug))
+        if tag:
+            cm = [('[COLOR violet]Tag [COLOR orange][{}][/COLOR]'.format(tag), 'RunPlugin(' + cm_related + ')')]
+        else:
+            cm = ''
+
+        site.add_download_link(name, videopage, 'BGPlayvid', img, plot, contextm=cm, duration=duration, quality=quality)
     if len(jdata) == 48:
         if not page:
             page = 1
         npage = url.split('offset=')[0] + 'offset=' + str(page * 48)
         site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'BGList', site.img_next, page=page + 1)
     utils.eod()
+
+
+@site.register()
+def ContextRelated(slug):
+    url = 'https://store.externulls.com/facts/tag?slug={}&get_original=true&limit=48&offset=0'.format(slug)
+    contexturl = (utils.addon_sys
+                  + "?mode=" + str('beeg.BGList')
+                  + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -97,7 +122,7 @@ def BGPlayvid(url, name, download=None):
         videos = jdata["file"]["resources"]
     else:
         links = {}
-        for i, fc_fact in enumerate(jdata["fc_facts"]):
+        for i, fc_fact in enumerate(sorted(jdata["fc_facts"], key=lambda x: x["fc_start"])):
             start = fc_fact["fc_start"]
             end = fc_fact["fc_end"]
             m, s = divmod(start, 60)
