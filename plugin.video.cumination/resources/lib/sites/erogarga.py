@@ -20,7 +20,7 @@ import re
 import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from spankbang import Playvid
+from resources.lib.sites.spankbang import Playvid
 
 site = AdultSite('erogarga', '[COLOR hotpink]EroGarga[/COLOR]', 'https://www.erogarga.com/', 'erogarga.png', 'erogarga')
 

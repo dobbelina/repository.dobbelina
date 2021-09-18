@@ -632,14 +632,15 @@ def _getHtml2(url):
     return data
 
 
-def getVideoLink(url, referer, headers=None, data=None):
+def getVideoLink(url, referer, headers=None, data=None, get_method='HEAD'):
     if not headers:
         headers = base_hdrs
 
     req2 = Request(url, data, headers)
     if len(referer) > 1:
         req2.add_header('Referer', referer)
-    req2.get_method = lambda: 'HEAD'
+    if get_method:
+        req2.get_method = lambda: get_method
     resp = urlopen(req2)
     url2 = resp.geturl()
     return url2

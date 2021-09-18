@@ -52,7 +52,7 @@ def BGList(url, page=1):
         tag = tag if utils.PY3 else tag.encode('utf8')
         name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
         name = name if utils.PY3 else name.encode('utf8')
-        name = '[COLOR lightblue]{} [/COLOR]{}'.format(tag, name)
+        name = '{} - {}'.format(tag, name)
         story = video["file"]["stuff"]["sf_story"] if "sf_story" in video["file"]["stuff"] else ''
         story = story if utils.PY3 else story.encode('utf8')
         if "fl_duration" in video["file"]:
