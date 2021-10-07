@@ -44,11 +44,10 @@ def BGList(url, page=1):
         tag = ''
         slug = ''
         fc_facts = video["fc_facts"]
-        for f in fc_facts:
-            for t in f["tags"]:
-                if t["is_owner"]:
-                    tag = t["tg_name"]
-                    slug = t["tg_slug"]
+        for t in video["tags"]:
+            if t["is_owner"]:
+                tag = t["tg_name"]
+                slug = t["tg_slug"]
         tag = tag if utils.PY3 else tag.encode('utf8')
         name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
         name = name if utils.PY3 else name.encode('utf8')
