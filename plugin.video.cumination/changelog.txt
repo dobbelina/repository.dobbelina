@@ -1,2 +1,3 @@
 [B]Version 1.1.25[/B]
 Fix beeg listing
+Fix Cert check disabling

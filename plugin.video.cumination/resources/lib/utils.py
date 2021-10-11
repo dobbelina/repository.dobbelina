@@ -63,9 +63,8 @@ cj = http_cookiejar.LWPCookieJar(TRANSLATEPATH(cookiePath))
 Request = urllib_request.Request
 
 handlers = [urllib_request.HTTPBasicAuthHandler(), urllib_request.HTTPHandler(), urllib_request.HTTPSHandler()]
-ssl_context = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
+ssl_context = ssl._create_unverified_context()
+ssl._create_default_https_context = ssl._create_unverified_context
 handlers.append(urllib_request.HTTPSHandler(context=ssl_context))
 
 
