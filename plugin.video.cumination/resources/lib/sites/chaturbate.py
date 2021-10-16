@@ -122,10 +122,10 @@ def List(url, page=1):
     listhtml = utils._getHtml(url)
     match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?<div[^>]+>([^<]+)</div>.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, status, name, age, subject, location, duration in match:
-        name = utils.cleantext(name.strip())
-        age = utils.cleantext(age.strip())
-        subject = utils.cleantext(subject.strip()) + "[CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location.strip()) + "[CR]" + utils.cleantext(duration.strip())
-        status = utils.cleantext(status.replace("[CR]", "").strip())
+        name = utils.cleantext(name)
+        age = age.replace('&nbsp;', '')
+        subject = utils.cleantext(subject) + "[CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" + utils.cleantext(duration)
+        status = utils.cleantext(status.replace("[CR]", ""))
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
         videopage = bu[:-1] + videopage
         site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
@@ -241,19 +241,22 @@ def Tags(url):
 def onlineFav(url):
     wmArray = ["C9m5N", "tfZSl", "jQrKO", "5XO2a", "WXomN", "zM6MR", "Lb2aB", "cIbs3", "zM6MR", "mnzQo", "N6TZA"]
     chaturbate_url = 'https://chaturbate.com/affiliates/api/onlinerooms/?format=json&wm=' + random.choice(wmArray)
-    data_chat = utils.getHtml(chaturbate_url, '')
+    data_chat = utils._getHtml(chaturbate_url, '')
     model_list = json.loads(data_chat)
-
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
     c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='chaturbate.Playvid'")
     result = c.fetchall()
     c.close()
-
     for (name, url, image) in result:
-        model = [item for item in model_list if item["username"] in name]
+        model = [item for item in model_list if item["username"] in name.split('[COLOR')[0]]
         if model:
             image = model[0]["image_url"]
-            site.add_download_link(name, url, 'Playvid', image, utils.cleantext(model[0]["room_subject"]), noDownload=True)
+            current_show = ''
+            if "current_show" in model[0]:
+                if model[0]["current_show"] != "public":
+                    current_show = '[COLOR blue] {}[/COLOR]'.format(model[0]["current_show"])
+            room_subject = model[0]["room_subject"] if utils.PY3 else model[0]["room_subject"].encode('utf8')
+            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(room_subject), noDownload=True)
     utils.eod()
