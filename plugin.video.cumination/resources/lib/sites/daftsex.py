@@ -22,8 +22,8 @@ site = AdultSite('daftsex', '[COLOR hotpink]DaftSex[/COLOR]', 'https://daftsex.c
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories'.format(site.url), 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}video/'.format(site.url), 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/', 'Search', site.img_search)
     List('{0}hot'.format(site.url))
     utils.eod()
 
@@ -65,7 +65,7 @@ def Playvid(url, name, download=None):
     else:
         v = re.compile(r'hash:\s*"([^"]+)').findall(vidsite)[0]
         video = 'https://daxab.com/player/{0}'.format(v)
-    video = '{0}|{1}'.format(video, url) if 'daxab' in video else video
+    video = '{0}$${1}'.format(video, url) if 'daxab' in video else video
     vp.play_from_link_to_resolve(video)
 
 
@@ -75,7 +75,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '_')
+        title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
         List(searchUrl)
 

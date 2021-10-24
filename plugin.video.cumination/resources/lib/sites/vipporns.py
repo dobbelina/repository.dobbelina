@@ -104,7 +104,7 @@ def Playvid(url, name, download=None):
         surl = surl.group(1)
         if surl.startswith('function/'):
             lcode = re.findall(r"license_code:\s*'([^']+)", html)[0]
-            surl = '{0}|User-Agent=iPad&Referer={1}/'.format(kvs_decode(surl, lcode), site.url)
+            surl = '{0}|User-Agent=iPad&Referer={1}'.format(kvs_decode(surl, lcode), site.url)
     else:
         vp.progress.close()
         return

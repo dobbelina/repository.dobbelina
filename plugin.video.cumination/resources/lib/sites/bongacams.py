@@ -58,15 +58,17 @@ def List(url):
         img = 'https:' + model['profile_images']['thumbnail_image_big_live']
         username = model['username']
         name = model['display_name']
-        subject = name
         age = model['display_age']
         name += ' [COLOR hotpink][{}][/COLOR]'.format(age)
         if model['hd_cam']:
             name += ' [COLOR gold]HD[/COLOR]'
-        subject += u', {}'.format(age)
-        subject += u', {}\n'.format(model['hometown']) if model['hometown'] else u'\n'
+        subject = ''
+        if model.get('hometown'):
+            subject += 'Location: {}'.format(model.get('hometown'))
+        if model.get('homecountry'):
+            subject += ', {}\n'.format(model.get('homecountry')) if subject else 'Location: {}\n'.format(model.get('homecountry'))
         if model['ethnicity']:
-            subject += u'- {}\n'.format(model['ethnicity'])
+            subject += u'\n- {}\n'.format(model['ethnicity'])
         if model['primary_language']:
             subject += u'- Speaks {}\n'.format(model['primary_language'])
         if model['secondary_language']:
@@ -84,12 +86,14 @@ def List(url):
         if model['pubic_hair']:
             subject = subject[:-1] + u' and {} Pubes\n'.format(model['pubic_hair'])
         if model['vibratoy']:
-            subject += u'- Lovense Toy\n'
+            subject += u'- Lovense Toy\n\n'
         if model['turns_on']:
             subject += u'- Likes: {}\n'.format(model['turns_on'])
         if model['turns_off']:
-            subject += u'- Dislikes: {}\n'.format(model['turns_off'])
-        site.add_download_link(name, username, 'Playvid', img, subject, noDownload=True)
+            subject += u'- Dislikes: {}\n\n'.format(model['turns_off'])
+        if model.get('tags'):
+            subject += u', '.join(model.get('tags'))
+        site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, noDownload=True)
     utils.eod()
 
 
@@ -117,13 +121,18 @@ def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
-        postRequest = {'method': 'getRoomData', 'args[]': str(url)}
+        postRequest = [
+            ('method', 'getRoomData'),
+            ('args[]', str(url)),
+            ('args[]', ''),
+            ('args[]', '')
+        ]
         hdr = utils.base_hdrs
-        hdr['cookie'] = 'bonga20120608=4dc36bf33c316636a744faef8379be54;'
-        hdr['x-ab-split-group'] = 'f2085b5fd8de2b4f7c9542009568798a157a99eeeb710d9679acca6621f17672793720ada24e7a68'
-        # hdr['cookie'] = 'bonga20120608=9f0ccb9f6247f4cf84de24aad90ed2b3;'
-        # hdr['x-ab-split-group'] = '4ca3a4ed6d07245cdce6a81654e63b5ee8889a547aaf7577cdbf0a28147a70fd78bdafa225b5a5ac'
-        hdr['x-requested-with'] = 'XMLHttpRequest'
+        hdr.update({
+            'Cookie': 'bonga20120608=4dc36bf33c316636a744faef8379be54',
+            'X-ab-Split-Group': 'f2085b5fd8de2b4f7c9542009568798a157a99eeeb710d9679acca6621f17672793720ada24e7a68',
+            'X-Requested-With': 'XMLHttpRequest'
+        })
         response = utils._postHtml('{0}tools/amf.php'.format(site.url), form_data=postRequest, headers=hdr, compression=False)
     except:
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
@@ -134,14 +143,14 @@ def Playvid(url, name):
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return
 
-    if amf_json['performerData']['showType'] == 'private':
+    if amf_json.get('performerData', {}).get('showType') == 'private':
         utils.notify(name, 'Model in private chat', icon='thumb')
         vp.progress.close()
         return
 
-    amf = amf_json.get('localData').get('videoServerUrl', '')
+    amf = amf_json.get('localData', {}).get('videoServerUrl')
 
-    if amf == '':
+    if amf is None:
         utils.notify(name, 'Model Offline', icon='thumb')
         vp.progress.close()
         return
