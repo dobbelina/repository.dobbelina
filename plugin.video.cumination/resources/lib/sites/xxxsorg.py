@@ -37,8 +37,8 @@ def Main():
 @site.register()
 def List(url):
     html = utils.getHtml(url, '')
-    match = re.compile(r'<div\s*class="entry-content">.*?lazy-src="([^"]+)".*?<a href="([^"]+)"\s*class="more-link">.+?<span\s*class="screen-reader-text">([^"]+)</span>', re.DOTALL | re.IGNORECASE).findall(html)
-    for img, videopage, name in match:
+    match = re.compile(r'<div\s*class="entry-content">.+?target.+?<a href="([^"]+)".*?lazy-src="([^"]+)".*?class="more-link">.+?<span\s*class="screen-reader-text">([^"]+)</span>', re.DOTALL | re.IGNORECASE).findall(html)
+    for videopage, img, name in match:
         if 'ubiqfile' in name.lower():
             continue
         name = utils.cleantext(name)
