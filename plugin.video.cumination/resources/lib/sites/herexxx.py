@@ -92,9 +92,7 @@ def Playvid(url, name, download=None):
         match = re.compile(r'id="player">\s*<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
         if match:
             iframe = match[0]
-            if utils.PY3:
-                url = url.encode('utf-8')
-            html = utils.getHtml(iframe, url)
+            html = utils.getHtml(iframe, site.url)
             referer = '|Referer={}'.format(iframe)
     match = re.compile(r'source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     if match:
