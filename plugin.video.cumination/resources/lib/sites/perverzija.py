@@ -29,16 +29,25 @@ def Main():
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tag', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Stars[/COLOR]', site.url + 'stars/', 'Stars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'page/1/')
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'<a href="([^"]+)">\s*?<img.*?src="([^"]+)".*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videourl, img, name in match:
+    videos = listhtml.split('class="video-listing-filter"')[-1].split('<div class="item-thumbnail">')
+    videos.pop(0)
+    # match = re.compile(r'<a href="([^"]+)">\s*?<img.*?src="([^"]+)".*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    # for videourl, img, name in match:
+    for video in videos:
+        videourl = re.compile(r'<a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)[0]
+        name = re.compile(r'title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)[0]
+        img = re.compile(r'src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)[0]
         name = utils.cleantext(name)
-        site.add_download_link(name, videourl, 'Play', img, name)
+        duration = re.compile(r'time_dur">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+        duration = duration[0] if duration else ''
+        site.add_download_link(name, videourl, 'Play', img, name, duration=duration)
 
     nextp = re.compile('next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
@@ -77,6 +86,15 @@ def Stars(url):
 
 
 @site.register()
+def Search(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search')
+    else:
+        url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
+        List(url)
+
+
+@site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     videohtml = utils.getHtml(url)
@@ -87,7 +105,7 @@ def Play(url, name, download=None):
             headers = {'Referer': iframeurl}
             iframehtml = utils.getHtml(iframeurl, url)
             videoid = re.compile(r"""var video_id\s+=\s+[`'"]([^`'"]+)[`'"];\s+var m3u8_loader_url\s=\s[`'"]([^`'"]+)[`'"];""", re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
-            #videourl = videoid[1] + videoid[0] + "|{0}".format(urllib_parse.urlencode(headers))
+            # videourl = videoid[1] + videoid[0] + "|{0}".format(urllib_parse.urlencode(headers))
 
             m3u8html = utils.getHtml(videoid[1] + videoid[0], iframeurl)
             videourl = re.compile("(https://[^\n]+)$", re.IGNORECASE | re.DOTALL).findall(m3u8html)[0]
