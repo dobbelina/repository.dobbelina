@@ -29,8 +29,8 @@ msgid "Auto-refresh Webcam images"
 msgstr "Webcam-afbeeldingen automatisch vernieuwen"
 
 msgctxt "#30004"
-msgid "Paradisehill -> Play all parts (no download)"
-msgstr "Paradisehill -> Speel alle delen (geen download)"
+msgid "Play all parts (no download)"
+msgstr "Speel alle delen (geen download)"
 
 msgctxt "#30005"
 msgid "Use video thumbnail for poster/fanart"

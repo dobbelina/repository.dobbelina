@@ -29,7 +29,7 @@ msgid "Auto-refresh Webcam images"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Paradisehill -> Play all parts (no download)"
+msgid "Play all parts (no download)"
 msgstr ""
 
 msgctxt "#30005"

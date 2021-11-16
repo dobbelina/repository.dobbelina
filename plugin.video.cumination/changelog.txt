@@ -2,3 +2,4 @@
 Herexxx - playback fixed for videos with Unicode characters in the name, on Matrix
 Sextb - added
 Perverzija - added search
+Beeg - Play all parts (enable it in the addon settings)

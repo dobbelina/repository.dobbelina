@@ -19,7 +19,9 @@
 
 import json
 import xbmc
+import xbmcgui
 import random
+import base64
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -39,7 +41,7 @@ def BGMain():
 def BGList(url, page=1):
     listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
-
+    
     for video in jdata:
         tag = ''
         slug = ''
@@ -67,7 +69,9 @@ def BGList(url, page=1):
         plot = tag + ' - ' + name + '[CR]' + story
 
         thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
-        videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
+        videodump = json.dumps(video)
+        videopage = base64.b64encode(videodump.encode())
+        #videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
         if "set_id" in video["file"]:
             img = 'https://thumbs-015.externulls.com/sets/{0}/thumbs/{0}-{1}.jpg?size={2}'.format(str(video["file"]["set_id"]).zfill(5), thumb.zfill(4), th_size)
         else:
@@ -112,13 +116,16 @@ def ContextRelated(slug):
 
 @site.register()
 def BGPlayvid(url, name, download=None):
+    playall = True if utils.addon.getSetting("paradisehill") == "true" else False
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    listjson = utils.getHtml(url, site.url)
-    jdata = json.loads(listjson)
+    #listjson = utils.getHtml(url, site.url)
+    listjson = base64.b64decode(url)
+    jdata = json.loads(listjson.decode())
 
     if "resources" in jdata["file"]:
         videos = jdata["file"]["resources"]
+        playall = False
     else:
         links = {}
         for i, fc_fact in enumerate(sorted(jdata["fc_facts"], key=lambda x: x["fc_start"])):
@@ -130,14 +137,37 @@ def BGPlayvid(url, name, download=None):
             etxt = '{:d}:{:02d}'.format(m, s)
             part = ' part {} ({} - {})'.format(str(i + 1), stxt, etxt)
             links[part] = fc_fact["resources"]
-        videos = utils.selector('Select part:', links)
-    if videos:
-        videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
-        key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
-        if key:
-            vp.progress.update(75, "[CR]Loading video page[CR]")
-            videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
-            vp.play_from_direct_link(videourl)
+        if len(links) < 2: playall = False
+        if not playall:
+            videos = utils.selector('Select part:', links)
+    if not playall:
+        if videos:
+            videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+            key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+            if key:
+                vp.progress.update(75, "[CR]Loading video page[CR]")
+                videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
+                vp.play_from_direct_link(videourl)
+
+    if playall:
+        if links:
+            iconimage = xbmc.getInfoImage("ListItem.Thumb")
+            pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+            pl.clear()
+            for video in links:
+                vp.progress.update(75, "[CR]Adding part to playlist[CR]")
+                videos = links[video]
+                videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+                key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+                newname = name + video
+                listitem = xbmcgui.ListItem(newname)
+                listitem.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
+                listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
+                listitem.setProperty("IsPlayable", "true")
+                videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
+                pl.add(videourl, listitem)
+                listitem = ''
+            xbmc.Player().play(pl)
 
 
 @site.register()
