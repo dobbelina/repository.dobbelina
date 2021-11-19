@@ -57,7 +57,7 @@ def Playvid(url, name):
     MFC_SERVERS['WZOBSSERVERS'] = jsonlist["wzobs_servers"]
     MFC_SERVERS['H5SERVERS'] = jsonlist["h5video_servers"]
     MFC_SERVERS['NGSERVERS'] = jsonlist["ngvideo_servers"]
-    MFC_SERVERS['CHATSERVERS'] = jsonlist["chat_servers"]
+    MFC_SERVERS['CHATSERVERS'] = [x for x in jsonlist["chat_servers"] if x.startswith('wchat')]
     videourl = myfreecam_start(url)
     if videourl:
         vp = utils.VideoPlayer(name)

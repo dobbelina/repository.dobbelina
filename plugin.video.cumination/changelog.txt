@@ -3,3 +3,4 @@ Herexxx - playback fixed for videos with Unicode characters in the name, on Matr
 Sextb - added
 Perverzija - added search
 Beeg - Play all parts (enable it in the addon settings)
+MyFreecams - Fix playback
