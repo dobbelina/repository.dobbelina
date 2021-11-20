@@ -29,6 +29,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tag', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Stars[/COLOR]', site.url + 'stars/', 'Stars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Full Movies[/COLOR]', site.url + 'full-movie/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'page/1/')
 

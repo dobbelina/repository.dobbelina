@@ -1,6 +1,3 @@
-[B]Version 1.1.28[/B]
-Herexxx - playback fixed for videos with Unicode characters in the name, on Matrix
-Sextb - added
-Perverzija - added search
-Beeg - Play all parts (enable it in the addon settings)
-MyFreecams - Fix playback
+[B]Version 1.1.29[/B]
+perverzija - added "Full movies" category
+
