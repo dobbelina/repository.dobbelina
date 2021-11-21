@@ -84,7 +84,6 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         url = "{0}{1}/".format(url, keyword.replace(' ', '+'))
-        utils.kodilog(url)
         List(url)
 
 

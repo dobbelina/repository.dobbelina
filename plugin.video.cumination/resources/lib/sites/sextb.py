@@ -17,18 +17,23 @@
 '''
 
 import re
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'https://sextb.net/images/logo.png?v=123', 'sextb')
 
 
-
 @site.register(default_mode=True)
 def Main():
+    site.add_dir('[COLOR hotpink]Amateur[/COLOR]', site.url + 'amateur/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Censored[/COLOR]', site.url + 'censored/pg-1', 'List', site.img_cat)
-    #site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Uncensored Leaked[/COLOR]', site.url + 'genre/uncensored-leaked/pg-1', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Reducing Mosaic[/COLOR]', site.url + 'genre/reducing-mosaic/pg-1', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Subtitle[/COLOR]', site.url + 'subtitle/pg-1', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actres[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studio', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'uncensored/pg-1')
     utils.eod()
 
@@ -36,6 +41,9 @@ def Main():
 @site.register()
 def List(url):
     html = utils.getHtml(url, '')
+    if 'No Video were found that matched your search query' in html:
+        utils.eod()
+        return
     match = re.compile('<div class="tray-item .*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for videopage, img, name in match:
         name = utils.cleantext(name)
@@ -43,8 +51,43 @@ def List(url):
 
     nextp = re.compile('href="([^"]+)"><[^>]+>Next', re.DOTALL | re.IGNORECASE).search(html)
     if nextp:
-        site.add_dir('Next Page', nextp.group(1), 'List', site.img_next)
+        np = nextp.group(1)
+        site.add_dir('Next Page (' + np.split('/pg-')[-1] + ')', np, 'List', site.img_next)
     utils.eod()
+
+
+@site.register()
+def Categories(url):
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'class="fas fa-folder".+?href="([^"]+)"\s*title="([^"]+)".+?>\((\d+)\)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, name, count in match:
+        name = utils.cleantext(name) + ' [COLOR hotpink](' + str(count) + ')[/COLOR]'
+        name = name.replace('Genre ', '').replace('Studio ', '')
+        site.add_dir(name, caturl, 'List', '')
+    utils.eod()
+
+
+@site.register()
+def Actress(url):
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'class="tray-item-actress".+?href="([^"]+)".+?data-src="([^"]+)".+?actress-title">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, img, name in match:
+        name = utils.cleantext(name)
+        site.add_dir(name, caturl, 'List', img)
+    nextp = re.compile('href="([^"]+)"><[^>]+>Next', re.DOTALL | re.IGNORECASE).search(cathtml)
+    if nextp:
+        np = nextp.group(1)
+        site.add_dir('Next Page (' + np.split('/pg-')[-1] + ')', np, 'Actress', site.img_next)
+    utils.eod()
+
+
+@site.register()
+def Search(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search')
+    else:
+        url = "{0}{1}".format(url, keyword.replace(' ', '-'))
+        List(url)
 
 
 @site.register()
@@ -61,11 +104,10 @@ def Playvid(url, name, download=None):
         data = utils.postHtml(ajaxurl, form_data=formdata)
         data = data.replace('\\', '')
         videos.append(data)
-    
+
     downloadvideos = re.compile('href="([^"]+)" target="_blank"><button class="btn-download', re.IGNORECASE | re.DOTALL).findall(video_page)
     for downurl in downloadvideos:
         videos.append('src="{0}"'.format(downurl))
-        
+
     videos = '\n'.join(videos)
     vp.play_from_html(videos)
-
