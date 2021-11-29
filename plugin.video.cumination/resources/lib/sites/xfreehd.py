@@ -32,9 +32,15 @@ def xfreehd_main():
 
 @site.register()
 def xfreehd_list(url):
-    listhtml = utils.getHtml(url)
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return
+
     match = re.compile(r'''class="well\s*well-sm.+?href="([^"]+).+?src="(.+?).\s*title[^>]+>(.+?)duration-new">\s*([^\s]+).+?title-new.+?>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, hd, duration, name in match:
+        if '>PRIVATE<' in hd:
+            continue
         hd = 'HD' if '>HD<' in hd else ''
         if 'data-src' in img:
             img = img.split('data-src="')[1]
@@ -45,10 +51,9 @@ def xfreehd_list(url):
 
     np = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        next_page = np.group(1)
+        next_page = np.group(1).replace('&amp;', '&')
         page_number = ''.join([nr for nr in next_page.split('=')[-1] if nr.isdigit()])
         site.add_dir('Next Page (' + page_number + ')', next_page, 'xfreehd_list', site.img_next)
-
     utils.eod()
 
 
@@ -67,7 +72,7 @@ def xfreehd_search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'xfreehd_search')
     else:
-        title = keyword.replace(' ', '+')
+        title = keyword.replace(' ', '%20')
         url = url + title + '&search_type=videos&o=mr'
         xfreehd_list(url)
 
