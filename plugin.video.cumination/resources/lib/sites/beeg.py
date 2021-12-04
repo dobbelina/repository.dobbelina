@@ -21,7 +21,7 @@ import json
 import xbmc
 import xbmcgui
 import random
-import base64
+# import base64
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -41,7 +41,7 @@ def BGMain():
 def BGList(url, page=1):
     listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
-    
+
     for video in jdata:
         tag = ''
         slug = ''
@@ -69,9 +69,9 @@ def BGList(url, page=1):
         plot = tag + ' - ' + name + '[CR]' + story
 
         thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
-        videodump = json.dumps(video)
-        videopage = base64.b64encode(videodump.encode())
-        #videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
+        # videodump = json.dumps(video)
+        # videopage = base64.b64encode(videodump.encode())
+        videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
         if "set_id" in video["file"]:
             img = 'https://thumbs-015.externulls.com/sets/{0}/thumbs/{0}-{1}.jpg?size={2}'.format(str(video["file"]["set_id"]).zfill(5), thumb.zfill(4), th_size)
         else:
@@ -119,9 +119,10 @@ def BGPlayvid(url, name, download=None):
     playall = True if utils.addon.getSetting("paradisehill") == "true" else False
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    #listjson = utils.getHtml(url, site.url)
-    listjson = base64.b64decode(url)
-    jdata = json.loads(listjson.decode())
+    listjson = utils.getHtml(url, site.url)
+    jdata = json.loads(listjson)
+    # listjson = base64.b64decode(url)
+    # jdata = json.loads(listjson.decode())
 
     if "resources" in jdata["file"]:
         videos = jdata["file"]["resources"]
@@ -137,7 +138,8 @@ def BGPlayvid(url, name, download=None):
             etxt = '{:d}:{:02d}'.format(m, s)
             part = ' part {} ({} - {})'.format(str(i + 1), stxt, etxt)
             links[part] = fc_fact["resources"]
-        if len(links) < 2: playall = False
+        if len(links) < 2:
+            playall = False
         if not playall:
             videos = utils.selector('Select part:', links)
     if not playall:
