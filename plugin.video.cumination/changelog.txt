@@ -1,6 +1,3 @@
-[B]Version 1.1.29[/B]
-perverzija - added "Full movies" category
-sextb - added search & categories
-xfreehd - fixed search pagination
-xfreehd - hide private videos
-beeg - fixed playback
+[B]Version 1.1.30[/B]
+Added - Thepornfull
+Speedporn - subfolder fixes and additions

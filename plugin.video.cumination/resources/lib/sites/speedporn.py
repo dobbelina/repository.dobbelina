@@ -27,10 +27,11 @@ site = AdultSite('speedporn', '[COLOR hotpink]SpeedPorn[/COLOR]', 'https://speed
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{}categories/'.format(site.url), 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Porn-genres[/COLOR]', '{}porn-genres/'.format(site.url), 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', '{}channels/tags/'.format(site.url), 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', '{}pornstars/'.format(site.url), 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Featured movies[/COLOR]', '{}category/featured/'.format(site.url), 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{}all-porn-movie-studios/'.format(site.url), 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}?s='.format(site.url), 'Search', site.img_search)
-    List(site.url)
+    List('{}?filter=latest'.format(site.url))
     utils.eod()
 
 
