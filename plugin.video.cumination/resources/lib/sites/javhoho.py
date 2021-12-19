@@ -37,10 +37,20 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
-    match = re.compile('class="item-thumbnail".+?href="([^"]+)".+?data-lazy-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name in match:
+    match = re.compile('div id="post(.+?)href="([^"]+)".+?data-lazy-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for badges, videopage, img, name in match:
+        badge = ''
+        if '4k-porn-icon.png' in badges.lower():
+            badge = '[COLOR orange][4k][/COLOR]'
+        if 'scat.png' in badges.lower():
+            badge += '[COLOR brown][scat][/COLOR]'
+        if 'premium-icon.png' in badges.lower():
+            badge += '[COLOR blue][premium][/COLOR]'
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        if 'Collection' in name:
+            site.add_dir('{} [COLOR dimgray]{}[/COLOR]'.format(badge, name), videopage, 'Collection', img)
+        else:
+            site.add_download_link(name, videopage, 'Playvid', img, name)
     try:
         next_page = re.compile('href="([^"]+)">&raquo;<').findall(listhtml)[0]
         last_page = re.compile('class="last" href="([^"]+)"').findall(listhtml)
@@ -54,10 +64,50 @@ def List(url):
 
 
 @site.register()
+def Collection(url):
+    listhtml = utils.getHtml(url)
+    match = re.compile(r"data-token='([^']+)'\s*data-account-id='([^']+)'\s*data-drive-id='([^']+)'.+?data-path='([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if match:
+        listtoken, account_id, drive_id, folderPath = match[0]
+        posturl = 'https://www1.javhoho.com/wp-admin/admin-ajax.php'
+        form_data = {}
+        form_data['listtoken'] = listtoken
+        form_data['account_id'] = account_id
+        form_data['drive_id'] = drive_id
+        form_data['folderPath'] = folderPath
+        form_data['lastFolder'] = ''
+        form_data['sort'] = 'name:asc'
+        form_data['action'] = 'shareonedrive-get-filelist'
+        form_data['_ajax_nonce'] = '44a0ac11f9'
+        form_data['mobile'] = 'false'
+        form_data['query'] = ''
+        response = utils.postHtml(posturl, form_data=form_data)
+    else:
+        return
+    match = re.compile(r'''class='entry file.+?data-src='([^']+)'(.+?)<span>([^<]+)<.+?<source data-src=\\"([^"]+)"''', re.DOTALL | re.IGNORECASE).findall(response)
+    if match:
+        for img, duration, name, videourl in match:
+            m = re.compile(r"class='entry-duration'.+?>([\s\d:]+)<", re.DOTALL | re.IGNORECASE).findall(duration)
+            duration = m[0] if m else ''
+            name = name.replace('\\', '')
+            img = img.replace('\\', '')
+            videourl = videourl.replace('\\', '')
+            site.add_download_link(name, videourl, 'Playvideo', img, duration=duration)
+        utils.eod()
+
+
+@site.register()
+def Playvideo(url, name, download=None):
+    vp = utils.VideoPlayer(name, download)
+    vp.progress.update(20, "[CR]Loading video page[CR]")
+    vp.play_from_direct_link(url)
+
+
+@site.register()
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
-        utils.searchDir(url, 314)
+        site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
