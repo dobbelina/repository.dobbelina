@@ -28,6 +28,7 @@ site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://t
 
 @site.register(default_mode=True)
 def thepornfull_main():
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'thepornfull_search', site.img_search)
     thepornfull_list(site.url + 'page/1/?filter=latest')
 
@@ -54,6 +55,17 @@ def thepornfull_search(url, keyword=None):
         title = keyword.replace(' ', '+')
         url += title
         thepornfull_list(url)
+
+
+@site.register()
+def Categories(url):
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<article id="post.+?a href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)"', re.DOTALL).findall(cathtml)
+    for catpage, name, img in match:
+        site.add_dir(name, catpage, 'thepornfull_list', img, '')
+    if 'class="current">1<' in cathtml:
+        Categories(url + 'page/2/')
+    utils.eod()
 
 
 @site.register()
