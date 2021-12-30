@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.cyou/', 'https://i.imgur.com/ddTgBNh.png', 'aagmaal')
+site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.cam/', 'https://i.imgur.com/ddTgBNh.png', 'aagmaal')
 
 
 @site.register(default_mode=True)
@@ -69,33 +69,15 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
     videourl = ''
-    ldiv = re.compile(r"<p>(.+?</a>)</p>", re.DOTALL | re.IGNORECASE).findall(videopage)
-    if ldiv:
-        links = re.compile(r'''href="(https?://([^/]+)[^"]+)"\s*class="external''', re.DOTALL | re.IGNORECASE).findall(ldiv[-1])
-        if links:
-            links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
-            videourl = utils.selector('Select link', links)
-            if not videourl:
-                vp.progress.close()
-                return
-            vp.play_from_link_to_resolve(videourl)
-        else:
-            links = re.compile(r'''href="([^"]+)[^<]+rel="nofollow".+?</i>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(ldiv[-1])
-            if links:
-                links = {utils.cleantext(name): link for link, name in links if vp.resolveurl.HostedMediaFile(link)}
-                videourl = utils.selector('Select link', links)
-                if not videourl:
-                    vp.progress.close()
-                    return
-                vp.play_from_link_to_resolve(videourl)
-    else:
-        ldiv = re.compile(r'class="entry">(.+?)</div', re.DOTALL | re.IGNORECASE).findall(videopage)
-        if ldiv:
-            videourl = re.compile(r'iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(ldiv[0])
-            if not videourl:
-                vp.progress.close()
-                return
-            vp.play_from_link_to_resolve(videourl[0])
+
+    links = re.compile(r'''href="(https?://([^/]+)[^"]+)"[^>]+>Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if links:
+        links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
+        videourl = utils.selector('Select link', links)
+        if not videourl:
+            vp.progress.close()
+            return
+        vp.play_from_link_to_resolve(videourl)
 
     if not videourl:
         utils.notify('Oh Oh', 'No Videos found')
@@ -106,8 +88,7 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div class="main-menu">(.+?)</div>').findall(cathtml)
-    match = re.compile(r'href="([^"]+).+?>((?!Check)[^<]+)').findall(match[0])
+    match = re.compile(r'<li\s*class="cat-item.+?href="([^"]+)">([^<]+)').findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         catpage = site.url[:-1] + catpage if catpage.startswith('/') else catpage
