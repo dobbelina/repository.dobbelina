@@ -30,6 +30,7 @@ import base64
 import gzip
 from resources.lib.brotlidecpy import decompress
 import json
+from math import ceil
 
 from kodi_six import xbmc, xbmcplugin, xbmcgui, xbmcvfs
 from resources.lib import random_ua, cloudflare, strings
@@ -1295,3 +1296,78 @@ def PLAYVIDEO(url, name, download=None, regex=r'''(?:src|SRC|href|HREF)=\s*["'](
     Exists for compatiblity with old site plug-ins."""
     vp = VideoPlayer(name, download, regex)
     vp.play_from_site_link(url, url)
+
+
+def next_page(site, list_mode, html, re_npurl, re_npnr=None, re_lpnr=None, videos_per_page=None, contextm=None, baseurl=None):
+    match = re.compile(re_npurl, re.DOTALL | re.IGNORECASE).findall(html)
+    if match:
+        npurl = fix_url(match[0], site.url, baseurl)
+        np = ''
+        npnr = 0
+        if re_npnr:
+            match = re.compile(re_npnr, re.DOTALL | re.IGNORECASE).findall(html)
+            if match:
+                npnr = match[0]
+                np = npnr
+        lp = ''
+        lpnr = 0
+        if re_lpnr:
+            match = re.compile(re_lpnr, re.DOTALL | re.IGNORECASE).findall(html)
+            lpnr = match[0] if match else 0
+            if videos_per_page:
+                lpnr = int(ceil(int(lpnr) / int(videos_per_page)))
+            lp = '/' + str(lpnr) if match else ''
+        if np:
+            np = '(' + np
+            lp = lp + ')'
+
+        cm = None
+        if contextm:
+            cm_page = (addon_sys + "?mode=" + str(contextm) + "&list_mode=" + list_mode + "&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(npnr) + "&lp=" + str(lpnr))
+            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        site.add_dir('Next Page {}{}'.format(np, lp), npurl, list_mode, contextm=cm)
+
+
+def fix_url(url, siteurl=None, baseurl=None):
+    if siteurl:
+        baseurl = baseurl if baseurl else siteurl[:-1]
+        if url.startswith('//'):
+            url = siteurl.split(':')[0] + url
+        elif url.startswith('?'):
+            url = baseurl + url
+        elif url.startswith('/'):
+            url = siteurl + url
+    return url
+
+
+def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None):
+    videolist = html.split(delimiter)
+    if videolist:
+        videolist.pop(0)
+        for video in videolist:
+            videopage = re.compile(re_videopage, re.DOTALL | re.IGNORECASE).findall(video)
+            if videopage:
+                videopage = fix_url(videopage[0], site.url)
+            else:
+                continue
+            name = ''
+            if re_name:
+                name = re.compile(re_name, re.DOTALL | re.IGNORECASE).findall(video)
+                name = cleantext(name[0]) if name else ''
+            img = ''
+            if re_img:
+                img = re.compile(re_img, re.DOTALL | re.IGNORECASE).findall(video)
+                img = fix_url(img[0], site.url) if img else ''
+            quality = ''
+            if re_quality:
+                quality = re.compile(re_quality, re.DOTALL | re.IGNORECASE).findall(video)
+                quality = quality[0] if quality else ''
+            duration = ''
+            if re_duration:
+                duration = re.compile(re_duration, re.DOTALL | re.IGNORECASE).findall(video)
+                duration = duration[0] if duration else ''
+            cm = ''
+            if contextm:
+                cm_related = (addon_sys + "?mode=" + str(contextm) + "&url=" + urllib_parse.quote_plus(videopage))
+                cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+            site.add_download_link(name, videopage, playvid, img, name, quality=quality, duration=duration, contextm=cm)
