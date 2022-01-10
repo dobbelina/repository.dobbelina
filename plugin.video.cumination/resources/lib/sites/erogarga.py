@@ -18,6 +18,9 @@
 
 import re
 import json
+import xbmc
+import xbmcgui
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.sites.spankbang import Playvid
@@ -45,22 +48,31 @@ def List(url):
             name = utils.cleantext(name)
             site.add_download_link(name, videourl, 'Play', img, name)
 
-    match = re.compile(r'href="([^"]+page/(\d+)/[^"]*)">Next<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if match:
-        npage, np = match[0]
-        matchlp = re.compile(r"href='[^']+page/(\d+)/[^']*'>Last<", re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lp = ''
-        if matchlp:
-            lp = '/' + matchlp[0]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0}{1})'.format(np, lp), npage, 'List', site.img_next)
+    re_npurl = 'href="([^"]+)"[^>]*>Next'
+    re_npnr = r'/page/(\d+)[^>]*>Next'
+    re_lpnr = r'/page/(\d+)[^>]*>Last'
+    utils.next_page(site, 'erogarga.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erogarga.GotoPage')
     utils.eod()
+
+
+@site.register()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        url = url.replace('/page/{}'.format(np), '/page/{}'.format(pg))
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url)
     cathtml = cathtml.split('>TAGS<')[-1].split('/section>')[0]
-    match = re.compile(r'<a href="([^"]+)".+?aria-label="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'<a href="([^"]+)".+?aria-label="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name in match:
         name = utils.cleantext(name)
         site.add_dir(name, caturl, 'List', '')

@@ -124,12 +124,16 @@ def BGPlayvid(url, name, download=None):
     # listjson = base64.b64decode(url)
     # jdata = json.loads(listjson.decode())
 
-    if "resources" in jdata["file"]:
-        videos = jdata["file"]["resources"]
+    fc_facts = jdata["fc_facts"]
+    if len(fc_facts) == 1:
+        if "hls_resources" in jdata["file"]:
+            videos = jdata["file"]["hls_resources"]
+        else:
+            videos = jdata["fc_facts"][0]["hls_resources"]
         playall = False
     else:
         links = {}
-        for i, fc_fact in enumerate(sorted(jdata["fc_facts"], key=lambda x: x["fc_start"])):
+        for i, fc_fact in enumerate(sorted(fc_facts, key=lambda x: x["fc_start"])):
             start = fc_fact["fc_start"]
             end = fc_fact["fc_end"]
             m, s = divmod(start, 60)
@@ -137,7 +141,7 @@ def BGPlayvid(url, name, download=None):
             m, s = divmod(end, 60)
             etxt = '{:d}:{:02d}'.format(m, s)
             part = ' part {} ({} - {})'.format(str(i + 1), stxt, etxt)
-            links[part] = fc_fact["resources"]
+            links[part] = fc_fact["hls_resources"]
         if len(links) < 2:
             playall = False
         if not playall:
