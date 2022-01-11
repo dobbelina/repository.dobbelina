@@ -31,6 +31,7 @@ url_dispatcher = URL_Dispatcher('favorites')
 
 dialog = utils.dialog
 favoritesdb = basics.favoritesdb
+orders = {'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
 
 conn = sqlite3.connect(favoritesdb)
 c = conn.cursor()
@@ -55,6 +56,8 @@ conn.close()
 
 @url_dispatcher.register()
 def List():
+    favorder = utils.addon.getSetting("favorder") or 'date added'
+    basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
     if utils.addon.getSetting("chaturbate") == "true":
         for f in AdultSite.clean_functions:
             f(False)
@@ -62,10 +65,56 @@ def List():
     conn.text_factory = str
     c = conn.cursor()
     try:
-        if basics.addon.getSetting('custom_sites') == 'true':
-            c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY ROWID DESC) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1")
+        if 'folders' in favorder:
+            if basics.addon.getSetting('custom_sites') == 'true':
+                c.execute("SELECT f.mode, COUNT(*) count FROM (SELECT * FROM favorites) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1 GROUP BY 1 ORDER BY 1")
+            else:
+                c.execute("SELECT f.mode, COUNT(*) count FROM (SELECT * FROM favorites) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL GROUP BY 1 ORDER BY 1")
+            for (mode, count) in c.fetchall():
+                site = mode.split('.')[0]
+                img = ''
+                for s in AdultSite.get_sites():
+                    if s.name == site:
+                        name = s.title
+                        img = s.image
+                        break
+                name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
+                basics.addDir(name, mode, 'favorites.FavListSite', img)
         else:
-            c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY ROWID DESC) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL")
+            if basics.addon.getSetting('custom_sites') == 'true':
+                c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY {}) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1".format(orders[favorder]))
+            else:
+                c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY {}) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL".format(orders[favorder]))
+            for (name, url, mode, img, duration, quality) in c.fetchall():
+                duration = '' if duration is None else duration
+                quality = '' if quality is None else quality
+                if 'site' in favorder:
+                    site = mode.split('.')[0]
+                    for s in AdultSite.get_sites():
+                        if s.name == site:
+                            site = s.title
+                            break
+                    name = '[COLOR hotpink][{}][/COLOR] {}'.format(site, name)
+                basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
+        conn.close()
+        utils.eod(utils.addon_handle)
+    except:
+        conn.close()
+        utils.notify('No Favorites', 'No Favorites found')
+        return
+
+
+@url_dispatcher.register()
+def FavListSite(url):
+    favorder = utils.addon.getSetting("favorder") or 'date added'
+    if utils.addon.getSetting("chaturbate") == "true":
+        for f in AdultSite.clean_functions:
+            f(False)
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM favorites  WHERE mode = '{}' ORDER BY {}".format(url, orders[favorder]))
         for (name, url, mode, img, duration, quality) in c.fetchall():
             duration = '' if duration is None else duration
             quality = '' if quality is None else quality
@@ -76,6 +125,15 @@ def List():
         conn.close()
         utils.notify('No Favorites', 'No Favorites found')
         return
+
+
+@url_dispatcher.register()
+def Favorder():
+    input = utils.selector('Select sort order by', orders.keys())
+    if input:
+        favorder = input
+        utils.addon.setSetting('favorder', favorder)
+        xbmc.executebuiltin('Container.Refresh')
 
 
 @url_dispatcher.register()
