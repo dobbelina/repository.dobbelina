@@ -642,7 +642,7 @@ def getVideoLink(url, referer, headers=None, data=None, get_method='HEAD'):
     if get_method:
         req2.get_method = lambda: get_method
     resp = urlopen(req2)
-    url2 = resp.geturl()
+    url2 = resp.url
     return url2
 
 
