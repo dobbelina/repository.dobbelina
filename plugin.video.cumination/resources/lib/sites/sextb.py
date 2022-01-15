@@ -17,10 +17,19 @@
 '''
 
 import re
+import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'https://sextb.net/images/logo.png?v=123', 'sextb')
+enames = {'VV': 'VideoVard',
+          'TV': 'TurboVIPlay',
+          'JP': 'JAVPoll',
+          'ST': 'StreamTape',
+          'DD': 'DoodStream',
+          'VS': 'Voe',
+          'SB': 'StreamSB',
+          'NJ': 'NinjaStream'}
 
 
 @site.register(default_mode=True)
@@ -92,22 +101,22 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    videos = []
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     video_page = utils.getHtml(url, site.url)
-
+    videourl = ''
     ajaxurl = 'https://sextb.net/ajax/player'
-    ajaxvideos = re.compile('data-source="([^"]+)" data-id="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video_page)
-    for source, id in ajaxvideos:
-        formdata = {'episode': id, 'filmId': source}
-        data = utils.postHtml(ajaxurl, form_data=formdata)
-        data = data.replace('\\', '')
-        videos.append(data)
+    embeds = re.compile(r'class="btn-player.+?data-source="([^"]+).+?data-id="([^"]+).+?/i>\s*([^<]+)', re.DOTALL | re.IGNORECASE).findall(video_page)
+    sources = {enames[hoster] if hoster in enames.keys() else hoster: vid + '$$' + embed for vid, embed, hoster in embeds if hoster != 'VIP'}
+    source = utils.selector('Select Hoster', sources)
+    if source:
+        filmid, episode = source.split('$$')
+        formdata = {'filmId': filmid, 'episode': episode}
+        player = json.loads(utils.postHtml(ajaxurl, form_data=formdata)).get('player')
+        videourl = re.findall(r'src="([^?"]+)', player)[0]
 
-    downloadvideos = re.compile('href="([^"]+)" target="_blank"><button class="btn-download', re.IGNORECASE | re.DOTALL).findall(video_page)
-    for downurl in downloadvideos:
-        videos.append('src="{0}"'.format(downurl))
+    if not videourl:
+        vp.progress.close()
+        return
 
-    videos = '\n'.join(videos)
-    vp.play_from_html(videos)
+    vp.play_from_link_to_resolve(videourl)
