@@ -102,11 +102,11 @@ def Playvid(url, name, download=None):
         sources = {}
         for part in parts:
             embeds = re.compile(r'class="btn-server.+?data-link="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(part)
-            sources.update({'{0} [COLOR hotpink]Part {1}[/COLOR]'.format(enames[hoster] if hoster in enames.keys() else hoster, pno): embed for embed, hoster in embeds if hoster != 'JPA'})
+            sources.update({'{0} [COLOR hotpink]Part {1}[/COLOR]'.format(enames[hoster] if hoster in enames.keys() else hoster, pno): embed for embed, hoster in embeds})
             pno += 1
     else:
         embeds = re.compile(r'class="btn-server.+?data-link="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(ediv)
-        sources = {enames[hoster] if hoster in enames.keys() else hoster: embed for embed, hoster in embeds if hoster != 'JPA'}
+        sources = {enames[hoster] if hoster in enames.keys() else hoster: embed for embed, hoster in embeds}
 
     olid = utils.selector('Select Hoster', sources)
     if olid:
