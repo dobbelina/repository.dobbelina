@@ -74,15 +74,17 @@ def Playvid(url, name, download=None):
     if links:
         links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
         videourl = utils.selector('Select link', links)
-        if not videourl:
-            vp.progress.close()
-            return
-        vp.play_from_link_to_resolve(videourl)
+    else:
+        r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
+        if r:
+            videourl = r.group(1)
 
     if not videourl:
         utils.notify('Oh Oh', 'No Videos found')
         vp.progress.close()
         return
+
+    vp.play_from_link_to_resolve(videourl)
 
 
 @site.register()

@@ -5,3 +5,4 @@ HPJAV - new site
 Cambro - Add tags and playlists
 Favorites - added 'sort by'
 SupJAV - new site
+Aagmaal - fix when only one video source
