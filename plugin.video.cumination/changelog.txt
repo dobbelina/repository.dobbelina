@@ -1,8 +1,3 @@
-[B]Version 1.1.32[/B]
-beeg - playback fixed
-erogarga - fixed categories & next page
-HPJAV - new site
-Cambro - Add tags and playlists
-Favorites - added 'sort by'
-SupJAV - new site
-Aagmaal - fix when only one video source
+[B]Version 1.1.33[/B]
+HPJav - thumbnails not showing fixed
+HPJav - added censored, uncensored, amateur, chinese subtitles categories to main page

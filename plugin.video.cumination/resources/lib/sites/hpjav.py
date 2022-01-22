@@ -29,7 +29,12 @@ site = AdultSite('hpjav', '[COLOR hotpink]HPJav[/COLOR]', 'https://hpjav.tv/', '
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'allcategories/', 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Censored[/COLOR]', site.url + 'category/censored', 'List', site.img_search)
+    site.add_dir('[COLOR hotpink]Unensored[/COLOR]', site.url + 'category/uncensored', 'List', site.img_search)
+    site.add_dir('[COLOR hotpink]Amateur[/COLOR]', site.url + 'category/amateur-jav', 'List', site.img_search)
+    site.add_dir('[COLOR hotpink]Chinese Subtitles[/COLOR]', site.url + 'category/chinese-subtitles', 'List', site.img_search)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+
     List(site.url + 'hot/')
 
 
@@ -41,6 +46,7 @@ def List(url):
         return None
     match = re.compile(r'class="video-item".+?href="([^"]+).+?original="([^"]+).+?href.+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
+        img = img + '|Referer=' + url
         name = utils.cleantext(name)
         if videopage.startswith('/'):
             videopage = urllib_parse.urljoin(site.url, videopage)
