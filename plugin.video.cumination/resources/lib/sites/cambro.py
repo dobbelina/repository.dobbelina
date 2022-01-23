@@ -100,8 +100,8 @@ def Playlist(url):
     if nextp:
         np = nextp[0]
         pg = int(np) - 1
-        if 'from_videos={0:02d}'.format(pg) in url:
-            next_page = url.replace('from_videos={0:02d}'.format(pg), 'from_videos={0:02d}'.format(int(np)))
+        if 'from={0:02d}'.format(pg) in url:
+            next_page = url.replace('from={0:02d}'.format(pg), 'from={0:02d}'.format(int(np)))
         else:
             next_page = url + '{0}/'.format(np)
         lp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)

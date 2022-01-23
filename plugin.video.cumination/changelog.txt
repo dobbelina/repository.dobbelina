@@ -1,3 +1,4 @@
 [B]Version 1.1.33[/B]
 HPJav - thumbnails not showing fixed
 HPJav - added censored, uncensored, amateur, chinese subtitles categories to main page
+Cambro - Playlist pagination fixed
