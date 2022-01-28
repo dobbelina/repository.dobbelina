@@ -21,7 +21,7 @@ import json
 import xbmc
 import xbmcgui
 import random
-# import base64
+import base64
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -69,9 +69,9 @@ def BGList(url, page=1):
         plot = tag + ' - ' + name + '[CR]' + story
 
         thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
-        # videodump = json.dumps(video)
-        # videopage = base64.b64encode(videodump.encode())
-        videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
+        videodump = json.dumps(video)
+        videopage = base64.b64encode(videodump.encode())
+        # videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
         if "set_id" in video["file"]:
             img = 'https://thumbs-015.externulls.com/sets/{0}/thumbs/{0}-{1}.jpg?size={2}'.format(str(video["file"]["set_id"]).zfill(5), thumb.zfill(4), th_size)
         else:
@@ -101,8 +101,20 @@ def BGList(url, page=1):
         if not page:
             page = 1
         npage = url.split('offset=')[0] + 'offset=' + str(page * 48)
-        site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'BGList', site.img_next, page=page + 1)
+        cm_page = (utils.addon_sys + "?mode=beeg.GotoPage" + "&url=" + urllib_parse.quote_plus(npage) + "&np=" + str(page))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'BGList', site.img_next, page=page + 1, contextm=cm)
     utils.eod()
+
+
+@site.register()
+def GotoPage(url, np):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        url = url.replace('offset={}'.format(int(np) * 48), 'offset={}'.format(int(pg) * 48))
+        contexturl = (utils.addon_sys + "?mode=" + "beeg.BGList&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -119,10 +131,10 @@ def BGPlayvid(url, name, download=None):
     playall = True if utils.addon.getSetting("paradisehill") == "true" else False
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    listjson = utils.getHtml(url, site.url)
-    jdata = json.loads(listjson)
-    # listjson = base64.b64decode(url)
-    # jdata = json.loads(listjson.decode())
+    # listjson = utils.getHtml(url, site.url)
+    # jdata = json.loads(listjson)
+    listjson = base64.b64decode(url)
+    jdata = json.loads(listjson.decode())
 
     fc_facts = jdata["fc_facts"]
     if len(fc_facts) == 1:
