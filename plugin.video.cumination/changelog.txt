@@ -5,3 +5,5 @@ Cambro - Playlist pagination fixed
 Beeg - fixed
 Javmoe -  playback fix
 Vintagetube - new site
+animeid - fix listing
+xhamster - fixed

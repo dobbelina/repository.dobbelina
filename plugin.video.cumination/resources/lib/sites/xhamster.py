@@ -53,12 +53,12 @@ def List(url):
         return
 
     if 'data-video-id="' in response:
-        videos = response.split('data-video-id="')
+        videos = response.split('class="video-thumb-info"')
         videos.pop(0)
         for video in videos:
-            match = re.compile(r'src="([^"]+)".+?duration>([^<]+)<.+?href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+            match = re.compile(r'href="([^"]+)" data-role="thumb-link">([^<]+)<.+?src="([^"]+)".+?duration>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
             if match:
-                (img, length, videolink, name) = match[0]
+                (videolink, name, img, length) = match[0]
                 if 'icon--uhd' in video:
                     hd = '4k'
                 elif 'icon--hd' in video:
