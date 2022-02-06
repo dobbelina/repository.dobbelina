@@ -64,9 +64,9 @@ def List(url):
             name += ' [COLOR gold]HD[/COLOR]'
         subject = ''
         if model.get('hometown'):
-            subject += 'Location: {}'.format(model.get('hometown'))
+            subject += u'Location: {}'.format(model.get('hometown'))
         if model.get('homecountry'):
-            subject += ', {}\n'.format(model.get('homecountry')) if subject else 'Location: {}\n'.format(model.get('homecountry'))
+            subject += u', {}\n'.format(model.get('homecountry')) if subject else u'Location: {}\n'.format(model.get('homecountry'))
         if model['ethnicity']:
             subject += u'\n- {}\n'.format(model['ethnicity'])
         if model['primary_language']:

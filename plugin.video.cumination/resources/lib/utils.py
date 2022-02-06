@@ -1301,7 +1301,7 @@ def PLAYVIDEO(url, name, download=None, regex=r'''(?:src|SRC|href|HREF)=\s*["'](
 def next_page(site, list_mode, html, re_npurl, re_npnr=None, re_lpnr=None, videos_per_page=None, contextm=None, baseurl=None):
     match = re.compile(re_npurl, re.DOTALL | re.IGNORECASE).findall(html)
     if match:
-        npurl = fix_url(match[0], site.url, baseurl)
+        npurl = fix_url(match[0], site.url, baseurl).replace('&amp;', '&')
         np = ''
         npnr = 0
         if re_npnr:
