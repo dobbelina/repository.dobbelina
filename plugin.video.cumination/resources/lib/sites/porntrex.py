@@ -264,7 +264,7 @@ def PTSearch(url, keyword=None):
         site.search_dir(url, 'PTSearch')
     else:
         searchUrl += keyword.replace(' ', '%20')
-        searchUrl += '/' + lengthChoices[ptlength]
+        searchUrl += '/' + lengthChoices[ptlength] + '/latest-updates/'
         PTList(searchUrl, 1)
 
 
