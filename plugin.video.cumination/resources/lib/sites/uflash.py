@@ -37,7 +37,8 @@ def Main():
 
 @site.register()
 def List(url):
-    html = utils.getHtml(url)
+    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
+    html = utils.getHtml(url, headers=headers)
     if 'No videos found!' in html:
         utils.notify(msg='Nothing found')
         utils.eod()
@@ -72,7 +73,8 @@ def GotoPage(list_mode, url, np, lp):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url)
+    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
+    cathtml = utils.getHtml(url, headers=headers)
     cathtml = cathtml.split('CATEGORIES')[-1].split('THUMBS')[0]
     match = re.compile(r'<li><a href="([^"]+)".*?>([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     i = 0
@@ -103,8 +105,8 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-
-    html = utils.getHtml(url, site.url)
+    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
+    html = utils.getHtml(url, site.url, headers=headers)
     match = re.compile(r'_8xHp9vZ2\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
     if match:
         videourl = base64.b64decode(match[0]).decode("utf-8")
