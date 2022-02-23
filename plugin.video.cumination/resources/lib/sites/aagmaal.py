@@ -17,10 +17,12 @@
 '''
 
 import re
+import pickle
+import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.cam/', 'https://i.imgur.com/ddTgBNh.png', 'aagmaal')
+site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.click/', 'https://aagmaal.click/wp-content/uploads/2022/02/aagmaal-click-logo.png', 'aagmaal')
 
 
 @site.register(default_mode=True)
@@ -34,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item.+?src="([^"]+).+?href="([^"]+)[^>]+>(.+?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="recent-item.+?data-src="([^"]+).+?href="([^"]+)[^>]+>(.+?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         if '</span>' in name:
             name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
@@ -51,10 +53,14 @@ def List(url):
 @site.register()
 def List2(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<article.+?href="([^"]+)">([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, name, img in match:
+    items = re.compile(r'<article.+?/article>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for item in items:
+        name = re.compile(r'data-text="([^"]+)', re.DOTALL | re.IGNORECASE).findall(item)[0]
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        urls = re.compile(r'href="\s*(https?://([^/]+)[^"]+)"[^>]+>\s*Watch', re.DOTALL | re.IGNORECASE).findall(item)
+        urls = pickle.dumps(urls)
+        urls = binascii.hexlify(urls)
+        site.add_download_link(name, urls, 'Playvid', '', name)
 
     url = re.compile(r'''class="pagination.+?class="current.+?href="([^"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:
@@ -67,10 +73,14 @@ def List2(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videopage = utils.getHtml(url, site.url)
     videourl = ''
 
-    links = re.compile(r'''href="(https?://([^/]+)[^"]+)"[^>]+>Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if url.startswith('http'):
+        videopage = utils.getHtml(url, site.url)
+        links = re.compile(r'''href="(https?://([^/]+)[^"]+)"[^>]+>Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    else:
+        links = pickle.loads(binascii.unhexlify(url))
+
     if links:
         links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
         videourl = utils.selector('Select link', links)
