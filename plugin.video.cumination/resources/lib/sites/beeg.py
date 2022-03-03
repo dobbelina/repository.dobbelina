@@ -161,6 +161,12 @@ def BGPlayvid(url, name, download=None):
     if not playall:
         if videos:
             videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+            if 'multi' in videos.keys():
+                maxres = videos['multi'].split('x')[-1].split(':')[0]
+                if maxres in videos.keys():
+                    del videos['multi']
+                elif maxres.isdigit():
+                    videos[maxres] = videos.pop('multi')
             key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
@@ -176,6 +182,12 @@ def BGPlayvid(url, name, download=None):
                 vp.progress.update(75, "[CR]Adding part to playlist[CR]")
                 videos = links[video]
                 videos = {key.replace('fl_cdn_', ''): videos[key] for key in videos.keys()}
+                if 'multi' in videos.keys():
+                    maxres = videos['multi'].split('x')[-1].split(':')[0]
+                    if maxres in videos.keys():
+                        del videos['multi']
+                    elif maxres.isdigit():
+                        videos[maxres] = videos.pop('multi')
                 key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
                 newname = name + video
                 listitem = xbmcgui.ListItem(newname)
