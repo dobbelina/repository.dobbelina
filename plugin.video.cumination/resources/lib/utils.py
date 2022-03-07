@@ -709,6 +709,16 @@ def cleanhtml(raw_html):
     return cleantext
 
 
+def get_vidhost(url):
+    """
+    Trim the url to get the video hoster
+    :return vidhost
+    """
+    parts = url.split('/')[2].split('.')
+    vidhost = '{}.{}'.format(parts[-2], parts[-1])
+    return vidhost
+
+
 def get_language(lang_code):
     languages = {
         "aa": "Afar", "ab": "Abkhazian", "af": "Afrikaans", "am": "Amharic", "ar": "Arabic", "as": "Assamese", "ay": "Aymara",
