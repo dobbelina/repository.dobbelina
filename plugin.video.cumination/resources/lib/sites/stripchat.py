@@ -60,8 +60,19 @@ def List(url):
         name = utils.cleanhtml(model['username'])
         videourl = model['stream']['url']
         img = model['previewUrl'] if utils.addon.getSetting("model_pic") == "0" else model['snapshotUrl']
-
-        site.add_download_link(name, videourl, 'Playvid', img, '', noDownload=True)
+        subject = ''
+        if model.get('country'):
+            subject += '[COLOR deeppink]Location: [/COLOR]{0}[CR]'.format(utils.get_country(model.get('country')))
+        if model.get('languages'):
+            langs = [utils.get_language(x) for x in model.get('languages')]
+            subject += '[COLOR deeppink]Languages: [/COLOR]{0}[CR]'.format(', '.join(langs))
+        if model.get('broadcastGender'):
+            subject += '[COLOR deeppink]Gender: [/COLOR]{0}[CR][CR]'.format(model.get('broadcastGender'))
+        if model.get('tags'):
+            subject += '[COLOR deeppink]#[/COLOR]'
+            tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
+            subject += '[COLOR deeppink] #[/COLOR]'.join(tags)
+        site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True)
     utils.eod()
 
 

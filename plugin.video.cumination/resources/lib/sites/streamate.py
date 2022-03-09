@@ -51,11 +51,11 @@ def List(url, page=1):
     model_list = json.loads(data)
     total_models = model_list.get('totalResultCount')
     for camgirl in model_list['performers']:
-        img = "http://m1.nsimg.net/media/snap/{0}.jpg".format(camgirl['id'])
-        status = 'HD' if camgirl['highDefinition'] else ''
-        name = "{0} [COLOR deeppink][{1}][/COLOR] {2}".format(camgirl['nickname'], camgirl['age'], status)
-        subject = '{0}[CR][COLOR deeppink]Location: [/COLOR]{1}'.format(utils.cleantext(camgirl['headlineMessage']), camgirl['country'])
-        site.add_download_link(name, '{0}$${1}'.format(camgirl['nickname'], camgirl['id']), 'Playvid', img, subject, noDownload=True)
+        img = "http://m1.nsimg.net/media/snap/{0}.jpg".format(camgirl.get('id'))
+        status = 'HD' if camgirl.get('highDefinition') else ''
+        name = "{0} [COLOR deeppink][{1}][/COLOR] {2}".format(camgirl.get('nickname'), camgirl.get('age'), status)
+        subject = '{0}[CR][COLOR deeppink]Location: [/COLOR]{1}'.format(utils.cleantext(camgirl.get('headlineMessage', '')), camgirl.get('country'))
+        site.add_download_link(name, '{0}$${1}'.format(camgirl.get('nickname'), camgirl.get('id')), 'Playvid', img, subject, noDownload=True)
     if total_models > page * 100:
         url = re.sub(r"&from=\d+", "&from={0}".format(page * 100), url)
         lastpg = math.ceil(total_models / 100)
