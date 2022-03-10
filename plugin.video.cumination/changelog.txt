@@ -3,3 +3,4 @@
 - Fix OK XXX playback
 - Fix streamate listing bug
 - Add subject to stripchat
+- Add XNXX
