@@ -95,18 +95,27 @@ def Play(url, name, download=None):
     match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     playerurl = match[0]
-    playerhtml = utils.getHtml(playerurl, url)
-    match = re.compile(r'''var hash = '([^']+)'.+?var baseURL = '([^']+)'.+?getPhiPlayer\(hash,'([^']+)',"(\d+)"\);''', re.DOTALL | re.IGNORECASE).findall(playerhtml)
-    if match:
-        hash, baseurl, alternative, order = match[0]
-
-        formdata = {'vid': hash, 'alternative': alternative, 'ord': order}
-        data = utils.postHtml(baseurl + 'ajax_sources.php', form_data=formdata)
+    if 'phixxx.cc/player/play.php?vid=' in playerurl:
+        vid = playerurl.split('?vid=')[-1]
+        posturl = 'https://phixxx.cc/player/ajax_sources.php'
+        formdata = {'vid': vid, 'alternative': 'mp4', 'ord': '0'}
+        data = utils.postHtml(posturl, form_data=formdata)
         data = data.replace(r'\/', '/')
         jsondata = json.loads(data)
         videolink = jsondata["source"][0]["file"]
     else:
-        videolink = playerurl
+        playerhtml = utils.getHtml(playerurl, url)
+        match = re.compile(r'''var hash = '([^']+)'.+?var baseURL = '([^']+)'.+?getPhiPlayer\(hash,'([^']+)',"(\d+)"\);''', re.DOTALL | re.IGNORECASE).findall(playerhtml)
+        if match:
+            hash, baseurl, alternative, order = match[0]
+            formdata = {'vid': hash, 'alternative': alternative, 'ord': order}
+            data = utils.postHtml(baseurl + 'ajax_sources.php', form_data=formdata)
+            data = data.replace(r'\/', '/')
+            jsondata = json.loads(data)
+            videolink = jsondata["source"][0]["file"]
+        else:
+            videolink = playerurl
+
     if 'spankbang' in videolink:
         videolink = videolink.replace('/embed/', '/video/')
         Playvid(videolink, name, download=download)
