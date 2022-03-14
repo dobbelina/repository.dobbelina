@@ -36,13 +36,15 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div\s*id="video.+?href="([^"]+).+?data-src="([^"]+).+?title.+?>([^<]+).+?(\d+min).+?(\d+p)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    hdr = utils.base_hdrs
+    hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0'
+    listhtml = utils.getHtml(url, site.url, headers=hdr)
+    match = re.compile(r'<div\s*id="video.+?href="([^"]+).+?data-src="([^"]+).+?title.+?>([^<]+).+?(\d+(?:min|sec)).+?(\d+p)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, duration, quality in match:
         name = utils.cleantext(name)
         site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=quality)
 
-    np = re.compile(r'class="pagination.+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'class="pagination.+?class="active".+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         currpg = re.compile(r'class="pagination.+?class="active".+?>(\d+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         lpg = re.compile(r'class="pagination.+?class="last-page">(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)

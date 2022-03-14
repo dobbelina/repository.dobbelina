@@ -1,8 +1,4 @@
-[B]Version 1.1.36[/B]
-- Add sxyprn
-- Fix OK XXX playback
-- Fix streamate listing bug
-- Add subject to stripchat
-- Add XNXX
-- Add Lesbian PornVideos
-- Fix Erogarga video playback
+[B]Version 1.1.37[/B]
+- XNXX Fix pagination beyond page 8
+- XNXX Fix listing error
+
