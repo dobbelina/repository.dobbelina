@@ -17,14 +17,14 @@ RegExMatch(Incoming, "^[a-zA-Z]{1,5}:.*?(?=[|]|$)", Link0)
 Link:= chr(34) . Link0 . chr(34)
 RegExMatch(Incoming, "(?i)(?<=user-agent=)(.*?)(?=&|$)", Uagent0)
 if (Uagent0)
-Uagent:= "--http-user-agent=" . chr(34) . Uagent0 . chr(34)
+Uagent:= ":http-user-agent=" . chr(34) . Uagent0 . chr(34)
 RegExMatch(Incoming, "(?i)(?<=Referer=)(.*?)(?=&|$)", Referer0)
 if (Referer0)
-Referer:= "--http-referrer=" . chr(34) . Referer0 . chr(34)
+Referer:= ":http-referrer=" . chr(34) . Referer0 . chr(34)
 
 
 
-Run, vlc.exe %Uagent% %Referer% %Link% 
+Run, vlc.exe %Link% %Uagent% %Referer%  
 
 ExitApp
 
