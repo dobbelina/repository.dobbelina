@@ -43,10 +43,11 @@ def List(url):
             name = utils.cleantext(name)
             site.add_download_link(name, site.url[:-1] + videourl, 'Play', img, name, quality=hd)
 
-    match = re.compile(r'href="([^"]+-(\d+))"\s*class="pages">Next<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
-    if match:
-        npage, np = match[0]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np), site.url[:-1] + npage, 'List', site.img_next)
+    if videos:
+        match = re.compile(r'href="([^"]+-(\d+))"\s*class="pages">Next<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
+        if match:
+            npage, np = match[0]
+            site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np), site.url[:-1] + npage, 'List', site.img_next)
     utils.eod()
 
 
@@ -73,4 +74,4 @@ def Search(url, keyword=None):
 @site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex=None, direct_regex=r'file:\s*"([^"]+)')
-    vp.play_from_site_link(url, url)
+    vp.play_from_site_link(url, site.url)

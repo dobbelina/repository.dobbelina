@@ -111,22 +111,19 @@ def EXPlayvid(url, name, download=None):
     if mlinks:
         links.extend(mlinks)
 
-    if len(links) > 1:
-        videolist = []
-        for _, ename in links:
-            videolist.append(ename)
-        hoster = utils.dialog.select('Multiple videos found', videolist)
-        if hoster == -1:
-            return
-        link = links[hoster][0]
-    else:
-        link = links[0][0]
+    links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
 
-    if 'videos.sh' in link:
-        vp.direct_regex = r'{src: "([^"]+)"'
-        vp.play_from_site_link(link, url)
+    if links:
+        link = utils.selector('Select link', links)
+        if 'videos.sh' in link:
+            vp.direct_regex = r'{src: "([^"]+)"'
+            vp.play_from_site_link(link, url)
+        else:
+            vp.play_from_link_to_resolve(link)
     else:
-        vp.play_from_link_to_resolve(link)
+        utils.notify('Oh Oh', 'No Videos found')
+        vp.progress.close()
+        return
 
 
 @site.register()

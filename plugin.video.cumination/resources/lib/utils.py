@@ -1178,7 +1178,7 @@ class VideoPlayer():
         if self.direct_regex:
             direct_links = re.compile(self.direct_regex, re.DOTALL | re.IGNORECASE).findall(html)
             if direct_links:
-                selected = 'https:' + direct_links[0] if direct_links[0].startswith('//') else direct_links[0]
+                selected = urllib_parse.urljoin(url, direct_links[0]) if direct_links[0].startswith('/') else direct_links[0]
                 self.progress.update(50, "[CR]{0}[CR]".format(i18n('play_dlink')))
                 self.play_from_direct_link(selected)
             elif not self.regex:

@@ -1,4 +1,7 @@
 [B]Version 1.1.37[/B]
 - XNXX Fix pagination beyond page 8
 - XNXX Fix listing error
-
+- Bitporno Fix playback of ftvgirls
+- Bitporno Fix error when search result is empty
+- Elreyx Filter out unsupported hosters
+- IPV Fix listing

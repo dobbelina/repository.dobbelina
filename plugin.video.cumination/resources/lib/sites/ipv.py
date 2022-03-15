@@ -22,14 +22,14 @@ import xbmcplugin
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('ipv', '[COLOR hotpink]Indian Porn Videos[/COLOR]', 'https://www.indianpornvideos2.com/', 'ipv.png', 'ipv')
+site = AdultSite('ipv', '[COLOR hotpink]Indian Porn Videos[/COLOR]', 'https://www.indianpornvideos.com/', 'ipv.png', 'ipv')
 
 
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'Search', site.img_search)
-    List('{0}page/1/'.format(site.url))
+    List('{0}recent-page/'.format(site.url))
     utils.eod()
 
 
