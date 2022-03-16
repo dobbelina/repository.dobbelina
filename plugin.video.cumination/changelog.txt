@@ -5,3 +5,4 @@
 - Bitporno Fix error when search result is empty
 - Elreyx Filter out unsupported hosters
 - IPV Fix listing
+- xxxstreams.watch removed dead site
