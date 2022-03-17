@@ -56,7 +56,7 @@ def v7_cat(url):
         cathtml = utils.getHtml(url, site.url)
         match = re.compile('class="channel-site.+?src="([^"]+).+?href="([^"]+)">([^<]+).+?videos <span>([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
         for img, catpage, name, nr in match:
-            nr = int(nr.replace(' ', ''))
+            nr = int(nr.replace(' ', '').replace(',', ''))
             if nr > 0:
                 name = '{0} [COLOR orange]{1} Videos[/COLOR]'.format(utils.cleantext(name), nr)
                 site.add_dir(name, catpage + '?orderby=date', 'v7_list', img)

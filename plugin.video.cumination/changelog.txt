@@ -6,3 +6,5 @@
 - Elreyx Filter out unsupported hosters
 - IPV Fix listing
 - xxxstreams.watch removed dead site
+- Vidoz8 fix studios
+
