@@ -7,4 +7,5 @@
 - IPV Fix listing
 - xxxstreams.watch removed dead site
 - Vidoz8 fix studios
+- Erogarga fix playback
 

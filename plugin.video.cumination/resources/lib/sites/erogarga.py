@@ -98,11 +98,19 @@ def Play(url, name, download=None):
     if 'phixxx.cc/player/play.php?vid=' in playerurl:
         vid = playerurl.split('?vid=')[-1]
         posturl = 'https://phixxx.cc/player/ajax_sources.php'
-        formdata = {'vid': vid, 'alternative': 'mp4', 'ord': '0'}
+        formdata = {'vid': vid, 'alternative': 'spankbang', 'ord': '0'}
         data = utils.postHtml(posturl, form_data=formdata)
         data = data.replace(r'\/', '/')
         jsondata = json.loads(data)
-        videolink = jsondata["source"][0]["file"]
+        src = jsondata["source"]
+        if len(src) > 0:
+            videolink = src[0]["file"]
+        else:
+            formdata = {'vid': vid, 'alternative': 'mp4', 'ord': '0'}
+            data = utils.postHtml(posturl, form_data=formdata)
+            data = data.replace(r'\/', '/')
+            jsondata = json.loads(data)
+            videolink = jsondata["source"][0]["file"]
     else:
         playerhtml = utils.getHtml(playerurl, url)
         match = re.compile(r'''var hash = '([^']+)'.+?var baseURL = '([^']+)'.+?getPhiPlayer\(hash,'([^']+)',"(\d+)"\);''', re.DOTALL | re.IGNORECASE).findall(playerhtml)
