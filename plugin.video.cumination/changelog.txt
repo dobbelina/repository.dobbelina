@@ -1,11 +1,3 @@
-[B]Version 1.1.37[/B]
-- XNXX Fix pagination beyond page 8
-- XNXX Fix listing error
-- Bitporno Fix playback of ftvgirls
-- Bitporno Fix error when search result is empty
-- Elreyx Filter out unsupported hosters
-- IPV Fix listing
-- xxxstreams.watch removed dead site
-- Vidoz8 fix studios
-- Erogarga fix playback
-
+[B]Version 1.1.38[/B]
+favorites - move up/down/top/bottom disabled when favorites list is sorted
+favorites - video list refresh disabled on add

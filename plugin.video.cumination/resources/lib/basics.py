@@ -146,7 +146,8 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
         else:
             if isinstance(contextm, tuple):
                 contextMenuItems.append(contextm)
-    if fav == 'del':
+    favorder = addon.getSetting("favorder") or 'date added'
+    if fav == 'del' and favorder == 'date added':
         favorite_move_to_top = (sys.argv[0]
                                 + "?url=" + urllib_parse.quote_plus(url)
                                 + "&fav=" + 'move_to_top'
