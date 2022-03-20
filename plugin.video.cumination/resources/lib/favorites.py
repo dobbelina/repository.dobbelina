@@ -161,6 +161,7 @@ def Favorites(fav, favmode, name, url, img, duration='', quality=''):
         else:
             addFav(favmode, name, url, img, duration, quality)
             utils.notify('Favorite added', 'Video added to the favorites')
+        return
     elif fav == "del":
         delFav(url)
         utils.notify('Favorite deleted', 'Video removed from the list')
