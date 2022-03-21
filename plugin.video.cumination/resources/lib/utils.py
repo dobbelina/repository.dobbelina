@@ -419,23 +419,44 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
     try:
         response = urlopen(req, timeout=30)
     except urllib_error.HTTPError as e:
-        result = e.read()
+        if e.info().get('Content-Encoding', '').lower() == 'gzip':
+            buf = six.BytesIO(e.read())
+            f = gzip.GzipFile(fileobj=buf)
+            result = f.read()
+            f.close()
+        else:
+            result = e.read()
         if e.code == 503 and 'cf-browser-verification' in result:
             result = cloudflare.solve(url, cj, USER_AGENT)
-        elif e.code == 403:
-            # Drop to TLS1.1 and try again
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+        elif e.code == 403 and 'cf-alert-error' in result:
+            # Drop to TLS1.2 and try again
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
             handle = [urllib_request.HTTPSHandler(context=ctx)]
             opener = urllib_request.build_opener(*handle)
             try:
                 response = opener.open(req, timeout=30)
-            except:
-                if 'return' in error:
-                    # Give up
-                    notify(i18n('oh_oh'), i18n('site_down'))
-                    return ''
+            except urllib_error.HTTPError as e:
+                if e.info().get('Content-Encoding', '').lower() == 'gzip':
+                    buf = six.BytesIO(e.read())
+                    f = gzip.GzipFile(fileobj=buf)
+                    result = f.read()
+                    f.close()
                 else:
-                    raise
+                    result = e.read()
+                if e.code == 403 and 'cf-alert-error' in result:
+                    # Drop to TLS1.1 and try again
+                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+                    handle = [urllib_request.HTTPSHandler(context=ctx)]
+                    opener = urllib_request.build_opener(*handle)
+                    try:
+                        response = opener.open(req, timeout=30)
+                    except:
+                        notify(i18n('oh_oh'), i18n('site_down'))
+                        if 'return' in error:
+                            # Give up
+                            return ''
+                        else:
+                            raise
         elif 400 < e.code < 500:
             if not e.code == 403:
                 notify(i18n('oh_oh'), i18n('not_exist'))
@@ -539,70 +560,114 @@ def postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoCo
 
 
 def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoCookie=None):
+    if form_data:
+        form_data = urllib_parse.urlencode(form_data)
+        form_data = form_data if PY2 else six.b(form_data)
+        req = urllib_request.Request(url, form_data)
+    elif json_data:
+        json_data = json.dumps(json_data)
+        json_data = json_data.encode('utf8') if PY3 else json_data
+        req = urllib_request.Request(url, json_data)
+        req.add_header('Content-Type', 'application/json')
+    else:
+        req = urllib_request.Request(url)
+        req.get_method = lambda: 'POST'
+    if 'User-Agent' not in headers.keys():
+        req.add_header('User-Agent', USER_AGENT)
+    for k, v in list(headers.items()):
+        req.add_header(k, v)
+    if compression:
+        req.add_header('Accept-Encoding', 'gzip')
+
     try:
-        _user_agent = 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 ' + \
-                      '(KHTML, like Gecko) Chrome/13.0.782.99 Safari/535.1'
-        if form_data:
-            form_data = urllib_parse.urlencode(form_data)
-            form_data = form_data if PY2 else six.b(form_data)
-            req = urllib_request.Request(url, form_data)
-        elif json_data:
-            json_data = json.dumps(json_data)
-            json_data = json_data.encode('utf8') if PY3 else json_data
-            req = urllib_request.Request(url, json_data)
-            req.add_header('Content-Type', 'application/json')
-        else:
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
-        req.add_header('User-Agent', _user_agent)
-        for k, v in list(headers.items()):
-            req.add_header(k, v)
-        if compression:
-            req.add_header('Accept-Encoding', 'gzip')
-
         response = urllib_request.urlopen(req)
-
-        if response.info().get('Content-Encoding', '').lower() == 'gzip':
-            buf = six.BytesIO(response.read())
+    except urllib_error.HTTPError as e:
+        if e.info().get('Content-Encoding', '').lower() == 'gzip':
+            buf = six.BytesIO(e.read())
             f = gzip.GzipFile(fileobj=buf)
-            data = f.read()
+            result = f.read()
             f.close()
         else:
-            data = response.read()
+            result = e.read()
 
-        encoding = None
-
-        content_type = response.headers.get('content-type', '')
-        if 'charset=' in content_type:
-            encoding = content_type.split('charset=')[-1]
-
-        if encoding is None:
-            epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
-            epattern = epattern.encode('utf8') if PY3 else epattern
-            r = re.search(epattern, data, re.IGNORECASE)
-            if r:
-                encoding = r.group(1).decode('utf8') if PY3 else r.group(1)
-
-        if encoding is not None:
-            data = data.decode(encoding.lower(), errors='ignore')
-            data = data.encode('utf8') if PY2 else data
-        else:
-            data = data.decode('ascii', errors='ignore') if PY3 else data.encode('utf8')
-
-        if not NoCookie:
-            cj.save(cookiePath, ignore_discard=True)
-
-        response.close()
-
-    except urllib_error.HTTPError as e:
-        if 'SSL23_GET_SERVER_HELLO' in str(e):
-            notify(i18n('oh_oh'), i18n('python_old'))
-            raise e.msg
+        if e.code == 503 and 'cf-browser-verification' in result:
+            result = cloudflare.solve(url, cj, USER_AGENT)
+        elif e.code == 403 and 'cf-alert-error' in result:
+            # Drop to TLS1.2 and try again
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+            handle = [urllib_request.HTTPSHandler(context=ctx)]
+            opener = urllib_request.build_opener(*handle)
+            try:
+                response = opener.open(req, timeout=30)
+            except urllib_error.HTTPError as e:
+                if e.info().get('Content-Encoding', '').lower() == 'gzip':
+                    buf = six.BytesIO(e.read())
+                    f = gzip.GzipFile(fileobj=buf)
+                    result = f.read()
+                    f.close()
+                else:
+                    result = e.read()
+                if e.code == 403 and 'cf-alert-error' in result:
+                    # Drop to TLS1.1 and try again
+                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+                    handle = [urllib_request.HTTPSHandler(context=ctx)]
+                    opener = urllib_request.build_opener(*handle)
+                    try:
+                        response = opener.open(req, timeout=30)
+                    except:
+                        notify(i18n('oh_oh'), i18n('site_down'))
+                        raise
+        elif 400 < e.code < 500:
+            if not e.code == 403:
+                notify(i18n('oh_oh'), i18n('not_exist'))
+            raise
         else:
             notify(i18n('oh_oh'), i18n('site_down'))
-            raise e.msg
-        return None
+            raise
+    except urllib_error.URLError as e:
+        notify(i18n('oh_oh'), i18n('slow_site'))
+        xbmc.log(str(e), xbmc.LOGDEBUG)
+        raise
+    # except Exception as e:
+    #     if 'SSL23_GET_SERVER_HELLO' in str(e):
+    #         notify(i18n('oh_oh'), i18n('python_old'))
+    #         raise
+    #     else:
+    #         notify(i18n('oh_oh'), i18n('site_down'))
+    #         raise
+    #     return None
 
+    if response.info().get('Content-Encoding', '').lower() == 'gzip':
+        buf = six.BytesIO(response.read())
+        f = gzip.GzipFile(fileobj=buf)
+        data = f.read()
+        f.close()
+    else:
+        data = response.read()
+
+    encoding = None
+
+    content_type = response.headers.get('content-type', '')
+    if 'charset=' in content_type:
+        encoding = content_type.split('charset=')[-1]
+
+    if encoding is None:
+        epattern = r'<meta\s+http-equiv="Content-Type"\s+content="(?:.+?);\s+charset=(.+?)"'
+        epattern = epattern.encode('utf8') if PY3 else epattern
+        r = re.search(epattern, data, re.IGNORECASE)
+        if r:
+            encoding = r.group(1).decode('utf8') if PY3 else r.group(1)
+
+    if encoding is not None:
+        data = data.decode(encoding.lower(), errors='ignore')
+        data = data.encode('utf8') if PY2 else data
+    else:
+        data = data.decode('ascii', errors='ignore') if PY3 else data.encode('utf8')
+
+    if not NoCookie:
+        cj.save(cookiePath, ignore_discard=True)
+
+    response.close()
     return data
 
 

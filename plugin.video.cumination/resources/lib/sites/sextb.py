@@ -50,7 +50,7 @@ def Main():
 @site.register()
 def List(url):
     html = utils.getHtml(url, '')
-    if 'No Video were found that matched your search query' in html:
+    if 'No Video were found that matched your search query' in html or len(html) < 10:
         utils.eod()
         return
     match = re.compile('<div class="tray-item .*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
