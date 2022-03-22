@@ -1,3 +1,5 @@
 [B]Version 1.1.38[/B]
 favorites - move up/down/top/bottom disabled when favorites list is sorted
 favorites - video list refresh disabled on add
+Paradisehill - fix videoplayback
+FamilyPornHD - fix videoplayback

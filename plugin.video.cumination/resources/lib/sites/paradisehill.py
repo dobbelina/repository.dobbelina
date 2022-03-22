@@ -17,6 +17,7 @@
 """
 
 import re
+import json
 
 import xbmc
 import xbmcgui
@@ -83,9 +84,17 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     playall = True if utils.addon.getSetting("paradisehill") == "true" else False
     videopage = utils.getHtml(url, site.url)
-    videos = re.compile(r'href="([^"]+)">(Part\s*\d*)', re.DOTALL | re.IGNORECASE).findall(videopage)
-    if len(videos) < 1:
-        videos = re.compile(r'<source[^\n]+src="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
+    videojson = re.compile("videoList = ([^;]+)", re.IGNORECASE | re.DOTALL).findall(videopage)[0]
+    videodict = json.loads(videojson)
+    
+    videos = []
+    for i, j in enumerate(videodict):
+        videourl = videodict[i]['sources'][0]['src']
+        part = 'Part {}'.format(i + 1)
+        videos.append((videourl, part))
+    
+    #if len(videos) < 1:
+    #    videos = re.compile(r'<source[^\n]+src="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
 
     if not playall:
         if len(videos) > 1:

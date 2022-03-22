@@ -119,7 +119,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex='<a href="([^"]+)" target="_blank"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="embed-container"><iframe loading="lazy" src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'class="embed-container"><iframe src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         iframeurl = match[0]
         iframehtml = utils.getHtml(iframeurl, url)
