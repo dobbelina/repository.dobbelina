@@ -14,3 +14,4 @@ A clear and concise description of what the problem is. Ex. I'm always frustrate
 A clear and concise description of what you want to happen.
 
 **If it's a site addition request, add url below**
+Sites with no DMCA information will not be added
