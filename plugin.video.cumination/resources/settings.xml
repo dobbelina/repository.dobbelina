@@ -14,8 +14,8 @@
     </category>
     <category label="30065">
         <setting type="lsep" label="30029" />
-        <setting id="cache_time" label="30030" type="slider" default="4" range="1,1,8" option="int" />
         <setting id="clear_cache" label="33011" type="action" action="RunPlugin(plugin://plugin.video.cumination/?mode=utils.clear_cache)"/>
+        <setting id="cache_time" label="30030" type="slider" default="4" range="1,1,8" option="int" />
     </category>
     <category label="30053">
         <setting id="qualityask" type="enum" label="30001" lvalues="30401|30402|30403|30404|30405" default="0" />

@@ -1359,6 +1359,10 @@ class VideoPlayer():
         return sources
 
 
+def showimage(url):
+    xbmc.executebuiltin('ShowPicture({0})'.format(url))
+
+
 def playvideo(videosource, name, download=None, url=None, regex=r'''(?:src|SRC|href|HREF)=\s*["']([^'"]+)'''):
     """Deprecated function, use VideoPlayer class.
     Exists for compatiblity with old site plug-ins."""

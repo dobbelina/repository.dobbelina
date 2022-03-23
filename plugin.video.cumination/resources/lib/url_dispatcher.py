@@ -17,7 +17,7 @@
 """
 
 from inspect import getargspec
-from resources.lib.basics import addDir, addDownLink, searchDir, cum_image
+from resources.lib.basics import addDir, addDownLink, addImgLink, searchDir, cum_image
 
 
 class URL_Dispatcher(object):
@@ -61,14 +61,18 @@ class URL_Dispatcher(object):
         return decorator
 
     def add_dir(self, name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True,
-                about=None, custom=False, list_avail=True, listitem_id=None, custom_list=False, contextm=None):
+                about=None, custom=False, list_avail=True, listitem_id=None, custom_list=False, contextm=None, desc=''):
         mode = self.get_full_mode(mode)
         addDir(name, url, mode, iconimage, page, channel, section, keyword, Folder, about,
-               custom, list_avail, listitem_id, custom_list, contextm)
+               custom, list_avail, listitem_id, custom_list, contextm, desc)
 
     def add_download_link(self, name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
         mode = self.get_full_mode(mode)
         addDownLink(name, url, mode, iconimage, desc, stream, fav, noDownload, contextm, fanart, duration, quality)
+
+    def add_img_link(self, name, url, mode):
+        mode = self.get_full_mode(mode)
+        addImgLink(name, url, mode)
 
     def search_dir(self, url, mode, page=None):
         mode = self.get_full_mode(mode)

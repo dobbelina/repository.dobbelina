@@ -66,6 +66,18 @@ def eod(handle=addon_handle, cache=True):
     xbmcplugin.endOfDirectory(handle, cacheToDisc=cache)
 
 
+def addImgLink(name, url, mode):
+    u = (sys.argv[0]
+         + "?url=" + urllib_parse.quote_plus(url)
+         + "&mode=" + str(mode)
+         + "&name=" + urllib_parse.quote_plus(name))
+    liz = xbmcgui.ListItem(name)
+    liz.setInfo(type='pictures', infoLabels={'title': name})
+    liz.setArt({'thumb': url, 'icon': url, 'poster': url})
+    ok = xbmcplugin.addDirectoryItem(handle=addon_handle, url=u, listitem=liz, isFolder=False)
+    return ok
+
+
 def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
     contextMenuItems = []
     favtext = "Remove from" if fav == 'del' else "Add to"  # fav == 'add' or 'del'
@@ -229,7 +241,7 @@ def get_resolution(quality):
 
 
 def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True, about=None,
-           custom=False, list_avail=True, listitem_id=None, custom_list=False, contextm=None):
+           custom=False, list_avail=True, listitem_id=None, custom_list=False, contextm=None, desc=''):
     u = (sys.argv[0]
          + "?url=" + urllib_parse.quote_plus(url)
          + "&mode=" + str(mode)
@@ -249,7 +261,8 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         art.update({'poster': iconimage})
     liz.setArt(art)
     liz.setInfo(type="Video", infoLabels={"Title": name})
-
+    if desc:
+        liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
     contextMenuItems = []
     if contextm:
         if isinstance(contextm, list):
