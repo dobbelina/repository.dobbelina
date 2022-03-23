@@ -17,10 +17,12 @@
 '''
 
 import re
+import pickle
+import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.com/', 'aagmaal.png', 'aagmaal')
+site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.pro/', 'https://aagmaal.pro/wp-content/uploads/2021/11/aagmaal.pro-logo.png', 'aagmaalpro')
 
 
 @site.register(default_mode=True)
@@ -34,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+)[^>]+>(.+?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         if '</span>' in name:
             name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
@@ -70,8 +72,12 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videourl = ''
 
-    videopage = utils.getHtml(url, site.url)
-    links = re.compile(r'''href="([^"]+)"\s*class="external.+?blank">.*?(?://|\.)([^/]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if url.startswith('http'):
+        videopage = utils.getHtml(url, site.url)
+        links = re.compile(r'''href="(https?://([^/]+)[^"]+)"[^>]+>Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    else:
+        links = pickle.loads(binascii.unhexlify(url))
+
     if links:
         links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
         videourl = utils.selector('Select link', links)
@@ -91,9 +97,10 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'href="([^"]+)"\s*class="tag.+?label="([^"]+)').findall(cathtml)
+    match = re.compile(r'<li\s*class="cat-item.+?href="([^"]+)">([^<]+)').findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
+        catpage = site.url[:-1] + catpage if catpage.startswith('/') else catpage
         site.add_dir(name, catpage, 'List2')
     utils.eod()
 
