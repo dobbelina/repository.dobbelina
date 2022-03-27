@@ -42,15 +42,17 @@ def List(url):
     videos = html.split('article data-video-uid')
     videos.pop(0)
     for video in videos:
+        if 'type-photos' in video:
+            continue
         match = re.compile(r'href="([^"]+).+?data-src="([^"]+)".+?<span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
         if match:
             videourl, img, name = match[0]
             name = utils.cleantext(name)
             site.add_download_link(name, videourl, 'Play', img, name)
 
-    re_npurl = 'href="([^"]+)"[^>]*>Next'
-    re_npnr = r'/page/(\d+)[^>]*>Next'
-    re_lpnr = r'/page/(\d+)[^>]*>Last'
+    re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
+    re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
+    re_lpnr = r'/page/(\d+)[^>]*>Last' if '>Last' in html else r'rel="follow">(\d+)<\D+<\/main>'
     utils.next_page(site, 'erogarga.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erogarga.GotoPage')
     utils.eod()
 
@@ -92,7 +94,7 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"')
     videohtml = utils.getHtml(url)
-    match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    match = re.compile(r'''<iframe[^>]+src=['"]([^'"]+)['"]''', re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     playerurl = match[0]
     if 'phixxx.cc/player/play.php?vid=' in playerurl:
@@ -111,6 +113,12 @@ def Play(url, name, download=None):
             data = data.replace(r'\/', '/')
             jsondata = json.loads(data)
             videolink = jsondata["source"][0]["file"]
+    elif 'pornflip.com' in playerurl:
+        playerhtml = utils.getHtml(playerurl, url)
+        match = re.compile(r'(data-\S+src\d*)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
+        src = {m[0]: m[1] for m in match}
+        videolink = utils.selector('Select video', src)
+        videolink = videolink.replace('&amp;', '&') + '|referer=https://www.pornflip.com/'
     else:
         playerhtml = utils.getHtml(playerurl, url)
         match = re.compile(r'''var hash = '([^']+)'.+?var baseURL = '([^']+)'.+?getPhiPlayer\(hash,'([^']+)',"(\d+)"\);''', re.DOTALL | re.IGNORECASE).findall(playerhtml)
@@ -121,6 +129,10 @@ def Play(url, name, download=None):
             data = data.replace(r'\/', '/')
             jsondata = json.loads(data)
             videolink = jsondata["source"][0]["file"]
+            if 'blogger.com' in videolink:
+                vp.direct_regex = '"play_url":"([^"]+)"'
+                vp.play_from_site_link(videolink, url)
+                return
         else:
             videolink = playerurl
 

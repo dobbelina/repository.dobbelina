@@ -127,7 +127,7 @@ def Categories(url):
     items = re.compile(r'cats.write_thumb_block_list\(([^]]+])', re.DOTALL).findall(cathtml)[0]
     items = json.loads(items)
     for item in items:
-        name = utils.cleantext(item.get('tf'))
+        name = item.get('tf') if utils.PY3 else item.get('tf').encode('utf-8')
         img = item.get('i')
         catpage = site.url[:-1] + item.get('u')
         site.add_dir(name, catpage, 'List', img)
