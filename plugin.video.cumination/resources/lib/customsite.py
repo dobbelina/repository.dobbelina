@@ -1,5 +1,5 @@
 from resources.lib import basics
-from resources.lib import utils
+from resources.lib import utils  # noQA
 from resources.lib.adultsite import AdultSite
 from resources.lib.favorites import get_custom_data
 

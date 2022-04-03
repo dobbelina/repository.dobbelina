@@ -119,5 +119,4 @@ def Playvid(url, name):
         return
 
     vp.progress.update(75, "[CR]Found Stream[CR]")
-    vp = utils.VideoPlayer(name)
     vp.play_from_direct_link(surl)
