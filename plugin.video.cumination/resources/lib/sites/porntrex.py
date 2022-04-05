@@ -84,8 +84,11 @@ def PTList(url, page=1):
             listhtml = utils.getHtml(url, site.url, headers=hdr)
         else:
             return None
-    videos = listhtml.split('class="video-preview-screen')
-    videos.pop(0)
+    try:
+        videos = listhtml.split('class="video-preview-screen')
+        videos.pop(0)
+    except:
+        videos = []
     if len(videos) == 0:
         utils.notify("Oh oh", "No videos found")
         return
@@ -325,12 +328,11 @@ def PTSubscriptions(url, page=1):
     hdr['Cookie'] = get_cookies()
     listhtml = utils._getHtml(url, site.url, headers=hdr)
 
-    results = re.findall('(?si)href="([^"]+)".*?data-original="([^"]+)" alt="([^"]+)', listhtml)
-    for url, img, name in results:
+    results = re.findall('href="([^"]+)".*?data-original="([^"]+)" alt="([^"]+).+?data-id="([^"]+)', listhtml, re.DOTALL)
+    for url, img, name, id in results:
         if img.startswith('//'):
             img = 'https:' + img
             img = img.replace(' ', '%20')
-        id = img.split('/')[5]
         if ptlogged:
             contexturl = (utils.addon_sys
                           + "?mode=" + str('porntrex.PTSubscribe_pornstar')
@@ -410,7 +412,7 @@ def PTSubscribe_pornstar(url, id=None, what='subscribe'):
             modelhtml = utils.getHtml(url2)
         except:
             return None
-        id = re.findall(r'(?si)data-subscribe-to="model" data-id="(\d+)"', modelhtml)[0]
+        id = re.findall(r'data-subscribe-to="model"\s*data-id="(\d+)"', modelhtml, re.DOTALL)[0]
 
     url = url2 if '?' in url else url
     url = url + '/' if not url.endswith('/') else url
@@ -421,16 +423,18 @@ def PTSubscribe_pornstar(url, id=None, what='subscribe'):
     response = utils._getHtml(suburl, url)
     if 'success' in response.lower():
         success = True
-        utils.notify('Success', 'Pornstar added successfull to your subscriptions')
+        if what == 'unsubscribe':
+            utils.notify('Success', 'Pornstar removed successfully from your subscriptions')
+            xbmc.executebuiltin('Container.Refresh')
+        else:
+            utils.notify('Success', 'Pornstar added successfully to your subscriptions')
     else:
         if what == 'unsubscribe':
             utils.notify('Failure', 'Failure removing the pornstar from your subscriptions')
         else:
             utils.notify('Failure', 'Failure adding the pornstar to your subscriptions')
         success = False
-    if what == 'unsubscribe':
-        utils.notify('Success', 'Pornstar removed successfull from your subscriptions')
-        xbmc.executebuiltin('Container.Refresh')
+
     return success
 
 
