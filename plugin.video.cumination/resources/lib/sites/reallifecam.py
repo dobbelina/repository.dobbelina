@@ -24,6 +24,7 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://reallifecam.to/', 'https://reallifecam.to/images/logo/logo.png', 'rlc')
 site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
+site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.life[/COLOR]', 'https://voyeur-house.life/', 'https://www.voyeur-house.life/images/logo/logo.png', 'vhlife')
 
 
 def getBaselink(url):
@@ -31,11 +32,14 @@ def getBaselink(url):
         siteurl = site.url
     elif 'voyeur-house.to' in url:
         siteurl = site1.url
+    elif 'voyeur-house.life' in url:
+        siteurl = site2.url
     return siteurl
 
 
 @site.register(default_mode=True)
 @site1.register(default_mode=True)
+@site2.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
@@ -95,18 +99,25 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url)
-    refurl = re.compile(r'class="video-embedded">\s*<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    vp.progress.update(50, "[CR]Loading video page[CR]")
-    refpage = utils.getHtml(refurl)
-    if '/playerz/' in refurl:
-        videourl = re.compile(r'"src":"\.([^"]+)"', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
-        videourl = refurl.split('/ss.php')[0] + videourl
-        videourlpage = utils.getHtml(videourl)
-        vp.direct_regex = '{"file":"([^"]+)"'
-        vp.play_from_html(videourlpage)
+
+    match = re.compile(r'class="video-embedded">\s*<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if match:
+        refurl = match[0]
+        if vp.resolveurl.HostedMediaFile(refurl):
+            vp.play_from_link_to_resolve(refurl)
+            return
+        refpage = utils.getHtml(refurl)
+        if '/playerz/' in refurl:
+            videourl = re.compile(r'"src":"\.([^"]+)"', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
+            videourl = refurl.split('/ss.php')[0] + videourl
+            videourlpage = utils.getHtml(videourl)
+            vp.direct_regex = '{"file":"([^"]+)"'
+            vp.play_from_html(videourlpage)
+        else:
+            videourl = re.compile(r'>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
+            videourl = unpack(videourl)
+            videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
+            videolink = videolink + '|Referer=' + refurl
+            vp.play_from_direct_link(videolink)
     else:
-        videourl = re.compile(r'>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(refpage)[0]
-        videourl = unpack(videourl)
-        videolink = re.compile('file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)[0]
-        videolink = videolink + '|Referer=' + refurl
-        vp.play_from_direct_link(videolink)
+        vp.play_from_html(videopage)
