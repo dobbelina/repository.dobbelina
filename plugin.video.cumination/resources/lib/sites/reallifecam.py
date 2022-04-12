@@ -54,7 +54,7 @@ def List(url):
         listhtml = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile(r'class="well well-sm">\s*<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="well well-sm">\s*<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, quality, duration in match:
         name = utils.cleantext(name)
         if videopage.startswith('/'):
