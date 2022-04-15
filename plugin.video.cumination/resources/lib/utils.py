@@ -1415,7 +1415,9 @@ def fix_url(url, siteurl=None, baseurl=None):
         elif url.startswith('?'):
             url = baseurl + url
         elif url.startswith('/'):
-            url = siteurl + url
+            url = siteurl[:-1] + url
+        elif '/' not in url:
+            url = baseurl + url
     return url
 
 

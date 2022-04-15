@@ -94,7 +94,7 @@ def Pornstars(url):
 
     re_npurl = r'href="([^"]+)"\s*class="next">Next'
     re_npnr = r'/page/(\d+)\D+class="next">Next'
-    utils.next_page(site, 'netfapx.Pornstars', cathtml, re_npurl, re_npnr, contextm='palimas.GotoPage')
+    utils.next_page(site, 'netfapx.Pornstars', cathtml, re_npurl, re_npnr, contextm='netfapx.GotoPage')
     utils.eod()
 
 
