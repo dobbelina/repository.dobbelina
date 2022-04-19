@@ -136,7 +136,7 @@ def hanime_play(url, name, download=None):
 
 @site.register()
 def hanime_eps(url):
-    url = 'https://hw.hanime.tv/api/v8/video?id=' + url
+    url = 'https://hanime.tv/api/v8/video?id=' + url
     try:
         listhtml = utils.getHtml(url, headers=hanime_headers)
     except Exception as e:
