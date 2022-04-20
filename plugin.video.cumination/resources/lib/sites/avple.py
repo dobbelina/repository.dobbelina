@@ -25,7 +25,7 @@ import xbmcgui
 import json
 import random
 
-site = AdultSite('avple', '[COLOR hotpink]Avple[/COLOR]', 'https://en.avple.tv/', 'https://assert.avple.tv/file/avple-images/logo.png', 'avple')
+site = AdultSite('avple', '[COLOR hotpink]Avple[/COLOR]', 'https://avple.tv/', 'https://assert.avple.tv/file/avple-images/logo.png', 'avple')
 CDN = [
     "q2cyl7.cdnedge.live", "d862cp.cdnedge.live", "47b61.cdnedge.live", "e2fa6.cdnedge.live", "je40u.cdnedge.live",
     "10j99.cdnedge.live", "u89ey.cdnedge.live", "1xp60.cdnedge.live", "w9n76.cdnedge.live", "zo392.cdnedge.live"
