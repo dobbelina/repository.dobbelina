@@ -90,6 +90,7 @@ def Playvid(url, name, download=None):
     for title, src in srcs:
         title = utils.cleantext(title)
         title = title.split(' on ')[-1]
+        src = src.split('?link=')[-1]
         if 'mangovideo' in src:
             html = utils.getHtml(src, url)
             if '=' in src:

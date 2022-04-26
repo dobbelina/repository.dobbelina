@@ -17,6 +17,7 @@
 """
 
 import re
+import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -41,18 +42,22 @@ def EXList(url):
     match = re.compile(r'<article.+?href="([^"]+).+?data-src="([^"]+).+?<span>([^<]+)', re.DOTALL | re.IGNORECASE).findall(vlist)
     for videopage, img, name in match:
         name = utils.cleantext(name).strip()
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('elreyx.EXPornstar')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Search Pornstars[/COLOR]', 'RunPlugin(' + contexturl + ')'))
         sitematch = re.compile(r"\[([^\]]*)\]", re.DOTALL | re.IGNORECASE).findall(name)
         if sitematch:
             sitename = sitematch[0]
             siteurl = 'https://elreyx.co/tag/{}/'.format(sitename.lower())
-            contextmenu = []
+
             contexturl = (utils.addon_sys
                           + "?mode=" + str('elreyx.EXList')
                           + "&url=" + urllib_parse.quote_plus(siteurl))
             contextmenu.append(('[COLOR deeppink]Search {}[/COLOR]'.format(sitename.strip()), 'Container.Update(' + contexturl + ')'))
-            site.add_download_link(name, videopage, 'EXPlayvid', img, name, contextm=contextmenu)
-        else:
-            site.add_download_link(name, videopage, 'EXPlayvid', img, name)
+        site.add_download_link(name, videopage, 'EXPlayvid', img, name, contextm=contextmenu)
+
 
     nextp = re.compile('<link rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
@@ -92,6 +97,33 @@ def EXCat(url):
         np = re.findall(r'/\d+/', nextp)[-1].replace('/', '')
         site.add_dir('Next Page ({}/{})'.format(np, lp), nextp, 'EXCat', site.img_next)
     utils.eod()
+
+
+@site.register()
+def EXPornstar(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+    pornstars = {}
+    matches = re.compile('/actor/([^"]+)" title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if matches:
+        for url, model in matches:
+            model = model.strip()
+            pornstars[model] = url
+        selected_model = utils.selector('Choose model to view', pornstars, sort_by=lambda x: x[1], show_on_one=True)
+        if not selected_model:
+            return
+
+        modelurl = 'https://elreyx.co/actor/' + selected_model
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('elreyx.EXList')
+                      + "&url=" + urllib_parse.quote_plus(modelurl))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+    else:
+        utils.notify('Notify', 'No tagged pornstars found in this video')
+    return
 
 
 @site.register()

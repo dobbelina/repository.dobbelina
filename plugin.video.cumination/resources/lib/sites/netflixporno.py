@@ -124,6 +124,7 @@ def Playvid(url, name, download=None):
     for title, src in srcs:
         title = utils.cleantext(title)
         title = title.split(' on ')[-1]
+        src = src.split('?link=')[-1]
         if '/goto/' in src:
             src = url_decode(src)
         if 'mangovideo' in src:
