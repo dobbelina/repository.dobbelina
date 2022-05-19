@@ -147,6 +147,49 @@ def Categories(url):
 
 
 @site.register()
+def PSList(url):
+    hdr = dict(utils.base_hdrs)
+    hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0'
+    try:
+        listhtml = utils.getHtml(url, headers=hdr)
+    except:
+        return None
+    jdata = json.loads(listhtml)
+    for video in jdata["videos"]:
+        videopage = video['u']
+        name = utils.cleantext(video['t'] if utils.PY3 else video['t'].encode('utf-8'))
+        namef = utils.cleantext(video['tf'] if utils.PY3 else video['tf'].encode('utf-8'))
+        duration = video['d']
+        img = video['i'].replace(r'\/', '/')
+        quality = ''
+        if video['td'] == 1:
+            quality = '1440p'
+        elif video['hp'] == 1:
+            quality = '1080p'
+        elif video['h'] == 1:
+            quality = '720p'
+        elif video['hm'] == 1:
+            quality = '480p'
+        else:
+            quality = '360p'
+        cm_related = (utils.addon_sys + "?mode=" + str('xvideos.ContextRelated') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, namef, contextm=cm, duration=duration, quality=quality)
+
+    videos = jdata["nb_videos"]
+    videospp = jdata["nb_per_page"]
+    cp = jdata["current_page"]
+    # page = page if page else 0
+    np = int(cp) + 1
+    npage = url + '/1' if cp == 0 else url.replace('/' + str(cp), '/' + str(np))
+    lp = int(int(videos) / float(videospp)) + 1
+    np += 1
+    if lp >= np:
+        site.add_dir('Next Page ({}/{})'.format(np, lp), npage, 'PSList', site.img_next)
+    utils.eod()
+
+
+@site.register()
 def Pornstars(url):
     try:
         cathtml = utils.getHtml(url)
@@ -156,7 +199,7 @@ def Pornstars(url):
     for img, catpage, name, videos in match:
         name = '{} [COLOR deeppink]{}[/COLOR]'.format(name, videos)
         catpage += '/videos/best'
-        site.add_dir(name, site.url[:-1] + catpage, 'List', img)
+        site.add_dir(name, site.url[:-1] + catpage, 'PSList', img)
     npage = re.compile(r'href="([^"]+)" class="no-page next-page', re.DOTALL | re.IGNORECASE).findall(cathtml)
     if npage:
         npage = npage[0].replace('&amp;', '&')
@@ -273,8 +316,8 @@ def ListRelated(url):
     jdata = json.loads('[' + jhtml + ']')
     for video in jdata:
         videopage = video['u']
-        name = utils.cleantext(str(video['t']))
-        namef = utils.cleantext(str(video['tf']))
+        name = utils.cleantext(video['t'] if utils.PY3 else video['t'].encode('utf-8'))
+        namef = utils.cleantext(video['tf'] if utils.PY3 else video['tf'].encode('utf-8'))
         duration = video['d']
         img = video['i'].replace(r'\/', '/')
         quality = ''
@@ -337,7 +380,8 @@ def update_url(url):
                 url = url.replace(site.url + type, site.url + type + '/d:' + length)
         if (date == 'anytime' and '/m:' in url) or (date != 'anytine' and '/m:' + date not in url):
             url = re.sub(r'/m:[^/]+', '', url)
-            url = re.sub(r'/\d+$', '', url)
+            if type != 'tags':
+                url = re.sub(r'/\d+$', '', url)
             if date != 'anytime':
                 url = url.replace(site.url + type, site.url + type + '/m:' + date)
         if (sortby == 'relevance' and '/s:' in url) or (sortby != 'relevance' and '/s:' + sortby not in url):
