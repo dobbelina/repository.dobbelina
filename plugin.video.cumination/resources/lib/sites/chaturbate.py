@@ -55,7 +55,7 @@ def Main():
         site.add_dir('[COLOR hotpink]20 to 30 Cams - Female[/COLOR]', bu + '20to30-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]30 to 50 Cams - Female[/COLOR]', bu + '30to50-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Mature Cams (50+) - Female[/COLOR]', bu + 'mature-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]HD Cams - Female[/COLOR]', bu + 'hd-cams/female/?page=1', 'List', '', '')
+        # site.add_dir('[COLOR hotpink]HD Cams - Female[/COLOR]', bu + 'hd-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]North American Cams - Female[/COLOR]', bu + 'north-american-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]South American Cams - Female[/COLOR]', bu + 'south-american-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Euro Russian Cams - Female[/COLOR]', bu + 'euro-russian-cams/female/?page=1', 'List', '', '')
@@ -70,7 +70,7 @@ def Main():
         site.add_dir('[COLOR hotpink]20 to 30 Cams - Couple[/COLOR]', bu + '20to30-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]30 to 50 Cams - Couple[/COLOR]', bu + '30to50-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Mature Cams (50+) - Couple[/COLOR]', bu + 'mature-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]HD Cams - Couple[/COLOR]', bu + 'hd-cams/couple/?page=1', 'List', '', '')
+        # site.add_dir('[COLOR hotpink]HD Cams - Couple[/COLOR]', bu + 'hd-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]North American Cams - Couple[/COLOR]', bu + 'north-american-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]South American Cams - Couple[/COLOR]', bu + 'south-american-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Euro Russian Cams - Couple[/COLOR]', bu + 'euro-russian-cams/couple/?page=1', 'List', '', '')
@@ -85,7 +85,7 @@ def Main():
         site.add_dir('[COLOR hotpink]20 to 30 Cams - Male[/COLOR]', bu + '20to30-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]30 to 50 Cams - Male[/COLOR]', bu + '30to50-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Mature Cams (50+) - Male[/COLOR]', bu + 'mature-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]HD Cams - Male[/COLOR]', bu + 'hd-cams/male/?page=1', 'List', '', '')
+        # site.add_dir('[COLOR hotpink]HD Cams - Male[/COLOR]', bu + 'hd-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]North American Cams - Male[/COLOR]', bu + 'north-american-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]South American Cams - Male[/COLOR]', bu + 'south-american-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Euro Russian Cams - Male[/COLOR]', bu + 'euro-russian-cams/male/?page=1', 'List', '', '')
@@ -100,7 +100,7 @@ def Main():
         site.add_dir('[COLOR hotpink]20 to 30 Cams - Transsexual[/COLOR]', bu + '20to30-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]30 to 50 Cams - Transsexual[/COLOR]', bu + '30to50-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Mature Cams (50+) - Transsexual[/COLOR]', bu + 'mature-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]HD Cams - Transsexual[/COLOR]', bu + 'hd-cams/trans/?page=1', 'List', '', '')
+        # site.add_dir('[COLOR hotpink]HD Cams - Transsexual[/COLOR]', bu + 'hd-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]North American Cams - Transsexual[/COLOR]', bu + 'north-american-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]South American Cams - Transsexual[/COLOR]', bu + 'south-american-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Euro Russian Cams - Transsexual[/COLOR]', bu + 'euro-russian-cams/trans/?page=1', 'List', '', '')
@@ -116,12 +116,14 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?<div[^>]+>([^<]+)</div>.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.+?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, status, name, age, subject, location, duration in match:
         name = utils.cleantext(name)
         age = age.replace('&nbsp;', '')
         subject = utils.cleantext(subject) + "[CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" + utils.cleantext(duration)
         status = utils.cleantext(status.replace("[CR]", ""))
+        if status:
+            status = status.split('>')[1].split('<')[0]
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
         videopage = bu[:-1] + videopage
         site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
