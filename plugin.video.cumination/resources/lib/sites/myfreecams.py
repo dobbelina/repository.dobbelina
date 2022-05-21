@@ -183,7 +183,8 @@ def myfreecam_start(url):
     CAMGIRLSERVER = 0
 
     try:
-        host = "ws://{0}.myfreecams.com:8080/fcsl".format(random.choice(MFC_SERVERS['CHATSERVERS']))
+        # host = "ws://{0}.myfreecams.com:8080/fcsl".format(random.choice(MFC_SERVERS['CHATSERVERS']))
+        host = "wss://{0}.myfreecams.com/fcsl".format(random.choice(MFC_SERVERS['CHATSERVERS']))
         ws = websocket.WebSocket()
         ws = websocket.create_connection(host)
         ws.send("hello fcserver\n\0")
