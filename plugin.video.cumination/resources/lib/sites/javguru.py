@@ -24,6 +24,12 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru/', 'https://cdn.javsts.com/wp-content/uploads/2018/12/logofinal6.png', 'javguru')
 
+enames = {'STREAM DD': 'DoodStream',
+          'STREAM FE': 'FEmbed',
+          'STREAM SB': 'StreamsB',
+          'STREAM ST': 'StreamTape',
+          'STREAM VO': 'Voe'}
+
 
 @site.register(default_mode=True)
 def Main():
@@ -87,11 +93,8 @@ def Play(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url)
     match = re.compile(r'data-localize="([^"]+)".+?">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(videohtml)
-    streams = {}
     if match:
-        for m in match:
-            (data, stream) = m
-            streams[stream] = data
+        streams = {enames.get(x[1]) or x[1]: x[0] for x in match}
     else:
         return
     vp.progress.update(50, "[CR]Loading video page[CR]")

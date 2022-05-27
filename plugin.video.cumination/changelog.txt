@@ -1,3 +1,5 @@
 [B]Version 1.1.43[/B]
 New sites from Porn TV Network:
 [asianpornmovies, asspoint, cartoonpornvideos, ghettotube, lesbianpornvideos, mobilepornmovies, movieshark, porntv, sexoasis, youngpornvideos]
+javguru - Show hoster names when selecting playback url
+javmoe - bug relating to missing hoster key

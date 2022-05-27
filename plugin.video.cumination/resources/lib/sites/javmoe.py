@@ -27,7 +27,7 @@ from resources.lib.adultsite import AdultSite
 site = AdultSite('javmoe', '[COLOR hotpink]JAV Moe[/COLOR]', 'https://javmama.me/', 'javmoe.png', 'javmoe')
 
 enames = {'FS': 'FileStar',
-          'sm': 'Streamango',
+          'sb': 'StreamSB',
           'fembed': 'FEmbed',
           'r': 'RapidVideo'}
 
@@ -119,7 +119,7 @@ def Playvid(url, name, download=None):
             embedurl = utils.getVideoLink(embedurl, url)
 
         if '//' in embedurl:
-            sources[enames[ename]] = embedurl
+            sources[enames.get(ename) or ename] = embedurl
     videourl = utils.selector('Select Hoster', sources)
     if not videourl:
         vp.progress.close()
