@@ -132,7 +132,7 @@ def Playvid(url, name, download=None):
         ptext = jsunpack.unpack(videohtml).replace('\\', '')
         ct = re.findall(r'"ct":"([^"]+)', ptext)[0]
         salt = codecs.decode(re.findall(r'"s":"([^"]+)', ptext)[0], 'hex')
-        pf = re.findall(r"null,\s*'([^']+)", ptext, re.S)[0]
+        pf = re.findall(r'''null,\s*['"]([^'"]+)''', ptext, re.S)[0]
         pf = re.compile(r"[a-zA-Z]{1,}").split(pf)
         passphrase = ''.join([chr(int(c)) for c in pf])
         passphrase = re.findall(r'var\s+pass\s*=\s*"([^"]+)', passphrase)[0]
@@ -142,7 +142,7 @@ def Playvid(url, name, download=None):
         frames = re.findall(r'sources:\s*(\[[^]]+\])', ctext)[0]
         frames = re.findall(r'file":"([^"]+)[^}]+label":"(\d+p)"', frames)
         t = int(time.time() * 1000)
-        sources = {qual: "{0}{1}&ref={2}&res={3}".format(source, t, site.url, qual) for source, qual in frames}
+        sources = {qual: "{0}{1}&res={2}".format(source, t, qual[:-1] if qual.endswith('p') else qual) for source, qual in frames}
         surl = utils.prefquality(sources)
         if surl:
             if surl.startswith('//'):
