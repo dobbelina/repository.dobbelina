@@ -1300,8 +1300,9 @@ class VideoPlayer():
         sdurl_world = re.compile(r'''.strdef\.world/([^"']+)''', re.DOTALL | re.IGNORECASE).findall(html)
         fcurl = re.compile(r'filecrypt\.cc/Container/([^\.]+)\.html', re.DOTALL | re.IGNORECASE).findall(html)
         shortixurl = re.compile(r'1155xmv\.com/\?u=(\w+)', re.DOTALL | re.IGNORECASE).findall(html)
+        klurl = re.compile(r'(https://www.keeplinks.org/[^/]+/[0-9a-fA-f]+)', re.DOTALL | re.IGNORECASE).findall(html)
         links = []
-        if sdurl or sdurl_world or fcurl or shortixurl:
+        if sdurl or sdurl_world or fcurl or shortixurl or klurl:
             self.progress.update(50, "[CR]{0}[CR]".format(i18n('fnd_sbsite')))
         if sdurl:
             links.extend(self._solve_streamdefence(sdurl, referrer_url, False))
@@ -1311,6 +1312,8 @@ class VideoPlayer():
             links.extend(self._solve_filecrypt(fcurl, referrer_url))
         elif shortixurl:
             links.extend(self._solve_shortix(shortixurl, referrer_url))
+        elif klurl:
+            links.extend(self._solve_keeplinks(klurl, referrer_url))
         return links
 
     @_cancellable
@@ -1356,6 +1359,18 @@ class VideoPlayer():
             shortixurl = 'https://1155xmv.com/?u=' + shortix
             shortixsrc = getHtml(shortixurl, url if url else shortixurl)
             sources.add(re.compile('src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(shortixsrc)[0])
+        return sources
+
+    @_cancellable
+    def _solve_keeplinks(self, klurls, url):
+        self.progress.update(55, "[CR]{0}[CR]".format(i18n('load_kl')))
+        sources = []
+        klurls = set(klurls)
+        for klurl in klurls:
+            headers = {'Cookie': 'flag[{0}]=1'.format(klurl.split('/')[-1])}
+            klsrc = getHtml(klurl, klurl, headers=headers)
+            srcs = re.compile('class="numlive.+?href="([^"\r]+)', re.DOTALL | re.IGNORECASE).findall(klsrc)
+            sources.extend(srcs)
         return sources
 
 

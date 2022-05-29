@@ -552,6 +552,10 @@ msgctxt "#30470"
 msgid "About"
 msgstr "Om"
 
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr "Läser in Keeplinks-webbplatser"
+
 msgctxt "#30500"
 msgid "Set content type"
 msgstr "Ställ in innehållstyp"

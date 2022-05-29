@@ -82,6 +82,7 @@ STRINGS = {
     'exit': 30468,
     'enter': 30469,
     'about': 30470,
+    'load_kl': 30471,
     'err_custom': 33001,
     'disable_custom': 33002,
     'sites': 33003,
