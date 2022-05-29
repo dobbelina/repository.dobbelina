@@ -97,12 +97,12 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     videohtml = utils.getHtml(url)
-    match = re.compile('iframe src="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
+    match = re.compile(r'iframe\s*src="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
     if match:
         iframeurl = match.group(1)
         if 'xtremestream' in iframeurl:
             iframehtml = utils.getHtml(iframeurl, url)
-            videoid = re.compile(r"""var video_id\s+=\s+[`'"]([^`'"]+)[`'"];\s+var m3u8_loader_url\s=\s[`'"]([^`'"]+)[`'"];""", re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
+            videoid = re.compile(r'''var\s*video_id\s*=\s*[`'"]([^`'"]+).+?var\s*m3u8_loader_url\s=\s[`'"]([^`'"]+)''', re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
             m3u8html = utils.getHtml(videoid[1] + videoid[0], iframeurl)
             links = re.compile(r"resolution=(\d+x\d+)\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
             links = {key: value for key, value in links}
