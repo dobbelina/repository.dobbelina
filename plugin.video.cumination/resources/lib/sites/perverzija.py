@@ -17,7 +17,6 @@
 '''
 
 import re
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -39,8 +38,6 @@ def List(url):
     listhtml = utils.getHtml(url)
     videos = listhtml.split('class="video-listing-filter"')[-1].split('<div class="item-thumbnail">')
     videos.pop(0)
-    # match = re.compile(r'<a href="([^"]+)">\s*?<img.*?src="([^"]+)".*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    # for videourl, img, name in match:
     for video in videos:
         videourl = re.compile(r'<a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)[0]
         name = re.compile(r'title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)[0]
@@ -48,11 +45,12 @@ def List(url):
         name = utils.cleantext(name)
         duration = re.compile(r'time_dur">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
         duration = duration[0] if duration else ''
-        site.add_download_link(name, videourl, 'Play', img, name, duration=duration)
+        site.add_download_link(name, videourl, 'Play', img, name, noDownload=True, duration=duration)
 
-    nextp = re.compile('next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    nextp = re.compile(r'label="Next\s*Page"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
-        site.add_dir('Next Page', nextp.group(1), 'List', site.img_next)
+        pgtxt = re.compile(r"class='pages'>([^<]+)", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        site.add_dir('Next Page... (Currently in {0})'.format(pgtxt), nextp.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -103,14 +101,20 @@ def Play(url, name, download=None):
     if match:
         iframeurl = match.group(1)
         if 'xtremestream' in iframeurl:
-            headers = {'Referer': iframeurl}
             iframehtml = utils.getHtml(iframeurl, url)
             videoid = re.compile(r"""var video_id\s+=\s+[`'"]([^`'"]+)[`'"];\s+var m3u8_loader_url\s=\s[`'"]([^`'"]+)[`'"];""", re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
-            # videourl = videoid[1] + videoid[0] + "|{0}".format(urllib_parse.urlencode(headers))
-
             m3u8html = utils.getHtml(videoid[1] + videoid[0], iframeurl)
-            videourl = re.compile("(https://[^\n]+)$", re.IGNORECASE | re.DOTALL).findall(m3u8html)[0]
-            videourl = "{0}|{1}".format(videourl, urllib_parse.urlencode(headers))
+            links = re.compile(r"resolution=(\d+x\d+)\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
+            links = {key: value for key, value in links}
+            videourl = utils.prefquality(links, sort_by=lambda x: int(x.split('x')[0]), reverse=True)
+            m3u8html = utils.getHtml(videourl, iframeurl)
+            myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.m3u8")
+            with open(myplaylist, 'w') as f:
+                f.write(m3u8html)
+            myparent = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-STREAM-INF:PROGRAM-ID=1\n{0}".format(myplaylist)
+            videourl = utils.TRANSLATEPATH("special://temp/myParent.m3u8")
+            with open(videourl, 'w') as f:
+                f.write(myparent)
             vp.play_from_direct_link(videourl)
         else:
             utils.notify('Oh oh', 'No other video hosts supported yet')

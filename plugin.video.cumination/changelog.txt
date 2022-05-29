@@ -5,3 +5,5 @@ javguru - Show hoster names when selecting playback url
 javmoe - bug relating to missing hoster key, fix playback errors on some videos
 pornkinox - fix playback
 freepornstreams - fix pagination, categories, search
+netflixporno - fix listing, categories
+perverzija - fix seek during playback

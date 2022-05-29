@@ -25,37 +25,41 @@ from resources.lib.decrypters.kvsplayer import kvs_decode
 
 progress = utils.progress
 
-site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https://netflixporno.net/', 'https://netflixporno.net/wp-content/uploads/2018/04/netflixporno-1.png', 'netflixporno')
+site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https://netflixporno.net/', 'https://netflixporno.net/scenes/wp-content/uploads/2021/04/netflixporno-1.png', 'netflixporno')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', 'https://netflixporno.net/search/', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]New Release[/COLOR]', 'https://netflixporno.net/genre/new-release/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]XXX Scenes[/COLOR]', 'https://netflixporno.net/genre/clips-scenes/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Parody Movies[/COLOR]', 'https://netflixporno.net/genre/parodies/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://netflixporno.net/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', 'https://netflixporno.net/', 'Studios', site.img_cat)
-    List('https://netflixporno.net/')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Full Movies[/COLOR]', site.url + 'adult', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Parody Movies[/COLOR]', site.url + 'adult/genre/parodies/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'adult/genre/parodies/', 'Studios', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'adult/genre/parodies/', 'Categories', site.img_cat)
+    List(site.url + 'scenes')
     utils.eod()
 
 
 @site.register()
 def List(url):
     try:
-        listhtml = utils.getHtml(url, '')
-    except:
-        return None
+        listhtml = utils.getHtml(url, site.url)
+    except urllib_error.URLError as e:
+        utils.notify(e)
+        return
+    if len(listhtml) == 0:
+        listhtml = 'Empty'
 
-    match = re.compile('<article[^>]+>.+?<a href="([^"]+)".*?src="([^"]+)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article[^>]+>.+?<a\s*href="([^"]+)".+?src="([^"]+)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, '')
 
-    nextp = re.compile('<a class="next page-numbers" href="(.+?)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    nextp = re.compile(r'<a\s*class="next page-numbers"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1).replace("&#038;", "&")
-        site.add_dir('Next Page', nextp, 'List', site.img_next)
+        currpg = re.compile(r'class="page-numbers\s*current">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        lastpg = re.compile(r'>([^<]+)</a>\s*<a\s*class="next\s*page', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpg, lastpg), nextp, 'List', site.img_next)
 
     utils.eod()
 
@@ -75,7 +79,7 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     try:
-        cathtml = utils.getHtml(url, '')
+        cathtml = utils.getHtml(url, site.url)
     except urllib_error.URLError as e:
         utils.notify(e)
         return
@@ -88,12 +92,12 @@ def Categories(url):
 @site.register()
 def Studios(url):
     try:
-        studhtml = utils.getHtml(url, '')
+        studhtml = utils.getHtml(url, site.url)
     except urllib_error.URLError as e:
         utils.notify(e)
         return
-    match = re.compile('menu-category-list"><a href="(.+?)">(.+?)</a>', re.DOTALL | re.IGNORECASE).findall(studhtml)
-    for studpage, name in match[2:]:
+    match = re.compile(r'director\s*menu-item.+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(studhtml)
+    for studpage, name in match:
         site.add_dir(name, studpage, 'List', site.img_cat)
     utils.eod()
 
@@ -112,15 +116,15 @@ def url_decode(str):
 @site.register()
 def Playvid(url, name, download=None):
     links = {}
+    videourl = None
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
-        html = utils.getHtml(url)
+        html = utils.getHtml(url, site.url)
     except urllib_error.URLError as e:
         utils.notify(e)
         return
-    # html = re.compile('<center><!-- Display player -->(.+?)<center>', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    srcs = re.compile('<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    srcs = re.compile(r'<a\s*title="([^"]+)"\s*href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for title, src in srcs:
         title = utils.cleantext(title)
         title = title.split(' on ')[-1]
@@ -144,9 +148,11 @@ def Playvid(url, name, download=None):
                 links[title] = murl
         elif vp.resolveurl.HostedMediaFile(src).valid_url():
             links[title] = src
-    videourl = utils.selector('Select server', links, setting_valid=False)
+    if links:
+        videourl = utils.selector('Select server', links, setting_valid=False)
     if not videourl:
         vp.progress.close()
+        utils.notify('Oh Oh', 'No Playable Videos found')
         return
     vp.progress.update(90, "[CR]Loading video page[CR]")
     if 'mango' in videourl:
