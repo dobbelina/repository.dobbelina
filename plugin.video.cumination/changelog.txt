@@ -1,3 +1,4 @@
 [B]Version 1.1.44[/B]
 utils - fix prefquality function
 perverzija - Add progress indicators and fix quality select
+thepornfull - fix listing & categories
