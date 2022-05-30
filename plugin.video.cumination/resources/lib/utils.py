@@ -1151,34 +1151,34 @@ def selector(dialog_name, select_from, setting_valid=False, sort_by=None, revers
 
 def prefquality(video_list, sort_by=None, reverse=False):
     maxquality = int(addon.getSetting('qualityask'))
-
     if maxquality == 4:
         return selector(i18n('pick_qual'), video_list, sort_by=sort_by, reverse=reverse)
 
+    vidurl = None
     if isinstance(video_list, dict):
-        for key, _ in list(video_list.items()):
+        qualities = [2160, 1080, 720, 576]
+        quality = qualities[maxquality]
+        for key in video_list.keys():
             if key.lower() == '4k':
                 video_list['2160'] = video_list[key]
-                del video_list[key]
+                video_list.pop(key)
 
-        video_list = {int(''.join([y for y in key if y.isdigit()])): value for key, value in list(video_list.items())}
+        video_list = [(int(''.join([y for y in key if y.isdigit()])), value) for key, value in list(video_list.items())]
+        video_list = sorted(video_list, reverse=True)
 
-        if maxquality == 1:
-            video_list = {key: value for key, value in list(video_list.items()) if key <= 1080}
-        elif maxquality == 2:
-            video_list = {key: value for key, value in list(video_list.items()) if key <= 720}
-        elif maxquality == 3:
-            video_list = {key: value for key, value in list(video_list.items()) if key < 720}
-
-        keys = sorted(list(video_list.keys()), key=lambda x: x, reverse=reverse)
-        values = [video_list[x] for x in keys]
+        for video in video_list:
+            if quality >= video[0]:
+                vidurl = video[1]
+                break
+        if not vidurl:
+            vidurl = video_list[-1][1]
     else:
         keys = sorted(video_list, key=sort_by, reverse=reverse)
-        values = None
-    if not keys:
-        return None
+        if not keys:
+            return None
+        vidurl = keys[0]
 
-    return values[0] if values else keys[0]
+    return vidurl
 
 
 class VideoPlayer():

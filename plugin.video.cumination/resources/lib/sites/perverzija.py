@@ -101,12 +101,15 @@ def Play(url, name, download=None):
     if match:
         iframeurl = match.group(1)
         if 'xtremestream' in iframeurl:
+            vp.progress.update(25, "[CR]Loading video page[CR]")
             iframehtml = utils.getHtml(iframeurl, url)
             videoid = re.compile(r'''var\s*video_id\s*=\s*[`'"]([^`'"]+).+?var\s*m3u8_loader_url\s=\s[`'"]([^`'"]+)''', re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
+            vp.progress.update(50, "[CR]Looking for qualities[CR]")
             m3u8html = utils.getHtml(videoid[1] + videoid[0], iframeurl)
-            links = re.compile(r"resolution=(\d+x\d+)\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
+            links = re.compile(r"resolution=\d+x(\d+)\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
             links = {key: value for key, value in links}
-            videourl = utils.prefquality(links, sort_by=lambda x: int(x.split('x')[0]), reverse=True)
+            videourl = utils.prefquality(links, sort_by=lambda x: int(x), reverse=True)
+            vp.progress.update(75, "[CR]Loading selected quality[CR]")
             m3u8html = utils.getHtml(videourl, iframeurl)
             myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.m3u8")
             with open(myplaylist, 'w') as f:
