@@ -134,9 +134,16 @@ def Playvid(url, name, download=None):
             html = utils.getHtml(url1, iframeurl, headers=hdr)
             match = re.compile(r'#EXT.+?RESOLUTION=(\d+x\d+)\s*([^#]+)', re.IGNORECASE | re.DOTALL).findall(html)
             if match:
-                links = {}
-                for key, value in match:
-                    links[key] = value.strip()
-            videourl = utils.prefquality(links, sort_by=lambda x: int(x.split('x')[0]), reverse=True)
-            if videourl:
-                vp.play_from_direct_link(videourl + '|Referer=' + iframeurl)
+                links = {m[0]: m[1].strip() for m in match}
+                videourl = utils.prefquality(links, sort_by=lambda x: int(x.split('x')[0]), reverse=True)
+                if videourl:
+                    vp.progress.update(75, "[CR]Loading selected quality[CR]")
+                    m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
+                    myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.m3u8")
+                    with open(myplaylist, 'w') as f:
+                        f.write(m3u8html)
+                    myparent = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-STREAM-INF:PROGRAM-ID=1\n{0}".format(myplaylist)
+                    videourl = utils.TRANSLATEPATH("special://temp/myParent.m3u8")
+                    with open(videourl, 'w') as f:
+                        f.write(myparent)
+                    vp.play_from_direct_link(videourl)
