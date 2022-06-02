@@ -132,10 +132,10 @@ def Playvid(url, name, download=None):
             hdr = dict(utils.base_hdrs)
             hdr['Accept'] = '*/*'
             html = utils.getHtml(url1, iframeurl, headers=hdr)
-            match = re.compile(r'#EXT.+?RESOLUTION=(\d+x\d+)\s*([^#]+)', re.IGNORECASE | re.DOTALL).findall(html)
+            match = re.compile(r'#EXT.+?RESOLUTION=\d+x(\d+)\s*([^#]+)', re.IGNORECASE | re.DOTALL).findall(html)
             if match:
                 links = {m[0]: m[1].strip() for m in match}
-                videourl = utils.prefquality(links, sort_by=lambda x: int(x.split('x')[0]), reverse=True)
+                videourl = utils.prefquality(links, sort_by=lambda x: int(x), reverse=True)
                 if videourl:
                     vp.progress.update(75, "[CR]Loading selected quality[CR]")
                     m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
