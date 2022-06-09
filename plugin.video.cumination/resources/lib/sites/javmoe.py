@@ -46,16 +46,19 @@ def List(url):
     items = 0
     while items < 36 and url:
         try:
-            listhtml = utils.getHtml(url, '')
+            listhtml = utils.getHtml(url, site.url)
         except:
             return None
-        match = re.compile(r'class="epshen".+?href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        for videopage, img, name in match:
-            name = utils.cleantext(name)
-            img = urllib_parse.quote(img, safe=':/')
-            videopage = urllib_parse.quote(videopage, safe=':/')
-            site.add_download_link(name, videopage, 'Playvid', img, name)
-            items += 1
+        divs = re.compile(r'<div\s*class="epshen">(.+?</h2></div>)</div>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        for div in divs:
+            match = re.compile(r'href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).search(div)
+            if match:
+                videopage, img, name = match.groups()
+                name = utils.cleantext(name)
+                img = urllib_parse.quote(img, safe=':/')
+                videopage = urllib_parse.quote(videopage, safe=':/')
+                site.add_download_link(name, videopage, 'Playvid', img, name)
+                items += 1
         try:
             url = re.compile(r'class="next\s*page-numbers"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         except:
@@ -110,20 +113,19 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, site.url)
 
     eurls = re.compile(r'<li><a\s*href="([^"]+)"\s*>\s*([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
-    sources = {}
-    for eurl, ename in eurls:
-        if eurl != '?server=1':
-            videopage = utils.getHtml(url + eurl, '')
-        embedurl = re.compile('<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-        if 'filestar.club' in embedurl:
-            embedurl = utils.getVideoLink(embedurl, url)
-
-        if '//' in embedurl:
-            sources[enames.get(ename) or ename] = embedurl
-    videourl = utils.selector('Select Hoster', sources)
-    if not videourl:
+    sources = {enames.get(ename): eurl for eurl, ename in eurls}
+    eurl = utils.selector('Select Hoster', sources)
+    if not eurl:
         vp.progress.close()
         return
+
+    vp.progress.update(50, "[CR]Loading embed page[CR]")
+    if eurl != '?server=1':
+        videopage = utils.getHtml(url + eurl, site.url)
+    videourl = re.compile('<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    if 'filestar.club' in videourl:
+        videourl = utils.getVideoLink(videourl, url)
+
     if 'gdriveplayer.to' in videourl:
         videourl = videourl.split('data=')[-1]
         while '%' in videourl:
@@ -144,6 +146,7 @@ def Playvid(url, name, download=None):
         t = int(time.time() * 1000)
         sources = {qual: "{0}{1}&res={2}".format(source, t, qual[:-1] if qual.endswith('p') else qual) for source, qual in frames}
         surl = utils.prefquality(sources)
+        vp.progress.update(75, "[CR]Processed embed page[CR]")
         if surl:
             if surl.startswith('//'):
                 surl = 'https:' + surl
@@ -155,6 +158,7 @@ def Playvid(url, name, download=None):
             videourl = 'https:' + videourl
         epage = utils.getHtml(videourl, url)
         s = re.findall(r'file":"(?P<url>[^"]+)","label":"(?P<label>[^"]+)', epage)
+        vp.progress.update(75, "[CR]Processed embed page[CR]")
         if s:
             sources = {qual: source.replace('\\/', '/') for source, qual in s}
             surl = utils.prefquality(sources)
@@ -166,4 +170,5 @@ def Playvid(url, name, download=None):
             utils.notify('Oh oh', 'No video found')
             return
     else:
+        vp.progress.update(75, "[CR]Processed embed page[CR]")
         vp.play_from_link_to_resolve(videourl)
