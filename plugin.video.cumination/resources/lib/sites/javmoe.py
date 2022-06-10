@@ -144,14 +144,27 @@ def Playvid(url, name, download=None):
         frames = re.findall(r'sources:\s*(\[[^]]+\])', ctext)[0]
         frames = re.findall(r'file":"([^"]+)[^}]+label":"(\d+p)"', frames)
         t = int(time.time() * 1000)
-        sources = {qual: "{0}{1}&res={2}".format(source, t, qual[:-1] if qual.endswith('p') else qual) for source, qual in frames}
+        sources = {qual: "{0}{1}&ref={2}&res={3}".format(source, t, site.url, qual[:-1] if qual.endswith('p') else qual) for source, qual in frames}
         surl = utils.prefquality(sources)
+        source = surl.split('&t=')[0]
+        qual = surl.split('=')[-1]
         vp.progress.update(75, "[CR]Processed embed page[CR]")
         if surl:
             if surl.startswith('//'):
                 surl = 'https:' + surl
-            vp.play_from_direct_link(surl)
+            attempt = 1
+            while 'redirect' in surl:
+                surl = utils.getVideoLink(surl, headers={'Range': 'bytes=0-'})
+                if 'server' not in surl:
+                    attempt += 1
+                    t = int(time.time() * 1000)
+                    surl = "{0}&t={1}&ref={2}%26play_error_file%3Dyes&try={3}&res={4}".format(source, t, site.url, attempt, qual)
+                elif 'redirector.' in surl:
+                    surl = ''
+            if surl:
+                vp.play_from_direct_link(surl)
         vp.progress.close()
+        utils.notify('Oh oh', 'No video found')
         return
     elif 'motonews' in videourl:
         if videourl.startswith('//'):

@@ -137,7 +137,7 @@ def Playvid(url, name, download=None):
     for item in match:
         vp.progress.update(30, "[CR]Loading video page[CR]")
         if 'javhoho.com' in item:
-            item = utils.getVideoLink(item, site.url, get_method=None)
+            item = utils.getVideoLink(item, site.url)
         # if 'hxdrive.xyz' in item:
         #     if '/embed/' not in item:
         #         item = item.replace('hxdrive.xyz/', 'hxdrive.xyz/embed/')

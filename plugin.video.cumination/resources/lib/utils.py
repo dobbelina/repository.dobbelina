@@ -118,6 +118,11 @@ class StopDownloading(Exception):
         return repr(self.value)
 
 
+class NoRedirection(urllib_request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def downloadVideo(url, name):
 
     def _pbhook(downloaded, filesize, url=None, dp=None, name=''):
@@ -400,7 +405,7 @@ def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='retu
 
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
-    url = urllib_parse.quote(url, ':/%?&=')
+    url = urllib_parse.quote(url, r':/%?+&=')
 
     if data:
         if type(data) != str:
@@ -697,18 +702,26 @@ def _getHtml2(url):
     return data
 
 
-def getVideoLink(url, referer='', headers=None, data=None, get_method='HEAD'):
+def getVideoLink(url, referer='', headers=None, data=None):
     if not headers:
         headers = base_hdrs
 
-    req2 = Request(url, data, headers)
+    if 'User-Agent' not in headers:
+        headers.update({'User-Agent': base_hdrs.get('User-Agent')})
+
+    req2 = Request(url, data=data, headers=headers)
+
     if referer:
         req2.add_header('Referer', referer)
-    if get_method:
-        req2.get_method = lambda: get_method
-    resp = urlopen(req2)
-    url2 = resp.url
-    return url2
+
+    opener = urllib_request.build_opener(NoRedirection())
+
+    try:
+        response = opener.open(req2, timeout=30)
+    except urllib_error.HTTPError as e:
+        response = e
+
+    return response.headers.get('location') or url
 
 
 def parse_query(query):
