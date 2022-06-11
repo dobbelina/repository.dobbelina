@@ -92,6 +92,9 @@ def thepornfull_play(url, name, download=None):
     match = re.compile('iframe src="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
     if match:
         iframeurl = match.group(1)
+        if 'xvideos.com' in iframeurl:
+            vp.play_from_link_to_resolve(iframeurl)
+            return
         headers = {'referer': iframeurl}
         iframehtml = utils.getHtml(iframeurl, url)
         iframefile = re.compile('file: "([^"]+)', re.IGNORECASE | re.DOTALL).search(iframehtml)

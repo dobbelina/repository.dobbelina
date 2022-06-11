@@ -41,8 +41,8 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="item\s.+?href="([^"]+).+?name">([^<]+).+?src=.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, name, img in match:
+    match = re.compile(r'class="item\s.+?href="([^"]+).+?src="([^"]+).+?name">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name in match:
         name = utils.cleantext(name)
         img = site.url[:-1] + img
         videopage = site.url[:-1] + videopage
@@ -86,14 +86,14 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, site.url)
     videojson = re.compile("videoList = ([^;]+)", re.IGNORECASE | re.DOTALL).findall(videopage)[0]
     videodict = json.loads(videojson)
-    
+
     videos = []
     for i, j in enumerate(videodict):
         videourl = videodict[i]['sources'][0]['src']
         part = 'Part {}'.format(i + 1)
         videos.append((videourl, part))
-    
-    #if len(videos) < 1:
+
+    # if len(videos) < 1:
     #    videos = re.compile(r'<source[^\n]+src="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
 
     if not playall:

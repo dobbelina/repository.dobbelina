@@ -1,3 +1,5 @@
 [B]Version 1.1.45[/B]
 
 javmoe - fix bug in listing
+paradisehill - fix bug in listing
+thepornfull - fix playback
