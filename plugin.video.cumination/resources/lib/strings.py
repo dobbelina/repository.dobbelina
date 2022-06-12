@@ -94,5 +94,6 @@ STRINGS = {
     'custom_msg': 33009,
     'list_custom': 33010,
     'clear_cache': 33011,
-    'cache_cleared': 33012
+    'cache_cleared': 33012,
+    'cookies_cleared': 33013
 }

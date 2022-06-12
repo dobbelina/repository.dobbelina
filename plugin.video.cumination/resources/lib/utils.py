@@ -84,6 +84,14 @@ def clear_cache():
     xbmcgui.Dialog().notification('Cumination', msg, cuminationicon, 3000, False)
 
 
+@url_dispatcher.register()
+def clear_cookies():
+    msg = i18n('cookies_cleared')
+    cj.clear()
+    cj.save(cookiePath, ignore_discard=True)
+    xbmcgui.Dialog().notification('Cumination', msg, cuminationicon, 3000, False)
+
+
 def i18n(string_id):
     try:
         return six.ensure_str(addon.getLocalizedString(strings.STRINGS[string_id]))

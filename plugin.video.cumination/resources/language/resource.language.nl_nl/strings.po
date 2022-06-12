@@ -112,6 +112,14 @@ msgctxt "#30030"
 msgid "Time to cache in hours"
 msgstr "Tijd om te cachen in uren"
 
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookies"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Verwijder alle cookies"
+
 msgctxt "#30051"
 msgid "General"
 msgstr "Algemeen"
@@ -615,3 +623,7 @@ msgstr "Wis lokale cache"
 msgctxt "#33012"
 msgid "Cached Data has been cleared"
 msgstr "Gegevens in cache zijn gewist"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Alle cookies zijn gewist"

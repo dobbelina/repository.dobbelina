@@ -112,6 +112,14 @@ msgctxt "#30030"
 msgid "Time to cache in hours"
 msgstr "Dags att cache i timmar"
 
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookies"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Radera alla cookies"
+
 msgctxt "#30051"
 msgid "General"
 msgstr "Allmänt"
@@ -615,3 +623,7 @@ msgstr "Rensa lokal cache"
 msgctxt "#33012"
 msgid "Cached Data has been cleared"
 msgstr "Cachad data har rensats"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Alla cookies har raderats"

@@ -70,7 +70,7 @@ def List(url):
         name = utils.cleantext(name)
         site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, contextm=cm_filter, duration=duration, quality=hd)
 
-    nextp = re.compile(r'<li\s*class="page_next"><a\s*href="([^"]+)"\s*class="orangeButton">Next', re.DOTALL).search(listhtml)
+    nextp = re.compile(r'<li\s*class="page_next"><a\s*href="([^"]+)"', re.DOTALL).search(listhtml)
     if nextp:
         np = re.compile(r'page=(\d+)').search(nextp.group(1))
         if np:

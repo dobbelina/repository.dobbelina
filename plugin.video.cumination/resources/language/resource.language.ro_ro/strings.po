@@ -112,6 +112,14 @@ msgctxt "#30030"
 msgid "Time to cache in hours"
 msgstr "Timpul de stocare în cache în ore"
 
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookie-uri"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Șterge toate cookie-urile"
+
 msgctxt "#30051"
 msgid "General"
 msgstr "General"
@@ -583,3 +591,7 @@ msgstr "Ștergeți memoria cache locală"
 msgctxt "#33012"
 msgid "Cached Data has been cleared"
 msgstr "Datele memorate în cache au fost șterse"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Toate cookie-urile au fost șterse"

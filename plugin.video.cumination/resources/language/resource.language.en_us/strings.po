@@ -112,6 +112,14 @@ msgctxt "#30030"
 msgid "Time to cache in hours"
 msgstr ""
 
+msgctxt "#30031"
+msgid "Cookies"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr ""
+
 msgctxt "#30051"
 msgid "General"
 msgstr ""
@@ -614,4 +622,8 @@ msgstr ""
 
 msgctxt "#33012"
 msgid "Cached Data has been cleared"
+msgstr ""
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
 msgstr ""
