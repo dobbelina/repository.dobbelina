@@ -1,7 +1,3 @@
-[B]Version 1.1.45[/B]
-javmoe - fix bug in listing
-paradisehill - fix bug in listing
-thepornfull - fix playback
-mrskin - new site. Access only to free stuff
-settings - delete cookies
-pornhub - fix next page
+[B]Version 1.1.46[/B]
+aagmaal - domain changed
+aagmaalpro - fix thumbnails

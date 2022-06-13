@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="recent-item".+?data-src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         if '</span>' in name:
             name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
@@ -62,7 +62,7 @@ def List2(url):
     purl = re.compile(r'''class="pagination.+?class="current.+?href="([^"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if purl:
         pgtxt = 'Currently in {0}'.format(re.findall(r'class="pages">([^<]+)', listhtml)[0])
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), purl.group(1), 'List2', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), purl.group(1), 'List2', site.img_next)
     utils.eod()
 
 
@@ -85,6 +85,10 @@ def Playvid(url, name, download=None):
         r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
         if r:
             videourl = r.group(1)
+        else:
+            r = re.search(r'<iframe.+?src="(http[^"]+)', videopage)
+            if r:
+                videourl = r.group(1)
 
     if not videourl:
         utils.notify('Oh Oh', 'No Videos found')
