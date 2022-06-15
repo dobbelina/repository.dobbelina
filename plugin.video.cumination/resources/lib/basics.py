@@ -26,7 +26,13 @@ aboutDir = os.path.join(resDir, 'about')
 profileDir = addon.getAddonInfo('profile')
 profileDir = TRANSLATEPATH(profileDir)
 cookiePath = os.path.join(profileDir, 'cookies.lwp')
-favoritesdb = os.path.join(profileDir, 'favorites.db')
+if addon.getSetting('custom_favorites') == 'true':
+    fav_path = addon.getSetting('favorites_path')
+    if fav_path == '':
+        fav_path = profileDir
+    favoritesdb = os.path.join(fav_path, 'favorites.db')
+else:
+    favoritesdb = os.path.join(profileDir, 'favorites.db')
 customSitesDir = os.path.join(profileDir, 'custom_sites')
 tempDir = os.path.join(profileDir, 'temp')
 

@@ -221,15 +221,15 @@ msgid "Compress backup files"
 msgstr "Komprimera säkerhetskopieringsfiler"
 
 msgctxt "#30201"
-msgid "Backup favorites"
+msgid "Backup favourites"
 msgstr "Backup-favoriter"
 
 msgctxt "#30202"
-msgid "Restore favorites"
+msgid "Restore favourites"
 msgstr "Återställ favoriter"
 
 msgctxt "#30203"
-msgid "Clear favorites"
+msgid "Clear favourites"
 msgstr "Rensa favoriter"
 
 msgctxt "#30211"
@@ -243,6 +243,14 @@ msgstr "Återställ nyckelord"
 msgctxt "#30213"
 msgid "Clear keywords"
 msgstr "Rensa nyckelord"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Använd anpassad mapp för favoriter"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Favoritplats"
 
 msgctxt "#30301"
 msgid "Enable custom sites"

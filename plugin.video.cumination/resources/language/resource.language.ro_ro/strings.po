@@ -221,15 +221,15 @@ msgid "Compress backup files"
 msgstr "Comprimă fișiere de rezervă"
 
 msgctxt "#30201"
-msgid "Backup favorites"
+msgid "Backup favourites"
 msgstr "Salveaza favoritele"
 
 msgctxt "#30202"
-msgid "Restore favorites"
+msgid "Restore favourites"
 msgstr "Restabileste favoritele"
 
 msgctxt "#30203"
-msgid "Clear favorites"
+msgid "Clear favourites"
 msgstr "Sterge favoritele"
 
 msgctxt "#30211"
@@ -243,6 +243,14 @@ msgstr "Restaureaza cuvintele cheie"
 msgctxt "#30213"
 msgid "Clear keywords"
 msgstr "Sterge cuvintele cheie"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Utilizați folderul personalizat pentru Favorite"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Locația preferată"
 
 msgctxt "#30301"
 msgid "Enable custom sites"

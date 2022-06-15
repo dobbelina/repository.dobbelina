@@ -221,15 +221,15 @@ msgid "Compress backup files"
 msgstr ""
 
 msgctxt "#30201"
-msgid "Backup favorites"
+msgid "Backup favourites"
 msgstr ""
 
 msgctxt "#30202"
-msgid "Restore favorites"
+msgid "Restore favourites"
 msgstr ""
 
 msgctxt "#30203"
-msgid "Clear favorites"
+msgid "Clear favourites"
 msgstr ""
 
 msgctxt "#30211"
@@ -242,6 +242,14 @@ msgstr ""
 
 msgctxt "#30213"
 msgid "Clear keywords"
+msgstr ""
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr ""
+
+msgctxt "#30215"
+msgid "Favourites location"
 msgstr ""
 
 msgctxt "#30301"

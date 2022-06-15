@@ -221,15 +221,15 @@ msgid "Compress backup files"
 msgstr "Back-upbestanden comprimeren"
 
 msgctxt "#30201"
-msgid "Backup favorites"
+msgid "Backup favourites"
 msgstr "Back-up favorieten"
 
 msgctxt "#30202"
-msgid "Restore favorites"
+msgid "Restore favourites"
 msgstr "Favorieten herstellen"
 
 msgctxt "#30203"
-msgid "Clear favorites"
+msgid "Clear favourites"
 msgstr "Wis favorieten"
 
 msgctxt "#30211"
@@ -243,6 +243,14 @@ msgstr "Sleutelwoorden herstellen"
 msgctxt "#30213"
 msgid "Clear keywords"
 msgstr "Trefwoorden wissen"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Aangepaste map gebruiken voor favorieten"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Favorieten locatie"
 
 msgctxt "#30301"
 msgid "Enable custom sites"
