@@ -31,7 +31,7 @@ url_dispatcher = URL_Dispatcher('favorites')
 
 dialog = utils.dialog
 favoritesdb = basics.favoritesdb
-orders = {'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
+orders = {'random': 'RANDOM()', 'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
 
 conn = sqlite3.connect(favoritesdb)
 c = conn.cursor()
