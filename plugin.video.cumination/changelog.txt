@@ -1,3 +1,4 @@
 [B]Version 1.1.46[/B]
 aagmaal - domain changed
 aagmaalpro - fix thumbnails
+playvids - new site
