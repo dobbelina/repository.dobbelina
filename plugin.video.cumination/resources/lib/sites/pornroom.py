@@ -21,7 +21,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('pornroom', '[COLOR hotpink]Pornroom[/COLOR]', 'https://pornroom.club/', 'pornroom.jpg', 'pornroom')
+site = AdultSite('pornroom', '[COLOR hotpink]ThePornRoom[/COLOR]', 'https://thepornroom.com/', 'pornroom.jpg', 'pornroom')
 
 
 @site.register(default_mode=True)

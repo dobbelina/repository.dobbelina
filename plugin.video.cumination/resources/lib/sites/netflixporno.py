@@ -30,12 +30,12 @@ site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https:/
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Full Movies[/COLOR]', site.url + 'adult', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]XXX Scenes[/COLOR]', site.url + 'scenes/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Parody Movies[/COLOR]', site.url + 'adult/genre/parodies/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'adult/genre/parodies/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'adult/genre/parodies/', 'Categories', site.img_cat)
-    List(site.url + 'scenes')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    List(site.url + 'adult/?v_sortby=views&v_orderby=desc')
     utils.eod()
 
 
@@ -49,7 +49,7 @@ def List(url):
     if len(listhtml) == 0:
         listhtml = 'Empty'
 
-    match = re.compile(r'<article[^>]+>.+?<a\s*href="([^"]+)".+?src="([^"]+)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article class.+?href="([^"]+)".+?(?:data-lazy-src=|\ssrc=)"([^"]+jpg)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, '')
@@ -72,7 +72,6 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
-        utils.kodilog("NetFlixPorno Searching URL: " + searchUrl)
         List(searchUrl)
 
 
