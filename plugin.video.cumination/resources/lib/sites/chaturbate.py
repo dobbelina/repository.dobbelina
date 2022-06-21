@@ -41,7 +41,7 @@ def Main():
     trans = True if addon.getSetting("chattrans") == "true" else False
 
     site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('[COLOR hotpink]Look for Model[/COLOR]', bu, 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', bu + '?keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
@@ -116,7 +116,7 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.+?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?cams">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.+?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?time">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, status, name, age, subject, location, duration in match:
         name = utils.cleantext(name)
         age = age.replace('&nbsp;', '')
@@ -202,13 +202,12 @@ def Playvid(url, name):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = urllib_parse.quote_plus(keyword)
-        searchUrl = searchUrl + title + '/'
-        Playvid(searchUrl, title)
+        url += title
+        List(url)
 
 
 @site.register()
