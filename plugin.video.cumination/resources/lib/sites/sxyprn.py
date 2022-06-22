@@ -192,6 +192,8 @@ def Playvid(url, name, download=None):
 
     if '/cdn8/' in videourl:
         videourl = utils.getVideoLink(videourl)
+        if videourl.startswith('//'):
+            videourl = 'https:' + videourl
         vp.play_from_direct_link(videourl)
     else:
         vp.play_from_link_to_resolve(videourl)

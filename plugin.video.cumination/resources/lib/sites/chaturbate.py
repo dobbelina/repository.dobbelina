@@ -116,11 +116,13 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.+?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?time">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, status, name, age, subject, location, duration in match:
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, status, name, age, subject, location, duration, viewers in match:
         name = utils.cleantext(name)
         age = age.replace('&nbsp;', '')
-        subject = utils.cleantext(subject) + "[CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" + utils.cleantext(duration)
+        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" \
+            + "[COLOR deeppink]Duration: [/COLOR]" + utils.cleantext(duration) + "[CR]" \
+            + "[COLOR deeppink]Watching: [/COLOR]" + utils.cleantext(viewers)
         status = utils.cleantext(status.replace("[CR]", ""))
         if status:
             status = status.split('>')[1].split('<')[0]
@@ -215,9 +217,9 @@ def topCams(url):
     response = utils._getHtml(url)
     jsonTop = json.loads(response)['top']
     for iTop in jsonTop:
-        subject = 'Name: ' + iTop['room_user'] + '\n'
-        subject = subject + 'Points: ' + str(iTop['points']) + '\n'
-        subject = subject + 'Watching: ' + str(iTop['viewers'])
+        subject = '[COLOR deeppink]Name: [/COLOR]' + iTop['room_user'] + '[CR]' \
+            + '[CR][COLOR deeppink]Duration: [/COLOR]' + str(iTop['points']) + '[CR]' \
+            + '[COLOR deeppink]Watching: [/COLOR]' + str(iTop['viewers'])
         site.add_download_link(iTop['room_user'], bu + iTop['room_user'] + '/', 'Playvid',
                                iTop['image_url'], subject, noDownload=True)
     utils.eod()
