@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?data-src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         if '</span>' in name:
             name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
@@ -46,7 +46,7 @@ def List(url):
     url = re.compile(r'''class="pagination.+?class="current.+?href=['"]?([^\s'"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:
         pgtxt = 'Currently in {0}'.format(re.findall(r'class="pages">([^<]+)', listhtml)[0])
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), url.group(1), 'List', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), url.group(1), 'List', site.img_next)
     utils.eod()
 
 
