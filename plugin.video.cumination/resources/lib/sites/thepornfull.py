@@ -28,7 +28,7 @@ site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://t
 
 @site.register(default_mode=True)
 def thepornfull_main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categorias/', 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categorias/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'thepornfull_search', site.img_search)
     thepornfull_list(site.url + '?order=recent')
 
@@ -41,12 +41,12 @@ def thepornfull_list(url):
         utils.eod()
         return
 
-    match = re.compile(r'class="video-thumb".*?href="([^"]+)"\s*title="([^"]+).*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="thumb-block.*?href="([^"]+)"\s*title="([^"]+).*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img in match:
         name = utils.cleantext(name)
         site.add_download_link(name, video, 'thepornfull_play', img, name)
 
-    utils.next_page(site, 'thepornfull.thepornfull_list', listhtml, r'href="([^"]+)">Next<', r'page/(\d+)/[^>]*>Next<', re_lpnr=r'>(\d+)\D+class="next"', contextm='thepornfull.GotoPage')
+    utils.next_page(site, 'thepornfull.thepornfull_list', listhtml, r'href="([^"]+)">Next<', r'page/(\d+)/[^>]*>Next<', re_lpnr=r"page/(\d+)/[^']*'>Last<", contextm='thepornfull.GotoPage')
     utils.eod()
 
 

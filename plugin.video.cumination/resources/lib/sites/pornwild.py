@@ -19,6 +19,7 @@
 import re
 from six.moves import urllib_parse
 import xbmcplugin
+import xbmcgui
 import xbmc
 from random import randint
 from resources.lib import utils
@@ -112,8 +113,24 @@ def List(url, page=1):
         else:
             nurl = url.replace('/{}/'.format(page), '/{}/'.format(npage)) if '/{}/'.format(page) in url else '{}{}/'.format(url, npage)
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
+        cm_page = (utils.addon_sys + "?mode=pornwild.GotoPage&list_mode=pornwild.List&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + lastp.replace('/', ''))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage, contextm=cm)
     utils.eod()
+
+
+@site.register()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        if url.endswith('/{}/'.format(np)):
+            url = '/{}/'.format(pg).join(url.rsplit('/{}/'.format(np), 1))
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -130,7 +147,8 @@ def Playvid(url, name, download=None):
     patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
                 r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
                 r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
+                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)",
+                r"video_url:\s*'([^']+)',\s*postfix:\s*'_([^']*)\.mp4',"]
     for pattern in patterns:
         items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
         for surl, qual in items:
