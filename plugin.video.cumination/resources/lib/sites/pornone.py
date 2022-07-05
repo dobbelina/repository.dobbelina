@@ -34,16 +34,16 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, '')
-    match = re.compile(r'class="video">.+?href="([^"]+)".+?"time">([^<]+).+?class="hd([^<]+)</span>.+?src="([^"]+)"\s*alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*portrait.+?py-\[2px[^>]+>([^<]+)</span>(.*?)</span>\s*<img\s*src="([^"]+).+?normal\s*">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, duration, hd, img, name in match:
         name = utils.cleantext(name)
-        hd = 'HD' if hd.find('is-hd') > 0 else ''
+        hd = 'HD' if hd.find('HD Video') > 0 else ''
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
-    np = re.compile('<link rel="next" href="(.+?)">').search(listhtml)
+    np = re.compile(r'<a\s*href="([^"]+)"\s*title="Next\s*Page"').search(listhtml)
     if np:
-        site.add_dir('Next Page', np.group(1), 'List', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np.group(1).split('/')[-2]), np.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -65,17 +65,12 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    cat_block = re.compile(r'class="heading-1">All(.+?)</div>\s*</div>\s*</div>', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
-    match = re.compile(r'<a\s*href="([^"]+)".+?src="([^"]+).+?title">([^<]+).+?videos">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cat_block)
-    for cat, image, name, videos in match[1:]:
-        name = "{0} [COLOR deeppink]{1} Videos[/COLOR]".format(utils.cleantext(name), videos)
-        catpage = site.url[:-1] + cat
-        site.add_dir(name, catpage, 'List', image)
-
-    np = re.compile(r'class="next\s*".+?href="([^"]+)').search(cathtml)
-    if np:
-        site.add_dir('Next Page', np.group(1), 'Categories', site.img_next)
-    utils.eod()
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="relative[^>]+>\s*<img.*?data-src="([^"]+)[^>]+>\s*<p[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, image, name in match:
+        name = utils.cleantext(name)
+        if image.startswith('/'):
+            image = site.url[:-1] + image
+        site.add_dir(name, site.url[:-1] + catpage, 'List', image)
     utils.eod()
 
 
@@ -85,6 +80,6 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '_')
+        title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
         List(searchUrl)
