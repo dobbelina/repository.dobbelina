@@ -29,7 +29,7 @@ site = AdultSite('porn00', '[COLOR hotpink]Porn00[/COLOR]', 'https://www.porn00.
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}/tags/'.format(site.url), 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}/search'.format(site.url), 'Search', site.img_search)
-    List('{0}/latest-updates/1/'.format(site.url))
+    List('{0}/porn-page/1/'.format(site.url))
     utils.eod()
 
 

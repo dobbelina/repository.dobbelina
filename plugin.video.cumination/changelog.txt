@@ -1,9 +1,1 @@
-[B]Version 1.1.48[/B]
-kissjav - new site
-homemoviestube - new site
-missav - new site
-pornwild - added jump to page number (Next Page - context menu)
-thepornfull - fix listing
-pornone - fix listing, search, categories
-hobbyporn - new site
-free porn streams and pornkinox removed cause of k2s hoster
+[B]Version 1.1.49[/B]

@@ -26,43 +26,53 @@ site = AdultSite('streamxxx', '[COLOR hotpink]StreamXXX[/COLOR]', 'https://strea
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', '', '')
-    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/movies-xxx/', 'MainMovies', '', '')
-    site.add_dir('[COLOR hotpink]International Movies[/COLOR]', site.url + 'category/movies-xxx/international-movies/', 'MainInternationalMovies', '', '')
+    # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', '', '')
+    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/movies-xxx/', 'List', '', '')
+    site.add_dir('[COLOR hotpink]Film Porno Italiani[/COLOR]', site.url + 'category/movies-xxx/film-porno-italian/', 'List', '', '')
+    site.add_dir('[COLOR hotpink]International Movies[/COLOR]', site.url + 'category/movies-xxx/international-movies/', 'List', '', '')
     site.add_dir('[COLOR hotpink]Search Overall[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Search Scenes[/COLOR]', site.url + '?cat=5562&s=', 'Search', site.img_search)
-    List(site.url + 'category/clips/')
-    utils.eod()
-
-
-@site.register()
-def MainMovies():
-    List(site.url + 'category/movies-xxx/')
-    utils.eod()
-
-
-@site.register()
-def MainInternationalMovies():
-    List(site.url + 'category/movies/international-movies/')
+    List(site.url)
     utils.eod()
 
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, url)
-    match = re.compile(r'<article.+?title.+?href=([^\s]+).+?>([^<]+).+?title="([^"]+).+?src=([^\s]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<article.+?title.+?href="?([^\s"]+).+?>([^<]+).+?title="([^"]+).+?src="?([^\s"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, info, img in match:
         name = utils.cleantext(name)
+        info = re.sub(r'http[^\s]+', '', info)
         info = utils.cleantext(info)
-        # if videopage.startswith('/'):
-        #     videopage = site.url[:-1] + videopage
-        site.add_download_link(name, videopage, 'Playvid', img, info)
+        if info.startswith('New Porn Videos'):
+            site.add_dir(name, videopage, 'List2', img, desc=info)
+        else:
+            site.add_download_link(name, videopage, 'Playvid', img, info)
     np = re.compile(r'class="next page-numbers"\s*href="?([^\s>"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         currpg = re.compile(r'class="page-numbers\s*current">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         lastpg = re.compile(r'>([^<]+)</a></li>\s*<li><a\s*class="next\s*page-numbers"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        site.add_dir('Next Page...(Currently in {0} of {1})'.format(currpg, lastpg), np.group(1), 'List', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), np.group(1), 'List', site.img_next)
+
+    utils.eod()
+
+
+@site.register()
+def List2(url):
+    listhtml = utils.getHtml(url, site.url)
+    listhtml = re.compile(r'<article[^>]+>(.+?)</article>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    items = re.compile(r'(<a[^<]+?class="?external.+?)</a>(?:<br>|</div)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for item in items:
+        if '<img' in item:
+            vpage, img, name = re.compile(r'href="?([^\s"]+)[^>]+><.*?img.+?src="?([^\s"]+).+?<br>(.*)', re.DOTALL | re.IGNORECASE).findall(item)[0]
+            name = utils.cleantext(name)
+            site.add_download_link(name, vpage, 'Playvid2', img, name)
+        else:
+            match = re.compile(r'<p>([^<]+)<br>\s*<a\s*href="?([^"\s]+)', re.DOTALL | re.IGNORECASE).findall(item)
+            for name, vpage in match:
+                name = utils.cleantext(name)
+                site.add_download_link(name, vpage, 'Playvid2', '', name)
 
     utils.eod()
 
@@ -114,3 +124,13 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         return
     vp.play_from_link_to_resolve(videourl)
+
+
+@site.register()
+def Playvid2(url, name, download=None):
+    vp = utils.VideoPlayer(name, download)
+    if vp.resolveurl.HostedMediaFile(url):
+        vp.play_from_link_to_resolve(url)
+    else:
+        utils.notify('Oh oh', 'No playable video found')
+        vp.progress.close()
