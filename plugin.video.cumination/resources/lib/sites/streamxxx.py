@@ -65,14 +65,17 @@ def List2(url):
     items = re.compile(r'(<a[^<]+?class="?external.+?)</a>(?:<br>|</div)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for item in items:
         if '<img' in item:
-            vpage, img, name = re.compile(r'href="?([^\s"]+)[^>]+><.*?img.+?src="?([^\s"]+).+?<br>(.*)', re.DOTALL | re.IGNORECASE).findall(item)[0]
-            name = utils.cleantext(name)
-            site.add_download_link(name, vpage, 'Playvid2', img, name)
+            try:
+                vpage, img, name = re.compile(r'href="?([^\s"]+)[^>]+><.*?img.+?src="?([^\s"]+).+?<br>(.*)', re.DOTALL | re.IGNORECASE).findall(item)[0]
+                name = utils.cleantext(name)
+                site.add_download_link(name, vpage, 'Playvid', img, name)
+            except IndexError:
+                pass
         else:
             match = re.compile(r'<p>([^<]+)<br>\s*<a\s*href="?([^"\s]+)', re.DOTALL | re.IGNORECASE).findall(item)
             for name, vpage in match:
                 name = utils.cleantext(name)
-                site.add_download_link(name, vpage, 'Playvid2', '', name)
+                site.add_download_link(name, vpage, 'Playvid', '', name)
 
     utils.eod()
 
@@ -109,28 +112,22 @@ def Tags(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
-    phtml = utils.getHtml(url, site.url)
-    phtml = re.compile('(<main.+?main>)').findall(phtml)[0]
-    sources = re.compile(r'href=([^\s]+)\s*(?:target=_blank rel="nofollow noopener noreferrer")?\s*class="external').findall(phtml)
-    links = {}
-    for link in sources:
-        if 'adshrink' in link:
-            link = 'http' + link.split('http')[-1]
-        if vp.resolveurl.HostedMediaFile(link).valid_url():
-            links[link.split('/')[2]] = link
-    videourl = utils.selector('Select link', links)
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.play_from_link_to_resolve(videourl)
-
-
-@site.register()
-def Playvid2(url, name, download=None):
-    vp = utils.VideoPlayer(name, download)
     if vp.resolveurl.HostedMediaFile(url):
         vp.play_from_link_to_resolve(url)
     else:
-        utils.notify('Oh oh', 'No playable video found')
-        vp.progress.close()
+        vp.progress.update(25, "[CR]Loading video page[CR]")
+        phtml = utils.getHtml(url, site.url)
+        phtml = re.compile('(<main.+?main>)').findall(phtml)[0]
+        sources = re.compile(r'href=([^\s]+)\s*(?:target=_blank rel="nofollow noopener noreferrer")?\s*class="external').findall(phtml)
+        links = {}
+        for link in sources:
+            if 'adshrink' in link:
+                link = 'http' + link.split('http')[-1]
+            if vp.resolveurl.HostedMediaFile(link).valid_url():
+                links[link.split('/')[2]] = link
+        videourl = utils.selector('Select link', links)
+        if not videourl:
+            utils.notify('Oh oh', 'No playable video found')
+            vp.progress.close()
+            return
+        vp.play_from_link_to_resolve(videourl)
