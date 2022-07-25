@@ -18,6 +18,8 @@
 '''
 
 import re
+import xbmc
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -37,11 +39,23 @@ def v7_main():
 @site.register()
 def v7_list(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''cell\s*video-listing.+?url\("([^"]+).+?ico-p'>([^<]+).+?ico-t'>([^<]+).+?href='([^']+)'\s*>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, hd, duration, videopage, name in match:
+    match = re.compile(r'''cell\s*video-listing.+?url\("([^"]+).+?ico-p'>([^<]+).+?ico-t'>([^<]+).+?href='([^']+)'\s*>([^<]+)<(.*?)video-views''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, hd, duration, videopage, name, channel in match:
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('vidz7.v7_pornstars')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Search Pornstars[/COLOR]', 'RunPlugin(' + contexturl + ')'))
         hd = 'HD' if 'HD' in hd else ''
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'v7_play', img, name, duration=duration, quality=hd)
+        if 'grid-post-cat' in channel:
+            match2 =  re.search('href="([^"]+)">([^<]+)', channel, re.IGNORECASE | re.DOTALL)
+            if match2:
+                contexturl = (utils.addon_sys
+                            + "?mode=" + str('vidz7.v7_list')
+                            + "&url=" + urllib_parse.quote_plus(match2.group(1)))
+                contextmenu.append(('[COLOR deeppink]Search {}[/COLOR]'.format(match2.group(2).strip()), 'Container.Update(' + contexturl + ')'))
+        site.add_download_link(name, videopage, 'v7_play', img, name, contextm=contextmenu, duration=duration, quality=hd)
 
     np = re.compile(r'class="next"\s*href\s*="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
@@ -80,6 +94,31 @@ def v7_tag(url):
             site.add_dir(name, tagpage + '?orderby=date', 'v7_list', '')
 
     utils.eod()
+
+@site.register()
+def v7_pornstars(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+    pornstars = {}
+    matches = re.compile('<span><a href="(.*?/tag/[^"]+)">([^<]+)</a></span>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if matches:
+        for url, model in matches:
+            model = model.strip()
+            pornstars[model] = url
+        selected_model = utils.selector('Choose model to view', pornstars, sort_by=lambda x: x[1], show_on_one=True)
+        if not selected_model:
+            return
+
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('vidz7.v7_list')
+                      + "&url=" + urllib_parse.quote_plus(selected_model))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+    else:
+        utils.notify('Notify', 'No tagged pornstars found in this video')
+    return
 
 
 @site.register()
