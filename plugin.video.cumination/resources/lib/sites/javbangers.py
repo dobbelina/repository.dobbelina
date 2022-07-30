@@ -157,7 +157,7 @@ def Playvid(url, name, download=None):
     if not videourl:
         vp.progress.close()
         return
-    vp.play_from_direct_link(videourl)
+    vp.play_from_direct_link(videourl + '|referer=' + url)
 
 
 @site.register()

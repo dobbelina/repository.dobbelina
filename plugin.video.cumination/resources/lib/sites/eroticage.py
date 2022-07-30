@@ -19,6 +19,7 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import json
 
 site = AdultSite('eroticage', '[COLOR hotpink]EroticAge[/COLOR]', 'https://www.eroticage.net/', 'https://www.eroticage.net/wp-content/uploads/2021/08/eroticage-logo.jpg', 'eroticage')
 
@@ -80,5 +81,26 @@ def Search(url, keyword=None):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex='<iframe src="([^"]+)"', direct_regex=None)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
-    vp.play_from_site_link(url)
+    videohtml = utils.getHtml(url)
+    if '<iframe src="' in videohtml:
+        vp.progress.update(25, "[CR]Loading video page[CR]")
+        vp.play_from_site_link(url)
+    else:
+        match = re.compile(r'itemprop="embedURL" content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+        if match:
+            iframehtml = utils.getHtml(match[0])
+            match = re.compile(r"iframeElement.src\s*=\s*'([^']+)'", re.IGNORECASE | re.DOTALL).findall(iframehtml)
+            if match:
+                playerurl = 'https:' + match[0] if match[0].startswith('//') else match[0]
+                playerhtml = utils.getHtml(playerurl)
+                match = re.compile(r'"contentProviderUrl":"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(playerhtml)
+                if match:
+                    contenturl = match[0].replace(r'\/', '/')
+                    headers = {'User-Agent': utils.USER_AGENT, 'X-Requested-With': 'XMLHttpRequest'}
+                    contenthtml = utils.getHtml(contenturl, playerurl, headers)
+                    jsondata = json.loads(contenthtml)
+                    videourl = jsondata['data']['contentUrl']
+                    if videourl.startswith('//'):
+                        videourl = 'https:' + videourl
+                    vp.progress.update(75, "[CR]Loading video page[CR]")
+                    vp.play_from_direct_link(videourl)
