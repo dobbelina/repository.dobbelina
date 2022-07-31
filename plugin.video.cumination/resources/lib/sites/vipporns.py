@@ -101,16 +101,16 @@ def Playvid(url, name, download=None):
     html = utils.getHtml(url, site.url)
     surl = re.search(r"video(?:_alt)?_url:\s*'([^']+)", html)
     if surl:
+        vp.progress.update(50, "[CR]Video found[CR]")
         surl = surl.group(1)
         if surl.startswith('function/'):
             lcode = re.findall(r"license_code:\s*'([^']+)", html)[0]
-            surl = '{0}|User-Agent=iPad&Referer={1}'.format(kvs_decode(surl, lcode), site.url)
+            surl = kvs_decode(surl, lcode)
+        if 'get_file' in surl:
+            surl = utils.getVideoLink(surl, site.url)
+        surl = '{0}|User-Agent=iPad&Referer={1}'.format(surl, site.url)
+        vp.play_from_direct_link(surl)
     else:
         vp.progress.close()
+        utils.notify('Oh oh', 'No video found')
         return
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.progress.close()
-    if download == 1:
-        utils.downloadVideo(surl, name)
-    else:
-        vp.play_from_direct_link(surl)
