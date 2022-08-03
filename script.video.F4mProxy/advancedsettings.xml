@@ -1,0 +1,10 @@
+<advancedsettings>
+    <cache>
+        <buffermode>0</buffermode>
+        <memorysize>314572800</memorysize>
+        <readfactor>8</readfactor>
+    </cache>
+    <network>
+        <disablehttp2>true</disablehttp2> 
+    </network>
+</advancedsettings>
