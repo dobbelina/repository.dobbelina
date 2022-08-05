@@ -42,7 +42,7 @@ def List(url):
     match = re.compile(r'<div\s*id="video.+?href="([^"]+).+?data-src="([^"]+).+?title.+?>([^<]+).+?(\d+(?:min|sec)).+?(\d+p)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, duration, quality in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=quality)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=quality, noDownload=True)
 
     np = re.compile(r'class="pagination.+?class="active".+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
@@ -78,7 +78,7 @@ def List2(url, page=0):
                 quality = '1080p'
             else:
                 quality = '720p'
-        site.add_download_link(name, vidpage, 'Playvid', img, name, duration=item.get('d'), quality=quality)
+        site.add_download_link(name, vidpage, 'Playvid', img, name, duration=item.get('d'), quality=quality, noDownload=True)
 
     page = page + 1
     lastpg = -1 * (-(jlist.get('nb_videos')) // jlist.get('nb_per_page'))

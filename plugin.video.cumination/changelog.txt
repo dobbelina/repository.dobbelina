@@ -1,5 +1,3 @@
-[B]Version 1.1.50[/B]
-Vidoz8 - added contextmenu items for pornstars and studios
-Javbangers - fix playback
-Eroticage - fix playback
-JavHD Porn - new site
+[B]Version 1.1.51[/B]
+
+xnxx - disable download in context menu as site only serves HLS
