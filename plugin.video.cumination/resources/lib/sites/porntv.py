@@ -212,6 +212,6 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, regex=None, direct_regex=r'sources:\s*\[\{\s*file:\s*"([^"]+)"')
+    vp = utils.VideoPlayer(name, download, regex=None, direct_regex=r'(?:sources:\s*\[\{\s*file:\s*|<source\s*src=)"([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vp.play_from_site_link(url)
