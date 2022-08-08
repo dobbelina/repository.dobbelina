@@ -82,9 +82,9 @@ def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url)
-    m = re.compile(r'video-id="([^"]+).+?mpu-data="([^"]+)', re.DOTALL | re.IGNORECASE).search(videohtml)
+    m = re.compile(r'video-id="([^"]+).+?(?:mpu-data|data-mpu)="([^"]+).+?data-ver="([^"]+)', re.DOTALL | re.IGNORECASE).search(videohtml)
     if m:
-        pdata = {'sources': dex(m.group(1), m.group(2)),
+        pdata = {'sources': dex(m.group(1), m.group(2), m.group(3), True),
                  'ver': 2}
         vp.progress.update(50, "[CR]Loading video page[CR]")
         hdr = utils.base_hdrs
@@ -92,14 +92,14 @@ def Play(url, name, download=None):
                     'Referer': site.url})
         r = utils.postHtml('https://video.javhdporn.net/api/play/', form_data=pdata, headers=hdr)
         eurl = json.loads(r).get('data')
-        eurl = dex(m.group(1), eurl)
+        eurl = dex(m.group(1), eurl, '2')
         eurl = 'https:' + eurl if eurl.startswith('//') else eurl
         hdr.pop('Origin')
         vp.progress.update(75, "[CR]Loading embed page[CR]")
         r = utils.getHtml(eurl, headers=hdr)
         match = re.compile(r"f8_0x5add\('([^']+)", re.DOTALL | re.IGNORECASE).search(r)
         if match:
-            link = dex('cGxheWVyaWQ9cFhI', match.group(1), 0)
+            link = dex('cGxheWVyaWQ9cFhI', match.group(1), '2', mtype=0)
             vp.play_from_link_to_resolve(link)
             return
     vp.progress.close()
@@ -107,25 +107,34 @@ def Play(url, name, download=None):
     return
 
 
-def dex(media_id, enc_data, mtype=1):
-    mid = base64.b64encode(six.b(media_id + ('_0x58fe15' if mtype == 1 else '_0x583715')))[::-1]
+def dex(key, data, dver, use_salt=False, mtype=1):
+    if mtype == 0:
+        part = '_0x583715'
+    else:
+        part = '_0x58fe15'
+
+    mid = base64.b64encode(six.b(key + part))[::-1]
     x = 0
     ct = ''
     y = list(range(256))
+
+    if dver == '1' and use_salt:
+        mid = base64.b64encode(six.b(key + 'QxLUF1bgIAdeQX'))[::-1]
+
     for r in range(256):
-        x = (x + y[r] + (mid[r % len(mid)] if six.PY3 else ord(mid[r % len(mid)]))) % 256
+        x = (x + y[r] + (mid[r % len(mid)] if isinstance(mid[r % len(mid)], int) else ord(mid[r % len(mid)]))) % 256
         t = y[r]
         y[r] = y[x]
         y[x] = t
 
     s = 0
     x = 0
-    ddata = base64.b64decode(enc_data)
+    ddata = base64.b64decode(data)
     for r in range(len(ddata)):
         s = (s + 1) % 256
         x = (x + y[s]) % 256
         t = y[s]
         y[s] = y[x]
         y[x] = t
-        ct += chr((ddata[r] if six.PY3 else ord(ddata[r])) ^ y[(y[s] + y[x]) % 256])
+        ct += chr((ddata[r] if isinstance(ddata[r], int) else ord(ddata[r])) ^ y[(y[s] + y[x]) % 256])
     return six.ensure_str(base64.b64decode(ct))
