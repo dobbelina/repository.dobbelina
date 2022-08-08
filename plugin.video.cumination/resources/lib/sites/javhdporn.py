@@ -107,25 +107,19 @@ def Play(url, name, download=None):
     return
 
 
-def dex(key, data, dver, use_salt=False, mtype=1):
-    if mtype == 0:
-        part = '_0x583715'
-    else:
-        part = '_0x58fe15'
+def dex(key, data, dver, use_alt=False, mtype=1):
+    part = '_0x583715' if mtype == 0 else '_0x58fe15'
+    if dver == '1' and use_alt:
+        part = 'QxLUF1bgIAdeQX'
 
     mid = base64.b64encode(six.b(key + part))[::-1]
     x = 0
     ct = ''
     y = list(range(256))
 
-    if dver == '1' and use_salt:
-        mid = base64.b64encode(six.b(key + 'QxLUF1bgIAdeQX'))[::-1]
-
     for r in range(256):
         x = (x + y[r] + (mid[r % len(mid)] if isinstance(mid[r % len(mid)], int) else ord(mid[r % len(mid)]))) % 256
-        t = y[r]
-        y[r] = y[x]
-        y[x] = t
+        y[r], y[x] = y[x], y[r]
 
     s = 0
     x = 0
@@ -133,8 +127,6 @@ def dex(key, data, dver, use_salt=False, mtype=1):
     for r in range(len(ddata)):
         s = (s + 1) % 256
         x = (x + y[s]) % 256
-        t = y[s]
-        y[s] = y[x]
-        y[x] = t
+        y[s], y[x] = y[x], y[s]
         ct += chr((ddata[r] if isinstance(ddata[r], int) else ord(ddata[r])) ^ y[(y[s] + y[x]) % 256])
     return six.ensure_str(base64.b64decode(ct))
