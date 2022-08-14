@@ -1447,7 +1447,7 @@ def fix_url(url, siteurl=None, baseurl=None):
     if siteurl:
         baseurl = baseurl if baseurl else siteurl[:-1]
         if url.startswith('//'):
-            url = siteurl.split(':')[0] + url
+            url = siteurl.split(':')[0] + ':' + url
         elif url.startswith('?'):
             url = baseurl + url
         elif url.startswith('/'):
