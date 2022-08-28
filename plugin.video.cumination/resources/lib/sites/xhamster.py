@@ -19,7 +19,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster.com/', 'xhamster.png', 'xhamster')
+site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster2.com/', 'xhamster.png', 'xhamster')
 
 
 @site.register(default_mode=True)
@@ -56,7 +56,7 @@ def List(url):
         videos = response.split('data-video-id="')
         videos.pop(0)
         for video in videos:
-            match = re.compile(r'href="([^"]+)".+?src="([^"]+)".+?alt="([^"]+)".+?duration>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+            match = re.compile(r'href="([^"]+)".+?src="([^"]+)".+?alt="([^"]+)".+?duration"?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
             if match:
                 (videolink, img, name, length) = match[0]
                 if 'icon--uhd' in video:

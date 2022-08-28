@@ -164,4 +164,5 @@ def Playvid(url, name, download=None):
     jdata = re.compile(r'application/json">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)[0]
     jdata = json.loads(jdata).get("props").get("pageProps")
     vidurl = 'https://{0}/file/avple-images/{1}'.format(random.choice(CDN), jdata.get('instance').get('play'))
+    vidurl += '|verify_peer=false'
     vp.play_from_direct_link(vidurl)

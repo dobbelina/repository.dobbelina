@@ -48,7 +48,7 @@ def List(url):
     query = {
         "operationName": "findBroadcastsByPage",
         "variables": '{"slug":"%s","limit":500}' % url,
-        "extensions": '{"persistedQuery":{"version":1,"sha256Hash":"313ae181e7c38ba4028302825f47a02af8e1513d71123a43e06ff98534606543"}}'
+        "extensions": '{"persistedQuery":{"version":1,"sha256Hash":"96e6b702b94bcf2b1875b6e0e76f1b2128e09aee1f3fb2977d08e114b5c9428c"}}'
     }
     murl = "https://api.cherry.tv/graphql?" + urllib_parse.urlencode(query)
     try:
