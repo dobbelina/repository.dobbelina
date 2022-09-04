@@ -59,7 +59,7 @@ def List(url):
     for model in model_list:
         name = utils.cleanhtml(model['username'])
         videourl = model['stream']['url']
-        img = model['previewUrl'] if utils.addon.getSetting("model_pic") == "0" else model['snapshotUrl']
+        img = model['previewUrlThumbBig']
         subject = ''
         if model.get('country'):
             subject += '[COLOR deeppink]Location: [/COLOR]{0}[CR]'.format(utils.get_country(model.get('country')))

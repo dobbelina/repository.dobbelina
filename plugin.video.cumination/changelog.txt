@@ -1,10 +1,2 @@
-[B]Version 1.1.52[/B]
-tnaflix - new site
-beeg - fix listing
-cartoon porn videos - removed, available as part of porntv network
-lesbian porn videos - removed, available as part of porntv network
-xhamster - fix listing
-cherry - fix listing
-avple - fix playback
-nonktube - new site
-porno365 - new site
+[B]Version 1.1.53[/B]
+stripchat - fix thumbnails
