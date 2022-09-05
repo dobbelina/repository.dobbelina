@@ -25,10 +25,10 @@ site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://st
 
 @site.register(default_mode=True)
 def Main():
-    female = True if utils.addon.getSetting("chatfemale") == "true" else False
-    male = True if utils.addon.getSetting("chatmale") == "true" else False
-    couple = True if utils.addon.getSetting("chatcouple") == "true" else False
-    trans = True if utils.addon.getSetting("chattrans") == "true" else False
+    female = utils.addon.getSetting("chatfemale") == "true"
+    male = utils.addon.getSetting("chatmale") == "true"
+    couple = utils.addon.getSetting("chatcouple") == "true"
+    trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
 
     bu = "https://stripchat.com/api/external/v4/widget/?limit=1000&modelsCountry=&modelsLanguage=&modelsList=&tag="
@@ -59,7 +59,9 @@ def List(url):
     for model in model_list:
         name = utils.cleanhtml(model['username'])
         videourl = model['stream']['url']
-        img = model['previewUrlThumbBig']
+        fanart = model.get('previewUrl')
+        img = model.get('snapshotUrl')
+        img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
         subject = ''
         if model.get('country'):
             subject += '[COLOR deeppink]Location: [/COLOR]{0}[CR]'.format(utils.get_country(model.get('country')))
@@ -72,7 +74,7 @@ def List(url):
             subject += '[COLOR deeppink]#[/COLOR]'
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
             subject += '[COLOR deeppink] #[/COLOR]'.join(tags)
-        site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True)
+        site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True, fanart=fanart)
     utils.eod()
 
 

@@ -25,23 +25,34 @@ import websocket
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('myfreecams', '[COLOR hotpink]MyFreeCams[/COLOR]', 'https://www.myfreecams.com/', 'myfreecams.jpg', 'myfreecams', True)
-MFC_SERVERS = {}
+
+serverlist = utils.getHtml('https://app.myfreecams.com/server')
+jsonlist = json.loads(serverlist)
+MFC_SERVERS = {
+    'WZOBSSERVERS': jsonlist.get("wzobs_servers"),
+    'H5SERVERS': jsonlist.get("h5video_servers"),
+    'NGSERVERS': jsonlist.get("ngvideo_servers"),
+    'CHATSERVERS': [x for x in jsonlist.get("chat_servers") if x.startswith('wchat')]
+}
 
 
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'php/model_tags.php?vcc=1545329519', 'Tags', '')
-    List(site.url + 'php/model_explorer.php?get_contents=1&page=1')
+    List(site.url + 'php/model_explorer.php?get_contents=1&sort=cam_score&selection=public&page=1')
 
 
 @site.register()
 def List(url, page=1):
     listhtml = utils._getHtml(url)
-    res = re.compile(r"avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
+    res = re.compile(r"broadcaster_id:(\d+).+?avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
 
-    for img, name, plot in res:
-        img = img.replace('100x100', '300x300')
-        site.add_download_link(name, name, 'Playvid', img, utils.cleantext(plot), noDownload=True)
+    for model_id, pic, name, plot in res:
+        pic = pic.replace('100x100', '300x300')
+        idx = random.choice(list(MFC_SERVERS['H5SERVERS'].keys()))
+        imgserver = MFC_SERVERS.get('H5SERVERS').get(idx)[5:]
+        img = 'https://snap.mfcimg.com/snapimg/{0}/640x480/mfc_{1}?no-cache={2}'.format(imgserver, int(model_id) + 100000000, random.random())
+        site.add_download_link(name, name, 'Playvid', pic, utils.cleantext(plot), noDownload=True, fanart=img)
 
     if len(res) >= 50:
         page += 1
@@ -51,13 +62,6 @@ def List(url, page=1):
 
 @site.register()
 def Playvid(url, name):
-    global MFC_SERVERS
-    serverlist = utils.getHtml('https://app.myfreecams.com/server')
-    jsonlist = json.loads(serverlist)
-    MFC_SERVERS['WZOBSSERVERS'] = jsonlist["wzobs_servers"]
-    MFC_SERVERS['H5SERVERS'] = jsonlist["h5video_servers"]
-    MFC_SERVERS['NGSERVERS'] = jsonlist["ngvideo_servers"]
-    MFC_SERVERS['CHATSERVERS'] = [x for x in jsonlist["chat_servers"] if x.startswith('wchat')]
     videourl = myfreecam_start(url)
     if videourl:
         vp = utils.VideoPlayer(name)
@@ -190,7 +194,7 @@ def myfreecam_start(url):
         ws.send("hello fcserver\n\0")
         ws.send("1 0 0 20071025 0 guest:guest\n\0")
     except Exception as e:
-        utils.kodilog('MyFreeCams WS connect error [{0}]'.format(e.message))
+        utils.kodilog('MyFreeCams WS connect error [{0}]'.format(e))
         return ''
 
     rembuf = ""
