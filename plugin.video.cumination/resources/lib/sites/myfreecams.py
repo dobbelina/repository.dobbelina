@@ -26,14 +26,17 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('myfreecams', '[COLOR hotpink]MyFreeCams[/COLOR]', 'https://www.myfreecams.com/', 'myfreecams.jpg', 'myfreecams', True)
 
-serverlist = utils.getHtml('https://app.myfreecams.com/server')
-jsonlist = json.loads(serverlist)
-MFC_SERVERS = {
-    'WZOBSSERVERS': jsonlist.get("wzobs_servers"),
-    'H5SERVERS': jsonlist.get("h5video_servers"),
-    'NGSERVERS': jsonlist.get("ngvideo_servers"),
-    'CHATSERVERS': [x for x in jsonlist.get("chat_servers") if x.startswith('wchat')]
-}
+
+def getMFC():
+    serverlist = utils.getHtml('https://app.myfreecams.com/server')
+    jsonlist = json.loads(serverlist)
+    MFC_SERVERS = {
+        'WZOBSSERVERS': jsonlist.get("wzobs_servers"),
+        'H5SERVERS': jsonlist.get("h5video_servers"),
+        'NGSERVERS': jsonlist.get("ngvideo_servers"),
+        'CHATSERVERS': [x for x in jsonlist.get("chat_servers") if x.startswith('wchat')]
+    }
+    return MFC_SERVERS
 
 
 @site.register(default_mode=True)
@@ -44,6 +47,7 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    MFC_SERVERS = getMFC()
     listhtml = utils._getHtml(url)
     res = re.compile(r"broadcaster_id:(\d+).+?avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
 
@@ -114,7 +118,7 @@ def fc_decode_json(m):
         return {'lv': 0}
 
 
-def read_model_data(m):
+def read_model_data(m, MFC_SERVERS):
     global CAMGIRLSERVER
     global CAMGIRLCHANID
     global CAMGIRLUID
@@ -186,6 +190,8 @@ def myfreecam_start(url):
     CAMGIRL = url
     CAMGIRLSERVER = 0
 
+    MFC_SERVERS = getMFC()
+
     try:
         # host = "ws://{0}.myfreecams.com:8080/fcsl".format(random.choice(MFC_SERVERS['CHATSERVERS']))
         host = "wss://{0}.myfreecams.com/fcsl".format(random.choice(MFC_SERVERS['CHATSERVERS']))
@@ -224,7 +230,7 @@ def myfreecam_start(url):
             if fc_type == 1:
                 ws.send("10 0 0 20 0 %s\n\0" % CAMGIRL)
             elif fc_type == 10:
-                read_model_data(msg)
+                read_model_data(msg, MFC_SERVERS)
                 quitting = 1
 
             sock_buf = sock_buf[6 + mlen:]
