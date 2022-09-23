@@ -27,6 +27,7 @@ site = AdultSite('speedporn', '[COLOR hotpink]SpeedPorn[/COLOR]', 'https://speed
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{}categories/'.format(site.url), 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR] - Loads all the pages', '{}categories/'.format(site.url), 'Categories_all', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', '{}pornstars/'.format(site.url), 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Featured movies[/COLOR]', '{}category/featured/'.format(site.url), 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{}all-porn-movie-studios/'.format(site.url), 'Tags', site.img_cat)
@@ -54,6 +55,27 @@ def List(url):
 
 
 @site.register()
+def List_all(url):
+    nextpg = True
+    while nextpg:
+        try:
+            listhtml = utils.getHtml(url)
+        except:
+            return None
+        match = re.compile(r'class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        for videopage, img, name in match:
+            name = utils.cleantext(name)
+            site.add_download_link(name, videopage, 'Playvid', img)
+        if len(match) == 49:
+            next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+            if next_page:
+                url = next_page[0]
+        else:
+            nextpg = False
+    utils.eod()
+
+
+@site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, '')
     match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?data-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
@@ -65,6 +87,24 @@ def Categories(url):
         next_page = next_page[0]
         page_nr = re.findall(r'\d+', next_page)[-1]
         site.add_dir('Next Page (' + str(page_nr) + ')', next_page, 'Categories', site.img_next)
+    utils.eod()
+
+
+@site.register()
+def Categories_all(url):
+    nextpg = True
+    while nextpg:
+        cathtml = utils.getHtml(url, '')
+        match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?data-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
+        for catpage, img, name, videos in match:
+            name = utils.cleantext(name) + " [COLOR deeppink]" + videos.strip() + "[/COLOR]"
+            site.add_dir(name, catpage, 'List_all', img)
+        if len(match) == 49:
+            next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+            if next_page:
+                url = next_page[0]
+        else:
+            nextpg = False
     utils.eod()
 
 

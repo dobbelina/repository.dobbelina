@@ -1,4 +1,4 @@
 [B]Version 1.1.54[/B]
 Update Myfreecams - only load MFC servers
 Dead site removal www.webcamshows.org/
-
+Speedporn - load all category pages and movies from each category
