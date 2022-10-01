@@ -50,7 +50,7 @@ def List(url):
         clean_database(False)
 
     try:
-        response = utils.getHtml(url)
+        response = utils._getHtml(url)
     except:
         return None
     data = json.loads(response)
@@ -59,7 +59,7 @@ def List(url):
     for model in model_list:
         name = utils.cleanhtml(model['username'])
         videourl = model['stream']['url']
-        fanart = model.get('previewUrl')
+        fanart = model.get('previewUrl') if utils.addon.getSetting('posterfanart') == 'true' else None
         img = model.get('snapshotUrl')
         img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
         subject = ''
@@ -103,7 +103,7 @@ def Playvid(url, name):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
     if not utils.checkUrl(url):
-        data = json.loads(utils.getHtml(altUrl + name))["models"][0]
+        data = json.loads(utils._getHtml(altUrl + name))["models"][0]
         if data["username"] == name:
             url = data['stream']['url']
         else:
@@ -111,6 +111,7 @@ def Playvid(url, name):
             vp.progress.close()
             return
 
+    url = re.sub(r'_\d+p\.', '.', url)
     vp.progress.update(75, "[CR]Found Stream[CR]")
     vp = utils.VideoPlayer(name)
     vp.play_from_direct_link(url)
