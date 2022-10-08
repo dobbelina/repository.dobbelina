@@ -1,3 +1,6 @@
 [B]Version 1.1.55[/B]
 stripchat - fix stream quality
 stripchat - fanart can be disabled in settings
+tnaflix - fix playback
+stripchat - fix HD list
+aagmaal & aagmaal pro - domain change

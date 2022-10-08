@@ -32,7 +32,7 @@ def Main():
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
 
     bu = "https://stripchat.com/api/external/v4/widget/?limit=1000&modelsCountry=&modelsLanguage=&modelsList=&tag="
-    site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd'.format(bu), 'List', '', '')
+    site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd&broadcastHD=true'.format(bu), 'List', '', '')
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
     if couple:
