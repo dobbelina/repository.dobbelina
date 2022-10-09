@@ -21,7 +21,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('vporn', '[COLOR hotpink]Porn One[/COLOR]', 'https://pornone.com/', 'pornone.png', 'pornone')
+site = AdultSite('pornone', '[COLOR hotpink]Porn One[/COLOR]', 'https://pornone.com/', 'pornone.png', 'pornone')
 
 
 @site.register(default_mode=True)
@@ -35,7 +35,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*portrait.+?py-\[2px[^>]+>([^<]+)</span>(.*?)</span>\s*<img\s*src="([^"]+).+?normal\s*">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*relative\s*.+?>([\d:]+)<(.*?)<img\s*src="([^"]+)"\s*alt=.+?normal\s*">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, duration, hd, img, name in match:
         name = utils.cleantext(name)
         hd = 'HD' if hd.find('HD Video') > 0 else ''
