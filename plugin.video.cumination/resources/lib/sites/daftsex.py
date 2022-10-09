@@ -24,7 +24,7 @@ site = AdultSite('daftsex', '[COLOR hotpink]DaftSex[/COLOR]', 'https://daftsex.c
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/', 'Search', site.img_search)
-    List('{0}hot'.format(site.url))
+    List(site.url)
     utils.eod()
 
 
