@@ -34,12 +34,16 @@ def Main():
     bu = "https://stripchat.com/api/external/v4/widget/?limit=1000&modelsCountry=&modelsLanguage=&modelsList=&tag="
     site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd&broadcastHD=true'.format(bu), 'List', '', '')
     if female:
+        site.add_dir('[COLOR hotpink]Female HD[/COLOR]', '{0}female&broadcastHD=true'.format(bu), 'List', '', '')
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
     if couple:
+        site.add_dir('[COLOR hotpink]Couples HD[/COLOR]', '{0}couples&broadcastHD=true'.format(bu), 'List', '', '')
         site.add_dir('[COLOR hotpink]Couples[/COLOR]', '{0}couples'.format(bu), 'List', '', '')
     if male:
+        site.add_dir('[COLOR hotpink]Male HD[/COLOR]', '{0}men&broadcastHD=true'.format(bu), 'List', '', '')
         site.add_dir('[COLOR hotpink]Male[/COLOR]', '{0}men'.format(bu), 'List', '', '')
     if trans:
+        site.add_dir('[COLOR hotpink]Transsexual HD[/COLOR]', '{0}trans&broadcastHD=true'.format(bu), 'List', '', '')
         site.add_dir('[COLOR hotpink]Transsexual[/COLOR]', '{0}trans'.format(bu), 'List', '', '')
     utils.eod()
 
