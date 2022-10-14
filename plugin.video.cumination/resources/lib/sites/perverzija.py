@@ -17,6 +17,8 @@
 '''
 
 import re
+import xbmc
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -45,7 +47,14 @@ def List(url):
         name = utils.cleantext(name)
         duration = re.compile(r'time_dur">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
         duration = duration[0] if duration else ''
-        site.add_download_link(name, videourl, 'Play', img, name, noDownload=True, duration=duration)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('perverzija.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videourl))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+        site.add_download_link(name, videourl, 'Play', img, name, noDownload=True, contextm=contextmenu, duration=duration)
 
     nextp = re.compile(r'label="Next\s*Page"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
@@ -82,6 +91,46 @@ def Stars(url):
         name = utils.cleantext(name)
         site.add_dir(name, site.url + caturl, 'List', '')
     utils.eod()
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    studios = re.compile('href="([^"]+)" rel="category tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if studios:
+        for url, studio in studios:
+            studio = "Studio - " + studio.strip()
+            infodict[studio] = url
+
+    actors = re.compile('(stars/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if actors:
+        for url, actor in actors:
+            actor = "Actor - " + actor.strip()
+            infodict[actor] = site.url + url
+
+    tags = re.compile('(tag/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('perverzija.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No actors, studios or tags found for this video')
+    return
 
 
 @site.register()
