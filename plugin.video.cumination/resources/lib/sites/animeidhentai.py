@@ -37,7 +37,7 @@ def animeidhentai_main():
 @site.register()
 def animeidhentai_list(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<article.+?data-src="(.*?)".+?link-co">([^<]+).+?mgr(.+?)description\s*dn">(?:<p>)?([^<]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article.+?src="(.*?)".+?link-co">([^<]+).+?mgr(.+?)description\s*dn">\s*(?:<p>)?([^<]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name, hd, plot, video in match:
         if '>hd<' in hd.lower():
             name = name + " [COLOR orange]HD[/COLOR]"
@@ -77,10 +77,10 @@ def animeidhentai_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
-    r = re.compile(r'data-player>\s*<iframe.+?-src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+    r = re.compile(r'data-player>\s*<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
     if r:
         vp.play_from_link_to_resolve(r.group(1))
-
-    utils.notify('Oh Oh', 'No Videos found')
-    vp.progress.close()
+    else:
+        utils.notify('Oh Oh', 'No Videos found')
+        vp.progress.close()
     return

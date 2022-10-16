@@ -20,13 +20,13 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven Co[/COLOR]', 'https://hentaihaven.co/', 'https://hentaihaven.co/wp-content/uploads/2021/09/hh1.png', 'hentaihavenco')
+site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven Co[/COLOR]', 'https://hentaihaven.co/', 'https://hentaihaven.co/wp-content/uploads/2022/08/logo1.png', 'hentaihavenco')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat, section='Genre')
-    site.add_dir('[COLOR hotpink]Year[/COLOR]', site.url, 'Categories', site.img_cat, section='Years')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tags-page/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/', 'Series', site.img_cat, section='Home')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
@@ -35,14 +35,12 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    if url == site.url:
-        listhtml = listhtml.split('id="wdgt_home_post')[1]
-    match = re.compile(r'<article.+?"title[^>]+>([^<]+).+?src="([^"]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for name, img, videopage in match:
+    match = re.compile(r'<a\s*href="([^"]+)">\s*<figure.+?img.+?src="([^"]+).+?<h2[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    page = re.compile(r'class="pagination.+?href="([^"]+)[^>]+>\s*<span\s*class="dn[^\d]+(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+    page = re.compile(r'<a\s*href="([^"]+/(\d+)/)">Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
     if page:
         site.add_dir('[COLOR hotpink]Next Page[/COLOR] ({0})'.format(page.group(2)), page.group(1), 'List', site.img_next)
 
@@ -54,25 +52,48 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
-    surl = re.compile(r'class="video.+?src="([^"]*)', re.DOTALL | re.IGNORECASE).findall(videopage)
+    surl = re.compile(r'<iframe.+?src="([^"]*)', re.DOTALL | re.IGNORECASE).search(videopage)
     if surl:
-        if surl[0]:
-            vp.play_from_link_to_resolve(surl[0])
+        surl = surl.group(1)
+        if 'nhplayer.com' in surl:
+            videopage = utils.getHtml(surl, site.url)
+            surl = re.compile(r'<span>Servers.+?id="([^"]+)').search(videopage)
+            if surl:
+                surl = surl.group(1)
+            else:
+                vp.progress.close()
+                utils.notify('Oh oh', 'Couldn\'t find a playable link')
+        vp.play_from_link_to_resolve(surl)
     else:
         vp.progress.close()
         utils.notify('Oh oh', 'Couldn\'t find a playable link')
-    return None
+    return
 
 
 @site.register()
-def Categories(url, section):
-    cathtml = utils.getHtml(url, '')
-    if section == 'Genre':
-        match = re.compile(r'menu-item-object-genre.+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+def Categories(url):
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<a\s*class="bg-tr"\s*href="([^"]+).+?img.+?src="([^"]+).+?<h2.+?>([^<]+).+?text-sm">(?:<p>)?([^<]*).+?white">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, image, name, desc, count in match:
+        name = utils.cleantext(name)
+        if count:
+            name += " [COLOR orange][I]{0} videos[/I][/COLOR]".format(count)
+        site.add_dir(name, catpage, 'List', image, desc=desc)
+    utils.eod()
+
+
+@site.register()
+def Series(url, section):
+    cathtml = utils.getHtml(url, site.url)
+    if section == 'Home':
+        match = re.compile(r'<a\s*class="c-htr3[^>]+?href="#l-.*?">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+        for alpha in match:
+            site.add_dir(alpha, url, 'Series', '', section=alpha)
     else:
-        match = re.compile(r'menu-item-object-dtyear.+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name in match:
-        site.add_dir(name, catpage, 'List', '')
+        section = r'\d' if section == "#" else section
+        match = re.compile(r'<a\s*class="c-htr3[^>]+?href="(http[^"]+)">({0}[^<]+)'.format(section), re.DOTALL | re.IGNORECASE).findall(cathtml)
+        for spage, name in match:
+            site.add_dir(name, spage, 'List', '')
     utils.eod()
 
 
