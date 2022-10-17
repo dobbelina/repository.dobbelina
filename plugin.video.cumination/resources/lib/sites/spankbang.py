@@ -18,9 +18,9 @@
 '''
 
 import re
+
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-import xbmc
 
 site = AdultSite('spankbang', '[COLOR hotpink]SpankBang[/COLOR]', 'https://spankbang.com/', 'spankbang.png', 'spankbang')
 filterQ = utils.addon.getSetting("spankbang_quality") or 'All'
@@ -44,7 +44,7 @@ def List(url):
     filtersL = {'All': '', '10+min': 10, '20+min': 20, '40+min': 40}
     if '?' in url:
         url = url.split('?')[0]
-    url += '?q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
+    url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
     listhtml = re.compile(r'<main(.*?)</main>', re.DOTALL).findall(listhtml)[0]
     videos = listhtml.split('class="video-item')
@@ -65,6 +65,7 @@ def List(url):
             name = utils.cleantext(name)
             site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
     nextp = re.compile(r'href="([^"]+)">&raquo', re.DOTALL | re.IGNORECASE).search(videos[-1])
+    nextps = re.compile(r'href="([^"]+)"\s*class="next">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
         np = re.findall(r'/(\d+)/', nextp)[-1]
@@ -74,6 +75,11 @@ def List(url):
         else:
             lp = ''
         site.add_dir('Next Page({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
+    elif nextps:
+        nextp = nextps.group(1)
+        pgtxt = re.findall(r'class="status">(.*?)</span', listhtml)[0].replace('<span>/', 'of').capitalize()
+        site.add_dir('Next Page... (Currently in {})'.format(pgtxt), site.url[:-1] + nextp, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -140,7 +146,7 @@ def FilterQ():
     f = utils.selector('Select resolution', filters.keys(), sort_by=lambda x: filters[x])
     if f:
         utils.addon.setSetting('spankbang_quality', f)
-        xbmc.executebuiltin('Container.Refresh')
+        utils.refresh()
 
 
 @site.register()
@@ -149,4 +155,4 @@ def FilterL():
     f = utils.selector('Select length', filters, reverse=True)
     if f:
         utils.addon.setSetting('spankbang_length', f)
-        xbmc.executebuiltin('Container.Refresh')
+        utils.refresh()
