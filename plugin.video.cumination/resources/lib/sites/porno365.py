@@ -88,7 +88,6 @@ def Search(url, keyword=None):
 
 @site.register()
 def Categories(url):
-    utils.kodilog(url)
     cathtml = utils.getHtml(url)
     match = re.compile(r'class="categories-list-div".+?href="([^"]+)".+?img src="([^"]+)".+?alt="([^"]+)".+?class="text">(\d+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name, count in match:
@@ -101,7 +100,6 @@ def Categories(url):
 
 @site.register()
 def Models(url):
-    utils.kodilog(url)
     cathtml = utils.getHtml(url)
     match = re.compile(r'class="item_model".+?href="([^"]+)".+?src="([^"]+)".+?class="cnt_span">(\d+)<.+?class="model_eng_name">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, count, name in match:

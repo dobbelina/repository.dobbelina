@@ -1457,11 +1457,13 @@ def fix_url(url, siteurl=None, baseurl=None):
     return url
 
 
-def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None):
+def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None, skip=None):
     videolist = html.split(delimiter)
     if videolist:
         videolist.pop(0)
         for video in videolist:
+            if skip and skip in video:
+                continue
             videopage = re.compile(re_videopage, re.DOTALL | re.IGNORECASE).findall(video)
             if videopage:
                 videopage = fix_url(videopage[0], site.url)
