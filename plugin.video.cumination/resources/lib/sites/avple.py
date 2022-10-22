@@ -16,14 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+import json
+# import random
 import re
+
+import xbmc
+import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
-import xbmc
-import xbmcgui
-import json
-import random
 
 site = AdultSite('avple', '[COLOR hotpink]Avple[/COLOR]', 'https://avple.tv/', 'https://assert.avple.tv/file/avple-images/logo.png', 'avple')
 CDN = [
@@ -161,8 +162,9 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    jdata = re.compile(r'application/json">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)[0]
-    jdata = json.loads(jdata).get("props").get("pageProps")
-    vidurl = 'https://{0}/file/avple-images/{1}'.format(random.choice(CDN), jdata.get('instance').get('play'))
-    vidurl += '|verify_peer=false'
+    # jdata = re.compile(r'application/json">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)[0]
+    # jdata = json.loads(jdata).get("props").get("pageProps")
+    # vidurl = 'https://{0}/file/avple-images/{1}'.format(random.choice(CDN), jdata.get('instance').get('play'))
+    vidurl = re.compile(r"source\s*=\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(html)[0]
+    vidurl += '|Referer={0}&Origin={1}&verify_peer=false'.format(site.url, site.url[:-1])
     vp.play_from_direct_link(vidurl)
