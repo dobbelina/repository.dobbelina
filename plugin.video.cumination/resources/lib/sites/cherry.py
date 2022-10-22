@@ -13,10 +13,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+import json
 import os
 import sqlite3
-import json
-from six.moves import urllib_parse
+
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -45,16 +45,38 @@ def List(url):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
-    query = {
-        "operationName": "findBroadcastsByPage",
-        "variables": '{"slug":"%s","limit":500}' % url,
-        "extensions": '{"persistedQuery":{"version":1,"sha256Hash":"96e6b702b94bcf2b1875b6e0e76f1b2128e09aee1f3fb2977d08e114b5c9428c"}}'
+    query = '''
+    query findBroadcastsByPage($slug: String, $following: Boolean, $tag: String, $cursor: ID, $limit: Float) {
+    broadcasts: broadcastsPaged(
+        cursor: $cursor
+        query: { slug: $slug, following: $following, tag: $tag, limit: $limit }
+    ) {
+        cursor
+        totalCount
+        broadcasts {
+        id
+        broadcastStatus
+        showStatus
+        viewers
+        description
+        tags
+        title
+        createdAt
+        imageUrl
+        thumbnailUrl
+        username
+        }
     }
-    murl = "https://api.cherry.tv/graphql?" + urllib_parse.urlencode(query)
-    try:
-        response = utils.getHtml(murl, site.url)
-    except:
-        return None
+    }
+    '''
+    pdata = {
+        "operationName": "findBroadcastsByPage",
+        "variables": {"slug": url, "limit": 500},
+        'query': query
+    }
+    murl = "https://api.cherry.tv/graphql"
+    response = utils._postHtml(murl, json_data=pdata)
+
     data = json.loads(response).get('data', {}).get('broadcasts', {})
     model_list = data.get('broadcasts')
 
@@ -100,16 +122,29 @@ def clean_database(showdialog=True):
 def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    query = {
-        "operationName": "findStreamerBySlug",
-        "variables": '{"slug":"%s"}' % url,
-        "extensions": '{"persistedQuery":{"version":1,"sha256Hash":"8850398f03323cf6acd9ce618fe82b5c033a3545834e8f5d5b968ad316337e54"}}'
+    query = '''
+    query findStreamerBySlug($slug: String!) {
+      streamer: findStreamerBySlug(username: $slug) {
+        id
+        username
+        broadcast {
+          broadcastStatus
+          showStatus
+          title
+          pullUrl
+        }
+      }
     }
-    murl = "https://api.cherry.tv/graphql?" + urllib_parse.urlencode(query)
-    try:
-        response = utils.getHtml(murl, site.url)
-    except:
-        return None
+    '''
+    pdata = {
+        'operationName': 'findStreamerBySlug',
+        'variables': {"slug": url},
+        'query': query
+    }
+
+    murl = "https://api.cherry.tv/graphql"
+    response = utils._postHtml(murl, json_data=pdata)
+
     data = json.loads(response).get('data', {}).get('streamer', {}).get('broadcast', {})
     if data.get('broadcastStatus') == 'Live':
         surl = data.get('pullUrl')
