@@ -35,7 +35,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'adult/genre/parodies/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'adult/genre/parodies/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + 'adult/?v_sortby=views&v_orderby=desc')
+    List(site.url + 'adult')
     utils.eod()
 
 
