@@ -1,9 +1,3 @@
-[B]Version 1.1.56[/B]
-Perverzija - added contextmenu to lookup info from the video
-animeidhentai - fix listing
-heantaihavenco - fix listing
-spankbang - fix search pagination
-new sites - youcrazyx, yrprn, trendyporn, yespornplease, blendporn
-cherrytv - fix listing and playback
-avple - fix playback
-Netflixporno - fix listing
+[B]Version 1.1.57[/B]
+
+trannyteca - new site

@@ -16,28 +16,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from resources.lib.basics import addon, cuminationicon, cookiePath, favoritesdb, addon_handle, eod, addon_sys, keys  # noqa
-import six
-from six.moves import urllib_request, urllib_parse, urllib_error, http_cookiejar, html_parser
-import ssl
-import re
-import os.path
-import sys
-import time
-import tempfile
-import sqlite3
 import base64
 import gzip
-from resources.lib.brotlidecpy import decompress
 import json
+import os.path
+import re
+import sqlite3
+import ssl
+import sys
+import tempfile
+import time
+from functools import wraps
 from math import ceil
 
-from kodi_six import xbmc, xbmcplugin, xbmcgui, xbmcvfs
-from resources.lib import random_ua, cloudflare, strings
-from resources.lib.basics import addDir, searchDir, cum_image
-from functools import wraps
-from resources.lib.url_dispatcher import URL_Dispatcher
+import six
 import StorageServer
+from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs
+from resources.lib import cloudflare, random_ua, strings
+from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
+                                  cookiePath, cum_image, cuminationicon, eod,
+                                  favoritesdb, keys, searchDir)
+from resources.lib.brotlidecpy import decompress
+from resources.lib.url_dispatcher import URL_Dispatcher
+from six.moves import (html_parser, http_cookiejar, urllib_error, urllib_parse,
+                       urllib_request)
 
 cache = StorageServer.StorageServer("cumination", int(addon.getSetting('cache_time')))
 url_dispatcher = URL_Dispatcher('utils')
@@ -988,8 +990,8 @@ def backup_keywords():
     progress.create(i18n('backing_up'), i18n('init'))
     if not path:
         return
-    import json
     import datetime
+    import json
     progress.update(25, i18n('read_db'))
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
@@ -1490,3 +1492,11 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
                 cm_related = (addon_sys + "?mode=" + str(contextm) + "&url=" + urllib_parse.quote_plus(videopage))
                 cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
             site.add_download_link(name, videopage, playvid, img, name, quality=quality, duration=duration, contextm=cm)
+
+
+def _bencode(text):
+    return six.ensure_str(base64.b64encode(six.ensure_binary(text)))
+
+
+def _bdecode(text):
+    return six.ensure_str(base64.b64decode(text))
