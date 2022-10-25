@@ -25,15 +25,22 @@ site = AdultSite('xfreehd', '[COLOR hotpink]XFreeHD[/COLOR]', 'https://www.xfree
 
 @site.register(default_mode=True)
 def xfreehd_main():
+    search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
+    search_order = utils.addon.getSetting("xfreeorder") or 'Relevance'
+    search_order = search_order if search_order in search_orders.keys() else 'Relevance'
+    context = (utils.addon_sys + "?mode=" + str('xfreehd.Sortorder'))
+    contextmenu = [('[COLOR orange]Search Order[/COLOR]', 'RunPlugin(' + context + ')')]
+
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'xfreehd_cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?search_query=', 'xfreehd_search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'xfreehd_search', site.img_search, contextm=contextmenu)
+    site.add_dir('[COLOR hotpink]REFRESH[/COLOR]', '', 'refresh', '')
     xfreehd_list(site.url + 'videos?o=mr')
 
 
 @site.register()
 def xfreehd_list(url):
     try:
-        listhtml = utils.getHtml(url)
+        listhtml = utils.getHtml(url, site.url)
     except:
         return
 
@@ -73,8 +80,20 @@ def xfreehd_search(url, keyword=None):
         site.search_dir(url, 'xfreehd_search')
     else:
         title = keyword.replace(' ', '%20')
-        url = url + title + '&search_type=videos&o=mr'
+        search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
+        search_order = utils.addon.getSetting("xfreeorder") or 'Relevance'
+        search_order = search_order if search_order in search_orders.keys() else 'Relevance'
+        url = url + title + '&search_type=videos&o={}'.format(search_orders[search_order]) if search_order != 'Relevance' else url + title + '&search_type=videos'
         xfreehd_list(url)
+
+
+@site.register()
+def Sortorder():
+    search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
+    order = utils.selector('Select sort order', search_orders.keys())
+    if order:
+        utils.addon.setSetting('xfreeorder', order)
+        utils.refresh()
 
 
 @site.register()

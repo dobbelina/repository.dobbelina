@@ -1,3 +1,4 @@
 [B]Version 1.1.57[/B]
-
+Speedporn - lookup info from contextmenu
 trannyteca - new site
+xfreehd - the order of the search results can be changed

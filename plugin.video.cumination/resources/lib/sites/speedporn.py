@@ -17,6 +17,8 @@
 '''
 
 import re
+import xbmc
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
@@ -45,7 +47,14 @@ def List(url):
     match = re.compile(r'class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('speedporn.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+        site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu)
     next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if next_page:
         next_page = next_page[0]
@@ -60,17 +69,23 @@ def List_all(url):
     while nextpg:
         try:
             listhtml = utils.getHtml(url)
+            match = re.compile(r'class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+            for videopage, img, name in match:
+                name = utils.cleantext(name)
+                contextmenu = []
+                contexturl = (utils.addon_sys
+                                + "?mode=" + str('speedporn.Lookupinfo')
+                                + "&url=" + urllib_parse.quote_plus(videopage))
+                contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+                site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu)
+            if len(match) == 49:
+                next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+                if next_page:
+                    url = next_page[0]
+            else:
+                nextpg = False
         except:
-            return None
-        match = re.compile(r'class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        for videopage, img, name in match:
-            name = utils.cleantext(name)
-            site.add_download_link(name, videopage, 'Playvid', img)
-        if len(match) == 49:
-            next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-            if next_page:
-                url = next_page[0]
-        else:
             nextpg = False
     utils.eod()
 
@@ -94,16 +109,19 @@ def Categories(url):
 def Categories_all(url):
     nextpg = True
     while nextpg:
-        cathtml = utils.getHtml(url, '')
-        match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?data-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
-        for catpage, img, name, videos in match:
-            name = utils.cleantext(name) + " [COLOR deeppink]" + videos.strip() + "[/COLOR]"
-            site.add_dir(name, catpage, 'List_all', img)
-        if len(match) == 49:
-            next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-            if next_page:
-                url = next_page[0]
-        else:
+        try:
+            cathtml = utils.getHtml(url, '')
+            match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?data-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
+            for catpage, img, name, videos in match:
+                name = utils.cleantext(name) + " [COLOR deeppink]" + videos.strip() + "[/COLOR]"
+                site.add_dir(name, catpage, 'List_all', img)
+            if len(match) == 49:
+                next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+                if next_page:
+                    url = next_page[0]
+            else:
+                nextpg = False
+        except:
             nextpg = False
     utils.eod()
 
@@ -169,3 +187,42 @@ def Search(url, keyword=None):
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
         List(searchUrl)
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    studios = re.compile('(director/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if studios:
+        for url, studio in studios:
+            studio = "Studio - " + studio.strip()
+            infodict[studio] = site.url + url
+
+    actors = re.compile('(pornstars/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if actors:
+        for url, actor in actors:
+            actor = "Actor - " + actor.strip()
+            infodict[actor] = site.url + url
+
+    genres = re.compile('(genres/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if genres:
+        for url, genre in genres:
+            genre = "Genre - " + genre.strip()
+            infodict[genre] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('speedporn.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No actors, studios or genres found for this video')
+    return
