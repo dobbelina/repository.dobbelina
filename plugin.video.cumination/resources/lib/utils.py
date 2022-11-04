@@ -1181,7 +1181,7 @@ def prefquality(video_list, sort_by=None, reverse=False):
     if isinstance(video_list, dict):
         qualities = [2160, 1080, 720, 576]
         quality = qualities[maxquality]
-        for key in video_list.keys():
+        for key in video_list.copy():
             if key.lower() == '4k':
                 video_list['2160'] = video_list[key]
                 video_list.pop(key)
