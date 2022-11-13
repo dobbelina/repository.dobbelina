@@ -64,7 +64,7 @@ def List(url):
         site.add_dir('[COLOR orange]' + title + ' [COLOR hotpink]*** Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
 
     main_block = re.compile(r'videos\s*search-video-thumbs.*?">(.*?)<div\s*class="reset">', re.DOTALL).findall(listhtml)[0]
-    match = re.compile(r'class="pcVideoListItem.+?data-thumb_url\s*=\s*"([^"]+).+?tion">([^<]+)(.*?)</div.+?href="([^"]+).+?>\s*(.+?)\s*<', re.DOTALL).findall(main_block)
+    match = re.compile(r'class="pcVideoListItem.+?data-mediumthumb\s*=\s*"([^"]+).+?tion">([^<]+)(.*?)</div.+?href="([^"]+).+?>\s*(.+?)\s*<', re.DOTALL).findall(main_block)
     for img, duration, hd, videopage, name in match:
         hd = 'HD' if 'HD' in hd else ''
         name = utils.cleantext(name)
