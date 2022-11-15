@@ -25,6 +25,7 @@ from resources.lib.adultsite import AdultSite
 site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://reallifecam.to/', 'https://reallifecam.to/images/logo/logo.png', 'rlc')
 site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
 site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.life[/COLOR]', 'https://voyeur-house.life/', 'https://www.voyeur-house.life/images/logo/logo.png', 'vhlife')
+site3 = AdultSite('vhlife1', '[COLOR hotpink]Voyeurhouse.life[/COLOR]', 'https://www.voyeurhouse.life/', 'https://www.voyeurhouse.life/images/logo/logo.png', 'vhlife1')
 
 
 def getBaselink(url):
@@ -34,12 +35,15 @@ def getBaselink(url):
         siteurl = site1.url
     elif 'voyeur-house.life' in url:
         siteurl = site2.url
+    elif 'voyeurhouse.life' in url:
+        siteurl = site3.url
     return siteurl
 
 
 @site.register(default_mode=True)
 @site1.register(default_mode=True)
 @site2.register(default_mode=True)
+@site3.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
@@ -50,11 +54,9 @@ def Main(url):
 @site.register()
 def List(url):
     siteurl = getBaselink(url)
-    try:
-        listhtml = utils.getHtml(url, '')
-    except:
-        return None
-    match = re.compile(r'class="well well-sm">\s*<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml = utils.getHtml(url, '')
+
+    match = re.compile(r'class="(?:well well-sm|content-info)">\s*<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name, quality, duration in match:
         name = utils.cleantext(name)
         if videopage.startswith('/'):
@@ -62,7 +64,7 @@ def List(url):
         hd = 'HD' if '>HD<' in quality else ''
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
     try:
-        next_page = re.compile('href="([^"]+)" class="prevnext">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        next_page = re.compile('href="([^"]+)" class="prevnext"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         page_nr = re.findall(r'\d+', next_page)[-1]
         site.add_dir('Next Page ({})'.format(page_nr), next_page, 'List', site.img_next)
     except:
