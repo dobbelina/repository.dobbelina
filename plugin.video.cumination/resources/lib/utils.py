@@ -1182,9 +1182,15 @@ def prefquality(video_list, sort_by=None, reverse=False):
         qualities = [2160, 1080, 720, 576]
         quality = qualities[maxquality]
         for key in video_list.copy():
-            if key.lower() == '4k':
-                video_list['2160'] = video_list[key]
+            if key.lower().endswith('p60'):
+                video_list[key.replace('p60','')] = video_list[key]
                 video_list.pop(key)
+            else:    
+                if key.lower() == '4k':
+                    video_list['2160'] = video_list[key]
+                    video_list.pop(key)
+            
+            
 
         video_list = [(int(''.join([y for y in key if y.isdigit()])), value) for key, value in list(video_list.items())]
         video_list = sorted(video_list, reverse=True)
@@ -1193,6 +1199,10 @@ def prefquality(video_list, sort_by=None, reverse=False):
             if quality >= video[0]:
                 vidurl = video[1]
                 break
+            else:
+                if str(quality) in str(video[0]):
+                    vidurl = video[1]
+                    break
         if not vidurl:
             vidurl = video_list[-1][1]
     else:
