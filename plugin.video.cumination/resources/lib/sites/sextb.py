@@ -40,7 +40,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Reducing Mosaic[/COLOR]', site.url + 'genre/reducing-mosaic/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Subtitle[/COLOR]', site.url + 'subtitle/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actres[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studio', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'uncensored/pg-1')
@@ -53,15 +53,16 @@ def List(url):
     if 'No Video were found that matched your search query' in html or len(html) < 10:
         utils.eod()
         return
-    match = re.compile('<div class="tray-item .*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    match = re.compile(r'<div class="tray-item .*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    nextp = re.compile('href="([^"]+)"><[^>]+>Next', re.DOTALL | re.IGNORECASE).search(html)
+    nextp = re.compile(r'''href=["']([^'"]+)["']>Next''', re.DOTALL | re.IGNORECASE).search(html)
     if nextp:
         np = nextp.group(1)
-        site.add_dir('Next Page (' + np.split('/pg-')[-1] + ')', np, 'List', site.img_next)
+        pgtxt = re.compile(r'''class=['"]current['"]\s*id[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(html)[0]
+        site.add_dir('Next Page... (Currently in Page {0})'.format(pgtxt), np, 'List', site.img_next)
     utils.eod()
 
 
@@ -83,10 +84,11 @@ def Actress(url):
     for caturl, img, name in match:
         name = utils.cleantext(name)
         site.add_dir(name, caturl, 'List', img)
-    nextp = re.compile('href="([^"]+)"><[^>]+>Next', re.DOTALL | re.IGNORECASE).search(cathtml)
+    nextp = re.compile(r'''href=["']([^'"]+)["']>Next''', re.DOTALL | re.IGNORECASE).search(cathtml)
     if nextp:
         np = nextp.group(1)
-        site.add_dir('Next Page (' + np.split('/pg-')[-1] + ')', np, 'Actress', site.img_next)
+        pgtxt = re.compile(r'''class=['"]current['"]\s*id[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        site.add_dir('Next Page... (Currently in Page {0})'.format(pgtxt), np, 'Actress', site.img_next)
     utils.eod()
 
 
