@@ -1,6 +1,6 @@
 """
     Cumination
-    Copyright (C) 2016 Whitecream
+    Copyright (C) 20222 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven Co[/COLOR]', 'https://hentaihaven.co/', 'https://hentaihaven.co/wp-content/uploads/2022/08/logo1.png', 'hentaihavenco')
+site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven[/COLOR]', 'https://hentaihaven.co/', 'hh.png', 'hentaihavenco')
 
 
 @site.register(default_mode=True)

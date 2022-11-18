@@ -18,6 +18,8 @@
 
 import re
 import json
+import xbmc
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -42,7 +44,14 @@ def List(url):
     for videopage, name, img in match:
         name = name.replace('[', '[COLOR pink]').replace('] ', '[/COLOR] ')
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('xmoviesforyou.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
     nextp = re.compile(r'class="next page-numbers"\s*href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if nextp:
         np = nextp[0]
@@ -89,3 +98,37 @@ def Categories(url):
         name = '{} ([COLOR hotpink]{}[/COLOR])'.format(category['name'], category['count'])
         site.add_dir(name, category['link'], 'List', '')
     utils.eod()
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    categories = re.compile('(category/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if categories:
+        for url, cat in categories:
+            cat = "Cat - " + cat.strip()
+            infodict[cat] = site.url + url
+
+    tags = re.compile('(tag/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('xmoviesforyou.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No categories or tags found for this video')
+    return

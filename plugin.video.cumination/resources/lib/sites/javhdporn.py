@@ -31,6 +31,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'pornstars/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    List('https://www2.javhdporn.net/')
     utils.eod()
 
 
