@@ -33,6 +33,8 @@ dialog = utils.dialog
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actors[/COLOR]', '{0}actors/?sort=name'.format(site.url), 'Actors', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{0}studios/?sort=title'.format(site.url), 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/?pattern='.format(site.url), 'Search', site.img_search)
     List('{0}all/?sort=created_at'.format(site.url))
     utils.eod()
@@ -66,6 +68,38 @@ def Cat(url):
         img = site.url[:-1] + img
         catpage = site.url[:-1] + caturl
         site.add_dir(utils.cleantext(name), catpage, 'List', img)
+    utils.eod()
+    
+@site.register()
+def Actors(url):
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile(r'class="item".+?href="([^"]+).+?span>([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for caturl, name, img in match:
+        img = site.url[:-1] + img
+        catpage = site.url[:-1] + caturl
+        site.add_dir(utils.cleantext(name), catpage, 'List', img)
+    npage = re.compile(r'class="next"><a href="([^"]+)"\s*data-page="(\d+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    if npage:
+        nurl, np = npage[0]
+        nurl = site.url[:-1] + nurl.replace('&amp;', '&')
+        lp = re.compile(r'class="last"><a href="[^"]+"\s*data-page="(\d+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        site.add_dir("Next Page (Currently in Page {} of {})".format(np, lp), nurl, 'Actors', site.img_next)
+    utils.eod()
+    
+@site.register()
+def Studios(url):
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile(r'class="item".+?href="([^"]+).+?span>([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for caturl, name, img in match:
+        img = site.url[:-1] + img
+        catpage = site.url[:-1] + caturl
+        site.add_dir(utils.cleantext(name), catpage, 'List', img)
+    npage = re.compile(r'class="next"><a href="([^"]+)"\s*data-page="(\d+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    if npage:
+        nurl, np = npage[0]
+        nurl = site.url[:-1] + nurl.replace('&amp;', '&')
+        lp = re.compile(r'class="last"><a href="[^"]+"\s*data-page="(\d+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        site.add_dir("Next Page (Currently in Page {} of {})".format(np, lp), nurl, 'Studios', site.img_next)
     utils.eod()
 
 
