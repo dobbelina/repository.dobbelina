@@ -31,11 +31,11 @@ def Main():
     trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
 
-    bu = "https://stripchat.com/api/external/v4/widget/?limit=1000&modelsCountry=&modelsLanguage=&modelsList=&tag="
-    site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd&broadcastHD=true'.format(bu), 'List', '', '')
+    bu = "https://stripchat.com/api/front/models?limit=1000&parentTag=autoTagNew&sortBy=trending&primaryTag="
+    # site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd&broadcastHD=true'.format(bu), 'List', '', '')
     if female:
-        site.add_dir('[COLOR hotpink]Female HD[/COLOR]', '{0}female&broadcastHD=true'.format(bu), 'List', '', '')
-        site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
+        site.add_dir('[COLOR hotpink]Female HD[/COLOR]', '{0}girls&broadcastHD=true'.format(bu), 'List', '', '')
+        site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}girls'.format(bu), 'List', '', '')
     if couple:
         site.add_dir('[COLOR hotpink]Couples HD[/COLOR]', '{0}couples&broadcastHD=true'.format(bu), 'List', '', '')
         site.add_dir('[COLOR hotpink]Couples[/COLOR]', '{0}couples'.format(bu), 'List', '', '')
@@ -62,10 +62,11 @@ def List(url):
 
     for model in model_list:
         name = utils.cleanhtml(model['username'])
-        videourl = model['stream']['url']
-        fanart = model.get('previewUrl') if utils.addon.getSetting('posterfanart') == 'true' else None
-        img = model.get('snapshotUrl')
-        img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
+        videourl = model['hlsPlaylist']
+        # fanart = model.get('') if utils.addon.getSetting('posterfanart') == 'true' else None
+        fanart = model.get('previewUrlThumbSmall')
+        img = 'https://img.strpst.com/thumbs/{0}/{1}_webp'.format(model.get('snapshotTimestamp'), model.get('id'))
+        # img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
         subject = ''
         if model.get('country'):
             subject += '[COLOR deeppink]Location: [/COLOR]{0}[CR]'.format(utils.get_country(model.get('country')))

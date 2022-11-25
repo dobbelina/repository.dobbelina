@@ -1,2 +1,3 @@
 [B]Version 1.1.59[/B]
 paradisehill - added search actors & studios
+stripchat - fix listing, thumbs
