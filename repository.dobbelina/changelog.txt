@@ -1,3 +1,4 @@
+Dobbelina Repo 1.0.4 (2022-11-29) Nexus compliant dir tags
 Dobbelina Repo 1.0.3 (2021-01-02)
 Cumination Release
 Dobbelina Repo 1.0.2 (2020-04-04)
