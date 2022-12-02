@@ -16,7 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from inspect import getargspec
+try:
+    from inspect import getargspec
+except ImportError:
+    from inspect import getfullargspec as getargspec
 from resources.lib.basics import addDir, addDownLink, addImgLink, searchDir, cum_image
 
 
