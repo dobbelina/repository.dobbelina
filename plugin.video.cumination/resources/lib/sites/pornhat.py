@@ -79,7 +79,6 @@ def Main(url):
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url)
     match = re.compile(r'(?:class="thumb thumb-video|class="thumb-bl thumb-video|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)

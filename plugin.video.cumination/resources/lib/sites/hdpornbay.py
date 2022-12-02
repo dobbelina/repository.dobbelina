@@ -27,30 +27,30 @@ from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
 
 
-site = AdultSite('pornwild', '[COLOR hotpink]PornWild[/COLOR]', 'https://pornwild.com/', 'pornwild.png', 'pornwild')
+site = AdultSite('hdpornbay', '[COLOR hotpink]HDPornBay[/COLOR]', 'https://hdpornbay.com/', 'hdpornbay.png', 'hdpornbay')
 
 getinput = utils._get_keyboard
-pwlogged = 'true' in utils.addon.getSetting('pwlogged')
+pblogged = 'true' in utils.addon.getSetting('pblogged')
 
 
 @site.register(default_mode=True)
 def Main():
     sort_orders = {'Recently updated': 'last_content_date', 'Most viewed': 'playlist_viewed', 'Top rated': 'rating', 'Most commented': 'most_commented', 'Most videos': 'total_videos'}
-    pwsortorder = utils.addon.getSetting('pwsortorder') if utils.addon.getSetting('pwsortorder') else 'last_content_date'
-    sortname = list(sort_orders.keys())[list(sort_orders.values()).index(pwsortorder)]
+    pbsortorder = utils.addon.getSetting('pbsortorder') if utils.addon.getSetting('pbsortorder') else 'last_content_date'
+    sortname = list(sort_orders.keys())[list(sort_orders.values()).index(pbsortorder)]
 
-    context = (utils.addon_sys + "?mode=" + str('pornwild.PLContextMenu'))
+    context = (utils.addon_sys + "?mode=" + str('hdpornbay.PLContextMenu'))
     contextmenu = [('[COLOR orange]Sort order[/COLOR]', 'RunPlugin(' + context + ')')]
 
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Playlists[/COLOR] [COLOR orange]{}[/COLOR]'.format(sortname), site.url + 'playlists/?mode=async&function=get_block&block_id=list_playlists_common_playlists_list&sort_by={}&from=01'.format(pwsortorder), 'Playlists', site.img_cat, contextm=contextmenu)
+    site.add_dir('[COLOR hotpink]Playlists[/COLOR] [COLOR orange]{}[/COLOR]'.format(sortname), site.url + 'playlists/?mode=async&function=get_block&block_id=list_playlists_common_playlists_list&sort_by={}&from=01'.format(pbsortorder), 'Playlists', site.img_cat, contextm=contextmenu)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{0}/', 'Search', site.img_search)
-    if not pwlogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PWLogin', '', Folder=False)
-    elif pwlogged:
-        pwuser = utils.addon.getSetting('pwuser')
-        site.add_dir('[COLOR violet]PW Favorites[/COLOR]', site.url + 'my/favorites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(pwuser), '', 'PWLogin', '', Folder=False)
+    if not pblogged:
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PBLogin', '', Folder=False)
+    elif pblogged:
+        pbuser = utils.addon.getSetting('pbuser')
+        site.add_dir('[COLOR violet]HDPB Favorites[/COLOR]', site.url + 'my/favorites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(pbuser), '', 'PBLogin', '', Folder=False)
     List(site.url + 'latest-updates/', 1)
     utils.eod()
 
@@ -60,8 +60,8 @@ def List(url, page=1):
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     listhtml = utils.getHtml(url, site.url, headers=hdr)
-    if pwlogged and ('>Log in<' in listhtml):
-        if PWLogin(False):
+    if pblogged and ('>Log in<' in listhtml):
+        if PBLogin(False):
             hdr['Cookie'] = get_cookies()
             listhtml = utils.getHtml(url, site.url, headers=hdr)
         else:
@@ -80,7 +80,7 @@ def List(url, page=1):
             hd = 'HD' if '>HD<' in hd else ''
             name = utils.cleantext(name)
             if 'private' in private.lower():
-                if not pwlogged:
+                if not pblogged:
                     continue
                 private = "[COLOR blue] [PV][/COLOR] "
             else:
@@ -88,17 +88,17 @@ def List(url, page=1):
             name = private + name
             img = 'https:' + img if img.startswith('//') else img
             contextmenu = None
-            if pwlogged:
+            if pblogged:
                 contextadd = (utils.addon_sys
-                              + "?mode=" + str('pornwild.ContextMenu')
+                              + "?mode=" + str('hdpornbay.ContextMenu')
                               + "&url=" + urllib_parse.quote_plus(videopage)
                               + "&fav=add")
                 contextdel = (utils.addon_sys
-                              + "?mode=" + str('pornwild.ContextMenu')
+                              + "?mode=" + str('hdpornbay.ContextMenu')
                               + "&url=" + urllib_parse.quote_plus(videopage)
                               + "&fav=del")
-                contextmenu = [('[COLOR violet]Add to PW favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'),
-                               ('[COLOR violet]Delete from PW favorites[/COLOR]', 'RunPlugin(' + contextdel + ')')]
+                contextmenu = [('[COLOR violet]Add to HDPB Favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'),
+                               ('[COLOR violet]Delete from HDPB Favorites[/COLOR]', 'RunPlugin(' + contextdel + ')')]
 
             site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=name2, quality=hd)
 
@@ -113,7 +113,7 @@ def List(url, page=1):
         else:
             nurl = url.replace('/{}/'.format(page), '/{}/'.format(npage)) if '/{}/'.format(page) in url else '{}{}/'.format(url, npage)
 
-        cm_page = (utils.addon_sys + "?mode=pornwild.GotoPage&list_mode=pornwild.List&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + lastp.replace('/', ''))
+        cm_page = (utils.addon_sys + "?mode=hdpornbay.GotoPage&list_mode=hdpornbay.List&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + lastp.replace('/', ''))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage, contextm=cm)
     utils.eod()
@@ -211,45 +211,45 @@ def Search(url, keyword=None):
 
 
 @site.register()
-def PWLogin(logged=True):
-    pwlogged = utils.addon.getSetting('pwlogged')
+def PBLogin(logged=True):
+    pblogged = utils.addon.getSetting('pblogged')
     if not logged:
-        pwlogged = False
-        utils.addon.setSetting('pwlogged', 'false')
+        pblogged = False
+        utils.addon.setSetting('pblogged', 'false')
 
-    if not pwlogged or 'false' in pwlogged:
-        pwuser = utils.addon.getSetting('pwuser') if utils.addon.getSetting('pwuser') else ''
-        pwpass = utils.addon.getSetting('pwpass') if utils.addon.getSetting('pwpass') else ''
-        if pwuser == '':
-            pwuser = getinput(default=pwuser, heading='Input your pornwild username')
-            pwpass = getinput(default=pwpass, heading='Input your pornwild password', hidden=True)
+    if not pblogged or 'false' in pblogged:
+        pbuser = utils.addon.getSetting('pbuser') if utils.addon.getSetting('pbuser') else ''
+        pbpass = utils.addon.getSetting('pbpass') if utils.addon.getSetting('pbpass') else ''
+        if pbuser == '':
+            pbuser = getinput(default=pbuser, heading='Input your hdpornbay username')
+            pbpass = getinput(default=pbpass, heading='Input your hdpornbay password', hidden=True)
 
         loginurl = '{0}login/'.format(site.url)
         postRequest = {'action': 'login',
                        'email_link': '{0}email/'.format(site.url),
                        'format': 'json',
                        'mode': 'async',
-                       'pass': pwpass,
+                       'pass': pbpass,
                        'remember_me': '1',
-                       'username': pwuser}
+                       'username': pbuser}
         response = utils._postHtml(loginurl, form_data=postRequest)
         if 'success' in response.lower():
-            utils.addon.setSetting('pwlogged', 'true')
-            utils.addon.setSetting('pwuser', pwuser)
-            utils.addon.setSetting('pwpass', pwpass)
+            utils.addon.setSetting('pblogged', 'true')
+            utils.addon.setSetting('pbuser', pbuser)
+            utils.addon.setSetting('pbpass', pbpass)
             success = True
         else:
             utils.notify('Failure logging in', 'Failure, please check your username or password')
-            utils.addon.setSetting('pwuser', '')
-            utils.addon.setSetting('pwpass', '')
+            utils.addon.setSetting('pbuser', '')
+            utils.addon.setSetting('pbpass', '')
             success = False
-    elif pwlogged:
+    elif pblogged:
         clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
         if clear:
             if clear == 'Yes':
-                utils.addon.setSetting('pwuser', '')
-                utils.addon.setSetting('pwpass', '')
-            utils.addon.setSetting('pwlogged', 'false')
+                utils.addon.setSetting('pbuser', '')
+                utils.addon.setSetting('pbpass', '')
+            utils.addon.setSetting('pblogged', 'false')
             utils._getHtml(site.url + 'logout/')
     if logged:
         xbmc.executebuiltin('Container.Refresh')
@@ -270,14 +270,14 @@ def ContextMenu(url, fav):
 
     if fav == 'add':
         if ('success') in resp:
-            utils.notify('Favorites', 'Added to PW Favorites')
+            utils.notify('Favorites', 'Added to HDPB Favorites')
         else:
             msg = re.findall('message":"([^"]+)"', resp)[0]
             utils.notify('Favorites', msg)
         return
     if fav == 'del':
         if ('success') in resp:
-            utils.notify('Deleted from PW Favorites')
+            utils.notify('Deleted from HDPB Favorites')
             xbmc.executebuiltin('Container.Refresh')
         else:
             msg = re.findall('message":"([^"]+)"', resp)[0]
@@ -290,7 +290,7 @@ def PLContextMenu():
     sort_orders = {'Recently updated': 'last_content_date', 'Most viewed': 'playlist_viewed', 'Top rated': 'rating', 'Most commented': 'most_commented', 'Most videos': 'total_videos'}
     order = utils.selector('Select order', sort_orders)
     if order:
-        utils.addon.setSetting('pwsortorder', order)
+        utils.addon.setSetting('pbsortorder', order)
         xbmc.executebuiltin('Container.Refresh')
 
 
@@ -306,6 +306,6 @@ def get_cookies():
             cookiestr += '; kt_member=' + cookie.value
         if cookie.domain == domain and cookie.name == '__ddg1_':
             cookiestr += '; __ddg1_=' + cookie.value
-    if pwlogged and 'kt_member' not in cookiestr:
-        PWLogin(False)
+    if pblogged and 'kt_member' not in cookiestr:
+        PBLogin(False)
     return cookiestr

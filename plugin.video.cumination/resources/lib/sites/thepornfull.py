@@ -92,14 +92,15 @@ def thepornfull_play(url, name, download=None):
     match = re.compile('iframe src="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
     if match:
         iframeurl = match.group(1)
+        iframeurl = 'https:' + iframeurl if iframeurl.startswith('//') else iframeurl
         if 'xvideos.com' in iframeurl:
             vp.play_from_link_to_resolve(iframeurl)
             return
         headers = {'referer': iframeurl}
         iframehtml = utils.getHtml(iframeurl, url)
-        iframefile = re.compile('file: "([^"]+)', re.IGNORECASE | re.DOTALL).search(iframehtml)
+        iframefile = re.compile(r'"{0,1}file"{0,1}:\s*"([^"]+)', re.IGNORECASE | re.DOTALL).search(iframehtml)
         if iframefile:
-            videourl = iframefile.group(1)
+            videourl = iframefile.group(1).replace(r'\/', '/')
             videourl = "{0}|{1}".format(videourl, urllib_parse.urlencode(headers))
             iconimage = xbmc.getInfoImage("ListItem.Thumb")
             subject = xbmc.getInfoLabel("ListItem.Plot")
