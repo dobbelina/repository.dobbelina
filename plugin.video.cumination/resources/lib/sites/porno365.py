@@ -23,7 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('porno365', "[COLOR hotpink]Porno365[/COLOR]", 'http://ru.porno365.bond/', 'http://ru.porno365.bond/settings/l8.png', 'porno365')
+site = AdultSite('porno365', "[COLOR hotpink]Porno365[/COLOR]", 'http://wew.porno365.bond/', 'http://wew.porno365.bond/settings/l8.png', 'porno365')
 
 
 @site.register(default_mode=True)
