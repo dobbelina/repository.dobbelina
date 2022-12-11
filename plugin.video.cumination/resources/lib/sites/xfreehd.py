@@ -17,10 +17,16 @@
 '''
 
 import re
+import xbmc
+import xbmcgui
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('xfreehd', '[COLOR hotpink]XFreeHD[/COLOR]', 'https://www.xfreehd.com/', 'xfreehd.png', 'xfreehd')
+
+getinput = utils._get_keyboard
+xflogged = 'true' in utils.addon.getSetting('xflogged')
 
 
 @site.register(default_mode=True)
@@ -33,34 +39,62 @@ def xfreehd_main():
 
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'xfreehd_cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'xfreehd_search', site.img_search, contextm=contextmenu)
-    site.add_dir('[COLOR hotpink]REFRESH[/COLOR]', '', 'refresh', '')
+    if not xflogged:
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', '', Folder=False)
+    elif xflogged:
+        xfuser = utils.addon.getSetting('xfuser')
+        site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', '', Folder=False)
     xfreehd_list(site.url + 'videos?o=mr')
 
 
 @site.register()
 def xfreehd_list(url):
+    hdr = dict(utils.base_hdrs)
+    hdr['Cookie'] = get_cookies()
     try:
-        listhtml = utils.getHtml(url, site.url)
+        listhtml = utils.getHtml(url, site.url, headers=hdr)
     except:
-        return
+        return None
+
+    if xflogged and '"/user">My Profile<' not in listhtml:
+        Login()
+        hdr['Cookie'] = get_cookies()
+        listhtml = utils._getHtml(url, site.url, headers=hdr)
 
     match = re.compile(r'''class="well\s*well-sm.+?href="([^"]+).+?src="(.+?).\s*title[^>]+>(.+?)duration-new">\s*([^\s]+).+?title-new.+?>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    i = 0
     for video, img, hd, duration, name in match:
+        i += 1
         if '>PRIVATE<' in hd:
-            continue
+            if not xflogged:
+                continue
+            else:
+                name = '[COLOR blue][PV][/COLOR] ' + name
         hd = 'HD' if '>HD<' in hd else ''
         if 'data-src' in img:
             img = img.split('data-src="')[1]
         else:
             img = site.url[:-1] + img
-        name = utils.cleantext(name)
+        name = str(i) + ': ' + utils.cleantext(name)
+
         site.add_download_link(name, site.url[:-1] + video, 'xfreehd_play', img, name, duration=duration, quality=hd)
 
-    np = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        next_page = np.group(1).replace('&amp;', '&')
+    match = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if match:
+        lp = re.compile(r'Showing.+?>\d+<.+?>\d+<.+?>(\d+)</span>\s*videos', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        if lp:
+            pages = int(lp[0]) // 30 + 1
+            last_page = '/' + str(pages) if lp else ''
+        else:
+            pages = None
+            last_page = ''
+        next_page = match.group(1).replace('&amp;', '&')
         page_number = ''.join([nr for nr in next_page.split('=')[-1] if nr.isdigit()])
-        site.add_dir('Next Page (' + page_number + ')', next_page, 'xfreehd_list', site.img_next)
+
+        cm_page = (utils.addon_sys + "?mode=xfreehd.GotoPage" + "&url=" + urllib_parse.quote_plus(next_page) + "&np=" + str(page_number) + "&lp=" + str(pages))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+        site.add_dir('Next Page (' + page_number + last_page + ')', next_page, 'xfreehd_list', site.img_next, contextm=cm)
     utils.eod()
 
 
@@ -100,11 +134,94 @@ def Sortorder():
 def xfreehd_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url, '')
+
+    hdr = dict(utils.base_hdrs)
+    hdr['Cookie'] = get_cookies()
+    html = utils.getHtml(url, site.url, headers=hdr)
+
+    if 'This is a private video.' in html:
+        if '"/user">My Profile<' not in html:
+            utils.notify('Cumination', 'Not logged in!')
+            return
+        match = re.compile(r'data-id="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(html)
+        if match:
+            userid = match[0]
+            posturl = site.url + 'ajax/subscribe'
+            postdata = {'user_id': userid}
+            response = utils._postHtml(posturl, form_data=postdata, headers=hdr)
+            html = utils._getHtml(url, site.url, headers=hdr)
+        if not match or '"status":-1' in response:
+            utils.notify('Cumination', 'Subscribe error...')
+            return
+
     sources = {}
     srcs = re.compile(r'''src="([^"]+)"\s*title="(SD|HD)"''', re.DOTALL | re.IGNORECASE).findall(html)
+
     if srcs:
-        for videourl, quality in srcs:
-            sources[quality] = videourl
+        sources = {x[1]: x[0] for x in srcs}
         videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: x)
-        vp.play_from_direct_link(videourl)
+        if videourl:
+            vp.play_from_direct_link(videourl)
+
+
+@site.register()
+def Login():
+    xfuser = utils.addon.getSetting('xfuser') if utils.addon.getSetting('xfuser') else ''
+    xfpass = utils.addon.getSetting('xfpass') if utils.addon.getSetting('xfpass') else ''
+    if xfuser == '':
+        xfuser = getinput(default=xfuser, heading='Input your XFreeHD username')
+        xfpass = getinput(default=xfpass, heading='Input your XFreeHD password', hidden=True)
+    loginurl = '{0}login'.format(site.url)
+    postRequest = {'username': xfuser,
+                   'password': xfpass,
+                   'submit_login': ''}
+    response = utils._postHtml(loginurl, form_data=postRequest)
+    if 'Welcome {}!'.format(xfuser) in response:
+        utils.addon.setSetting('xflogged', 'true')
+        utils.addon.setSetting('xfuser', xfuser)
+        utils.addon.setSetting('xfpass', xfpass)
+        success = True
+        utils.refresh()
+    else:
+        utils.notify('Failure logging in', 'Failure, please check your username or password')
+        utils.addon.setSetting('xfuser', '')
+        utils.addon.setSetting('xfpass', '')
+        success = False
+    return success
+
+
+@site.register()
+def Logout():
+    clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
+    if clear:
+        if clear == 'Yes':
+            utils.addon.setSetting('xfuser', '')
+            utils.addon.setSetting('xfpass', '')
+        utils.addon.setSetting('xflogged', 'false')
+        utils._getHtml(site.url + 'logout')
+        utils.refresh()
+
+
+@site.register()
+def GotoPage(url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        if 'page=' in url:
+            url = url.replace('page={}'.format(np), 'page={}'.format(pg))
+        contexturl = (utils.addon_sys + "?mode=xfreehd.xfreehd_list&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+def get_cookies():
+    domain = site.url.split('//')[-1][:-1]
+    cookiestr = ''
+    for cookie in utils.cj:
+        if cookie.domain == domain and cookie.name == 'AVS':
+            cookiestr = 'AVS=' + cookie.value
+    if xflogged and 'AVS=' not in cookiestr:
+        Login()
+    return cookiestr
