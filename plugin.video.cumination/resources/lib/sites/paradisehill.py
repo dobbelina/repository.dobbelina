@@ -75,7 +75,7 @@ def Cat(url):
         nurl, np = npage[0]
         nurl = site.url[:-1] + nurl.replace('&amp;', '&')
         lp = re.compile(r'class="last"><a href="[^"]+"\s*data-page="(\d+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
-        site.add_dir("Next Page (Currently in Page {} of {})".format(np, lp), nurl, 'Actors', site.img_next)
+        site.add_dir("Next Page (Currently in Page {} of {})".format(np, int(lp) + 1), nurl, 'Cat', site.img_next)
     utils.eod()
 
 
