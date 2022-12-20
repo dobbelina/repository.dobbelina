@@ -116,17 +116,19 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?title="([^"]+).+?location.+?>([^<]+).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, status, name, age, subject, location, duration, viewers in match:
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>.+?class="username">[^>]+>\s*([^<]+).+?age">([^<]+).+?subject">\s*(.+?)</div.+?inner">([^<]+).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name, age, subject, location, duration, viewers in match:
         name = utils.cleantext(name)
-        age = age.replace('&nbsp;', '')
+        age = age.replace('&nbsp;', '').strip()
+        tags = re.findall(r'>#([^<]+)', subject)
+        subject = re.sub(r'<.+>', '', subject)
         subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" \
             + "[COLOR deeppink]Duration: [/COLOR]" + utils.cleantext(duration) + "[CR]" \
             + "[COLOR deeppink]Watching: [/COLOR]" + utils.cleantext(viewers)
-        status = utils.cleantext(status.replace("[CR]", ""))
-        if status:
-            status = status.split('>')[1].split('<')[0]
-        name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
+        if tags:
+            tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
+            subject += "[CR][COLOR deeppink]Tags: [/COLOR]" + tags
+        name = name + " [COLOR deeppink][" + age + "][/COLOR]"
         videopage = bu[:-1] + videopage
         site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
 
