@@ -1,6 +1,6 @@
 '''
     Cumination
-    Copyright (C) 2016 Whitecream, hdgdl, holisticdioxide
+    Copyright (C) 2022 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import json
+from six.moves import urllib_parse
+import xbmc
+import xbmcgui
 
 site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster2.com/', 'xhamster.png', 'xhamster')
 
@@ -51,32 +55,36 @@ def List(url):
             site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=contextmenu)
             utils.eod()
         return
-
-    if 'data-video-id="' in response:
-        videos = response.split('data-video-id="')
-        videos.pop(0)
-        for video in videos:
-            match = re.compile(r'href="([^"]+)".+?src="([^"]+)".+?alt="([^"]+)".+?duration"?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
-            if match:
-                (videolink, img, name, length) = match[0]
-                if 'icon--uhd' in video:
-                    hd = '4k'
-                elif 'icon--hd' in video:
-                    hd = 'HD'
-                else:
-                    hd = ''
-                name = utils.cleantext(name)
-                site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
-
-        nextp = re.compile(r'data-page="next"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videos[-1])
-        if nextp:
-            nextp = nextp[0].replace('&#x3D;', '=').replace('&amp;', '&')
-            np = re.findall(r'\d+', nextp)[-1]
-            lp = re.compile(r'>([\d,]+)<\D+?class="next"', re.DOTALL | re.IGNORECASE).findall(videos[-1])
-            lp = '/' + lp[0] if lp else ''
-            site.add_dir('Next Page (' + np + lp + ')', nextp, 'List', site.img_next)
+    listjson = response.split('window.initials=')[-1].split(';</script>')[0]
+    jdata = json.loads(listjson)
+    if "trendingVideoListComponent" in jdata:
+        videos = jdata["trendingVideoListComponent"]["models"]
+    elif "searchResult" in jdata:
+        videos = jdata["searchResult"]["models"]
     else:
         utils.notify('Cumination', 'No video found.')
+
+    for video in videos:
+        name = video["title"]
+        videolink = video["pageURL"]
+        img = video["thumbURL"]
+        if not img:
+            continue
+        length = str(video["duration"])
+        hd = "4k" if video["isUHD"] else "HD" if video["isHD"] else ""
+        name = '[COLOR blue][VR][/COLOR] ' + name if video["isVR"] else name
+        name = name + ' [COLOR blue][Full Video][/COLOR]' if video["hasProducerBadge"] else name
+        name = name + ' [COLOR orange][Amateur][/COLOR]' if video["hasAmateurBadge"] else name
+        site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
+
+    if "pagination" in jdata:
+        np = jdata["pagination"]["next"]
+        lp = jdata["pagination"]["maxPages"]
+        if lp >= np:
+            npurl = jdata["pagination"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+            cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
+            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+            site.add_dir('Next Page (' + str(np) + '/' + str(lp) + ')', npurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
@@ -95,7 +103,7 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet"')[-1].split('class="letter-blocks page"')[0]
+    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
     match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'CategoriesA', '')
@@ -106,7 +114,7 @@ def Categories(url):
 def CategoriesA(url):
     cathtml = utils.getHtml(url, site.url)
     cathtml = cathtml.split('class="letter-blocks page"')[-1].split('class="search"')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile('href="([^"]+)" data-role="tag-link"><!-- HTML_TAG_START -->([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url + '/newest', 'List', '')
     utils.eod()
@@ -120,7 +128,7 @@ def Channels(url):
     elif cat == 'shemale':
         url = url.replace('/channels', '/shemale/channels')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="letter-blocks')[0]
+    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
     match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'ChannelsA', '')
@@ -130,7 +138,7 @@ def Channels(url):
 @site.register()
 def ChannelsA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="letter-blocks')[-1].split('class="alphabet')[0]
+    cathtml = cathtml.split('class="allcats categories-container page clearfix')[-1].split('class="after-pager"')[0]
     match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url + '/newest', 'List', '')
@@ -145,7 +153,7 @@ def Pornstars(url):
     elif cat == 'shemale':
         url = url.replace('/pornstars', '/shemale/pornstars')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="letter-blocks')[0]
+    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
     match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'PornstarsA', '')
@@ -155,8 +163,8 @@ def Pornstars(url):
 @site.register()
 def PornstarsA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="letter-blocks')[-1].split('class="search"')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    cathtml = cathtml.split('class="allcats categories-container page clearfix"')[-1].split('class="after-pager"')[0]
+    match = re.compile('href="([^"]+)"><span>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url + '/newest', 'List', '')
     utils.eod()
@@ -170,7 +178,7 @@ def Celebrities(url):
     elif cat == 'shemale':
         url = url.replace('/celebrities', '/shemale/celebrities')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="letter-blocks')[0]
+    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
     match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'CelebritiesA', '')
@@ -180,8 +188,8 @@ def Celebrities(url):
 @site.register()
 def CelebritiesA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="letter-blocks')[-1].split('class="search"')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    cathtml = cathtml.split('class="allcats categories-container page clearfix"')[-1].split('class="after-pager"')[0]
+    match = re.compile('href="([^"]+)"><span>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url + '/newest', 'List', '')
     utils.eod()
@@ -222,7 +230,7 @@ def ContextLength():
 
 @site.register()
 def ContextQuality():
-    categories = {'ALL': 1, 'hd': 2, '4k': 3, 'vr': 4}
+    categories = {'ALL': 1, '2160p': 2, '1080p': 3, '720p': 4}
     cat = utils.selector('Select category', categories.keys(), sort_by=lambda x: categories[x])
     if cat:
         utils.addon.setSetting('xhamsterqual', cat)
@@ -261,13 +269,12 @@ def update_url(url):
                 url = url.replace(site.url + old_cat, site.url[:-1]) if cat == 'straight' else url.replace(site.url + old_cat, site.url + cat)
 
     qual = get_setting('quality')
-    q = url.split('/')
-    if 'hd' in q or 'quality=hd' in url:
-        old_qual = 'hd'
-    elif '4k' in q or 'quality=4k' in url:
-        old_qual = '4k'
-    elif 'vr' in q or 'quality=vr' in url:
-        old_qual = 'vr'
+    if 'quality=720p' in url or ('hd/newest' in url and 'quality=1080p' not in url):
+        old_qual = '720p'
+    elif 'quality=1080p' in url:
+        old_qual = '1080p'
+    elif 'quality=2160p' in url or '4k/newest' in url:
+        old_qual = '2160p'
     else:
         old_qual = 'ALL'
 
@@ -279,12 +286,22 @@ def update_url(url):
                 url += '&quality=' + qual if '?' in url else '?quality=' + qual
         else:
             url = re.sub(r'newest/\d+', 'newest', url)
-            url = url.replace('/hd', '').replace('/4k', '').replace('/vr', '')
-            if qual != 'ALL':
-                url = url.split('newest')
-                url[0] += qual + '/'
-                url = 'newest'.join(url)
+            url = url.replace('/hd/newest', 'newest').replace('/4k/newest', '/newest').replace('quality=1080p', '').replace('?&', '&').replace('&&', '&')
 
+            url = url.split('newest')
+            if qual == '720p':
+                url[0] += 'hd/'
+                url = 'newest'.join(url)
+            elif qual == '2160p':
+                url[0] += '4k/'
+                url = 'newest'.join(url)
+            else:
+                url[0] += 'hd/'
+                url = 'newest'.join(url)
+                if '?' in url:
+                    url += '&quality=1080p'
+                else:
+                    url += '?quality=1080p'
     length = get_setting('length')
     if 'max-duration=10' in url:
         old_length = '0-10 min'
@@ -317,3 +334,17 @@ def ResetFilters():
     utils.addon.setSetting('xhamsterqual', 'ALL')
     utils.refresh()
     return
+
+
+@site.register()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = url.replace('page={}'.format(np), 'page={}'.format(pg))
+        url = url.replace('newest/{}'.format(np), 'newest/{}'.format(pg))
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')

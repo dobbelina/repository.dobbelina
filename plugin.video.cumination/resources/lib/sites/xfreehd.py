@@ -62,21 +62,17 @@ def xfreehd_list(url):
         listhtml = utils._getHtml(url, site.url, headers=hdr)
 
     match = re.compile(r'''class="well\s*well-sm.+?href="([^"]+).+?src="(.+?).\s*title[^>]+>(.+?)duration-new">\s*([^\s]+).+?title-new.+?>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    i = 0
     for video, img, hd, duration, name in match:
-        i += 1
         if '>PRIVATE<' in hd:
             if not xflogged:
                 continue
             else:
-                name = '[COLOR blue][PV][/COLOR] ' + name
+                name = '[COLOR blue][PV][/COLOR] ' + utils.cleantext(name)
         hd = 'HD' if '>HD<' in hd else ''
         if 'data-src' in img:
             img = img.split('data-src="')[1]
         else:
             img = site.url[:-1] + img
-        name = str(i) + ': ' + utils.cleantext(name)
-
         site.add_download_link(name, site.url[:-1] + video, 'xfreehd_play', img, name, duration=duration, quality=hd)
 
     match = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
