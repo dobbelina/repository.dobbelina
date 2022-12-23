@@ -252,7 +252,7 @@ def onlineFav(url):
     result = c.fetchall()
     c.close()
     for (name, url, image) in result:
-        model = [item for item in model_list if item["username"] in name.split('[COLOR')[0]]
+        model = [item for item in model_list if item["username"] == name.split('[COLOR')[0].strip()]
         if model:
             image = model[0]["image_url"]
             current_show = ''
