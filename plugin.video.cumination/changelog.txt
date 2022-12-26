@@ -1,6 +1,3 @@
-[B]Version 1.1.61[/B]
-Porno365 - Domain fix
-Chaturbate - listing fix
-xHamster - listing fix
-Chaturbate - Online Favorites fix
-Spankbang - listing fix
+[B]Version 1.1.62[/B]
+
+- chaturbate : fix listing
