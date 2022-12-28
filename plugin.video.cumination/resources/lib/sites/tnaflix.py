@@ -123,7 +123,7 @@ def Playvid(url, name, download=None):
         match = re.compile(r'config\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(embedhtml)
         if match:
             videourl = 'https:' + match[0] if match[0].startswith('//') else site.url + match[0] if match[0].startswith('/') else match[0]
-            html = utils.getHtml(videourl, embedurl)
+            html = utils.getHtml(videourl, embedurl, ignoreCertificateErrors=True)
             match = re.compile(r'<res>([^<]+)</res>\s*<videoLink><!\[CDATA\[([^]]+)\]', re.IGNORECASE | re.DOTALL).findall(html)
             if match:
                 videoArray = {x[0].split('_')[0]: x[1] for x in match}

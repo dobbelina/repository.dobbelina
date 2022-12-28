@@ -23,7 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('yrprno', "[COLOR hotpink]YrPrno[/COLOR]", 'https://www.yrprno.com/', 'yrprno.png', 'yrprno')
+site = AdultSite('6xtube', "[COLOR hotpink]6XTube[/COLOR]", 'https://www.6xtube.com/', '6xtube.png', '6xtube')
 
 
 @site.register(default_mode=True)
@@ -49,11 +49,11 @@ def List(url):
     re_duration = '<div class="duration">([^<]+)<'
     re_quality = '>HD<'
     skip = '=modelfeed'
-    utils.videos_list(site, 'yrprno.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm='yrprno.Related', skip=skip)
+    utils.videos_list(site, '6xtube.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm='6xtube.Related', skip=skip)
 
     re_npurl = r"href='([^']+)'\s*class=\"prevnext\">Next"
     re_npnr = r"href='page(\d+)\.html'\s*class=\"prevnext\">Next"
-    utils.next_page(site, 'yrprno.List', html, re_npurl, re_npnr, baseurl=url.split('page')[0], contextm='yrprno.GotoPage')
+    utils.next_page(site, '6xtube.List', html, re_npurl, re_npnr, baseurl=url.split('page')[0], contextm='6xtube.GotoPage')
     utils.eod()
 
 
@@ -72,7 +72,7 @@ def GotoPage(list_mode, url, np, lp):
 
 @site.register()
 def Related(url):
-    contexturl = (utils.addon_sys + "?mode=" + str('yrprno.List') + "&url=" + urllib_parse.quote_plus(url))
+    contexturl = (utils.addon_sys + "?mode=" + str('6xtube.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -88,16 +88,21 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'<a href="([^"]+)" title="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for caturl, name in match:
+    match = re.compile(r'class="col-sm-6.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, name, img in match:
         name = utils.cleantext(name)
-        site.add_dir(name, caturl, 'List', '')
+        site.add_dir(name, caturl, 'List', img)
     utils.eod()
 
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r'source src="([^"]+)"')
+    vp = utils.VideoPlayer(name, download, direct_regex=r'(?:src:|source src=)\s*"([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
+
     videohtml = utils.getHtml(url, site.url, ignoreCertificateErrors=True)
-    vp.play_from_html(videohtml)
+    match = re.compile(r'iframe scrolling="no"\s*src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    if match:
+        embedlink = match[0]
+        embedhtml = utils.getHtml(embedlink, url, ignoreCertificateErrors=True)
+        vp.play_from_html(embedhtml)

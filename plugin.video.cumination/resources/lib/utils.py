@@ -56,7 +56,6 @@ base_hdrs = {'User-Agent': USER_AGENT,
              'Accept-Encoding': 'gzip',
              'Accept-Language': 'en-US,en;q=0.8',
              'Connection': 'keep-alive'}
-openloadhdr = base_hdrs
 
 progress = xbmcgui.DialogProgress()
 dialog = xbmcgui.Dialog()
@@ -410,11 +409,11 @@ def PlayStream(name, url):
     return
 
 
-def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
-    return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data, error)
+def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
+    return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data, error, ignoreCertificateErrors)
 
 
-def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return'):
+def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
     url = urllib_parse.quote(url, r':/%?+&=')
 
     if data:
@@ -432,7 +431,13 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
     if data:
         req.add_header('Content-Length', len(data))
     try:
-        response = urlopen(req, timeout=30)
+        if ignoreCertificateErrors:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            response = urlopen(req, timeout=30, context=ctx)
+        else:
+            response = urlopen(req, timeout=30)
     except urllib_error.HTTPError as e:
         if e.info().get('Content-Encoding', '').lower() == 'gzip':
             buf = six.BytesIO(e.read())
@@ -1183,14 +1188,12 @@ def prefquality(video_list, sort_by=None, reverse=False):
         quality = qualities[maxquality]
         for key in video_list.copy():
             if key.lower().endswith('p60'):
-                video_list[key.replace('p60','')] = video_list[key]
+                video_list[key.replace('p60', '')] = video_list[key]
                 video_list.pop(key)
-            else:    
+            else:
                 if key.lower() == '4k':
                     video_list['2160'] = video_list[key]
                     video_list.pop(key)
-            
-            
 
         video_list = [(int(''.join([y for y in key if y.isdigit()])), value) for key, value in list(video_list.items())]
         video_list = sorted(video_list, reverse=True)
