@@ -11,4 +11,5 @@ herexxx - removed
 datoporn - removed
 youcrazyx - fix playback
 asianporn - new site
-
+xhamster - fix pagination, videos length
+favorites - Refresh images

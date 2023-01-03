@@ -22,6 +22,7 @@ import json
 from six.moves import urllib_parse
 import xbmc
 import xbmcgui
+import datetime
 
 site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster2.com/', 'xhamster.png', 'xhamster')
 
@@ -65,26 +66,38 @@ def List(url):
         utils.notify('Cumination', 'No video found.')
 
     for video in videos:
-        name = video["title"]
+        name = video["title"] if utils.PY3 else video["title"].encode('utf8')
         videolink = video["pageURL"]
         img = video["thumbURL"]
         if not img:
             continue
-        length = str(video["duration"])
+        length = str(datetime.timedelta(seconds=video["duration"]))
+        if length.startswith('0:'):
+            length = length[2:]
         hd = "4k" if video["isUHD"] else "HD" if video["isHD"] else ""
         name = '[COLOR blue][VR][/COLOR] ' + name if video["isVR"] else name
         name = name + ' [COLOR blue][Full Video][/COLOR]' if video["hasProducerBadge"] else name
         name = name + ' [COLOR orange][Amateur][/COLOR]' if video["hasAmateurBadge"] else name
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
+    npurl = None
     if "pagination" in jdata:
         np = jdata["pagination"]["next"]
         lp = jdata["pagination"]["maxPages"]
         if lp >= np:
             npurl = jdata["pagination"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
-            cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
-            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-            site.add_dir('Next Page (' + str(np) + '/' + str(lp) + ')', npurl, 'List', site.img_next, contextm=cm)
+    elif "activePage" in jdata:
+        np = jdata["activePage"] + 1
+        lp = jdata["maxPages"]
+        if lp >= np:
+            match = re.compile(r'data-page="next"\s*href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(response)
+            if match:
+                npurl = match.group(1)
+    if npurl:
+        npurl = npurl.replace('&#x3D;', '=')
+        cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        site.add_dir('Next Page (' + str(np) + '/' + str(lp) + ')', npurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
@@ -307,7 +320,7 @@ def update_url(url):
         old_length = '0-10 min'
     elif 'max-duration=40' in url:
         old_length = '10-40 min'
-    elif 'max-duration=40' in url:
+    elif 'min-duration=40' in url:
         old_length = '40+ min'
     else:
         old_length = 'ALL'

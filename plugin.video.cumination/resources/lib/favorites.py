@@ -55,7 +55,33 @@ conn.close()
 
 
 @url_dispatcher.register()
+def Refresh_images():
+    utils.clear_cache()
+
+    connfav = sqlite3.connect(favoritesdb)
+    connfav.text_factory = str
+    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    c = connfav.cursor()
+    c.execute('SELECT * FROM favorites')
+    for (name, url, mode, img, duration, quality) in c.fetchall():
+        try:
+            with conn:
+                list = conn.execute("SELECT id, cachedurl FROM texture WHERE url = '{}';".format(img))
+                for row in list:
+                    conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
+                    try:
+                        os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
+                    except:
+                        pass
+                conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".highwebmedia.com")
+        except:
+            pass
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
 def List():
+    basics.addDir('[COLOR red]Refresh images[/COLOR]', '', 'favorites.Refresh_images', '', Folder=False)
     favorder = utils.addon.getSetting("favorder") or 'date added'
     basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
     if utils.addon.getSetting("chaturbate") == "true":
