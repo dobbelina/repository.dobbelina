@@ -23,7 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('6xtube', "[COLOR hotpink]6XTube[/COLOR]", 'https://www.6xtube.com/', '6xtube.png', '6xtube')
+site = AdultSite('6xtube', "[COLOR hotpink]6XTube[/COLOR]", 'http://www.6xtube.com/', '6xtube.png', '6xtube')
 
 
 @site.register(default_mode=True)
@@ -45,7 +45,7 @@ def List(url):
     delimiter = '<div class="well well-sm"'
     re_videopage = 'class="video-link" href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-original="([^"]+)"'
+    re_img = 'src="https:([^"]+)"'
     re_duration = '<div class="duration">([^<]+)<'
     re_quality = '>HD<'
     skip = '=modelfeed'

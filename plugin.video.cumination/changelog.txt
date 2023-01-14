@@ -1,15 +1,3 @@
-[B]Version 1.1.63[/B]
-yrprno - fix playback
-tnaflix - fix playback
-6xtube - new site
-javxxx - removed
-freexxx - removed
-myxxx - removed
-xmilf - removed
-hdpornbay - removed
-herexxx - removed
-datoporn - removed
-youcrazyx - fix playback
-asianporn - new site
-xhamster - fix pagination, videos length
-favorites - Refresh images
+[B]Version 1.1.64[/B]
+chaturbate - online favorites - added more information about the room
+6xtube - fix thumbnails

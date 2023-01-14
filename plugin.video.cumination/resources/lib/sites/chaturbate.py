@@ -262,6 +262,12 @@ def onlineFav(url):
             if "current_show" in model[0]:
                 if model[0]["current_show"] != "public":
                     current_show = '[COLOR blue] {}[/COLOR]'.format(model[0]["current_show"])
-            room_subject = model[0]["room_subject"] if utils.PY3 else model[0]["room_subject"].encode('utf8')
-            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(room_subject), noDownload=True)
+            subject = model[0]["room_subject"] if utils.PY3 else model[0]["room_subject"].encode('utf8')
+            subject = utils.cleantext(subject.split(' #')[0]) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model[0]["location"]) + "[CR]" \
+                + "[COLOR deeppink]Duration: [/COLOR]" + str(round(model[0]["seconds_online"] / 3600, 1)) + " hrs[CR]" \
+                + "[COLOR deeppink]Watching: [/COLOR]" + str(model[0]["num_users"]) + " viewers"
+            tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(model[0]["tags"])
+            subject += "[CR][CR]" + tags
+
+            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True)
     utils.eod()
