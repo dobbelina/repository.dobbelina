@@ -112,6 +112,7 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    utils.kodilog(url)
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)
 

@@ -1,3 +1,2 @@
-[B]Version 1.1.64[/B]
-chaturbate - online favorites - added more information about the room
-6xtube - fix thumbnails
+[B]Version 1.1.65[/B]
+xhamster - fix pagination, categories

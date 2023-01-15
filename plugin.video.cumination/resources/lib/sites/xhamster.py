@@ -81,15 +81,17 @@ def List(url):
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
     npurl = None
-    if "pagination" in jdata:
-        np = jdata["pagination"]["next"]
-        lp = jdata["pagination"]["maxPages"]
+    if "paginationComponent" in jdata:
+        np = jdata["paginationComponent"]["currentPageNumber"] + 1
+        lp = jdata["paginationComponent"]["lastPageNumber"]
         if lp >= np:
-            npurl = jdata["pagination"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
-    elif "activePage" in jdata:
-        np = jdata["activePage"] + 1
-        lp = jdata["maxPages"]
-        if lp >= np:
+            npurl = jdata["paginationComponent"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+    elif "page" in jdata:
+        np = jdata["page"] + 1
+        lp = None
+        if "maxPages" in jdata:
+            lp = jdata["maxPages"]
+        if not lp or (np and lp >= np):
             match = re.compile(r'data-page="next"\s*href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(response)
             if match:
                 npurl = match.group(1)
@@ -97,7 +99,8 @@ def List(url):
         npurl = npurl.replace('&#x3D;', '=')
         cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-        site.add_dir('Next Page (' + str(np) + '/' + str(lp) + ')', npurl, 'List', site.img_next, contextm=cm)
+        npage = str(np) + '/' + str(lp) if lp else str(np)
+        site.add_dir('Next Page (' + npage + ')', npurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
@@ -116,8 +119,7 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile('class="root-9d8b4[^"]*" href="([^"]+)">((?:Popular|.))<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'CategoriesA', '')
     utils.eod()
@@ -129,7 +131,7 @@ def CategoriesA(url):
     cathtml = cathtml.split('class="letter-blocks page"')[-1].split('class="search"')[0]
     match = re.compile('href="([^"]+)" data-role="tag-link"><!-- HTML_TAG_START -->([^<]+)<').findall(cathtml)
     for url, name in match:
-        site.add_dir(name.strip(), url + '/newest', 'List', '')
+        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
     utils.eod()
 
 
@@ -141,9 +143,10 @@ def Channels(url):
     elif cat == 'shemale':
         url = url.replace('/channels', '/shemale/channels')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile(r'href="([^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
     for url, name in match:
+        if '0' in name:
+            continue
         site.add_dir(name.strip(), url, 'ChannelsA', '')
     utils.eod()
 
@@ -151,10 +154,9 @@ def Channels(url):
 @site.register()
 def ChannelsA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="allcats categories-container page clearfix')[-1].split('class="after-pager"')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile(r'<div class="item">\s*<a href="([^"]+/channels/[^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
-        site.add_dir(name.strip(), url + '/newest', 'List', '')
+        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
     utils.eod()
 
 
@@ -166,8 +168,7 @@ def Pornstars(url):
     elif cat == 'shemale':
         url = url.replace('/pornstars', '/shemale/pornstars')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile(r'href="([^"]+/pornstars/all[^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'PornstarsA', '')
     utils.eod()
@@ -176,10 +177,9 @@ def Pornstars(url):
 @site.register()
 def PornstarsA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="allcats categories-container page clearfix"')[-1].split('class="after-pager"')[0]
-    match = re.compile('href="([^"]+)"><span>([^<]+)<').findall(cathtml)
+    match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
     for url, name in match:
-        site.add_dir(name.strip(), url + '/newest', 'List', '')
+        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
     utils.eod()
 
 
@@ -191,8 +191,7 @@ def Celebrities(url):
     elif cat == 'shemale':
         url = url.replace('/celebrities', '/shemale/celebrities')
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="alphabet')[-1].split('class="allcats categories-container')[0]
-    match = re.compile('href="([^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+    match = re.compile(r'<a class="" href="([^"]+)">\s*(\S)\s*</a>').findall(cathtml)
     for url, name in match:
         site.add_dir(name.strip(), url, 'CelebritiesA', '')
     utils.eod()
@@ -201,10 +200,9 @@ def Celebrities(url):
 @site.register()
 def CelebritiesA(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="allcats categories-container page clearfix"')[-1].split('class="after-pager"')[0]
-    match = re.compile('href="([^"]+)"><span>([^<]+)<').findall(cathtml)
+    match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
     for url, name in match:
-        site.add_dir(name.strip(), url + '/newest', 'List', '')
+        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
     utils.eod()
 
 
@@ -354,7 +352,7 @@ def GotoPage(list_mode, url, np, lp):
     dialog = xbmcgui.Dialog()
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
-        if int(lp) > 0 and int(pg) > int(lp):
+        if lp and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
         url = url.replace('page={}'.format(np), 'page={}'.format(pg))
