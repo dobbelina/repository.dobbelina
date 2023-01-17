@@ -1487,7 +1487,14 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
             name = ''
             if re_name:
                 name = re.compile(re_name, re.DOTALL | re.IGNORECASE).findall(video)
-                name = cleantext(name[0]) if name else ''
+                if name:
+                    if PY3:
+                        name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: chr(int(x.group(1), 16)), name[0].strip())
+                        name = name.encode('utf-8', 'replace').decode()
+                    else:
+                        name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: unichr(int(x.group(1), 16)), name[0].strip())
+                        name = name.encode('utf8')
+                    name = cleantext(name)
             img = ''
             if re_img:
                 img = re.compile(re_img, re.DOTALL | re.IGNORECASE).findall(video)
