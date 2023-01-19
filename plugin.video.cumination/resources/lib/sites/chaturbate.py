@@ -267,6 +267,7 @@ def onlineFav(url):
                 + "[COLOR deeppink]Duration: [/COLOR]" + str(round(model[0]["seconds_online"] / 3600, 1)) + " hrs[CR]" \
                 + "[COLOR deeppink]Watching: [/COLOR]" + str(model[0]["num_users"]) + " viewers"
             tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(model[0]["tags"])
+            tags = tags if utils.PY3 else tags.encode('utf8')
             subject += "[CR][CR]" + tags
 
             site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True)
