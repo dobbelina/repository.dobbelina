@@ -93,33 +93,43 @@ def List():
     try:
         if 'folders' in favorder:
             if basics.addon.getSetting('custom_sites') == 'true':
-                c.execute("SELECT f.mode, COUNT(*) count FROM (SELECT * FROM favorites) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1 GROUP BY 1 ORDER BY 1")
+                sql = "SELECT f.mode, COUNT(*) count FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 1"
             else:
-                c.execute("SELECT f.mode, COUNT(*) count FROM (SELECT * FROM favorites) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL GROUP BY 1 ORDER BY 1")
+                sql = "SELECT f.mode, COUNT(*) count FROM favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 1"
+            c.execute(sql)
             for (mode, count) in c.fetchall():
                 site = mode.split('.')[0]
                 img = ''
+                removed = True
                 for s in AdultSite.get_sites():
                     if s.name == site:
                         name = s.title
                         img = s.image
+                        removed = False
                         break
+                if removed:
+                    name = site + ' [COLOR blue](removed)[/COLOR]'
                 name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
                 basics.addDir(name, mode, 'favorites.FavListSite', img)
         else:
             if basics.addon.getSetting('custom_sites') == 'true':
-                c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY {}) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE IFNULL(cs.enabled, 1) = 1".format(orders[favorder]))
+                sql = "SELECT * FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}".format(orders[favorder])
             else:
-                c.execute("SELECT f.* FROM (SELECT * FROM favorites ORDER BY {}) f LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' || cs.author = substr(f.mode, 1, instr(f.mode, '.') - 1) WHERE cs.name IS NULL".format(orders[favorder]))
+                sql = "SELECT * FROM favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
+            c.execute(sql)
             for (name, url, mode, img, duration, quality) in c.fetchall():
                 duration = '' if duration is None else duration
                 quality = '' if quality is None else quality
                 if 'site' in favorder:
                     site = mode.split('.')[0]
+                    removed = True
                     for s in AdultSite.get_sites():
                         if s.name == site:
                             site = s.title
+                            removed = False
                             break
+                    if removed:
+                        site = site + ' [COLOR blue](removed)[/COLOR]'
                     name = '[COLOR hotpink][{}][/COLOR] {}'.format(site, name)
                 basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
         conn.close()
@@ -140,7 +150,7 @@ def FavListSite(url):
     conn.text_factory = str
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM favorites  WHERE mode = '{}' ORDER BY {}".format(url, orders[favorder]))
+        c.execute("SELECT * FROM favorites WHERE mode = '{}' ORDER BY {}".format(url, orders[favorder]))
         for (name, url, mode, img, duration, quality) in c.fetchall():
             duration = '' if duration is None else duration
             quality = '' if quality is None else quality
