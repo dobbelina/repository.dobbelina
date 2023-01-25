@@ -82,16 +82,14 @@ def List(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     html = utils.getHtml(url)
-    referer = '|Referer={}'.format(url)
     if 'source src="' not in html:
         match = re.compile(r'id="player">\s*<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
         if match:
             iframe = match[0]
             html = utils.getHtml(iframe, site.url)
-            referer = '|Referer={}'.format(iframe)
     match = re.compile(r'source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     if match:
-        videourl = match[0] + referer
+        videourl = match[0] + '|Referer={}'.format(site.url)
         vp.play_from_direct_link(videourl)
     else:
         utils.notify('Oh oh', 'No video found')
