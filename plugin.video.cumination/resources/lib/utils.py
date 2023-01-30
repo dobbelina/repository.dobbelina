@@ -1469,6 +1469,8 @@ def fix_url(url, siteurl=None, baseurl=None):
             url = siteurl[:-1] + url
         elif '/' not in url:
             url = baseurl + url
+        elif not url.startswith('http'):
+            url = siteurl + url
     return url
 
 

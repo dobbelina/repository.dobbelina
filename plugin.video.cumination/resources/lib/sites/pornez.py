@@ -38,10 +38,11 @@ def List(url):
     videos = listhtml.split('data-post-id="')
     videos.pop(0)
     for video in videos:
-        match = re.compile(r'data-src="([^"]+)".+?href="([^"]+)"\s*title="([^"]+)".+?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
+        match = re.compile(r'duration">([^<]+)<.+?data-src="([^"]+)".+?href="([^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(video)
         if match:
-            img, videourl, name, duration = match[0]
+            duration, img, videourl, name = match[0]
             name = utils.cleantext(name)
+            videourl = site.url[:-1] + videourl
             if name == 'Live Cams':
                 continue
             cm_related = (utils.addon_sys + "?mode=" + str('pornez.ContextRelated') + "&url=" + urllib_parse.quote_plus(videourl))
@@ -52,6 +53,7 @@ def List(url):
     match = re.compile(r'href="([^"]+page/(\d+)[^"]*)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
     if match:
         npage, np = match[0]
+        npage = site.url[:-1] + npage
         matchlp = re.compile(r'"page-link"\s*href="[^"]+">([\d,]+)<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
         lp = ''
         if matchlp:
@@ -63,7 +65,7 @@ def List(url):
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'tag-menu"><a class="btn btn-grey" href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="btn btn-grey" href="([^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name in match:
         name = utils.cleantext(name)
         site.add_dir(name, site.url[:-1] + caturl, 'List', '')
@@ -94,7 +96,7 @@ def Play(url, name, download=None):
     match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
     if not match:
         return
-    playerurl = match[0]
+    playerurl = site.url[:-1] + match[0]
     playerhtml = utils.getHtml(playerurl, url)
     match = re.compile(r'src="([^"]+)" title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
     videos = {}

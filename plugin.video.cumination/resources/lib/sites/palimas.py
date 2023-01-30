@@ -30,7 +30,7 @@ site = AdultSite('palimas', '[COLOR hotpink]Palimas[/COLOR]', 'https://palimas.o
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars?view=top-rated', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels', 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?q=', 'Search', site.img_search)
     List(site.url + '?view=latest&when=all-time')
     utils.eod()

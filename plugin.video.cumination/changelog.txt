@@ -1,7 +1,4 @@
-[B]Version 1.1.65[/B]
-xhamster - fix pagination, categories
-pornkai - new site
-chaturbate - online favorites - fix unicode error
-favorites – fix sort order in Kodi Nexus
-asianporn - fix download
-rule34video - new site
+﻿[B]Version 1.1.66[/B]
+pornhub - fix categories
+pornez - fix
+palimas - fix thumbnails
