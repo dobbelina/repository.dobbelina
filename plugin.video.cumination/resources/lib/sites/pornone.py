@@ -35,10 +35,10 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*relative\s*.+?>([\d:]+)<(.*?)<img\s*src="([^"]+)"\s*alt=.+?normal\s*">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, duration, hd, img, name in match:
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*relative.+?<span\s*class="text(.*?)>([\d:]+).+?img\s*src="([^"]+).+?"block[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, hd, duration, img, name in match:
         name = utils.cleantext(name)
-        hd = 'HD' if hd.find('HD Video') > 0 else ''
+        hd = 'HD' if 'HD Video' in hd else ''
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
     np = re.compile(r'<a\s*href="([^"]+)"\s*title="Next\s*Page"').search(listhtml)
