@@ -45,6 +45,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
+    site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
 
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
@@ -112,12 +113,27 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    if 'followed' in url and 'offline' not in url:
+        site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', site.url + 'followed-cams/offline/', 'List', '', '')
+        if 'followed' in url:
+            login()
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details">.+?href[^>]+>([^<]+)<.+?age">([^<]+).+?subject">.+?>(.*?)</li.+?location.+?>([^<]+).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, status, name, age, subject, location, duration, viewers in match:
+    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, status, name, age, data in match:
+        subject, location, duration, viewers = '', '', '', ''
+        if '/followed-cams/offline/' in url:
+            match = re.compile(r'class="cams">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(data)
+            if match:
+                age = match[0].strip()
+        else:
+            match = re.compile(r'>.+?>(.*?)</li.+?location.+?>([^<]*).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(data)
+            if match:
+                subject, location, duration, viewers = match[0]
+
+        follow = 'title="Follow"' in data
         name = utils.cleantext(name)
         age = age.replace('&nbsp;', '')
         tags = re.findall(r'>#([^<]+)', subject)
@@ -132,8 +148,14 @@ def List(url, page=1):
         if status:
             status = status.split('>')[1].split('<')[0]
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
+        id = videopage[1:-1]
         videopage = bu[:-1] + videopage
-        site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
+
+        contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
+        contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
+        contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
+
+        site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
 
     nextp = re.compile(r'<a\s*href="([^"]+)"\s*class="next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
@@ -272,3 +294,71 @@ def onlineFav(url):
 
             site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True)
     utils.eod()
+
+
+def login():
+    url = 'https://chaturbate.com/followed-cams/'
+    loginurl = 'https://chaturbate.com/auth/login/?next=/followed-cams/'
+
+    loginhtml = utils._getHtml(url, site.url)
+    if '<h1>Chaturbate Login</h1>' not in loginhtml:
+        return
+
+    username = utils._get_keyboard(default='', heading='Input your Chaturbate username')
+    password = utils._get_keyboard(default='', heading='Input your Chaturbate password', hidden=True)
+
+    match = re.compile(r'"csrfmiddlewaretoken"\s+value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(loginhtml)
+    if not match:
+        return
+
+    csrfmiddlewaretoken = match[0]
+    hdr = utils.base_hdrs
+    hdr.update({'Referer': 'https://chaturbate.com/auth/login/?next=/followed-cams/'})
+    postRequest = {	"next": "/followed-cams/",
+                    "csrfmiddlewaretoken": csrfmiddlewaretoken,
+                    "username": username,
+                    "password": password,
+                    "rememberme": "on"}
+    response = utils._postHtml(loginurl, headers=hdr, form_data=postRequest)
+    if 'title="Username Dropdown">{}<'.format(username) not in response:
+        utils.notify('Chaturbate', 'Login failed please check your username and password')
+
+
+@site.register()
+def Unfollow(id):
+    url = 'https://chaturbate.com/follow/unfollow/{}/'.format(id)
+    html = utils._getHtml(url, site.url)
+    if '<h1>Chaturbate Login</h1>' in html:
+        login()
+        html = utils._getHtml(url, site.url)
+    match = re.compile(r'"csrfmiddlewaretoken"\s+value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    if not match:
+        return
+    csrfmiddlewaretoken = match[0]
+    hdr = utils.base_hdrs
+    hdr.update({'Referer': 'https://chaturbate.com/'})
+    postRequest = {	"csrfmiddlewaretoken": csrfmiddlewaretoken}
+    response = utils._postHtml(url, headers=hdr, form_data=postRequest)
+    if '"following": false' in response:
+        utils.notify('Chaturbate', 'NOT FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))
+        utils.refresh()
+
+
+@site.register()
+def Follow(id):
+    url = 'https://chaturbate.com/follow/follow/{}/'.format(id)
+    html = utils._getHtml(url, site.url)
+    if '<h1>Chaturbate Login</h1>' in html:
+        login()
+        html = utils._getHtml(url, site.url)
+    match = re.compile(r'"csrfmiddlewaretoken"\s+value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    if not match:
+        return
+    csrfmiddlewaretoken = match[0]
+    hdr = utils.base_hdrs
+    hdr.update({'Referer': 'https://chaturbate.com/'})
+    postRequest = {	"csrfmiddlewaretoken": csrfmiddlewaretoken}
+    response = utils._postHtml(url, headers=hdr, form_data=postRequest)
+    if '"following": true' in response:
+        utils.notify('Chaturbate', 'FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))
+        utils.refresh()
