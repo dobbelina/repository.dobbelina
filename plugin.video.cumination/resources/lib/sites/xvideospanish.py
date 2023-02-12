@@ -39,10 +39,14 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url, '')
     main = re.compile('<main.*?>(.*?)</main>', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    match = re.compile(r'<article.+?href="([^"]+).+?data-src="([^"]+).+?duration">(?:<i.*?i>)?([^<]*).+?header">\s*(?:<span>)?([^<]+)', re.DOTALL | re.IGNORECASE).findall(main)
-    for videopage, img, duration, name in match:
+    match = re.compile(r'<article.+?href="([^"]+)" title="([^"]+)"(.*?)duration">([^<]+)', re.DOTALL | re.IGNORECASE).findall(main)
+    for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = videopage.replace('xvideos-español', 'xn--xvideos-espaol-1nb')
+        if 'data-src' in img:
+            img = re.compile('data-src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(img)[0]
+        elif 'poster' in img:
+            img = re.compile('poster="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(img)[0]
         img = img.replace('xvideos-español', 'xn--xvideos-espaol-1nb')
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 

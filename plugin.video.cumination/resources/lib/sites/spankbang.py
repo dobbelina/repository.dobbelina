@@ -29,7 +29,7 @@ filterL = utils.addon.getSetting("spankbang_length") or 'All'
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'pornstars_alphabet', 'Models_alphabet', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 's/', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Quality: [/COLOR] [COLOR orange]{}[/COLOR]'.format(filterQ), '', 'FilterQ', '', Folder=False)
@@ -95,11 +95,12 @@ def Search(url, keyword=None):
 
 
 @site.register()
-def Categories(url):
+def Tags(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('<a href="/category/([^"]+)"><img src="([^"]+)"><span>([^>]+)</span>', re.DOTALL).findall(cathtml)
-    for catpage, img, name in match:
-        site.add_dir(name, site.url[:-1] + '/category/' + catpage, 'List', site.url[:-1] + img, '')
+    matchmain = re.compile('<div class="search_holder">(.*?)</html', re.IGNORECASE | re.DOTALL).findall(cathtml)[0]
+    match = re.compile('<li><a href="([^"]+)" class="keyword">([^<]+)<', re.DOTALL).findall(matchmain)
+    for catpage, name in sorted(match, key=lambda x: x[1]):
+        site.add_dir(name, site.url[:-1] + catpage, 'List')
     utils.eod()
 
 
