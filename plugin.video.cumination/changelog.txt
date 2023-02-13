@@ -1,6 +1,3 @@
-﻿[B]Version 1.1.67[/B]
-chaturbate - added "Followed Cams"
-heroero - new site
-elreyx - removed broken site
-spankbang - changed categories to tags
-xvideospanish - show the video names in the listing
+﻿[B]Version 1.1.68[/B]
+
+heroero - sort categories when listing

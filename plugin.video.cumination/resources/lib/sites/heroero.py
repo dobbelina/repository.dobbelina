@@ -22,7 +22,7 @@ from resources.lib import utils
 from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
-import xbmcgui
+from kodi_six import xbmcgui, xbmcplugin
 
 site = AdultSite('heroero', "[COLOR hotpink]Heroero[/COLOR]", 'https://heroero.com/', 'https://www.heroero.com/images/logo.png', 'heroero')
 
@@ -88,6 +88,8 @@ def Categories(url):
     for caturl, name, img, data in match:
         img = img.replace(' ', '%20')
         name = utils.cleantext(name)
+        if '/categories/' in url:
+            name = name.capitalize()
         if 'videos">' in data:
             match = re.compile(r'videos">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(data)
             name = name + ' [COLOR cyan][{}][/COLOR]'.format(match[0])
@@ -96,8 +98,8 @@ def Categories(url):
     re_npnr = r'class="next"><a href="[^"]+/(\d+)/"'
     re_lpnr = r'class="last"><a href="[^"]+/(\d+)/"'
     utils.next_page(site, 'heroero.Categories', cathtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='heroero.GotoPage')
-    utils.eod()
-
+    if '/categories/' in url:
+        xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
