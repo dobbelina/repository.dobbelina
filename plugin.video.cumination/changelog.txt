@@ -1,5 +1,11 @@
 ﻿[B]Version 1.1.68[/B]
 Base code changes to support Kodi 20+
 heroero - sort categories when listing
-porndish - new start (basic at the moment)
+porndish - new site (basic at the moment)
 erome - fix listing
+upornia - new site
+manysex - new site
+hotmovs - new site
+the gay - new site
+inporn - new site
+desiporn - new site
