@@ -31,7 +31,7 @@ from math import ceil
 
 import six
 import StorageServer
-from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs
+from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs, xbmcaddon
 from resources.lib import cloudflare, random_ua, strings
 from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
                                   cookiePath, cum_image, cuminationicon, eod,
@@ -49,6 +49,7 @@ PY2 = six.PY2
 PY3 = six.PY3
 TRANSLATEPATH = xbmcvfs.translatePath if PY3 else xbmc.translatePath
 LOGINFO = xbmc.LOGINFO if PY3 else xbmc.LOGNOTICE
+KODIVER = float(xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')[:4])
 
 base_hdrs = {'User-Agent': USER_AGENT,
              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -373,7 +374,14 @@ def playvid(videourl, name, download=None):
         subject = xbmc.getInfoLabel("ListItem.Plot")
         listitem = xbmcgui.ListItem(name)
         listitem.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
-        listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
+        if KODIVER > 19.8:
+            vtag = listitem.getVideoInfoTag()
+            vtag.setTitle(name)
+            vtag.setGenres(['Porn'])
+            vtag.setPlot(subject)
+            vtag.setPlotOutline(subject)
+        else:
+            listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
 
         if videourl.startswith('is://') or '.mpd' in videourl:
             videourl = videourl[5:] if videourl.startswith('is://') else videourl
@@ -1490,12 +1498,8 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
             if re_name:
                 name = re.compile(re_name, re.DOTALL | re.IGNORECASE).findall(video)
                 if name:
-                    if PY3:
-                        name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: chr(int(x.group(1), 16)), name[0].strip())
-                        name = name.encode('utf-8', 'replace').decode()
-                    else:
-                        name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: unichr(int(x.group(1), 16)), name[0].strip())
-                        name = name.encode('utf8')
+                    name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), name[0].strip())
+                    name = six.ensure_str(name)
                     name = cleantext(name)
             img = ''
             if re_img:

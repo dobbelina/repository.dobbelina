@@ -536,7 +536,7 @@ def install_custom_sites_from_folder():
 def process_custom_site_zip(path):
     import json
 
-    if int(basics.kodiver) == 18:
+    if basics.KODIVER < 19.0:
         from resources.lib import zfile as zipfile
     else:
         import zipfile

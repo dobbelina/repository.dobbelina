@@ -106,7 +106,14 @@ def thepornfull_play(url, name, download=None):
             subject = xbmc.getInfoLabel("ListItem.Plot")
             listitem = xbmcgui.ListItem(name)
             listitem.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
-            listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
+            if utils.KODIVER > 19.8:
+                vtag = listitem.getVideoInfoTag()
+                vtag.setTitle(name)
+                vtag.setGenres(['Porn'])
+                vtag.setPlot(subject)
+                vtag.setPlotOutline(subject)
+            else:
+                listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
             listitem.setMimeType('application/vnd.apple.mpegurl')
             listitem.setContentLookup(False)
             xbmc.Player().play(videourl, listitem)

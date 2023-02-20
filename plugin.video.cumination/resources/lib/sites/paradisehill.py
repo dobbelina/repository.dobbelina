@@ -141,7 +141,12 @@ def Playvid(url, name, download=None):
                 newname = name + ' ' + pname
                 listitem = xbmcgui.ListItem(newname)
                 listitem.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
-                listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
+                if utils.KODIVER > 19.8:
+                    vtag = listitem.getVideoInfoTag()
+                    vtag.setTitle(newname)
+                    vtag.setGenres(['Porn'])
+                else:
+                    listitem.setInfo('video', {'Title': newname, 'Genre': 'Porn'})
                 listitem.setProperty("IsPlayable", "true")
                 if videourl.startswith('//'):
                     videourl = 'https:' + videourl

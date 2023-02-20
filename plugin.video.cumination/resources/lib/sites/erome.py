@@ -27,15 +27,15 @@ site = AdultSite("erome", "[COLOR hotpink]Erome[/COLOR]", "https://www.erome.com
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?q=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?o=new&q=', 'Search', site.img_search)
     List(site.url + 'explore/new')
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'''<div[^<]+id="album-.+?href="([^"]+).+?title">([^<]+).+?data-src="([^"]+).+?right">(.+?)</div''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for iurl, name, img, content in match:
+    match = re.compile(r'''<div[^<]+id="album-.+?data-src="([^"]+).+?right">(.+?)</div.+?title"\s*href="([^"]+)">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, content, iurl, name in match:
         name = utils.cleantext(name)
         img += '|Referer={0}'.format(site.url)
         pics = False

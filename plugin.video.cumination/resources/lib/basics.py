@@ -48,7 +48,7 @@ if not os.path.exists(customSitesDir):
 if not os.path.exists(tempDir):
     os.makedirs(tempDir)
 
-kodiver = xbmc.getInfoLabel("System.BuildVersion").split(".")[0]
+KODIVER = float(xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')[:4])
 
 
 def cum_image(filename, custom=False):
@@ -78,7 +78,8 @@ def addImgLink(name, url, mode):
          + "&mode=" + str(mode)
          + "&name=" + urllib_parse.quote_plus(name))
     liz = xbmcgui.ListItem(name)
-    liz.setInfo(type='pictures', infoLabels={'title': name})
+    if KODIVER < 19.8:
+        liz.setInfo(type='pictures', infoLabels={'title': name})
     liz.setArt({'thumb': url, 'icon': url, 'poster': url})
     ok = xbmcplugin.addDirectoryItem(handle=addon_handle, url=u, listitem=liz, isFolder=False)
     return ok
@@ -137,8 +138,31 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     if dname:
         desc = name
     liz = xbmcgui.ListItem(name)
-    if duration and addon.getSetting('duration_in_name') != 'true':
-        liz.setInfo(type="Video", infoLabels={"Duration": secs})
+    if KODIVER > 19.8:
+        vtag = liz.getVideoInfoTag()
+        vtag.setTitle(name)
+        if duration and addon.getSetting('duration_in_name') != 'true':
+            vtag.setDuration(secs)
+        if desc:
+            vtag.setPlot(desc)
+            vtag.setPlotOutline(desc)
+        if width:
+            vtag.addVideoStream(xbmc.VideoStreamDetail(width=width, height=height, codec='h264'))
+        else:
+            vtag.addVideoStream(xbmc.VideoStreamDetail(codec='h264'))
+    else:
+        if duration and addon.getSetting('duration_in_name') != 'true':
+            liz.setInfo(type="Video", infoLabels={"Duration": secs})
+        if desc:
+            liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
+        else:
+            liz.setInfo(type="Video", infoLabels={"Title": name})
+        if width:
+            video_streaminfo = {'codec': 'h264', 'width': width, 'height': height}
+        else:
+            video_streaminfo = {'codec': 'h264'}
+        liz.addStreamInfo('video', video_streaminfo)
+
     liz.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
     if not fanart:
         fanart = os.path.join(rootDir, 'fanart.jpg')
@@ -147,15 +171,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     liz.setArt({'fanart': fanart})
     if stream:
         liz.setProperty('IsPlayable', 'true')
-    if desc:
-        liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
-    else:
-        liz.setInfo(type="Video", infoLabels={"Title": name})
-    if width:
-        video_streaminfo = {'codec': 'h264', 'width': width, 'height': height}
-    else:
-        video_streaminfo = {'codec': 'h264'}
-    liz.addStreamInfo('video', video_streaminfo)
+
     if contextm:
         if isinstance(contextm, list):
             for i in contextm:
@@ -266,9 +282,16 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         fanart = iconimage
         art.update({'poster': iconimage})
     liz.setArt(art)
-    liz.setInfo(type="Video", infoLabels={"Title": name})
-    if desc:
-        liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
+    if KODIVER > 19.8:
+        vtag = liz.getVideoInfoTag()
+        vtag.setTitle(name)
+        if desc:
+            vtag.setPlot(desc)
+            vtag.setPlotOutline(desc)
+    else:
+        liz.setInfo(type="Video", infoLabels={"Title": name})
+        if desc:
+            liz.setInfo(type="Video", infoLabels={"Title": name, "plot": desc, "plotoutline": desc})
     contextMenuItems = []
     if contextm:
         if isinstance(contextm, list):
