@@ -28,7 +28,13 @@ site3 = AdultSite('hclips', '[COLOR hotpink]HClips[/COLOR]', 'https://hclips.com
 site4 = AdultSite('hdzog', '[COLOR hotpink]HD Zog[/COLOR]', 'https://hdzog.com/', 'hdzog.png', 'hdzog')
 site5 = AdultSite('vjav', '[COLOR hotpink]Vjav[/COLOR]', 'https://vjav.com/', 'vjav.png', 'vjav')
 site6 = AdultSite('shemalez', '[COLOR hotpink]ShemaleZ[/COLOR]', 'https://shemalez.com/', 'shemalez.png', 'shemalez')
-
+site7 = AdultSite('upornia', '[COLOR hotpink]Upornia[/COLOR]', 'https://upornia.com/', 'upornia.png', 'upornia')
+#site8 = AdultSite('pornzog', '[COLOR hotpink]Pornzog[/COLOR]', 'https://pornzog.com/', 'pornzog.png', 'pornzog')
+#site9 = AdultSite('manysex', '[COLOR hotpink]Manysex[/COLOR]', 'https://manysex.com/', 'manysex.png', 'manysex')
+#site10 = AdultSite('hotmovs', '[COLOR hotpink]Hotmovs[/COLOR]', 'https://hotmovs.com/', 'hotmovs.png', 'hotmovs')
+#site11 = AdultSite('tporn', '[COLOR hotpink]TPorn[/COLOR]', 'https://tporn.xxx/', 'tporn.png', 'tporn')
+#site12 = AdultSite('seexxx', '[COLOR hotpink]See XXX[/COLOR]', 'https://see.xxx/', 'seexxx.png', 'seexxx')
+site13 = AdultSite('thegay', '[COLOR hotpink]The Gay[/COLOR]', 'https://thegay.com/', 'thegay.png', 'thegay')
 
 def getBaselink(url):
     if 'txxx.com' in url:
@@ -45,6 +51,20 @@ def getBaselink(url):
         siteurl = site5.url
     elif 'shemalez.com' in url:
         siteurl = site6.url
+    elif 'upornia.com' in url:
+        siteurl = site7.url
+#    elif 'pornzog.com' in url:
+#        siteurl = site8.url
+#    elif 'manysex.com' in url:
+#        siteurl = site9.url
+#    elif 'hotmovs.com' in url:
+ #       siteurl = site10.url
+#    elif 'tporn.xxx' in url:
+#        siteurl = site11.url
+#    elif 'see.xxx' in url:
+#        siteurl = site12.url
+    elif 'thegay.com' in url:
+        siteurl = site13.url
     return siteurl
 
 
@@ -55,12 +75,19 @@ def getBaselink(url):
 @site4.register(default_mode=True)
 @site5.register(default_mode=True)
 @site6.register(default_mode=True)
+@site7.register(default_mode=True)
+#@site8.register(default_mode=True)
+#@site9.register(default_mode=True)
+#@site10.register(default_mode=True)
+#@site11.register(default_mode=True)
+#@site12.register(default_mode=True)
+@site13.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
-    if any(x in siteurl for x in ['hclips', 'hdzog', 'txxx', 'shemalez']):
+    if any(x in siteurl for x in ['hclips', 'hdzog', 'txxx', 'shemalez','upornia','hotmovs']):
         site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels', 'Channels')
-    if any(x in siteurl for x in ['hdzog', 'txxx', 'tubepornclassic', 'vjav', 'shemalez']):
+    if any(x in siteurl for x in ['hdzog', 'txxx', 'tubepornclassic', 'vjav', 'shemalez','upornia','thegay','tporn','seexxx','pornzog','hotmovs']):
         site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models', 'Models')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search.', 'Search', site.img_search)
     List(siteurl + 'latest-updates')
@@ -171,6 +198,7 @@ def Models(url, page=1):
     letter = '' if url == 'models' else url.lower()
     page = 1 if not page else page
     gender = 'she' if 'shemalez' in siteurl else 'str'
+    gender = 'gay' if 'thegay' in siteurl else 'str'
     pagesize = 80
     aurl = '{0}api/json/models/86400/{1}/filt.{2}........./most-popular/{3}/{4}.json'.format(siteurl, gender, letter, pagesize, page)
     jdata = json.loads(utils.getHtml(aurl, siteurl))
