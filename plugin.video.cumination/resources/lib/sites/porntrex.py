@@ -333,6 +333,7 @@ def PTSubscriptions(url, page=1):
         if img.startswith('//'):
             img = 'https:' + img
             img = img.replace(' ', '%20')
+            img = img + '|Referer=' + url
         if ptlogged:
             contexturl = (utils.addon_sys
                           + "?mode=" + str('porntrex.PTSubscribe_pornstar')
