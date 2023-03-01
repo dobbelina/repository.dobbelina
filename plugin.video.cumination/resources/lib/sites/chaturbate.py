@@ -121,7 +121,7 @@ def List(url, page=1):
         clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room".+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'room_list_room.+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, status, name, age, data in match:
         subject, location, duration, viewers = '', '', '', ''
         if '/followed-cams/offline/' in url:
@@ -314,11 +314,11 @@ def login():
     csrfmiddlewaretoken = match[0]
     hdr = utils.base_hdrs
     hdr.update({'Referer': 'https://chaturbate.com/auth/login/?next=/followed-cams/'})
-    postRequest = {	"next": "/followed-cams/",
-                    "csrfmiddlewaretoken": csrfmiddlewaretoken,
-                    "username": username,
-                    "password": password,
-                    "rememberme": "on"}
+    postRequest = {"next": "/followed-cams/",
+                   "csrfmiddlewaretoken": csrfmiddlewaretoken,
+                   "username": username,
+                   "password": password,
+                   "rememberme": "on"}
     response = utils._postHtml(loginurl, headers=hdr, form_data=postRequest)
     if 'title="Username Dropdown">{}<'.format(username) not in response:
         utils.notify('Chaturbate', 'Login failed please check your username and password')
@@ -337,7 +337,7 @@ def Unfollow(id):
     csrfmiddlewaretoken = match[0]
     hdr = utils.base_hdrs
     hdr.update({'Referer': 'https://chaturbate.com/'})
-    postRequest = {	"csrfmiddlewaretoken": csrfmiddlewaretoken}
+    postRequest = {"csrfmiddlewaretoken": csrfmiddlewaretoken}
     response = utils._postHtml(url, headers=hdr, form_data=postRequest)
     if '"following": false' in response:
         utils.notify('Chaturbate', 'NOT FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))
@@ -357,7 +357,7 @@ def Follow(id):
     csrfmiddlewaretoken = match[0]
     hdr = utils.base_hdrs
     hdr.update({'Referer': 'https://chaturbate.com/'})
-    postRequest = {	"csrfmiddlewaretoken": csrfmiddlewaretoken}
+    postRequest = {"csrfmiddlewaretoken": csrfmiddlewaretoken}
     response = utils._postHtml(url, headers=hdr, form_data=postRequest)
     if '"following": true' in response:
         utils.notify('Chaturbate', 'FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))

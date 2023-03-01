@@ -46,13 +46,10 @@ def List(url):
             name += ' [COLOR yellow]{0}[/COLOR]'.format(info.group(1).strip())
         duration = utils.cleantext(duration)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, noDownload=True, fanart=img)
-
-    nextp = re.compile(r'<a\s*href="([^"]+)[^>]+aria-label="pagination\.next"', re.DOTALL | re.IGNORECASE).search(html)
-    if nextp:
-        np = nextp.group(1)
-        curr_pg = re.findall(r'aria-current="page">[^>]+>([^<]+)', html)[0]
-        last_pg = re.findall(r'href="[^"]+[^>]+aria-label="Go[^>]+>([^<]+)', html)[-1].strip()
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(curr_pg, last_pg), np, 'List', site.img_next)
+    match = re.compile(r'aria-label="Go to page \d+">\s*(\d+)\s*</a>\s*<a href="([^"]+page=(\d+))"\s+rel="next"', re.DOTALL | re.IGNORECASE).findall(html)
+    if match:
+        lp, npurl, np = match[0]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}/{1}'.format(np, lp), npurl, 'List', site.img_next)
     utils.eod()
 
 
@@ -64,12 +61,10 @@ def Models(url):
         name = utils.cleantext(name) + ' [COLOR hotpink]({0})[/COLOR]'.format(count)
         site.add_dir(name, caturl, 'List', img)
 
-    nextp = re.compile(r'<a\s*href="([^"]+)[^>]+aria-label="pagination\.next"', re.DOTALL | re.IGNORECASE).search(cathtml)
-    if nextp:
-        np = nextp.group(1)
-        curr_pg = re.findall(r'aria-current="page">[^>]+>([^<]+)', cathtml)[0]
-        last_pg = re.findall(r'href="[^"]+[^>]+aria-label="Go[^>]+>([^<]+)', cathtml)[-1].strip()
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(curr_pg, last_pg), np, 'Models', site.img_next)
+    match = re.compile(r'aria-label="Go to page \d+">\s*(\d+)\s*</a>\s*<a href="([^"]+page=(\d+))"\s+rel="next"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    if match:
+        lp, npurl, np = match[0]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}/{1}'.format(np, lp), npurl, 'Models', site.img_next)
     utils.eod()
 
 
