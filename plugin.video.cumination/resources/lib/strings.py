@@ -95,5 +95,6 @@ STRINGS = {
     'list_custom': 33010,
     'clear_cache': 33011,
     'cache_cleared': 33012,
-    'cookies_cleared': 33013
+    'cookies_cleared': 33013,
+    'keyword_exists': 33014
 }

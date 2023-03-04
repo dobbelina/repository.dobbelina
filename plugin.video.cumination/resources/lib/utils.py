@@ -938,12 +938,14 @@ def oneSearch(url, page, channel):
 
 
 @url_dispatcher.register()
-def newSearch(url, channel):
-    vq = _get_keyboard(heading=i18n('srch_for'))
+def newSearch(url=None, channel=None, keyword=None):
+    vq = _get_keyboard(default=keyword, heading=i18n('srch_for'))
     if not vq:
         return False, 0
-    title = urllib_parse.quote_plus(vq)
-    addKeyword(title)
+    if not keyword:
+        addKeyword(vq)
+    elif keyword != vq:
+        updateKeyword(keyword, vq)
     xbmc.executebuiltin('Container.Refresh')
 
 
@@ -966,11 +968,25 @@ def alphabeticalSearch(url, channel, keyword=None):
 
 
 def addKeyword(keyword):
-    xbmc.log(keyword)
+    if check_if_keyword_exists(keyword):
+        notify(i18n('error'), i18n('keyword_exists'))
+        return
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    c.execute("INSERT INTO keywords VALUES (?)", (keyword,))
+    c.execute("INSERT INTO keywords VALUES (?)", (urllib_parse.quote_plus(keyword),))
+    conn.commit()
+    conn.close()
+
+
+def updateKeyword(keyword, new_keyword):
+    if check_if_keyword_exists(new_keyword):
+        notify(i18n('error'), i18n('keyword_exists'))
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE keywords SET keyword='{}' WHERE keyword='{}'".format(urllib_parse.quote_plus(new_keyword), urllib_parse.quote_plus(keyword)))
     conn.commit()
     conn.close()
 
@@ -988,7 +1004,6 @@ def delallKeyword():
 
 @url_dispatcher.register()
 def delKeyword(keyword):
-    xbmc.log('keyword: ' + keyword)
     conn = sqlite3.connect(favoritesdb)
     c = conn.cursor()
     c.execute("DELETE FROM keywords WHERE keyword = ?", (urllib_parse.quote_plus(keyword),))
@@ -1057,7 +1072,7 @@ def check_if_keyword_exists(keyword):
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    c.execute("SELECT * FROM keywords WHERE keyword = ?", (keyword,))
+    c.execute("SELECT * FROM keywords WHERE keyword = ?", (urllib_parse.quote_plus(keyword),))
     row = c.fetchone()
     conn.close()
     if row:

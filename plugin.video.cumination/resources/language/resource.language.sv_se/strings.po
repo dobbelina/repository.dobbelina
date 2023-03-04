@@ -635,3 +635,7 @@ msgstr "Cachad data har rensats"
 msgctxt "#33013"
 msgid "All cookies have been cleared"
 msgstr "Alla cookies har raderats"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Nyckelordet finns redan!"

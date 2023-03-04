@@ -635,3 +635,7 @@ msgstr ""
 msgctxt "#33013"
 msgid "All cookies have been cleared"
 msgstr ""
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr ""

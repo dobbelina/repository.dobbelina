@@ -635,3 +635,7 @@ msgstr "Gegevens in cache zijn gewist"
 msgctxt "#33013"
 msgid "All cookies have been cleared"
 msgstr "Alle cookies zijn gewist"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Het zoekwoord bestaat al!"

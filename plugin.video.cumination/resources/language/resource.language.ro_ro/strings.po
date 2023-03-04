@@ -603,3 +603,7 @@ msgstr "Datele memorate în cache au fost șterse"
 msgctxt "#33013"
 msgid "All cookies have been cleared"
 msgstr "Toate cookie-urile au fost șterse"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Cuvântul cheie există deja!"
