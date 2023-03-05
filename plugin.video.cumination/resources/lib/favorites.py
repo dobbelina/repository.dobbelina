@@ -938,6 +938,10 @@ def load_custom_list(url):
                   + " cs.author = substr(cli.mode, 1, instr(cli.mode, '.') - 1)"
                   + " WHERE cs.name IS NULL and cli.list_id = ?", (url,))
     for (rowid, name, url, mode, img) in c.fetchall():
+        if not img.startswith('http'):
+            custom = 'custom_sites' in img
+            img = img if img.lower().startswith('http') else img.split('/')[-1].split('\\')[-1]
+            img = basics.cum_image(img, custom)
         ins = AdultSite.get_site_by_name(mode.split('.')[0])
         if ins:
             if ins.default_mode == mode:
