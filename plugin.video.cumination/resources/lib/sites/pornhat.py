@@ -81,7 +81,7 @@ def Main(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url)
-    match = re.compile(r'(?:class="thumb thumb-video|class="thumb-bl thumb-video|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'(?:class="thumb|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img in match:
         name = utils.cleantext(name)
         img = 'https:' + img if img.startswith('//') else img

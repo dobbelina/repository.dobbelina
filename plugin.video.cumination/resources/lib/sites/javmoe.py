@@ -29,7 +29,8 @@ site = AdultSite('javmoe', '[COLOR hotpink]JAV Moe[/COLOR]', 'https://javmama.me
 enames = {'FS': 'FileStar',
           'sb': 'StreamSB',
           'fembed': 'FEmbed',
-          'r': 'RapidVideo'}
+          'r': 'RapidVideo',
+          'ST': 'Motonews'}
 
 
 @site.register(default_mode=True)
@@ -49,7 +50,7 @@ def List(url):
             listhtml = utils.getHtml(url, site.url)
         except:
             return None
-        divs = re.compile(r'<div\s*class="epshen">(.+?</h2></div>)</div>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        divs = re.compile(r'<div\s*class="epshen">(.+?</h2>)', re.DOTALL | re.IGNORECASE).findall(listhtml)
         for div in divs:
             match = re.compile(r'href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL | re.IGNORECASE).search(div)
             if match:

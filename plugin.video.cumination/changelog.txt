@@ -1,2 +1,5 @@
 [B]Version 1.1.70[/B]
-
+Vidoz8 - changed contextmenu to lookup info
+pornez - fixed
+okporn - fixed
+javmoe - fixed

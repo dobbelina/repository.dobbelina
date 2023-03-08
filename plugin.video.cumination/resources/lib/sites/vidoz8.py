@@ -43,18 +43,12 @@ def v7_list(url):
     for img, hd, duration, videopage, name, channel in match:
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('vidz7.v7_pornstars')
+                          + "?mode=" + str('vidz7.Lookupinfo')
                           + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Search Pornstars[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
         hd = 'HD' if 'HD' in hd else ''
         name = utils.cleantext(name)
-        if 'grid-post-cat' in channel:
-            match2 =  re.search('href="([^"]+)">([^<]+)', channel, re.IGNORECASE | re.DOTALL)
-            if match2:
-                contexturl = (utils.addon_sys
-                            + "?mode=" + str('vidz7.v7_list')
-                            + "&url=" + urllib_parse.quote_plus(match2.group(1)))
-                contextmenu.append(('[COLOR deeppink]Search {}[/COLOR]'.format(match2.group(2).strip()), 'Container.Update(' + contexturl + ')'))
+
         site.add_download_link(name, videopage, 'v7_play', img, name, contextm=contextmenu, duration=duration, quality=hd)
 
     np = re.compile(r'class="next"\s*href\s*="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
@@ -95,31 +89,6 @@ def v7_tag(url):
 
     utils.eod()
 
-@site.register()
-def v7_pornstars(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
-    pornstars = {}
-    matches = re.compile('<span><a href="(.*?/tag/[^"]+)">([^<]+)</a></span>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if matches:
-        for url, model in matches:
-            model = model.strip()
-            pornstars[model] = url
-        selected_model = utils.selector('Choose model to view', pornstars, sort_by=lambda x: x[1], show_on_one=True)
-        if not selected_model:
-            return
-
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('vidz7.v7_list')
-                      + "&url=" + urllib_parse.quote_plus(selected_model))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-
-    else:
-        utils.notify('Notify', 'No tagged pornstars found in this video')
-    return
-
 
 @site.register()
 def v7_search(url, keyword=None):
@@ -134,3 +103,44 @@ def v7_search(url, keyword=None):
 def v7_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex=r'''<iframe.+?src\s*=\s*["']([^'"]+)''')
     vp.play_from_site_link(url)
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    studios = re.compile('<a class="" href="https://vidoz8.com/(channel/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if studios:
+        for url, studio in studios:
+            studio = "Studio - " + studio.strip()
+            infodict[studio] = site.url + url
+
+    actors = re.compile('<a href="https://vidoz8.com/(tag/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if actors:
+        for url, actor in actors:
+            actor = "Actor - " + actor.strip()
+            infodict[actor] = site.url + url
+
+    tags = re.compile("<span class='llist'>.*?</div>", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    tags = re.compile('(tag/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('vidz7.v7_list')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No actors, studios or tags found for this video')
+    return
