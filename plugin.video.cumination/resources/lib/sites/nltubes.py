@@ -44,7 +44,8 @@ def getBaselink(url):
 @site4.register(default_mode=True)
 def NLTUBES(url):
     siteurl = getBaselink(url)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + ('categories/' if '/us/' in siteurl else 'categorieen/'), 'NLCAT', site.img_cat)
+    if '12milf' not in siteurl:
+        site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categorieen/', 'NLCAT', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=', 'NLSEARCH', site.img_search)
     NLVIDEOLIST(url + '?filter=latest')
 
@@ -53,23 +54,31 @@ def NLTUBES(url):
 def NLVIDEOLIST(url):
     siteurl = getBaselink(url)
     link = utils.getHtml(url, '')
-    if "0 video found" in link or "Nothing found" in link:
-        return
-    match = re.compile(r'<article(.+?)href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)(.+?)tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
-    for hd1, surl, name, img, hd2, duration in match:
-        surl = surl if surl.startswith('http') else siteurl + surl
-        if 'tag-hd-porno' in hd1 or '>HD<' in hd2:
-            hd = "HD"
-        else:
-            hd = ""
-        name = utils.cleantext(name)
-        site.add_download_link(name, surl, 'NLPLAYVID', img, name, duration=duration, quality=hd)
-    nextp = re.compile(r'''class="pagination.+?class="current".+?href=['"]([^"']+)''', re.DOTALL | re.IGNORECASE).search(link)
-    if nextp:
-        nextp = nextp.group(1)
-        page_nr = re.findall(r'\d+', nextp)[-1]
-        nextp = nextp if nextp.startswith('http') else siteurl + nextp
-        site.add_dir('Next Page (' + page_nr + ')', nextp, 'NLVIDEOLIST', site.img_next)
+
+    if 'poldertube' in siteurl or '12milf' in siteurl:
+        match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
+        for surl, name, img, duration in match:
+            surl = surl if surl.startswith('http') else siteurl + surl
+            name = utils.cleantext(name)
+            site.add_download_link(name, surl, 'NLPLAYVID', img, name, duration=duration)
+        nextp = re.compile(r'''class="pagination.+?class="current".+?href=['"]([^"']+)''', re.DOTALL | re.IGNORECASE).search(link)
+        if nextp:
+            nextp = nextp.group(1)
+            page_nr = re.findall(r'\d+', nextp)[-1]
+            nextp = nextp if nextp.startswith('http') else siteurl + nextp
+            site.add_dir('Next Page (' + page_nr + ')', nextp, 'NLVIDEOLIST', site.img_next)
+    else:
+        match = re.compile(r'data-post-id=.+?data-src="([^"]+)".+?href="([^"]+)"\s*title="([^"]+)".+?.+?tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
+        for img, surl, name, duration in match:
+            surl = surl if surl.startswith('http') else siteurl + surl
+            name = utils.cleantext(name)
+            site.add_download_link(name, surl, 'NLPLAYVID', img, name, duration=duration)
+        nextp = re.compile(r'class="next page-link"\s*href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(link)
+        if nextp:
+            nextp = nextp.group(1)
+            page_nr = re.findall(r'\d+', nextp)[-1]
+            nextp = nextp if nextp.startswith('http') else siteurl + nextp
+            site.add_dir('Next Page (' + page_nr + ')', nextp, 'NLVIDEOLIST', site.img_next)
     utils.eod()
 
 
@@ -101,8 +110,15 @@ def NLSEARCH(url, keyword=None):
 def NLCAT(url):
     siteurl = getBaselink(url)
     link = utils.getHtml(url, '')
-    tags = re.compile(r'<article.+?href="([^"]+).+?src="([^"]+).+?le">([^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
-    for caturl, catimg, catname in tags:
-        catimg = catimg if catimg.startswith('http') else siteurl + catimg
-        site.add_dir(catname, caturl, 'NLVIDEOLIST', catimg)
+    if 'poldertube.nl' in siteurl:
+        tags = re.compile(r'<article.+?href="([^"]+).+?src="([^"]+).+?le">([^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
+        for caturl, catimg, catname in tags:
+            catimg = catimg if catimg.startswith('http') else siteurl + catimg
+            site.add_dir(catname, caturl, 'NLVIDEOLIST', catimg)
+    else:
+        tags = re.compile(r'class="video-block.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+)".+?video-datas">\s*(\d[^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
+        for caturl, catname, catimg, videos in tags:
+            catname = catname.replace('sex films', '').replace('porn videos', '') + '[COLOR hotpink] ({})[/COLOR]'.format(videos)
+            catimg = catimg if catimg.startswith('http') else siteurl + catimg
+            site.add_dir(catname, caturl, 'NLVIDEOLIST', catimg)
     utils.eod()
