@@ -50,8 +50,8 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('perverzija.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videourl))
+                      + "?mode=" + str('perverzija.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videourl))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videourl, 'Play', img, name, noDownload=True, contextm=contextmenu, duration=duration)
@@ -155,7 +155,7 @@ def Play(url, name, download=None):
             videoid = re.compile(r'''var\s*video_id\s*=\s*[`'"]([^`'"]+).+?var\s*m3u8_loader_url\s=\s[`'"]([^`'"]+)''', re.IGNORECASE | re.DOTALL).findall(iframehtml)[0]
             vp.progress.update(50, "[CR]Looking for qualities[CR]")
             m3u8html = utils.getHtml(videoid[1] + videoid[0], iframeurl)
-            links = re.compile(r"resolution=\d+x(\d+)\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
+            links = re.compile(r"resolution=\d+x(\d+)[^\n]*\n([^\s]+)", re.IGNORECASE | re.DOTALL).findall(m3u8html)
             links = {key: value for key, value in links}
             videourl = utils.prefquality(links, sort_by=lambda x: int(x), reverse=True)
             vp.progress.update(75, "[CR]Loading selected quality[CR]")
