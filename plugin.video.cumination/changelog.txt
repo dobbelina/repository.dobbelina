@@ -1,10 +1,2 @@
-[B]Version 1.1.70[/B]
-Vidoz8 - changed contextmenu to lookup info
-pornez - fixed
-okporn - fixed
-javmoe - fixed
-poldertube - fixed
-porntube - fixed
-sextube - fixed
-12milf - fixed
-perverzija - fix playback
+[B]Version 1.1.71[/B]
+xhamster - fix listing

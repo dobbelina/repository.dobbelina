@@ -62,6 +62,8 @@ def List(url):
         videos = jdata["trendingVideoListComponent"]["models"]
     elif "searchResult" in jdata:
         videos = jdata["searchResult"]["models"]
+    elif "pagesNewestComponent" in jdata:
+        videos = jdata["pagesNewestComponent"]["videoListProps"]["models"]
     else:
         utils.notify('Cumination', 'No video found.')
 
@@ -81,7 +83,13 @@ def List(url):
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
     npurl = None
-    if "paginationComponent" in jdata:
+    if "pagesNewestComponent" in jdata:
+        if "paginationProps" in jdata["pagesNewestComponent"]:
+            np = jdata["pagesNewestComponent"]["paginationProps"]["currentPageNumber"] + 1
+            lp = jdata["pagesNewestComponent"]["paginationProps"]["lastPageNumber"] + 1
+            if lp >= np:
+                npurl = jdata["pagesNewestComponent"]["paginationProps"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+    elif "paginationComponent" in jdata:
         np = jdata["paginationComponent"]["currentPageNumber"] + 1
         lp = jdata["paginationComponent"]["lastPageNumber"]
         if lp >= np:
