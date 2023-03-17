@@ -1,6 +1,6 @@
 """
     Cumination
-    Copyright (C) 2015 Whitecream
+    Copyright (C) 2023 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 """
 
 import re
+import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -46,7 +47,14 @@ def HQLIST(url):
         videourl = urllib_parse.quote(site.url + url, safe=':/')
         if img.startswith('//'):
             img = 'https:' + img
-        site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('hqporner.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videourl))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+        site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration, contextm=contextmenu)
     try:
         nextp = re.compile('<a href="([^"]+)"[^>]+>Next', re.DOTALL | re.IGNORECASE).findall(link)
         nextp = "https://www.hqporner.com" + nextp[0]
@@ -146,3 +154,36 @@ def getHQWO(url):
         if videourl.startswith('//'):
             videourl = 'https:' + videourl
         return videourl
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    actors = re.compile('href="(/actress/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if actors:
+        for url, actor in actors:
+            actor = "Actor - " + actor.strip()
+            infodict[actor] = site.url + url
+
+    tags = re.compile('href="(/category/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('hqporner.HQLIST')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No actors, studios or tags found for this video')
+    return
