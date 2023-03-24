@@ -23,6 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('pornhub', '[COLOR hotpink]PornHub[/COLOR]', 'https://www.pornhub.com/', 'pornhub.png', 'pornhub')
+cookiehdr = {'Cookie': 'accessAgeDisclaimerPH=1'}
 
 
 @site.register(default_mode=True)
@@ -52,7 +53,7 @@ def List(url):
                  ('[COLOR violet]Sort By[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('sortby')), 'RunPlugin(' + cm_sortby + ')'),
                  ('[COLOR violet]Time[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('time')), 'RunPlugin(' + cm_time + ')')]
 
-    listhtml = utils.getHtml(url, site.url)
+    listhtml = utils.getHtml(url, site.url, cookiehdr)
     if 'Error Page Not Found' in listhtml or not listhtml:
         site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
         utils.eod()
@@ -99,7 +100,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, site.url)
+    cathtml = utils.getHtml(url, site.url, cookiehdr)
     match = re.compile(r'<div class="category-wrapper.*?<a href="([^"]+)"\s*alt="([^"]+)".*?img\s+src="([^"]+).+?<var>([^<]+)<', re.DOTALL).findall(cathtml)
     for catpage, name, img, videos in match:
         catpage = site.url[:-1] + catpage
