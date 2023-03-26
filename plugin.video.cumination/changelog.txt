@@ -1,4 +1,2 @@
-[B]Version 1.1.71[/B]
-xhamster - fix listing
-hqporner - lookup info contextmenu
-pornhub - fix access in Germany
+[B]Version 1.1.72[/B]
+xvideos - fix categories

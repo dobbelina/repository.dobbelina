@@ -1519,7 +1519,7 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
             img = ''
             if re_img:
                 img = re.compile(re_img, re.DOTALL | re.IGNORECASE).findall(video)
-                img = fix_url(img[0], site.url) if img else ''
+                img = fix_url(img[0].replace('&amp;', '&'), site.url) if img else ''
             quality = ''
             if re_quality:
                 quality = re.compile(re_quality, re.DOTALL | re.IGNORECASE).findall(video)

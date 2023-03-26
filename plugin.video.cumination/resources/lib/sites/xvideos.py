@@ -140,7 +140,7 @@ def Country(url):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'href="([^"]+)" class="btn btn-default">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'href="([^"]+)">([^<]+)<[^"]+class="dyn', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in sorted(match, key=lambda x: x[1]):
         site.add_dir(name, site.url[:-1] + catpage, 'List', site.img_cat)
     utils.eod()
