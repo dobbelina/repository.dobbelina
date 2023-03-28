@@ -25,7 +25,7 @@ site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven[/COLOR]', 'https://
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tags-page/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'genres/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/', 'Series', site.img_cat, section='Home')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
@@ -60,6 +60,13 @@ def Playvid(url, name, download=None):
             surl = re.compile(r'<span>Servers.+?id="([^"]+)').search(videopage)
             if surl:
                 surl = surl.group(1)
+                if surl.startswith('/'):
+                    surl = 'https://nhplayer.com' + surl
+                    videohtml = utils.getHtml(surl, site.url)
+                    vp.direct_regex = r'file:\s*"([^"]+)"'
+                    vp.play_from_html(videohtml)
+                    vp.progress.close()
+                    return
             else:
                 vp.progress.close()
                 utils.notify('Oh oh', 'Couldn\'t find a playable link')
