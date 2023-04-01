@@ -1,6 +1,6 @@
 '''
     Cumination
-    Copyright (C) 2021 Team Cumination
+    Copyright (C) 2023 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://realli
 site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
 site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.life[/COLOR]', 'https://voyeur-house.life/', 'https://www.voyeur-house.life/images/logo/logo.png', 'vhlife')
 site3 = AdultSite('vhlife1', '[COLOR hotpink]Voyeurhouse.life[/COLOR]', 'https://www.voyeurhouse.life/', 'https://www.voyeurhouse.life/images/logo/logo.png', 'vhlife1')
+site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps.to[/COLOR]', 'https://camcaps.to/', 'https://camcaps.to/images/logo/logo.png', 'camcapsto')
 
 
 def getBaselink(url):
@@ -37,6 +38,8 @@ def getBaselink(url):
         siteurl = site2.url
     elif 'voyeurhouse.life' in url:
         siteurl = site3.url
+    elif 'camcaps.to' in url:
+        siteurl = site4.url
     return siteurl
 
 
@@ -44,10 +47,14 @@ def getBaselink(url):
 @site1.register(default_mode=True)
 @site2.register(default_mode=True)
 @site3.register(default_mode=True)
+@site4.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos?search_query=', 'Search', site.img_search)
+    if 'camcaps.to' in url:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos/', 'Search', site.img_search)
+    else:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos?search_query=', 'Search', site.img_search)
     List(siteurl + 'videos?o=mr')
 
 
@@ -79,7 +86,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
+        title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
         List(searchUrl)
 
@@ -88,12 +95,15 @@ def Search(url, keyword=None):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, '')
-    match = re.compile('div class="col-sm.+?a href="([^"]+)">.+?title-truncate">([^<]+)<.+?class="badge">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, videos in match:
-        if catpage.startswith('/'):
-            catpage = siteurl[:-1] + catpage
+    if 'reallifecam.to' in url or 'voyeur-house.to' in url:
+        match = re.compile('div class="col-sm.+?a href="([^"]+)"(>).+?title-truncate">([^<]+)<.+?class="badge">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    else:
+        match = re.compile(r'col-sm.+?a href="([^"]+)">.+?img src="([^"]+)"\s*title="([^"]+)".+?"float-right">\s*(\d+)\s*<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, img, name, videos in match:
+        catpage = siteurl[:-1] + catpage if catpage.startswith('/') else catpage
+        img = siteurl[:-1] + img if img.startswith('/') else site.img_cat
         name = utils.cleantext(name.strip()).title() + " [COLOR deeppink]" + videos + "[/COLOR]"
-        site.add_dir(name, catpage, 'List', site.img_cat)
+        site.add_dir(name, catpage, 'List', img)
     utils.eod()
 
 
@@ -106,6 +116,8 @@ def Playvid(url, name, download=None):
     match = re.compile(r'class="video-embedded">\s*<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
     if match:
         refurl = match[0]
+        if '/vtplayer.net/' in refurl:
+            refurl = refurl.replace('embed-', '')
         if vp.resolveurl.HostedMediaFile(refurl):
             vp.play_from_link_to_resolve(refurl)
             return
