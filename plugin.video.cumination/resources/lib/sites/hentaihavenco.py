@@ -57,7 +57,7 @@ def Playvid(url, name, download=None):
         surl = surl.group(1)
         if 'nhplayer.com' in surl:
             videopage = utils.getHtml(surl, site.url)
-            surl = re.compile(r'<span>Servers.+?id="([^"]+)').search(videopage)
+            surl = re.compile(r'<li data-id="([^"]+)').search(videopage)
             if surl:
                 surl = surl.group(1)
                 if surl.startswith('/'):
