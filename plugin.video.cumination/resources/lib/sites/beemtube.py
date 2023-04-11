@@ -19,6 +19,7 @@
 import re
 import xbmc
 import xbmcgui
+import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -117,9 +118,16 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url)
-    match = re.compile(r'file:\s*"([^"]+)",label:"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'"embedUrl":\s+"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
-        sources = {m[1].replace(' HD', '').replace('Auto', '0p'): m[0] for m in match}
-        videourl = utils.prefquality(sources, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-        if videourl:
-            vp.play_from_direct_link(videourl + '|referer:' + url)
+        embedhtml = utils.getHtml(match[0])
+        match = re.compile(r'"playlist":\s+"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(embedhtml)
+        if match:
+            playlist = utils.getHtml(match[0])
+            jdata = json.loads(playlist)
+            if "label" not in jdata["playlist"][0]["sources"][0].keys():
+                jdata["playlist"][0]["sources"][0]["label"] = "0p"
+            sources = {j["label"]: j["file"] for j in jdata["playlist"][0]["sources"]}
+            videourl = utils.prefquality(sources, reverse=True)
+            if videourl:
+                vp.play_from_direct_link(videourl + '|referer:' + url)

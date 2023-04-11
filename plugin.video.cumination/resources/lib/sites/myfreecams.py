@@ -49,7 +49,7 @@ def Main():
 def List(url, page=1):
     MFC_SERVERS = getMFC()
     listhtml = utils._getHtml(url)
-    res = re.compile(r"broadcaster_id:(\d+).+?avatar_border\s*src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
+    res = re.compile(r"broadcaster_id:(\d+).+?avatar_border.+?src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
 
     for model_id, pic, name, plot in res:
         pic = pic.replace('100x100', '300x300')

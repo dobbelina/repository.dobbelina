@@ -34,21 +34,25 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     listhtml = utils.getHtml(url, site.url)
-    match =  re.compile('open-popup" href="([^"]+)" title="([^"]+)".*?original="([^"]+)"(.*?)time">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(listhtml)
+    match = re.compile(r'open-popup"\s*href="([^"]+)"\s*title="([^"]+)".*?original="([^"]+)"(.*?)time">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(listhtml)
 
     for videopage, name, img, hd, duration in match:
         name = utils.cleantext(name.strip())
-        if 'hd' in hd:
-            hd = " [COLOR orange]HD[/COLOR]"
+        hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
-    nextp = re.compile(r'pager next">\s+<a href="/([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if nextp:
-        nextp = site.url + nextp[0]
+    nextp = re.compile(r'pager\s*next">.+?block-id="([^"]+)"\s*data-parameters="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
-        site.add_dir('Next Page..', nextp, 'List', site.img_next)
+    if nextp:
+        currpg = re.compile(r'class="pagination".+?class="item\sactive">.+?from(?:_albums)?:(\d+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[-1]
+        lastpg = re.compile(r'class="item">\s*<a[^>]*from(?:_albums)?:(\d+)">', re.DOTALL | re.IGNORECASE).findall(listhtml)[-1]
+        params = nextp[-1][1].replace(':', '=').replace(';', '&')
+        if '+' in params:
+            params = params.replace('+', '={0}&'.format(params.split('=')[-1].zfill(2)))
+        params = params.replace('%20', '+')
+        nextpg = '{0}?mode=async&function=get_block&block_id={1}&{2}'.format(url.split('?')[0], nextp[-1][0], params)
+        site.add_dir('Next Page... (Currently in Page {} of {})'.format(currpg, lastpg), nextpg, 'List', site.img_next)
 
     utils.eod()
 
@@ -79,10 +83,11 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    surl = re.search(r"video(?:_alt)?_url:\s*'([^']+)", html)
-    if surl:
+    srcs = re.findall(r"video(?:_alt)?_url\d?:\s*'([^']+).+?video_(?:alt_)?url\d?_text:\s*'([^']+)", html)
+    if srcs:
         vp.progress.update(50, "[CR]Video found[CR]")
-        surl = surl.group(1)
+        srcs = {m[1]: m[0] for m in srcs}
+        surl = utils.prefquality(srcs, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
         if surl.startswith('function/'):
             lcode = re.findall(r"license_code:\s*'([^']+)", html)[0]
             surl = kvs_decode(surl, lcode)
