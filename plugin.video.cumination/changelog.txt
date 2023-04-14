@@ -4,3 +4,4 @@
 - beemtube: fix playback
 - myfreecams: fix listing
 - Hentaihaven Video playback fix
+- Pornhits: new site
