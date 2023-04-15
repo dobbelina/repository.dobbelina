@@ -44,12 +44,12 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = "class='video-cube'"
-    re_videopage = "href='([^']+)' title"
-    re_name = "title='([^']+)'"
-    re_img = "img src='([^']+)'"
-    re_quality = "class='vquality'>([^<]+)<"
-    re_duration = "class='vmin'>([^<]+)<"
+    delimiter = 'class="video-cube"'
+    re_videopage = 'href="([^"]+)" title'
+    re_name = 'title="([^"]+)"'
+    re_img = 'img src="([^"]+)"'
+    re_quality = 'class="vquality">([^<]+)<'
+    re_duration = 'class="vmin">([^<]+)<'
     utils.videos_list(site, 'palimas.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm='palimas.Related')
 
     re_npurl = 'href="([^"]+)">Next'

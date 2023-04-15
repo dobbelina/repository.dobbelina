@@ -5,3 +5,4 @@
 - myfreecams: fix listing
 - Hentaihaven Video playback fix
 - Pornhits: new site
+- Palimas: fix listing
