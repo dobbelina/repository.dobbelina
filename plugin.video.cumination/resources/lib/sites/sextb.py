@@ -53,7 +53,7 @@ def List(url):
     if 'No Video were found that matched your search query' in html or len(html) < 10:
         utils.eod()
         return
-    match = re.compile(r'<div class="tray-item .*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    match = re.compile(r'<div class="tray-item.*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
