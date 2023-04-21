@@ -22,6 +22,7 @@ import xbmcgui
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.jsunpack import unpack
 
 site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://thepornfull.com/', 'https://thepornfull.com/wp-content/uploads/2022/05/Logo-Thepornfull.png', 'thepornfull')
 
@@ -30,7 +31,7 @@ site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://t
 def thepornfull_main():
     # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categorias/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'thepornfull_search', site.img_search)
-    thepornfull_list(site.url + '?order=recent')
+    thepornfull_list(site.url + '?filter=latest')
 
 
 @site.register()
@@ -46,7 +47,9 @@ def thepornfull_list(url):
         name = utils.cleantext(name)
         site.add_download_link(name, video, 'thepornfull_play', img, name)
 
-    utils.next_page(site, 'thepornfull.thepornfull_list', listhtml, r'href="([^"]+)">Next<', r'page/(\d+)/[^>]*>Next<', re_lpnr=r"page/(\d+)/[^']*'>Last<", contextm='thepornfull.GotoPage')
+    re_np = r'class="current">\d+<[^"]+?href="([^"]+)"\s+class="inactive">'
+    re_npnr = r'class="current">\d+<[^"]+?href="[^"]+"\s+class="inactive">(\d+)<'
+    utils.next_page(site, 'thepornfull.thepornfull_list', listhtml, re_np, re_npnr, re_lpnr=r"page/(\d+)/[^']*'>Last<", contextm='thepornfull.GotoPage')
     utils.eod()
 
 
@@ -117,3 +120,10 @@ def thepornfull_play(url, name, download=None):
             listitem.setMimeType('application/vnd.apple.mpegurl')
             listitem.setContentLookup(False)
             xbmc.Player().play(videourl, listitem)
+        else:
+            videourl = re.compile(r'>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(iframehtml)[0]
+            videourl = unpack(videourl)
+            videolink = re.compile(r'sources:\[\{file:"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videourl)
+            if match:
+                videolink = videolink[0] + '|Referer=' + iframeurl
+                vp.play_from_direct_link(videolink)

@@ -1,9 +1,6 @@
-[B]Version 1.1.73[/B]
-- Rule34: fix pagination
-- Rule34: pick all qualities
-- beemtube: fix playback
-- myfreecams: fix listing
-- Hentaihaven Video playback fix
-- Pornhits: new site
-- Palimas: fix listing
-- TubeXporn: new site
+[B]Version 1.1.74[/B]
+Hdporn92 - new site
+Camcaps - fix playback
+thepornfull - fix playback & next page
+Palimas - fix listing
+
