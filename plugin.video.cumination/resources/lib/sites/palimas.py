@@ -44,13 +44,20 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = 'video-cube'
+    delimiter = '''class=['"]video-cube['"]'''
     re_videopage = r'''href=['"]([^'"]+)['"]\s+title'''
-    re_name = '''title=['"]([^"]+)['"]'''
-    re_img = r'''img\s+src=['"]([^"]+)['"]'''
+    re_name = '''title=['"]([^'"]+)['"]'''
+    re_img = r'''img\s+src=['"]([^'"]+)['"]'''
     re_quality = '''class=['"]vquality['"]>([^<]+)<'''
     re_duration = '''class=['"]vmin['"]>([^<]+)<'''
-    utils.videos_list(site, 'palimas.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm='palimas.Related')
+
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('palimas.Lookupinfo') + "&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=" + str('palimas.Related') + "&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+
+    utils.videos_list(site, 'palimas.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm=cm)
 
     re_npurl = 'href="([^"]+)">Next'
     re_npnr = r'page=(\d+)">Next'
@@ -145,3 +152,37 @@ def Playvid(url, name, download=None):
         vp.play_from_direct_link(videourl)
     if videourl in videolinks.values():
         vp.play_from_link_to_resolve(videourl)
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    categories = re.compile(r"<a href='([^']+)'>([^<]+)</a>", re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Categories:<')[-1].split('</span>')[0])
+    if categories:
+        for url, cat in categories:
+            cat = "Cat - " + cat.strip()
+            infodict[cat] = site.url[:-1] + url
+
+    models = re.compile(r"<a href='([^']+)'>([^<]+)</a>", re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Pornstars:<')[-1].split('</span>')[0])
+    if models:
+        for url, model in models:
+            model = "Model - " + model.strip()
+            infodict[model] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('palimas.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No categories or models found for this video')
+    return

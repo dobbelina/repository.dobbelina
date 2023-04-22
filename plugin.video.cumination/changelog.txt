@@ -3,4 +3,4 @@ Hdporn92 - new site
 Camcaps - fix playback
 thepornfull - fix playback & next page
 Palimas - fix listing
-
+Palimas - added "Lookupinfo" to context menu

@@ -1498,40 +1498,46 @@ def fix_url(url, siteurl=None, baseurl=None):
 
 
 def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None, skip=None):
-    videolist = html.split(delimiter)
+    videolist = re.split(delimiter, html)
     if videolist:
         videolist.pop(0)
         for video in videolist:
             if skip and skip in video:
                 continue
-            videopage = re.compile(re_videopage, re.DOTALL | re.IGNORECASE).findall(video)
-            if videopage:
-                videopage = fix_url(videopage[0], site.url)
+            match = re.search(re_videopage, video, flags=re.DOTALL | re.IGNORECASE)
+            if match:
+                videopage = fix_url(match.group(1), site.url)
             else:
                 continue
             name = ''
             if re_name:
-                name = re.compile(re_name, re.DOTALL | re.IGNORECASE).findall(video)
-                if name:
-                    name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), name[0].strip())
+                match = re.search(re_name, video, flags=re.DOTALL | re.IGNORECASE)
+                if match:
+                    name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), match.group(1).strip())
                     name = six.ensure_str(name)
                     name = cleantext(name)
             img = ''
             if re_img:
-                img = re.compile(re_img, re.DOTALL | re.IGNORECASE).findall(video)
-                img = fix_url(img[0].replace('&amp;', '&'), site.url) if img else ''
+                match = re.search(re_img, video, flags=re.DOTALL | re.IGNORECASE)
+                if match:
+                    img = fix_url(match.group(1).replace('&amp;', '&'), site.url)
             quality = ''
             if re_quality:
-                quality = re.compile(re_quality, re.DOTALL | re.IGNORECASE).findall(video)
-                quality = quality[0] if quality else ''
+                match = re.search(re_quality, video, flags=re.DOTALL | re.IGNORECASE)
+                if match:
+                    quality = match.group(1) if match.groups() else match.group(0)
             duration = ''
             if re_duration:
-                duration = re.compile(re_duration, re.DOTALL | re.IGNORECASE).findall(video)
-                duration = duration[0] if duration else ''
+                match = re.search(re_duration, video, flags=re.DOTALL | re.IGNORECASE)
+                if match:
+                    duration = match.group(1)
             cm = ''
             if contextm:
-                cm_related = (addon_sys + "?mode=" + str(contextm) + "&url=" + urllib_parse.quote_plus(videopage))
-                cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+                if isinstance(contextm, six.string_types):
+                    cm_related = (addon_sys + "?mode=" + str(contextm) + "&url=" + urllib_parse.quote_plus(videopage))
+                    cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+                else:
+                    cm = [(x[0], x[1].replace("&url=", "&url=" + urllib_parse.quote_plus(videopage))) for x in contextm]
             site.add_download_link(name, videopage, playvid, img, name, quality=quality, duration=duration, contextm=cm)
 
 
