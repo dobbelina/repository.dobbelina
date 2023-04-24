@@ -146,12 +146,13 @@ def Playvid(url, name):
     response = utils._postHtml(murl, json_data=pdata)
 
     data = json.loads(response).get('data', {}).get('streamer', {}).get('broadcast', {})
-    if data.get('broadcastStatus') == 'Live':
+    if data and data.get('broadcastStatus') == 'Live':
         surl = data.get('pullUrl')
-    else:
-        utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
-        vp.progress.close()
-        return
+        if surl:
+            vp.progress.update(75, "[CR]Found Stream[CR]")
+            vp.play_from_direct_link(surl)
+            return
 
-    vp.progress.update(75, "[CR]Found Stream[CR]")
-    vp.play_from_direct_link(surl)
+    utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
+    vp.progress.close()
+    return
