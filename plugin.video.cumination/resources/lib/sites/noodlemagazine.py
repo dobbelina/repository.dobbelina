@@ -24,9 +24,46 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('noodlemagazine', '[COLOR hotpink]Noodlemagazine[/COLOR]', 'https://noodlemagazine.com/', 'noodlemagazine', 'noodlemagazine')
 
+data = {
+    "sort": {
+        "0": {
+            "label": "Date Added",
+            "default": True
+        },
+        "1": {
+            "label": "Duration"
+        },
+        "2": {
+            "label": "Relevance"
+        }
+    },
+    "hd": {
+        "0": {
+            "label": "Everything",
+            "default": True
+        },
+        "1": {
+            "label": "HD Only"
+        }
+    },
+    "len": {
+        "long": {
+            "label": "Long"
+        },
+        "short": {
+            "label": "Short"
+        },
+        "any": {
+            "label": "Any",
+            "default": True
+        }
+    }
+}
+
 
 @site.register(default_mode=True)
 def Main(url):
+    site.add_download_link(getFilterLabels(), site.url, 'setFilters', '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Babepedia Top 100 Pornstar to search for[/COLOR]', 'https://www.babepedia.com/pornstartop100', 'Babepedia', site.img_search)
     utils.eod()
@@ -34,6 +71,7 @@ def Main(url):
 
 @site.register()
 def List(url, page=0):
+    utils.kodilog('Url: ' + url)
     try:
         listhtml = utils.getHtml(url, '')
     except:
@@ -87,7 +125,7 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        searchUrl = searchUrl + title + '?sort=0&p=0'
+        searchUrl = searchUrl + title +  getFilters(0)
         List(searchUrl, 0)
 
 @site.register()
@@ -101,6 +139,52 @@ def Babepedia(url):
     for img, name in match:
         name = utils.cleantext(name)
         img = 'https://www.babepedia.com'  + img
-        videopage = site.url + 'video/' + name.replace(' ', '%20') + '?sort=0&p=0'
+        videopage = site.url + 'video/' + name.replace(' ', '%20') + getFilters(0)
         site.add_dir(name, videopage, 'List', img, page=0)
     utils.eod()
+
+
+@site.register()
+def setFilters():
+    filters = {'Sort': 'sort', 'Quality': 'hd', 'Length': 'len'}
+    chosenfilter = utils.selector('Select filter', filters)
+    if chosenfilter:
+        options = {v['label']: k for k, v in data[chosenfilter].items()}
+        chosenoption = utils.selector('Choose option', options)
+        if chosenoption:
+            utils.addon.setSetting('noodle' + chosenfilter, chosenoption)
+            utils.refresh()
+
+
+def getFilters(page):
+    defaults = getDefaults()
+    sortvalue = utils.addon.getSetting('noodlesort') if utils.addon.getSetting('noodlesort') else next(iter(defaults['sort'].keys()))
+    hdvalue = utils.addon.getSetting('noodlehd') if utils.addon.getSetting('noodlehd') else next(iter(defaults['hd'].keys()))
+    lenvalue = utils.addon.getSetting('noodlelen') if utils.addon.getSetting('noodlelen') else next(iter(defaults['len'].keys()))
+    return '?sort={}&hd={}&len={}&p={}'.format(sortvalue, hdvalue, lenvalue, page)
+
+
+def getFilterLabels():
+    defaults = getDefaults()
+    sortvalue = utils.addon.getSetting('noodlesort') if utils.addon.getSetting('noodlesort') else next(iter(defaults['sort'].keys()))
+    hdvalue = utils.addon.getSetting('noodlehd') if utils.addon.getSetting('noodlehd') else next(iter(defaults['hd'].keys()))
+    lenvalue = utils.addon.getSetting('noodlelen') if utils.addon.getSetting('noodlelen') else next(iter(defaults['len'].keys()))
+
+    sortlabel = data['sort'][sortvalue]['label']
+    hdlabel = data['hd'][hdvalue]['label']
+    lenlabel = data['len'][lenvalue]['label']
+    return 'Sort: {} - Quality: {} - Length: {}'.format(sortlabel, hdlabel, lenlabel)
+
+
+def getDefaults():
+    default_items = {}
+
+    for category, options in data.items():
+        for key, details in options.items():
+            if details.get("default"):
+                default_items[category] = {
+                    key: {
+                        "label": details["label"]
+                    }
+                }
+    return default_items
