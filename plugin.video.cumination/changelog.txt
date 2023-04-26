@@ -9,3 +9,4 @@ Ividz - new site
 TabooTube - new site
 NoodleMagazine - new site
 cherry - fix error when stream not available
+TabooFantazy - new site
