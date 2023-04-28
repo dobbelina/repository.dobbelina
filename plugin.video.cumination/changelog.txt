@@ -10,3 +10,5 @@ TabooTube - new site
 NoodleMagazine - new site
 cherry - fix error when stream not available
 TabooFantazy - new site
+Freeomovie - fixed listing
+JapTeenX - new site

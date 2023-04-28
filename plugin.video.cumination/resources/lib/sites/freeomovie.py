@@ -1,6 +1,6 @@
 """
     Cumination
-    Copyright (C) 2022 Team Cumination
+    Copyright (C) 2023 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'boxtitle">.+?href="([^"]+).+?title="([^"]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('class="thumi">.+?href="([^"]+).+?title="([^"]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img in match:
         name = utils.cleantext(name)
 
@@ -48,7 +48,7 @@ def List(url):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
-    nextp = re.compile(r'''navigation'>.+?rel="next"\s*href="([^"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    nextp = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
         site.add_dir('Next Page... ({0})'.format(nextp.split('/')[-2]), nextp, 'List', site.img_next)
@@ -86,15 +86,15 @@ def Lookupinfo(url):
 
     infodict = {}
 
-    listhtml = re.compile("Category:(.*?)<!--/videocont-->", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    listhtml = re.compile('Categories:(.*?)<div class="clearfix">', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
 
-    categories = re.compile('(category/[^"]+)" rel="category tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    categories = re.compile('(category/[^"]+)"[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if categories:
         for url, cat in categories:
             cat = "Cat - " + cat.strip()
             infodict[cat] = site.url + url
 
-    tags = re.compile('(tag/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    tags = re.compile('(tag/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if tags:
         for url, tag in tags:
             tag = "Tag - " + tag.strip()

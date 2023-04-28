@@ -29,6 +29,7 @@ site = AdultSite('taboofantazy', '[COLOR hotpink]TabooFantazy[/COLOR]', 'https:/
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + '?filter=latest')
 
@@ -37,16 +38,19 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url)
     html = listhtml.split('>SHOULD WATCH<')[0]
-    videos = html.split('article data-video-uid')
-    videos.pop(0)
-    for video in videos:
-        if 'type-photos' in video:
-            continue
-        match = re.compile(r'href="([^"]+).+?data-src="([^"]+)".+?<span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
-        if match:
-            videourl, img, name = match[0]
+    match = re.compile(r'video-uid="\d*?".*?href="([^"]+)"\s*title="([^"]+)">.*?data-src="([^"]+)"(.*?)</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if match:
+        for videourl, name, img, hd, duration in match:
             name = utils.cleantext(name)
-            site.add_download_link(name, videourl, 'Play', img, name)
+            hd = 'HD' if 'HD' in hd else ''
+
+            contextmenu = []
+            contexturl = (utils.addon_sys
+                        + "?mode=" + str('taboofantazy.Lookupinfo')
+                        + "&url=" + urllib_parse.quote_plus(videourl))
+            contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+            site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu, duration=duration, quality=hd)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
@@ -94,3 +98,54 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex='data-wpfc-original-src="([^"]+)"')
     vp.play_from_site_link(url)
+
+
+@site.register()
+def Tags(url):
+    listhtml = utils.getHtml(url, url)
+    match = re.compile('/(tag/[^"]+)".*?aria-label="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for tagpage, name in match:
+        name = utils.cleantext(name)
+        site.add_dir(name, site.url + tagpage, 'List', '')
+
+    utils.eod()
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    categories = re.compile(r'(category/[^"]+)"\s*class="label"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if categories:
+        for url, category in categories:
+            category = "Cat - " + category.strip()
+            infodict[category] = site.url + url    
+
+    actors = re.compile(r'(actor[^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if actors:
+        for url, actor in actors:
+            actor = "Actor - " + actor.strip()
+            infodict[actor] = site.url + url
+
+    tags = re.compile(r'(tag/[^"]+)"\s*class="label"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('taboofantazy.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No categories, actors or tags found for this video')
+    return
