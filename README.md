@@ -25,9 +25,9 @@ This is also where you find custom add-ons.
 
 **sites/catchers, or make a pull request.**
 
-[![GitHub Issues Open](https://github-basic-badges.herokuapp.com/issues/dobbelina/repository.dobbelina.svg)]()
+![GitHub issues](https://img.shields.io/github/issues/dobbelina/repository.dobbelina)
 
-[![GitHub Commits](https://github-basic-badges.herokuapp.com/commits/dobbelina/repository.dobbelina.svg)]()
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/dobbelina/repository.dobbelina)
 
 
 
