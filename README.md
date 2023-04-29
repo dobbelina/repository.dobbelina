@@ -25,7 +25,7 @@ This is also where you find custom add-ons.
 
 **sites/catchers, or make a pull request.**
 
-![GitHub issues](https://img.shields.io/github/issues/dobbelina/repository.dobbelina)
+![GitHub closed issues](https://img.shields.io/github/issues-closed/dobbelina/repository.dobbelina)
 
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/dobbelina/repository.dobbelina)
 
