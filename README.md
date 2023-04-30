@@ -29,6 +29,7 @@ This is also where you find custom add-ons.
 
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/dobbelina/repository.dobbelina)
 
-[![Version Info](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&query=%2FVersionInfo%2FVersion&url=https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/plugin.video.cumination/addon.xml)](https://github.com/dobbelina/repository.dobbelina)
+[![Version Info](https://img.shields.io/badge/dynamic/xml?color=blue&label=version&query=%2Faddon%2F@version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdobbelina%2Frepository.dobbelina%2Fmaster%2Fplugin.video.cumination%2Faddon.xml)](https://github.com/dobbelina/repository.dobbelina)
+
 
 
