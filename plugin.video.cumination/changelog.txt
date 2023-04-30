@@ -1,18 +1,3 @@
-[B]Version 1.1.74[/B]
-Hdporn92 - new site
-Camcaps - fix playback
-thepornfull - fix playback & next page
-Palimas - fix listing
-Palimas - added "Lookupinfo" to context menu
-Chaturbate - fix tags
-Ividz - new site
-TabooTube - new site
-NoodleMagazine - new site
-cherry - fix error when stream not available
-TabooFantazy - new site
-Freeomovie - fixed listing
-JapTeenX - new site
-LatestPorn - new site
-PornXP - new site
-FreshPorno - new site
-thepornfull - fix listing & pagination
+[B]Version 1.1.75[/B]
+Aagmaal Pro - fix thumbnails
+Desi Porn - Domain change

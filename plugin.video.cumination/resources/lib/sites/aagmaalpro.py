@@ -22,7 +22,7 @@ import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.today/', 'https://aagmaal.pro/wp-content/uploads/2021/11/aagmaal.pro-logo.png', 'aagmaalpro')
+site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.city/', 'https://aagmaal.city/wp-content/uploads/2021/11/aagmaal.pro-logo.png', 'aagmaalpro')
 
 
 @site.register(default_mode=True)
@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="recent-item".+?data-src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         if '</span>' in name:
             name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
