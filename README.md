@@ -26,9 +26,7 @@ This is also where you find custom add-ons.
 **sites/catchers, or make a pull request.**
 
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/dobbelina/repository.dobbelina)
-
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/dobbelina/repository.dobbelina)
-
 [![Latest Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=latest%20version&query=%2Faddon%2F@version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdobbelina%2Frepository.dobbelina%2Fmaster%2Fplugin.video.cumination%2Faddon.xml)](https://github.com/dobbelina/repository.dobbelina)
 
 
