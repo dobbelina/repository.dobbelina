@@ -49,7 +49,7 @@ def Main():
 
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=-rc&page=1&g=f&limit=50', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=f&limit=50', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Female[/COLOR]', bu + 'new-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Female[/COLOR]', bu + 'teen-cams/female/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Female[/COLOR]', bu + '18to21-cams/female/?page=1', 'List', '', '')
@@ -64,7 +64,7 @@ def Main():
         site.add_dir('[COLOR hotpink]Other Region Cams - Female[/COLOR]', bu + 'other-region-cams/female/?page=1', 'List', '', '')
     if couple:
         site.add_dir('[COLOR violet]Couple[/COLOR]', bu + 'couple-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Couple[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=-rc&page=1&g=c&limit=50', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Couple[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=c&limit=50', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Couple[/COLOR]', bu + 'new-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Couple[/COLOR]', bu + 'teen-cams/couple/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Couple[/COLOR]', bu + '18to21-cams/couple/?page=1', 'List', '', '')
@@ -79,7 +79,7 @@ def Main():
         site.add_dir('[COLOR hotpink]Other Region Cams - Couple[/COLOR]', bu + 'other-region-cams/couple/?page=1', 'List', '', '')
     if male:
         site.add_dir('[COLOR violet]Male[/COLOR]', bu + 'male-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Male[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=-rc&page=1&g=m&limit=50', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Male[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=m&limit=50', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Male[/COLOR]', bu + 'new-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Male[/COLOR]', bu + 'teen-cams/male/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Male[/COLOR]', bu + '18to21-cams/male/?page=1', 'List', '', '')
@@ -94,7 +94,7 @@ def Main():
         site.add_dir('[COLOR hotpink]Other Region Cams - Male[/COLOR]', bu + 'other-region-cams/male/?page=1', 'List', '', '')
     if trans:
         site.add_dir('[COLOR violet]Transsexual[/COLOR]', bu + 'trans-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Transsexual[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=-rc&page=1&g=t&limit=50', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Transsexual[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=t&limit=50', 'Tags', '', '')
         site.add_dir('[COLOR hotpink]New Cams - Transsexual[/COLOR]', bu + 'new-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]Teen Cams (18+) - Transsexual[/COLOR]', bu + 'teen-cams/trans/?page=1', 'List', '', '')
         site.add_dir('[COLOR hotpink]18 to 21 Cams - Transsexual[/COLOR]', bu + '18to21-cams/trans/?page=1', 'List', '', '')
@@ -255,16 +255,13 @@ def topCams(url):
 @site.register()
 def Tags(url, page=1):
     cat = re.search(r'&g=([^&]*)', url).group(1)
-    if cat == 'f':
-        category = '/female/'
-    elif cat == 'c':
-        category = '/couple/'
-    elif cat == 'm':
-        category = '/male/'
-    elif cat == 't':
-        category = '/trans/'
-    else:
-        category = '/'
+    categories = {
+        'f': '/female/',
+        'c': '/couple/',
+        'm': '/male/',
+        't': '/trans/',
+    }
+    category = categories.get(cat, '/')
 
     html = utils.getHtml(url, site.url)
     jdata = json.loads(html)
