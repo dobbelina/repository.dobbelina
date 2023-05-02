@@ -45,7 +45,7 @@ def List(url):
     delimiter = '<div class="well well-sm"'
     re_videopage = 'class="video-link" href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'img src="([^"]+)"'
+    re_img = 'data-original="([^"]+)"'
     re_duration = '<div class="duration">([^<]+)<'
     re_quality = '>HD<'
     skip = '=modelfeed'
