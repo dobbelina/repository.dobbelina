@@ -447,51 +447,54 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
         else:
             response = urlopen(req, timeout=30)
     except urllib_error.HTTPError as e:
-        if e.info().get('Content-Encoding', '').lower() == 'gzip':
-            buf = six.BytesIO(e.read())
-            f = gzip.GzipFile(fileobj=buf)
-            result = f.read()
-            f.close()
+        if error is True:
+            response = e
         else:
-            result = e.read()
-        if e.code == 503 and 'cf-browser-verification' in result:
-            result = cloudflare.solve(url, cj, USER_AGENT)
-        elif e.code == 403 and 'cf-alert-error' in result:
-            # Drop to TLS1.2 and try again
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            handle = [urllib_request.HTTPSHandler(context=ctx)]
-            opener = urllib_request.build_opener(*handle)
-            try:
-                response = opener.open(req, timeout=30)
-            except urllib_error.HTTPError as e:
-                if e.info().get('Content-Encoding', '').lower() == 'gzip':
-                    buf = six.BytesIO(e.read())
-                    f = gzip.GzipFile(fileobj=buf)
-                    result = f.read()
-                    f.close()
-                else:
-                    result = e.read()
-                if e.code == 403 and 'cf-alert-error' in result:
-                    # Drop to TLS1.1 and try again
-                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
-                    handle = [urllib_request.HTTPSHandler(context=ctx)]
-                    opener = urllib_request.build_opener(*handle)
-                    try:
-                        response = opener.open(req, timeout=30)
-                    except:
-                        notify(i18n('oh_oh'), i18n('site_down'))
-                        if 'return' in error:
-                            # Give up
-                            return ''
-                        else:
-                            raise
-        elif 400 < e.code < 500:
-            if not e.code == 403:
-                notify(i18n('oh_oh'), i18n('not_exist'))
-            raise
-        else:
-            notify(i18n('oh_oh'), i18n('site_down'))
-            raise
+            if e.info().get('Content-Encoding', '').lower() == 'gzip':
+                buf = six.BytesIO(e.read())
+                f = gzip.GzipFile(fileobj=buf)
+                result = f.read()
+                f.close()
+            else:
+                result = e.read()
+            if e.code == 503 and 'cf-browser-verification' in result:
+                result = cloudflare.solve(url, cj, USER_AGENT)
+            elif e.code == 403 and 'cf-alert-error' in result:
+                # Drop to TLS1.2 and try again
+                ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+                handle = [urllib_request.HTTPSHandler(context=ctx)]
+                opener = urllib_request.build_opener(*handle)
+                try:
+                    response = opener.open(req, timeout=30)
+                except urllib_error.HTTPError as e:
+                    if e.info().get('Content-Encoding', '').lower() == 'gzip':
+                        buf = six.BytesIO(e.read())
+                        f = gzip.GzipFile(fileobj=buf)
+                        result = f.read()
+                        f.close()
+                    else:
+                        result = e.read()
+                    if e.code == 403 and 'cf-alert-error' in result:
+                        # Drop to TLS1.1 and try again
+                        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+                        handle = [urllib_request.HTTPSHandler(context=ctx)]
+                        opener = urllib_request.build_opener(*handle)
+                        try:
+                            response = opener.open(req, timeout=30)
+                        except:
+                            notify(i18n('oh_oh'), i18n('site_down'))
+                            if 'return' in error:
+                                # Give up
+                                return ''
+                            else:
+                                raise
+            elif 400 < e.code < 500:
+                if not e.code == 403:
+                    notify(i18n('oh_oh'), i18n('not_exist'))
+                raise
+            else:
+                notify(i18n('oh_oh'), i18n('site_down'))
+                raise
     except urllib_error.URLError as e:
         if 'return' in error:
             notify(i18n('oh_oh'), i18n('slow_site'))

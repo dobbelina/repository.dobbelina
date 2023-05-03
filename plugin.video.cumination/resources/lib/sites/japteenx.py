@@ -25,8 +25,9 @@ site = AdultSite('japteenx', '[COLOR hotpink]JapTeenX[/COLOR]', 'https://www.jap
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + 'pornstars/', 'Pornstars', site.img_cat)
-    #site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tags', 'Cats', site.img_cat)
+    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + 'pornstars', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos?search_query=', 'Search', site.img_search)
     List(site.url + 'videos?o=mr&type=public&page=1')
     utils.eod()
@@ -70,6 +71,25 @@ def Search(url, keyword=None):
 
 
 @site.register()
+def Cats(url):
+    match = [
+        ('Amateur', 'videos/amateur'),
+        ('Gravure Idols', 'videos/gravure-idols'),
+        ('Hentai', 'videos/hentai'),
+        ('JAV', 'videos/jav'),
+        ('JAV Amateur', 'videos/jav-amateur'),
+        ('JAV Softcore', 'videos/jav-softcore'),
+        ('JAV Uncensored', 'videos/jav-uncensored'),
+        ('Southeast Asia', 'videos/southeast-asia'),
+        ('Western Girls', 'videos/western-girls'),
+    ]
+    for name, catpage in match:
+        site.add_dir(name, site.url + catpage + '?type=public&o=mr', 'List', '')
+
+    utils.eod()
+
+
+@site.register()
 def Pornstars(url):
     listhtml = utils.getHtml(url)
     match = re.compile('class="model-sh" href="/([^"]+)">.*?src="([^"]+)".*?title-small">([^<]+)<.*?fa-film"></i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -77,7 +97,6 @@ def Pornstars(url):
         name = '{} - [COLOR hotpink]{}[/COLOR]'.format(utils.cleantext(name), videos)
         videos = utils.cleantext(videos)
         site.add_dir(name, site.url + catpage, 'List', img)
-
 
     np = re.compile('<li><a href="([^"]+)" class="prevnext', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
@@ -88,7 +107,7 @@ def Pornstars(url):
 
 @site.register()
 def Tags(url):
-    listhtml = utils.getHtml(url, url)
+    listhtml = utils.getHtml(url, site.url, error=True)
     match = re.compile('/(tags/[^"]+)">([^<]+)</a><span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name, videos in match:
         name = '{} - [COLOR hotpink]{}[/COLOR]'.format(utils.cleantext(name), videos)
