@@ -70,7 +70,7 @@ def getBaselink(url):
         siteurl = site13.url
     elif 'inporn.com' in url:
         siteurl = site14.url
-    elif 'desiporn.tube' in url:
+    elif 'desi-porn.tube' in url:
         siteurl = site15.url
     return siteurl
 
