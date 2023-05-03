@@ -109,10 +109,10 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex='source: "([^"]+)"')
+    vp = utils.VideoPlayer(name, download, direct_regex='source src="([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'source: "([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'source src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         videolink = match[0]
         vp.play_from_direct_link(videolink + '|verifypeer=false')
