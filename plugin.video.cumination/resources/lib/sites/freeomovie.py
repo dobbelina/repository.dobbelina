@@ -70,7 +70,7 @@ def Search(url, keyword=None):
 @site.register()
 def Cat(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'<li class="cat-item">.+?<a href="([^"]+)"[^>]?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<li class="cat-item cat-item-\d+"><a href="([^"]+)"[^>]?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         site.add_dir(name, catpage, 'List', '', '')
