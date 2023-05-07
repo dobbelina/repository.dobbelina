@@ -29,27 +29,22 @@ def animeidhentai_main():
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', '{0}genre/hentai-uncensored/'.format(site.url), 'animeidhentai_list', site.img_cat)
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url, 'animeidhentai_genres', site.img_cat)
     site.add_dir('[COLOR hotpink]Trending[/COLOR]', '{0}trending/'.format(site.url), 'animeidhentai_list', site.img_cat)
-    site.add_dir('[COLOR hotpink]Years[/COLOR]', '{0}?s='.format(site.url), 'Years', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}?s='.format(site.url), 'animeidhentai_search', site.img_search)
-    animeidhentai_list('{0}year/2023/'.format(site.url))
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'animeidhentai_search', site.img_search)
+    animeidhentai_list('{0}genre/2021/'.format(site.url))
 
 
 @site.register()
 def animeidhentai_list(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<article.+?loading="lazy"\s+(?:src|data-src)="(.*?)".+?link-co">([^<]+).+?mgr(.+?)description\s*dn">\s*(?:<p>)?([^<]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article.+?src="(.*?)".+?link-co">([^<]+).+?mgr(.+?)description\s*dn">\s*(?:<p>)?([^<]+).+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name, hd, plot, video in match:
-        quality = ''
         if '>hd<' in hd.lower():
-            quality = 'HD'
+            name = name + " [COLOR orange]HD[/COLOR]"
         elif '1080p' in hd.lower():
-            quality = 'FHD'
+            name = name + " [COLOR orange]FHD[/COLOR]"
         if 'uncensored' in name.lower():
             name = name.replace('Uncensored', '') + " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
-        match = re.search(r'>(\d\d\d\d)<', hd)
-        year = " [COLOR blue](" + match.group(1) + ")[/COLOR]" if match else ''
-        name += year
-        site.add_download_link(utils.cleantext(name), video, 'animeidhentai_play', img, utils.cleantext(plot), quality=quality)
+        site.add_download_link(utils.cleantext(name), video, 'animeidhentai_play', img, utils.cleantext(plot))
     next_page = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if next_page:
         site.add_dir('Next Page', next_page.group(1), 'animeidhentai_list', site.img_next)
@@ -77,41 +72,14 @@ def animeidhentai_genres(url):
 
 
 @site.register()
-def Years(url):
-    yearhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'name="years"\s+id="year-\d+"\s+value="\d+"\s+data-name="(\d+)">', re.DOTALL | re.IGNORECASE).findall(yearhtml)
-    if match:
-        year = utils.selector('Select link', match, reverse=True)
-        if year:
-            animeidhentai_list(site.url + 'year/' + year + '/')
-
-
-@site.register()
 def animeidhentai_play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
-
-    match = re.compile(r'data-player>\s+<iframe.+?-src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
-    if match:
-        videourl = match.group(1)
-        if 'nhplayer.com' in videourl:
-            videopage = utils.getHtml(videourl, site.url)
-            match = re.compile(r'<li data-id="([^"]+)').search(videopage)
-            if match:
-                videourl = match.group(1)
-                if videourl.startswith('/'):
-                    videourl = 'https://nhplayer.com' + videourl
-                    videohtml = utils.getHtml(videourl, site.url)
-                    vp.direct_regex = r'file:\s*"([^"]+)"'
-                    vp.play_from_html(videohtml)
-                    vp.progress.close()
-                    return
-            else:
-                vp.progress.close()
-                utils.notify('Oh oh', 'Couldn\'t find a playable link')
-        vp.play_from_link_to_resolve(videourl)
+    r = re.compile(r'data-player>\s*<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+    if r:
+        vp.play_from_link_to_resolve(r.group(1))
     else:
+        utils.notify('Oh Oh', 'No Videos found')
         vp.progress.close()
-        utils.notify('Oh oh', 'Couldn\'t find a playable link')
     return
