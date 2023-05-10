@@ -1,0 +1,25 @@
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.75">
+    <requires>
+        <import addon="script.module.six" />
+        <import addon="script.module.kodi-six" />
+        <import addon="script.module.resolveurl" version="5.0.00" />
+        <import addon="script.module.resolveurl.xxx" version="2.0.1" />
+        <import addon="script.common.plugin.cache" />
+        <import addon="script.module.websocket" version="0.50.0" />
+        <import addon="script.module.requests" optional="true" />
+    </requires>
+    <extension library="default.py" point="xbmc.python.pluginsource">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <license>GPL 2.0</license>
+        <summary lang="en_GB">Cumination, the culmination of adult sites on Kodi</summary>
+        <description lang="en_GB">Cumination, the culmination of adult sites on Kodi</description>
+        <disclaimer lang="en_GB">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the sites offered. Click on About from the contextmenu on each site to check for contact details.</disclaimer>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
+    </extension>
+</addon>
