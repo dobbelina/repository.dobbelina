@@ -1,0 +1,609 @@
+# Kodi Media Center language file
+# Addon Name: Cumination
+# Addon id: plugin.video.cumination
+# Addon Provider: Cumination
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://forum.kodi.tv/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: Team-Kodi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ro_RO\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred maximum video quality"
+msgstr "Calitatea video maxima preferata"
+
+msgctxt "#30002"
+msgid "Don't ask for videohost"
+msgstr "Nu intreba pentru videohost"
+
+msgctxt "#30003"
+msgid "Auto-refresh Webcam images"
+msgstr "Reinprospatare automata a imaginilor webcam"
+
+msgctxt "#30004"
+msgid "Play all parts (no download)"
+msgstr "Reda toate partile (fara descarcare)"
+
+msgctxt "#30005"
+msgid "Use video thumbnail for poster/fanart"
+msgstr "Foloseste thumbnail pentru poster/fanart"
+
+msgctxt "#30006"
+msgid "Enabled"
+msgstr "Activat"
+
+msgctxt "#30007"
+msgid "Disabled"
+msgstr "Dezactivat"
+
+msgctxt "#30008"
+msgid "Enable custom view types"
+msgstr "Activeaza vizualizare personalizata"
+
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr "Calitate adăugată la numele videoclipului"
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr "Durata adăugată la numele videoclipului"
+
+msgctxt "#30011"
+msgid "Select Sort method for Scenes"
+msgstr "Alege metoda de sortare pentru scene"
+
+msgctxt "#30012"
+msgid "Latest"
+msgstr "Cele mai noi"
+
+msgctxt "#30013"
+msgid "Top rated"
+msgstr "Cele mai apreciate"
+
+msgctxt "#30014"
+msgid "Most viewed"
+msgstr "Cele mai vazute"
+
+msgctxt "#30021"
+msgid "Select Sort method for Movies"
+msgstr "Alege metoda de sortare pentru filme"
+
+msgctxt "#30022"
+msgid "Date"
+msgstr "Data"
+
+msgctxt "#30023"
+msgid "Title"
+msgstr "Denumire"
+
+msgctxt "#30024"
+msgid "Views"
+msgstr "Vizualizari"
+
+msgctxt "#30025"
+msgid "Likes"
+msgstr "Aprecieri"
+
+msgctxt "#30026"
+msgid "Enable universal resolvers"
+msgstr "Activeaza resolver universal"
+
+msgctxt "#30027"
+msgid "Open ResolveURL settings"
+msgstr "Deschide setarile ResolveURL"
+
+msgctxt "#30028"
+msgid "Set/Change/Remove startup pin"
+msgstr "Stabileste/Schimba/Sterge pin-ul de pornire"
+
+msgctxt "#30029"
+msgid "Cache Web Requests"
+msgstr "Cereri web cache"
+
+msgctxt "#30030"
+msgid "Time to cache in hours"
+msgstr "Timpul de stocare în cache în ore"
+
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookie-uri"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Șterge toate cookie-urile"
+
+msgctxt "#30051"
+msgid "General"
+msgstr "General"
+
+msgctxt "#30052"
+msgid "Download Folder"
+msgstr "Doosarul de descarcari"
+
+msgctxt "#30053"
+msgid "Hosts and resolvers"
+msgstr "Gazde si resolvers"
+
+msgctxt "#30054"
+msgid "Cam Sites"
+msgstr "Pagini Cam"
+
+msgctxt "#30055"
+msgid "Preferred Playback mode"
+msgstr "Modul preferat de redare"
+
+msgctxt "#30056"
+msgid "RTMP needs a patched inpustream.rtmp from:"
+msgstr "RTMP are nevoie de inputstream.rtmp de la:"
+
+msgctxt "#30057"
+msgid "With RTMP, no audio on some SD streams though,"
+msgstr "Cu RTMP, fara audio pentru unele streamuri SD"
+
+msgctxt "#30058"
+msgid "because of missing Speex codec in Kodi"
+msgstr "din cauza lipsei codecului Speex in Kodi"
+
+msgctxt "#30059"
+msgid "Favourites and keywords"
+msgstr "Favorite si cuvinte cheie"
+
+msgctxt "#30060"
+msgid "Favourites"
+msgstr "Favorite"
+
+msgctxt "#30061"
+msgid "Search keywords"
+msgstr "Cuvinte cheie de cautare"
+
+msgctxt "#30062"
+msgid "Custom sites"
+msgstr "Site-uri personalizate"
+
+msgctxt "#30063"
+msgid "Enable or disable installed custom sites"
+msgstr "Activeaza/Dezactiveaza site-uri personalizate"
+
+msgctxt "#30064"
+msgid "Add or remove custom sites"
+msgstr "Adauga/Sterge site-uri personalizate"
+
+msgctxt "#30065"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Select Playback mode"
+msgstr "Selecteaza modul de redare"
+
+msgctxt "#30101"
+msgid "HLS"
+msgstr "HLS"
+
+msgctxt "#30102"
+msgid "F4mProxy"
+msgstr "F4mProxy"
+
+msgctxt "#30103"
+msgid "RTMP"
+msgstr "RTMP"
+
+msgctxt "#30110"
+msgid "Preferred sections"
+msgstr "Sectiuni preferate"
+
+msgctxt "#30111"
+msgid "Female"
+msgstr "Femei"
+
+msgctxt "#30112"
+msgid "Male"
+msgstr "Barbati"
+
+msgctxt "#30113"
+msgid "Couple"
+msgstr "Cupluri"
+
+msgctxt "#30114"
+msgid "Trans"
+msgstr "Trans"
+
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Comprimă fișiere de rezervă"
+
+msgctxt "#30201"
+msgid "Backup favourites"
+msgstr "Salveaza favoritele"
+
+msgctxt "#30202"
+msgid "Restore favourites"
+msgstr "Restabileste favoritele"
+
+msgctxt "#30203"
+msgid "Clear favourites"
+msgstr "Sterge favoritele"
+
+msgctxt "#30211"
+msgid "Backup keywords"
+msgstr "Salveaza cuvintele cheie"
+
+msgctxt "#30212"
+msgid "Restore keywords"
+msgstr "Restaureaza cuvintele cheie"
+
+msgctxt "#30213"
+msgid "Clear keywords"
+msgstr "Sterge cuvintele cheie"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Utilizați folderul personalizat pentru Favorite"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Locația preferată"
+
+msgctxt "#30301"
+msgid "Enable custom sites"
+msgstr "Activeaza site-uri personalizate"
+
+msgctxt "#30302"
+msgid "Install custom site"
+msgstr "Instaleaza site personalizat"
+
+msgctxt "#30303"
+msgid "Uninstall custom site"
+msgstr "Dezinstaleaza site personalizat"
+
+msgctxt "#30304"
+msgid "Enable custom site"
+msgstr "Activeaza site personalizat"
+
+msgctxt "#30305"
+msgid "Disable custom site"
+msgstr "Dezactiveaza site personalizat"
+
+msgctxt "#30306"
+msgid "List installed custom sites"
+msgstr "Afiseaza site-uri personalizate instalate"
+
+msgctxt "#30307"
+msgid "Enable all custom sites"
+msgstr "Activeaza toate site-urile personalizate"
+
+msgctxt "#30308"
+msgid "Disable all custom sites"
+msgstr "Dezactiveaza toate site-urile"
+
+msgctxt "#30309"
+msgid "Install all custom sites from folder"
+msgstr "Instaleaza toate site-urile din dosar"
+
+msgctxt "#30401"
+msgid "4K"
+msgstr "4K"
+
+msgctxt "#30402"
+msgid "FHD"
+msgstr "FHD"
+
+msgctxt "#30403"
+msgid "HD"
+msgstr "HD"
+
+msgctxt "#30404"
+msgid "SD"
+msgstr "SD"
+
+msgctxt "#30405"
+msgid "Ask"
+msgstr "Intreaba"
+
+msgctxt "#30414"
+msgid "Default set as:"
+msgstr "Implicit setat la:"
+
+msgctxt "#30415"
+msgid "Oh oh"
+msgstr "Oh oh"
+
+msgctxt "#30416"
+msgid "It looks like this website is too slow."
+msgstr "Se pare ca acest site este prea lent."
+
+msgctxt "#30417"
+msgid "It looks like the page does not exist."
+msgstr "Se pare ca pagina nu exista."
+
+msgctxt "#30418"
+msgid "It looks like this website is down."
+msgstr "Se pare ca site-ul este cazut."
+
+msgctxt "#30419"
+msgid "Python version to old - update to Krypton or FTMC"
+msgstr "Versiunea de Python este prea veche - actualizati la Kripton sau FTMC"
+
+msgctxt "#30420"
+msgid "Keywords empty"
+msgstr "Lista de cuvinte cheie goala"
+
+msgctxt "#30421"
+msgid "No keywords to back up"
+msgstr "Niciun cuvant cheie de salvat"
+
+msgctxt "#30422"
+msgid "Error: invalid path"
+msgstr "Eroare: cale invalida"
+
+msgctxt "#30423"
+msgid "Do you have permission to write to the selected folder?"
+msgstr "Aveti permisiuni de scriere pentru dosarul selectat?"
+
+msgctxt "#30424"
+msgid "Backup complete"
+msgstr "Salvare terminata"
+
+msgctxt "#30425"
+msgid "Backup file:"
+msgstr "Fisierul de salvare:"
+
+msgctxt "#30426"
+msgid "Error"
+msgstr "Eroare"
+
+msgctxt "#30427"
+msgid "Invalid backup file"
+msgstr "Fisier de salvare invalid"
+
+msgctxt "#30428"
+msgid "Empty backup"
+msgstr "Salvare goala"
+
+msgctxt "#30429"
+msgid "Could not find a supported link"
+msgstr "Nu s-a gasit o legatura"
+
+msgctxt "#30430"
+msgid "Resolve failed"
+msgstr "Rezolvare esuata"
+
+msgctxt "#30431"
+msgid "link could not be resolved"
+msgstr "Legatura nu a putut fi rezolvata"
+
+msgctxt "#30432"
+msgid "The Cookie file is locked, please restart Kodi"
+msgstr "Fisierul Cookie este blocat, restartati Kodi"
+
+msgctxt "#30433"
+msgid "Download failed"
+msgstr "Descarcarea a esuat"
+
+msgctxt "#30434"
+msgid "No response from server"
+msgstr "Niciun raspuns de la server"
+
+msgctxt "#30435"
+msgid "Unknown filesize"
+msgstr "Dimensiune fisier necunoscuta"
+
+msgctxt "#30436"
+msgid "Unable to download"
+msgstr "Nu s-a putut descarca"
+
+msgctxt "#30437"
+msgid "Download File Size"
+msgstr "Dimensiune fisier descarcare"
+
+msgctxt "#30438"
+msgid "Download Path"
+msgstr "Calea de descarcare"
+
+msgctxt "#30439"
+msgid "Cumination Download"
+msgstr "Descarcare Cumination"
+
+msgctxt "#30440"
+msgid "Stopped Downloading"
+msgstr "Descarcare oprita"
+
+msgctxt "#30441"
+msgid "Searching for..."
+msgstr "Se cauta..."
+
+msgctxt "#30442"
+msgid "Warning"
+msgstr "Atentionare"
+
+msgctxt "#30443"
+msgid "This will clear all the keywords"
+msgstr "Acesta va sterge toate cuvintele cheie"
+
+msgctxt "#30444"
+msgid "Continue"
+msgstr "Continuare"
+
+msgctxt "#30445"
+msgid "Select directory to place backup"
+msgstr "Selectati dosarul pentru salvare"
+
+msgctxt "#30446"
+msgid "Backing up"
+msgstr "In curs de salvare"
+
+msgctxt "#30447"
+msgid "Initialising"
+msgstr "Initializare"
+
+msgctxt "#30448"
+msgid "Reading database"
+msgstr "Se citeste baza de date"
+
+msgctxt "#30449"
+msgid "Writing backup file"
+msgstr "Scriere fisier de salvare"
+
+msgctxt "#30450"
+msgid "Select backup file"
+msgstr "Selecteaza fisierul cu salvari"
+
+msgctxt "#30451"
+msgid "Restore complete"
+msgstr "Restaurare completa"
+
+msgctxt "#30452"
+msgid "Restore skips items that are already present in keywords to avoid duplicates"
+msgstr "Restaurarea ignora cuvintele cheie care exista deja pentru a evita duplicatele"
+
+msgctxt "#30453"
+msgid "Added"
+msgstr "Adaugat"
+
+msgctxt "#30454"
+msgid "Skipped"
+msgstr "Omis"
+
+msgctxt "#30455"
+msgid "Select quality"
+msgstr "Alege calitatea"
+
+msgctxt "#30456"
+msgid "Playing video"
+msgstr "Redare video"
+
+msgctxt "#30457"
+msgid "Searching for videofile"
+msgstr "Cautare fisier video"
+
+msgctxt "#30458"
+msgid "Loading video page"
+msgstr "Incarcare pagina video"
+
+msgctxt "#30459"
+msgid "Searching for supported hosts"
+msgstr "Cautare gazde suportate"
+
+msgctxt "#30460"
+msgid "Playing from direct link"
+msgstr "Redare din legatura directa"
+
+msgctxt "#30461"
+msgid "No regular expression specified"
+msgstr "Nu este specificata nicio expresie"
+
+msgctxt "#30462"
+msgid "Passing link to ResolveURL"
+msgstr "Link transferat catre ResolveURL"
+
+msgctxt "#30463"
+msgid "Playing from"
+msgstr "Redare din"
+
+msgctxt "#30464"
+msgid "Found subsites"
+msgstr "Pagini gasite"
+
+msgctxt "#30465"
+msgid "Loading StreamDefence sites"
+msgstr "Incarcare pagini StreamDefence"
+
+msgctxt "#30466"
+msgid "Loading FileCrypt sites"
+msgstr "Incarcare pagini FileCrypt"
+
+msgctxt "#30467"
+msgid "Loading ShortIX sites"
+msgstr "Incarcare pagini ShortIX"
+
+msgctxt "#30468"
+msgid "Exit"
+msgstr "Ieșiți"
+
+msgctxt "#30469"
+msgid "Enter"
+msgstr "Introduceți"
+
+msgctxt "#30470"
+msgid "About"
+msgstr "Despre"
+
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr "Incarcare pagini Keeplinks"
+
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Setați tipul de conținut"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr "filme"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "videoclipuri"
+
+msgctxt "#33001"
+msgid "Error loading custom site"
+msgstr "Eroare la incarcare site personalizat"
+
+msgctxt "#33002"
+msgid "Custom site disabled"
+msgstr "Site personalizat dezactivat"
+
+msgctxt "#33003"
+msgid "Sites"
+msgstr "Pagini web"
+
+msgctxt "#33004"
+msgid "Favorite videos"
+msgstr "Video favorite"
+
+msgctxt "#33005"
+msgid "Download folder"
+msgstr "Directorul pentru descarcari"
+
+msgctxt "#33006"
+msgid "Create custom list"
+msgstr "Creare lista personalizata"
+
+msgctxt "#33007"
+msgid "WARNING:"
+msgstr "AVERTISMENT:"
+
+msgctxt "#33008"
+msgid "This addon contains adult material.[CR]You may enter only if you are at least 18 years of age."
+msgstr "Acest Supliment contine material destinat adultilor.[CR]Poti accesa continutul doar daca ai cel putin 18 ani."
+
+msgctxt "#33009"
+msgid "Custom site disabled due to errors."
+msgstr "Site personalizat dezactivat din cauza erorilor."
+
+msgctxt "#33010"
+msgid "Listing custom site"
+msgstr "Listarea site-ului personalizat"
+
+msgctxt "#33011"
+msgid "Clear local cache"
+msgstr "Ștergeți memoria cache locală"
+
+msgctxt "#33012"
+msgid "Cached Data has been cleared"
+msgstr "Datele memorate în cache au fost șterse"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Toate cookie-urile au fost șterse"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Cuvântul cheie există deja!"

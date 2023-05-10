@@ -1,0 +1,641 @@
+# Kodi Media Center language file
+# Addon Name: Cumination
+# Addon id: plugin.video.cumination
+# Addon Provider: Cumination
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://forum.kodi.tv/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: Team-Kodi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sv_SE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred maximum video quality"
+msgstr "Föredragen maximal videokvalitet"
+
+msgctxt "#30002"
+msgid "Don't ask for videohost"
+msgstr "Be inte om videohost"
+
+msgctxt "#30003"
+msgid "Auto-refresh Webcam images"
+msgstr "Uppdatera webbkamerabilder automatiskt"
+
+msgctxt "#30004"
+msgid "Play all parts (no download)"
+msgstr "Spela alla delar (ingen nedladdning)"
+
+msgctxt "#30005"
+msgid "Use video thumbnail for poster/fanart"
+msgstr "Använd videominiatyr för affisch/fanart"
+
+msgctxt "#30006"
+msgid "Enabled"
+msgstr "Aktiverat"
+
+msgctxt "#30007"
+msgid "Disabled"
+msgstr "Inaktiverad"
+
+msgctxt "#30008"
+msgid "Enable custom view types"
+msgstr "Aktivera anpassade vytyper"
+
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr "Kvalitet har lagts till i videonamnet"
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr "Längd tillagd i videonamnet"
+
+msgctxt "#30011"
+msgid "Select Sort method for Scenes"
+msgstr "Välj sorteringsmetod för scener"
+
+msgctxt "#30012"
+msgid "Latest"
+msgstr "Senaste"
+
+msgctxt "#30013"
+msgid "Top rated"
+msgstr "Topprankad"
+
+msgctxt "#30014"
+msgid "Most viewed"
+msgstr "Mest visade"
+
+msgctxt "#30021"
+msgid "Select Sort method for Movies"
+msgstr "Välj sorteringsmetod för filmer"
+
+msgctxt "#30022"
+msgid "Date"
+msgstr "Datum"
+
+msgctxt "#30023"
+msgid "Title"
+msgstr "Titel"
+
+msgctxt "#30024"
+msgid "Views"
+msgstr "Visningar"
+
+msgctxt "#30025"
+msgid "Likes"
+msgstr "Gillar"
+
+msgctxt "#30026"
+msgid "Enable universal resolvers"
+msgstr "Aktivera universalupplösare"
+
+msgctxt "#30027"
+msgid "Open ResolveURL settings"
+msgstr "Öppna ResolveURL inställningar"
+
+msgctxt "#30028"
+msgid "Set/Change/Remove startup pin"
+msgstr "Ange/ändra/ta bort startkod"
+
+msgctxt "#30029"
+msgid "Cache Web Requests"
+msgstr "Cache webbförfrågningar"
+
+msgctxt "#30030"
+msgid "Time to cache in hours"
+msgstr "Dags att cache i timmar"
+
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookies"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Radera alla cookies"
+
+msgctxt "#30051"
+msgid "General"
+msgstr "Allmänt"
+
+msgctxt "#30052"
+msgid "Download Folder"
+msgstr "Ladda ned mapp"
+
+msgctxt "#30053"
+msgid "Hosts and resolvers"
+msgstr "Värdar och resolvers"
+
+msgctxt "#30054"
+msgid "Cam Sites"
+msgstr "Cam-webbplatser"
+
+msgctxt "#30055"
+msgid "Preferred Playback mode"
+msgstr "Föredraget uppspelningsläge"
+
+msgctxt "#30056"
+msgid "RTMP needs a patched inpustream.rtmp from:"
+msgstr "RTMP behöver en lappad inpustream.rtmp från:"
+
+msgctxt "#30057"
+msgid "With RTMP, no audio on some SD streams though,"
+msgstr "Med RTMP, inget ljud på vissa SD-strömmar,"
+
+msgctxt "#30058"
+msgid "because of missing Speex codec in Kodi"
+msgstr "på grund av saknad Speex-kod i Kodi"
+
+msgctxt "#30059"
+msgid "Favourites and keywords"
+msgstr "Favoriter och nyckelord"
+
+msgctxt "#30060"
+msgid "Favourites"
+msgstr "Favoriter"
+
+msgctxt "#30061"
+msgid "Search keywords"
+msgstr "Sökord"
+
+msgctxt "#30062"
+msgid "Custom sites"
+msgstr "Anpassade webbplatser"
+
+msgctxt "#30063"
+msgid "Enable or disable installed custom sites"
+msgstr "Aktivera eller inaktivera installerade anpassade webbplatser"
+
+msgctxt "#30064"
+msgid "Add or remove custom sites"
+msgstr "Lägg till eller ta bort anpassade webbplatser"
+
+msgctxt "#30065"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Select Playback mode"
+msgstr "Välj uppspelningsläge"
+
+msgctxt "#30101"
+msgid "HLS"
+msgstr ""
+
+msgctxt "#30102"
+msgid "F4mProxy"
+msgstr ""
+
+msgctxt "#30103"
+msgid "RTMP"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Preferred sections"
+msgstr "Föredragna avsnitt"
+
+msgctxt "#30111"
+msgid "Female"
+msgstr "Kvinna"
+
+msgctxt "#30112"
+msgid "Male"
+msgstr "Man"
+
+msgctxt "#30113"
+msgid "Couple"
+msgstr "Par"
+
+msgctxt "#30114"
+msgid "Trans"
+msgstr "Transsexuell"
+
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Komprimera säkerhetskopieringsfiler"
+
+msgctxt "#30201"
+msgid "Backup favourites"
+msgstr "Backup-favoriter"
+
+msgctxt "#30202"
+msgid "Restore favourites"
+msgstr "Återställ favoriter"
+
+msgctxt "#30203"
+msgid "Clear favourites"
+msgstr "Rensa favoriter"
+
+msgctxt "#30211"
+msgid "Backup keywords"
+msgstr "Backup nyckelord"
+
+msgctxt "#30212"
+msgid "Restore keywords"
+msgstr "Återställ nyckelord"
+
+msgctxt "#30213"
+msgid "Clear keywords"
+msgstr "Rensa nyckelord"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Använd anpassad mapp för favoriter"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Favoritplats"
+
+msgctxt "#30301"
+msgid "Enable custom sites"
+msgstr "Aktivera anpassade webbplatser"
+
+msgctxt "#30302"
+msgid "Install custom site"
+msgstr "Installera anpassad webbplats"
+
+msgctxt "#30303"
+msgid "Uninstall custom site"
+msgstr "Avinstallera anpassad webbplats"
+
+msgctxt "#30304"
+msgid "Enable custom site"
+msgstr "Aktivera anpassad webbplats"
+
+msgctxt "#30305"
+msgid "Disable custom site"
+msgstr "Inaktivera anpassad webbplats"
+
+msgctxt "#30306"
+msgid "List installed custom sites"
+msgstr "Lista installerade anpassade webbplatser"
+
+msgctxt "#30307"
+msgid "Enable all custom sites"
+msgstr "Aktivera alla anpassade webbplatser"
+
+msgctxt "#30308"
+msgid "Disable all custom sites"
+msgstr "Inaktivera alla anpassade webbplatser"
+
+msgctxt "#30309"
+msgid "Install all custom sites from folder"
+msgstr "Installera alla anpassade webbplatser från mapp"
+
+msgctxt "#30401"
+msgid "4K"
+msgstr ""
+
+msgctxt "#30402"
+msgid "FHD"
+msgstr ""
+
+msgctxt "#30403"
+msgid "HD"
+msgstr ""
+
+msgctxt "#30404"
+msgid "SD"
+msgstr ""
+
+msgctxt "#30405"
+msgid "Ask"
+msgstr "Fråga"
+
+msgctxt "#30406"
+msgid "Choose an option"
+msgstr "Välj ett alternativ"
+
+msgctxt "#30407"
+msgid "Set/Change PIN"
+msgstr "Ställ in / ändra PIN-kod"
+
+msgctxt "#30408"
+msgid "Remove PIN"
+msgstr "Ta bort PIN-kod"
+
+msgctxt "#30409"
+msgid "Enter your PIN Code"
+msgstr "Ange din PIN-kod"
+
+msgctxt "#30410"
+msgid "PIN Code incorrect"
+msgstr "PIN-kod är felaktig"
+
+msgctxt "#30411"
+msgid "The PIN Code is incorrect"
+msgstr "PIN-koden är felaktig"
+
+msgctxt "#30412"
+msgid "Retry"
+msgstr "Försök igen"
+
+msgctxt "#30413"
+msgid "Default viewtype set"
+msgstr "Standardvytyp uppsättning"
+
+msgctxt "#30414"
+msgid "Default set as:"
+msgstr "Standard inställd som:"
+
+msgctxt "#30415"
+msgid "Oh oh"
+msgstr "Åh åh"
+
+msgctxt "#30416"
+msgid "It looks like this website is too slow."
+msgstr "Det verkar som att den här webbplatsen är för långsam."
+
+msgctxt "#30417"
+msgid "It looks like the page does not exist."
+msgstr "Det ser ut som att sidan inte finns."
+
+msgctxt "#30418"
+msgid "It looks like this website is down."
+msgstr "Det ser ut som att den här webbplatsen är nere."
+
+msgctxt "#30419"
+msgid "Python version to old - update to Krypton or FTMC"
+msgstr "Pythonversion för gammal - uppdatera till Krypton eller FTMC"
+
+msgctxt "#30420"
+msgid "Keywords empty"
+msgstr "Nyckelord tomma"
+
+msgctxt "#30421"
+msgid "No keywords to back up"
+msgstr "Inga nyckelord att säkerhetskopiera"
+
+msgctxt "#30422"
+msgid "Error: invalid path"
+msgstr "Fel: ogiltig sökväg"
+
+msgctxt "#30423"
+msgid "Do you have permission to write to the selected folder?"
+msgstr "Har du behörighet att skriva till den valda mappen?"
+
+msgctxt "#30424"
+msgid "Backup complete"
+msgstr "Säkerhetskopiering klar"
+
+msgctxt "#30425"
+msgid "Backup file:"
+msgstr "Säkerhetskopieringsfil:"
+
+msgctxt "#30426"
+msgid "Error"
+msgstr "Fel"
+
+msgctxt "#30427"
+msgid "Invalid backup file"
+msgstr "Ogiltig backupfil"
+
+msgctxt "#30428"
+msgid "Empty backup"
+msgstr "Tom säkerhetskopia"
+
+msgctxt "#30429"
+msgid "Could not find a supported link"
+msgstr "Det gick inte att hitta en länk som stöds"
+
+msgctxt "#30430"
+msgid "Resolve failed"
+msgstr "Lösning misslyckades"
+
+msgctxt "#30431"
+msgid "link could not be resolved"
+msgstr "länken kunde inte lösas"
+
+msgctxt "#30432"
+msgid "The Cookie file is locked, please restart Kodi"
+msgstr "Cookiefilen är låst, starta om Kodi"
+
+msgctxt "#30433"
+msgid "Download failed"
+msgstr "Nedladdning misslyckades"
+
+msgctxt "#30434"
+msgid "No response from server"
+msgstr "Inget svar från servern"
+
+msgctxt "#30435"
+msgid "Unknown filesize"
+msgstr "Okänd filstorlek"
+
+msgctxt "#30436"
+msgid "Unable to download"
+msgstr "Det går inte att ladda ner"
+
+msgctxt "#30437"
+msgid "Download File Size"
+msgstr "Ladda ner filstorlek"
+
+msgctxt "#30438"
+msgid "Download Path"
+msgstr "Ladda ned sökväg"
+
+msgctxt "#30439"
+msgid "Cumination Download"
+msgstr "Cumination ladda ner"
+
+msgctxt "#30440"
+msgid "Stopped Downloading"
+msgstr "Stoppad nedladdning"
+
+msgctxt "#30441"
+msgid "Searching for..."
+msgstr "Söker efter ..."
+
+msgctxt "#30442"
+msgid "Warning"
+msgstr "Varning"
+
+msgctxt "#30443"
+msgid "This will clear all the keywords"
+msgstr "Detta rensar alla nyckelord"
+
+msgctxt "#30444"
+msgid "Continue"
+msgstr "Fortsätt"
+
+msgctxt "#30445"
+msgid "Select directory to place backup"
+msgstr "Välj katalog för säkerhetskopiering"
+
+msgctxt "#30446"
+msgid "Backing up"
+msgstr "Säkerhetskopiera"
+
+msgctxt "#30447"
+msgid "Initialising"
+msgstr "Initierar"
+
+msgctxt "#30448"
+msgid "Reading database"
+msgstr "Läser databas"
+
+msgctxt "#30449"
+msgid "Writing backup file"
+msgstr "skriver backupfil"
+
+msgctxt "#30450"
+msgid "Select backup file"
+msgstr "Välj backupfil"
+
+msgctxt "#30451"
+msgid "Restore complete"
+msgstr "Återställning klar"
+
+msgctxt "#30452"
+msgid "Restore skips items that are already present in keywords to avoid duplicates"
+msgstr "Återställ hoppar över objekt som redan finns i nyckelord för att undvika dubbletter"
+
+msgctxt "#30453"
+msgid "Added"
+msgstr "Tillagd"
+
+msgctxt "#30454"
+msgid "Skipped"
+msgstr "Hoppade över"
+
+msgctxt "#30455"
+msgid "Select quality"
+msgstr "Välj kvalitet"
+
+msgctxt "#30456"
+msgid "Playing video"
+msgstr "Spela upp video"
+
+msgctxt "#30457"
+msgid "Searching for videofile"
+msgstr "Söker videofil"
+
+msgctxt "#30458"
+msgid "Loading video page"
+msgstr "Laddar videosida"
+
+msgctxt "#30459"
+msgid "Searching for supported hosts"
+msgstr "Söker efter värdar som stöds"
+
+msgctxt "#30460"
+msgid "Playing from direct link"
+msgstr "Spela från direktlänk"
+
+msgctxt "#30461"
+msgid "No regular expression specified"
+msgstr "Inget reguljärt uttryck specificerat"
+
+msgctxt "#30462"
+msgid "Passing link to ResolveURL"
+msgstr "skickar länk till ResolveURL"
+
+msgctxt "#30463"
+msgid "Playing from"
+msgstr "Spela från"
+
+msgctxt "#30464"
+msgid "Found subsites"
+msgstr "Hittade underwebbplatser"
+
+msgctxt "#30465"
+msgid "Loading StreamDefence sites"
+msgstr "Läser in StreamDefence-webbplatser"
+
+msgctxt "#30466"
+msgid "Loading FileCrypt sites"
+msgstr "Läser in FileCrypt-webbplatser"
+
+msgctxt "#30467"
+msgid "Loading ShortIX sites"
+msgstr "Läser in ShortIX-webbplatser"
+
+msgctxt "#30468"
+msgid "Exit"
+msgstr "Avsluta"
+
+msgctxt "#30469"
+msgid "Enter"
+msgstr "Enter"
+
+msgctxt "#30470"
+msgid "About"
+msgstr "Om"
+
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr "Läser in Keeplinks-webbplatser"
+
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Ställ in innehållstyp"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr  "filmer"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "videor"
+
+msgctxt "#33001"
+msgid "Error loading custom site"
+msgstr "Fel vid inläsning av anpassad webbplats"
+
+msgctxt "#33002"
+msgid "Custom site disabled"
+msgstr "Anpassad webbplats inaktiverad"
+
+msgctxt "#33003"
+msgid "Sites"
+msgstr "Webbplatser"
+
+msgctxt "#33004"
+msgid "Favourite videos"
+msgstr "Favoritvideor"
+
+msgctxt "#33005"
+msgid "Download folder"
+msgstr "Ladda ned mapp"
+
+msgctxt "#33006"
+msgid "Create custom list"
+msgstr "Skapa anpassad lista"
+
+msgctxt "#33007"
+msgid "WARNING:"
+msgstr "VARNING:"
+
+msgctxt "#33008"
+msgid "This addon contains adult material.[CR]You may enter only if you are at least 18 years of age."
+msgstr "Detta tillägg innehåller vuxenmaterial. [CR]Du kan bara ange om du är minst 18 år."
+
+msgctxt "#33009"
+msgid "Custom site disabled due to errors."
+msgstr "Anpassad webbplats inaktiverad på grund av fel."
+
+msgctxt "#33010"
+msgid "Listing custom site"
+msgstr "Listar anpassad webbplats"
+
+msgctxt "#33011"
+msgid "Clear local cache"
+msgstr "Rensa lokal cache"
+
+msgctxt "#33012"
+msgid "Cached Data has been cleared"
+msgstr "Cachad data har rensats"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Alla cookies har raderats"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Nyckelordet finns redan!"
