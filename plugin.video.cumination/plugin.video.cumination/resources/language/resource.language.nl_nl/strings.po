@@ -1,0 +1,641 @@
+# Kodi Media Center language file
+# Addon Name: Cumination
+# Addon id: plugin.video.cumination
+# Addon Provider: Cumination
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://forum.kodi.tv/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: Team-Kodi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred maximum video quality"
+msgstr "Voorkeur maximale videokwaliteit"
+
+msgctxt "#30002"
+msgid "Don't ask for videohost"
+msgstr "Vraag niet om videohost"
+
+msgctxt "#30003"
+msgid "Auto-refresh Webcam images"
+msgstr "Webcam-afbeeldingen automatisch vernieuwen"
+
+msgctxt "#30004"
+msgid "Play all parts (no download)"
+msgstr "Speel alle delen (geen download)"
+
+msgctxt "#30005"
+msgid "Use video thumbnail for poster/fanart"
+msgstr "Gebruik videominiatuur voor poster/fanart"
+
+msgctxt "#30006"
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
+msgctxt "#30007"
+msgid "Disabled"
+msgstr "Ingeschakeld"
+
+msgctxt "#30008"
+msgid "Enable custom view types"
+msgstr "Ingeschakeld"
+
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr "Kwaliteit toegevoegd aan de videonaam"
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr "Duur toegevoegd aan de videonaam"
+
+msgctxt "#30011"
+msgid "Select Sort method for Scenes"
+msgstr "Ingeschakeld"
+
+msgctxt "#30012"
+msgid "Latest"
+msgstr "Ingeschakeld"
+
+msgctxt "#30013"
+msgid "Top rated"
+msgstr "Best beoordeeld"
+
+msgctxt "#30014"
+msgid "Most viewed"
+msgstr "Meest bekeken"
+
+msgctxt "#30021"
+msgid "Select Sort method for Movies"
+msgstr "Selecteer sorteermethode voor films"
+
+msgctxt "#30022"
+msgid "Date"
+msgstr "Datum"
+
+msgctxt "#30023"
+msgid "Title"
+msgstr "Titel"
+
+msgctxt "#30024"
+msgid "Views"
+msgstr "Weergaven"
+
+msgctxt "#30025"
+msgid "Likes"
+msgstr "Vind ik leuk"
+
+msgctxt "#30026"
+msgid "Enable universal resolvers"
+msgstr "Universele resolvers inschakelen"
+
+msgctxt "#30027"
+msgid "Open ResolveURL settings"
+msgstr "Open ResolveURL-instellingen"
+
+msgctxt "#30028"
+msgid "Set/Change/Remove startup pin"
+msgstr "Opstartpin instellen / wijzigen / verwijderen"
+
+msgctxt "#30029"
+msgid "Cache Web Requests"
+msgstr "Webverzoeken in cache"
+
+msgctxt "#30030"
+msgid "Time to cache in hours"
+msgstr "Tijd om te cachen in uren"
+
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookies"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Verwijder alle cookies"
+
+msgctxt "#30051"
+msgid "General"
+msgstr "Algemeen"
+
+msgctxt "#30052"
+msgid "Download Folder"
+msgstr "Downloadmap"
+
+msgctxt "#30053"
+msgid "Hosts and resolvers"
+msgstr "Hosts en resolvers"
+
+msgctxt "#30054"
+msgid "Cam Sites"
+msgstr "Cam Sites"
+
+msgctxt "#30055"
+msgid "Preferred Playback mode"
+msgstr "Voorkeur afspeelmodus"
+
+msgctxt "#30056"
+msgid "RTMP needs a patched inpustream.rtmp from:"
+msgstr "RTMP heeft een gepatchte inpustream.rtmp nodig van:"
+
+msgctxt "#30057"
+msgid "With RTMP, no audio on some SD streams though,"
+msgstr "Met RTMP, geen audio op sommige SD-streams,"
+
+msgctxt "#30058"
+msgid "because of missing Speex codec in Kodi"
+msgstr "vanwege ontbrekende Speex-codec in Kodi"
+
+msgctxt "#30059"
+msgid "Favourites and keywords"
+msgstr "Favorieten en trefwoorden"
+
+msgctxt "#30060"
+msgid "Favourites"
+msgstr "Favorieten"
+
+msgctxt "#30061"
+msgid "Search keywords"
+msgstr "Zoekwoorden zoeken"
+
+msgctxt "#30062"
+msgid "Custom sites"
+msgstr "Aangepaste sites"
+
+msgctxt "#30063"
+msgid "Enable or disable installed custom sites"
+msgstr "Geïnstalleerde aangepaste sites in- of uitschakelen"
+
+msgctxt "#30064"
+msgid "Add or remove custom sites"
+msgstr "Aangepaste sites toevoegen of verwijderen"
+
+msgctxt "#30065"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Select Playback mode"
+msgstr "Selecteer afspeelmodus"
+
+msgctxt "#30101"
+msgid "HLS"
+msgstr ""
+
+msgctxt "#30102"
+msgid "F4mProxy"
+msgstr ""
+
+msgctxt "#30103"
+msgid "RTMP"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Preferred sections"
+msgstr "Voorkeurssecties"
+
+msgctxt "#30111"
+msgid "Female"
+msgstr "Vrouw"
+
+msgctxt "#30112"
+msgid "Male"
+msgstr "Man"
+
+msgctxt "#30113"
+msgid "Couple"
+msgstr "Koppel"
+
+msgctxt "#30114"
+msgid "Trans"
+msgstr "Transseksueel"
+
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Back-upbestanden comprimeren"
+
+msgctxt "#30201"
+msgid "Backup favourites"
+msgstr "Back-up favorieten"
+
+msgctxt "#30202"
+msgid "Restore favourites"
+msgstr "Favorieten herstellen"
+
+msgctxt "#30203"
+msgid "Clear favourites"
+msgstr "Wis favorieten"
+
+msgctxt "#30211"
+msgid "Backup keywords"
+msgstr "Back-up trefwoorden"
+
+msgctxt "#30212"
+msgid "Restore keywords"
+msgstr "Sleutelwoorden herstellen"
+
+msgctxt "#30213"
+msgid "Clear keywords"
+msgstr "Trefwoorden wissen"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Aangepaste map gebruiken voor favorieten"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Favorieten locatie"
+
+msgctxt "#30301"
+msgid "Enable custom sites"
+msgstr "Aangepaste sites inschakelen"
+
+msgctxt "#30302"
+msgid "Install custom site"
+msgstr "Installeer aangepaste site"
+
+msgctxt "#30303"
+msgid "Uninstall custom site"
+msgstr "Aangepaste site verwijderen"
+
+msgctxt "#30304"
+msgid "Enable custom site"
+msgstr "Aangepaste site inschakelen"
+
+msgctxt "#30305"
+msgid "Disable custom site"
+msgstr "Aangepaste site uitschakelen"
+
+msgctxt "#30306"
+msgid "List installed custom sites"
+msgstr "Lijst geïnstalleerde aangepaste sites"
+
+msgctxt "#30307"
+msgid "Enable all custom sites"
+msgstr "Alle aangepaste sites inschakelen"
+
+msgctxt "#30308"
+msgid "Disable all custom sites"
+msgstr "Alle aangepaste sites uitschakelen"
+
+msgctxt "#30309"
+msgid "Install all custom sites from folder"
+msgstr "Installeer alle aangepaste sites vanuit de map"
+
+msgctxt "#30401"
+msgid "4K"
+msgstr ""
+
+msgctxt "#30402"
+msgid "FHD"
+msgstr ""
+
+msgctxt "#30403"
+msgid "HD"
+msgstr ""
+
+msgctxt "#30404"
+msgid "SD"
+msgstr ""
+
+msgctxt "#30405"
+msgid "Ask"
+msgstr "Vraag"
+
+msgctxt "#30406"
+msgid "Choose an option"
+msgstr "Kies een optie"
+
+msgctxt "#30407"
+msgid "Set/Change PIN"
+msgstr "Pincode instellen / wijzigen"
+
+msgctxt "#30408"
+msgid "Remove PIN"
+msgstr "Pincode verwijderen"
+
+msgctxt "#30409"
+msgid "Enter your PIN Code"
+msgstr "Voer uw pincode in"
+
+msgctxt "#30410"
+msgid "PIN Code incorrect"
+msgstr "Pincode onjuist"
+
+msgctxt "#30411"
+msgid "The PIN Code is incorrect"
+msgstr "De pincode is onjuist"
+
+msgctxt "#30412"
+msgid "Retry"
+msgstr "Opnieuw proberen"
+
+msgctxt "#30413"
+msgid "Default viewtype set"
+msgstr "Standaard set weergavetypes"
+
+msgctxt "#30414"
+msgid "Default set as:"
+msgstr "Standaard ingesteld als:"
+
+msgctxt "#30415"
+msgid "Oh oh"
+msgstr "Oh oh"
+
+msgctxt "#30416"
+msgid "It looks like this website is too slow."
+msgstr "Het lijkt erop dat deze website te traag is."
+
+msgctxt "#30417"
+msgid "It looks like the page does not exist."
+msgstr "Het lijkt erop dat de pagina niet bestaat."
+
+msgctxt "#30418"
+msgid "It looks like this website is down."
+msgstr "Het lijkt erop dat deze website offline is."
+
+msgctxt "#30419"
+msgid "Python version to old - update to Krypton or FTMC"
+msgstr "Python-versie naar oud - update naar Krypton of FTMC"
+
+msgctxt "#30420"
+msgid "Keywords empty"
+msgstr "Sleutelwoorden leeg"
+
+msgctxt "#30421"
+msgid "No keywords to back up"
+msgstr "Geen trefwoorden om een ​​back-up van te maken"
+
+msgctxt "#30422"
+msgid "Error: invalid path"
+msgstr "Fout: ongeldig pad"
+
+msgctxt "#30423"
+msgid "Do you have permission to write to the selected folder?"
+msgstr "Heeft u toestemming om naar de geselecteerde map te schrijven?"
+
+msgctxt "#30424"
+msgid "Backup complete"
+msgstr "Back-up voltooid"
+
+msgctxt "#30425"
+msgid "Backup file:"
+msgstr "Back-upbestand:"
+
+msgctxt "#30426"
+msgid "Error"
+msgstr "Fout"
+
+msgctxt "#30427"
+msgid "Invalid backup file"
+msgstr "Ongeldig back-upbestand"
+
+msgctxt "#30428"
+msgid "Empty backup"
+msgstr "Lege back-up"
+
+msgctxt "#30429"
+msgid "Could not find a supported link"
+msgstr "Kon geen ondersteunde link vinden"
+
+msgctxt "#30430"
+msgid "Resolve failed"
+msgstr "Oplossen mislukt"
+
+msgctxt "#30431"
+msgid "link could not be resolved"
+msgstr "link kon niet worden opgelost"
+
+msgctxt "#30432"
+msgid "The Cookie file is locked, please restart Kodi"
+msgstr "Het Cookie-bestand is vergrendeld, start Kodi opnieuw"
+
+msgctxt "#30433"
+msgid "Download failed"
+msgstr "Downloaden mislukt"
+
+msgctxt "#30434"
+msgid "No response from server"
+msgstr "Geen reactie van server"
+
+msgctxt "#30435"
+msgid "Unknown filesize"
+msgstr "Onbekende bestandsgrootte"
+
+msgctxt "#30436"
+msgid "Unable to download"
+msgstr "Kan niet downloaden"
+
+msgctxt "#30437"
+msgid "Download File Size"
+msgstr "Download bestandsgrootte"
+
+msgctxt "#30438"
+msgid "Download Path"
+msgstr "Downloadpad"
+
+msgctxt "#30439"
+msgid "Cumination Download"
+msgstr "Cumination Download"
+
+msgctxt "#30440"
+msgid "Stopped Downloading"
+msgstr "Gestopt met downloaden"
+
+msgctxt "#30441"
+msgid "Searching for..."
+msgstr "Zoeken naar ..."
+
+msgctxt "#30442"
+msgid "Warning"
+msgstr "Waarschuwing"
+
+msgctxt "#30443"
+msgid "This will clear all the keywords"
+msgstr "Hiermee worden alle trefwoorden gewist"
+
+msgctxt "#30444"
+msgid "Continue"
+msgstr "Doorgaan"
+
+msgctxt "#30445"
+msgid "Select directory to place backup"
+msgstr "Selecteer map om back-up te plaatsen"
+
+msgctxt "#30446"
+msgid "Backing up"
+msgstr "Back-up maken"
+
+msgctxt "#30447"
+msgid "Initialising"
+msgstr "Initialiseren"
+
+msgctxt "#30448"
+msgid "Reading database"
+msgstr "Database lezen"
+
+msgctxt "#30449"
+msgid "Writing backup file"
+msgstr "back-upbestand schrijven"
+
+msgctxt "#30450"
+msgid "Select backup file"
+msgstr "Selecteer back-upbestand"
+
+msgctxt "#30451"
+msgid "Restore complete"
+msgstr "Herstel voltooid"
+
+msgctxt "#30452"
+msgid "Restore skips items that are already present in keywords to avoid duplicates"
+msgstr "Herstellen slaat items over die al aanwezig zijn in trefwoorden om duplicaten te voorkomen"
+
+msgctxt "#30453"
+msgid "Added"
+msgstr "Toegevoegd"
+
+msgctxt "#30454"
+msgid "Skipped"
+msgstr "Overgeslagen"
+
+msgctxt "#30455"
+msgid "Select quality"
+msgstr "Selecteer kwaliteit"
+
+msgctxt "#30456"
+msgid "Playing video"
+msgstr "Video afspelen"
+
+msgctxt "#30457"
+msgid "Searching for videofile"
+msgstr "Zoeken naar videobestand"
+
+msgctxt "#30458"
+msgid "Loading video page"
+msgstr "Videopagina laden"
+
+msgctxt "#30459"
+msgid "Searching for supported hosts"
+msgstr "Zoeken naar ondersteunde hosts"
+
+msgctxt "#30460"
+msgid "Playing from direct link"
+msgstr "Spelen via directe link"
+
+msgctxt "#30461"
+msgid "No regular expression specified"
+msgstr "Geen reguliere expressie opgegeven"
+
+msgctxt "#30462"
+msgid "Passing link to ResolveURL"
+msgstr "Link doorgeven aan ResolveURL"
+
+msgctxt "#30463"
+msgid "Playing from"
+msgstr "Spelen vanaf"
+
+msgctxt "#30464"
+msgid "Found subsites"
+msgstr "Gevonden subsites"
+
+msgctxt "#30465"
+msgid "Loading StreamDefence sites"
+msgstr "StreamDefence-sites laden"
+
+msgctxt "#30466"
+msgid "Loading FileCrypt sites"
+msgstr "FileCrypt-sites laden"
+
+msgctxt "#30467"
+msgid "Loading ShortIX sites"
+msgstr "ShortIX-sites laden"
+
+msgctxt "#30468"
+msgid "Exit"
+msgstr "Afsluiten"
+
+msgctxt "#30469"
+msgid "Enter"
+msgstr "Enter"
+
+msgctxt "#30470"
+msgid "About"
+msgstr "Over"
+
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr "Keeplinks-sites laden"
+
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Stel inhoudstype in"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr "films"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "video's"
+
+msgctxt "#33001"
+msgid "Error loading custom site"
+msgstr "Fout bij laden van aangepaste site"
+
+msgctxt "#33002"
+msgid "Custom site disabled"
+msgstr "Aangepaste site uitgeschakeld"
+
+msgctxt "#33003"
+msgid "Sites"
+msgstr "Sites"
+
+msgctxt "#33004"
+msgid "Favourite videos"
+msgstr "Favoriete video's"
+
+msgctxt "#33005"
+msgid "Download folder"
+msgstr "Downloadmap"
+
+msgctxt "#33006"
+msgid "Create custom list"
+msgstr "Maak aangepaste lijst"
+
+msgctxt "#33007"
+msgid "WARNING:"
+msgstr "WAARSCHUWING:"
+
+msgctxt "#33008"
+msgid "This addon contains adult material.[CR]You may enter only if you are at least 18 years of age."
+msgstr "Deze add-on bevat materiaal voor volwassenen. [CR]U mag alleen deelnemen als u ten minste 18 jaar oud bent."
+
+msgctxt "#33009"
+msgid "Custom site disabled due to errors."
+msgstr "Aangepaste site uitgeschakeld vanwege fouten."
+
+msgctxt "#33010"
+msgid "Listing custom site"
+msgstr "Aangepaste site vermelden"
+
+msgctxt "#33011"
+msgid "Clear local cache"
+msgstr "Wis lokale cache"
+
+msgctxt "#33012"
+msgid "Cached Data has been cleared"
+msgstr "Gegevens in cache zijn gewist"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Alle cookies zijn gewist"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Het zoekwoord bestaat al!"
