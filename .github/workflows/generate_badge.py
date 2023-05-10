@@ -9,11 +9,7 @@ response = requests.get(xml_url)
 
 # Parse the XML file and extract the version information
 root = ET.fromstring(response.content)
-version_element = root.find(".//version")
-if version_element is not None:
-    version = version_element.text
-else:
-    version = "unknown"
+version = root.find(".//version").text
 
 # Generate the badge URL
 badge_url = "https://img.shields.io/badge/version-{}-green.svg".format(version)
@@ -30,4 +26,3 @@ for i in range(len(readme_lines)):
 readme_file = open("README.md", "w")
 readme_file.writelines(readme_lines)
 readme_file.close()
-
