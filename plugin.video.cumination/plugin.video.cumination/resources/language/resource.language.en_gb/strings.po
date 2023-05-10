@@ -1,0 +1,641 @@
+# Kodi Media Center language file
+# Addon Name: Cumination
+# Addon id: plugin.video.cumination
+# Addon Provider: Cumination
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://forum.kodi.tv/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: Team-Kodi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred maximum video quality"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Don't ask for videohost"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Auto-refresh Webcam images"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Play all parts (no download)"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Use video thumbnail for poster/fanart"
+msgstr ""
+
+msgctxt "#30006"
+msgid "Enabled"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Disabled"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Enable custom view types"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Select Sort method for Scenes"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Latest"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Top rated"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Most viewed"
+msgstr ""
+
+msgctxt "#30021"
+msgid "Select Sort method for Movies"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Date"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Title"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Views"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Likes"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Enable universal resolvers"
+msgstr ""
+
+msgctxt "#30027"
+msgid "Open ResolveURL settings"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Set/Change/Remove startup pin"
+msgstr ""
+
+msgctxt "#30029"
+msgid "Cache Web Requests"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Time to cache in hours"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Cookies"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr ""
+
+msgctxt "#30051"
+msgid "General"
+msgstr ""
+
+msgctxt "#30052"
+msgid "Download Folder"
+msgstr ""
+
+msgctxt "#30053"
+msgid "Hosts and resolvers"
+msgstr ""
+
+msgctxt "#30054"
+msgid "Cam Sites"
+msgstr ""
+
+msgctxt "#30055"
+msgid "Preferred Playback mode"
+msgstr ""
+
+msgctxt "#30056"
+msgid "RTMP needs a patched inpustream.rtmp from:"
+msgstr ""
+
+msgctxt "#30057"
+msgid "With RTMP, no audio on some SD streams though,"
+msgstr ""
+
+msgctxt "#30058"
+msgid "because of missing Speex codec in Kodi"
+msgstr ""
+
+msgctxt "#30059"
+msgid "Favourites and keywords"
+msgstr ""
+
+msgctxt "#30060"
+msgid "Favourites"
+msgstr ""
+
+msgctxt "#30061"
+msgid "Search keywords"
+msgstr ""
+
+msgctxt "#30062"
+msgid "Custom sites"
+msgstr ""
+
+msgctxt "#30063"
+msgid "Enable or disable installed custom sites"
+msgstr ""
+
+msgctxt "#30064"
+msgid "Add or remove custom sites"
+msgstr ""
+
+msgctxt "#30065"
+msgid "Cache"
+msgstr ""
+
+msgctxt "#30100"
+msgid "Select Playback mode"
+msgstr ""
+
+msgctxt "#30101"
+msgid "HLS"
+msgstr ""
+
+msgctxt "#30102"
+msgid "F4mProxy"
+msgstr ""
+
+msgctxt "#30103"
+msgid "RTMP"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Preferred sections"
+msgstr ""
+
+msgctxt "#30111"
+msgid "Female"
+msgstr ""
+
+msgctxt "#30112"
+msgid "Male"
+msgstr ""
+
+msgctxt "#30113"
+msgid "Couple"
+msgstr ""
+
+msgctxt "#30114"
+msgid "Trans"
+msgstr ""
+
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr ""
+
+msgctxt "#30201"
+msgid "Backup favourites"
+msgstr ""
+
+msgctxt "#30202"
+msgid "Restore favourites"
+msgstr ""
+
+msgctxt "#30203"
+msgid "Clear favourites"
+msgstr ""
+
+msgctxt "#30211"
+msgid "Backup keywords"
+msgstr ""
+
+msgctxt "#30212"
+msgid "Restore keywords"
+msgstr ""
+
+msgctxt "#30213"
+msgid "Clear keywords"
+msgstr ""
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr ""
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr ""
+
+msgctxt "#30301"
+msgid "Enable custom sites"
+msgstr ""
+
+msgctxt "#30302"
+msgid "Install custom site"
+msgstr ""
+
+msgctxt "#30303"
+msgid "Uninstall custom site"
+msgstr ""
+
+msgctxt "#30304"
+msgid "Enable custom site"
+msgstr ""
+
+msgctxt "#30305"
+msgid "Disable custom site"
+msgstr ""
+
+msgctxt "#30306"
+msgid "List installed custom sites"
+msgstr ""
+
+msgctxt "#30307"
+msgid "Enable all custom sites"
+msgstr ""
+
+msgctxt "#30308"
+msgid "Disable all custom sites"
+msgstr ""
+
+msgctxt "#30309"
+msgid "Install all custom sites from folder"
+msgstr ""
+
+msgctxt "#30401"
+msgid "4K"
+msgstr ""
+
+msgctxt "#30402"
+msgid "FHD"
+msgstr ""
+
+msgctxt "#30403"
+msgid "HD"
+msgstr ""
+
+msgctxt "#30404"
+msgid "SD"
+msgstr ""
+
+msgctxt "#30405"
+msgid "Ask"
+msgstr ""
+
+msgctxt "#30406"
+msgid "Choose an option"
+msgstr ""
+
+msgctxt "#30407"
+msgid "Set/Change PIN"
+msgstr ""
+
+msgctxt "#30408"
+msgid "Remove PIN"
+msgstr ""
+
+msgctxt "#30409"
+msgid "Enter your PIN Code"
+msgstr ""
+
+msgctxt "#30410"
+msgid "PIN Code incorrect"
+msgstr ""
+
+msgctxt "#30411"
+msgid "The PIN Code is incorrect"
+msgstr ""
+
+msgctxt "#30412"
+msgid "Retry"
+msgstr ""
+
+msgctxt "#30413"
+msgid "Default viewtype set"
+msgstr ""
+
+msgctxt "#30414"
+msgid "Default set as:"
+msgstr ""
+
+msgctxt "#30415"
+msgid "Oh oh"
+msgstr ""
+
+msgctxt "#30416"
+msgid "It looks like this website is too slow."
+msgstr ""
+
+msgctxt "#30417"
+msgid "It looks like the page does not exist."
+msgstr ""
+
+msgctxt "#30418"
+msgid "It looks like this website is down."
+msgstr ""
+
+msgctxt "#30419"
+msgid "Python version to old - update to Krypton or FTMC"
+msgstr ""
+
+msgctxt "#30420"
+msgid "Keywords empty"
+msgstr ""
+
+msgctxt "#30421"
+msgid "No keywords to back up"
+msgstr ""
+
+msgctxt "#30422"
+msgid "Error: invalid path"
+msgstr ""
+
+msgctxt "#30423"
+msgid "Do you have permission to write to the selected folder?"
+msgstr ""
+
+msgctxt "#30424"
+msgid "Backup complete"
+msgstr ""
+
+msgctxt "#30425"
+msgid "Backup file:"
+msgstr ""
+
+msgctxt "#30426"
+msgid "Error"
+msgstr ""
+
+msgctxt "#30427"
+msgid "Invalid backup file"
+msgstr ""
+
+msgctxt "#30428"
+msgid "Empty backup"
+msgstr ""
+
+msgctxt "#30429"
+msgid "Could not find a supported link"
+msgstr ""
+
+msgctxt "#30430"
+msgid "Resolve failed"
+msgstr ""
+
+msgctxt "#30431"
+msgid "link could not be resolved"
+msgstr ""
+
+msgctxt "#30432"
+msgid "The Cookie file is locked, please restart Kodi"
+msgstr ""
+
+msgctxt "#30433"
+msgid "Download failed"
+msgstr ""
+
+msgctxt "#30434"
+msgid "No response from server"
+msgstr ""
+
+msgctxt "#30435"
+msgid "Unknown filesize"
+msgstr ""
+
+msgctxt "#30436"
+msgid "Unable to download"
+msgstr ""
+
+msgctxt "#30437"
+msgid "Download File Size"
+msgstr ""
+
+msgctxt "#30438"
+msgid "Download Path"
+msgstr ""
+
+msgctxt "#30439"
+msgid "Cumination Download"
+msgstr ""
+
+msgctxt "#30440"
+msgid "Stopped Downloading"
+msgstr ""
+
+msgctxt "#30441"
+msgid "Searching for..."
+msgstr ""
+
+msgctxt "#30442"
+msgid "Warning"
+msgstr ""
+
+msgctxt "#30443"
+msgid "This will clear all the keywords"
+msgstr ""
+
+msgctxt "#30444"
+msgid "Continue"
+msgstr ""
+
+msgctxt "#30445"
+msgid "Select directory to place backup"
+msgstr ""
+
+msgctxt "#30446"
+msgid "Backing up"
+msgstr ""
+
+msgctxt "#30447"
+msgid "Initialising"
+msgstr ""
+
+msgctxt "#30448"
+msgid "Reading database"
+msgstr ""
+
+msgctxt "#30449"
+msgid "Writing backup file"
+msgstr ""
+
+msgctxt "#30450"
+msgid "Select backup file"
+msgstr ""
+
+msgctxt "#30451"
+msgid "Restore complete"
+msgstr ""
+
+msgctxt "#30452"
+msgid "Restore skips items that are already present in keywords to avoid duplicates"
+msgstr ""
+
+msgctxt "#30453"
+msgid "Added"
+msgstr ""
+
+msgctxt "#30454"
+msgid "Skipped"
+msgstr ""
+
+msgctxt "#30455"
+msgid "Select quality"
+msgstr ""
+
+msgctxt "#30456"
+msgid "Playing video"
+msgstr ""
+
+msgctxt "#30457"
+msgid "Searching for videofile"
+msgstr ""
+
+msgctxt "#30458"
+msgid "Loading video page"
+msgstr ""
+
+msgctxt "#30459"
+msgid "Searching for supported hosts"
+msgstr ""
+
+msgctxt "#30460"
+msgid "Playing from direct link"
+msgstr ""
+
+msgctxt "#30461"
+msgid "No regular expression specified"
+msgstr ""
+
+msgctxt "#30462"
+msgid "Passing link to ResolveURL"
+msgstr ""
+
+msgctxt "#30463"
+msgid "Playing from"
+msgstr ""
+
+msgctxt "#30464"
+msgid "Found subsites"
+msgstr ""
+
+msgctxt "#30465"
+msgid "Loading StreamDefence sites"
+msgstr ""
+
+msgctxt "#30466"
+msgid "Loading FileCrypt sites"
+msgstr ""
+
+msgctxt "#30467"
+msgid "Loading ShortIX sites"
+msgstr ""
+
+msgctxt "#30468"
+msgid "Exit"
+msgstr ""
+
+msgctxt "#30469"
+msgid "Enter"
+msgstr ""
+
+msgctxt "#30470"
+msgid "About"
+msgstr ""
+
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr ""
+
+msgctxt "#30500"
+msgid "Set content type"
+msgstr ""
+
+msgctxt "#30501"
+msgid "movies"
+msgstr ""
+
+msgctxt "#30502"
+msgid "videos"
+msgstr ""
+
+msgctxt "#33001"
+msgid "Error loading custom site"
+msgstr ""
+
+msgctxt "#33002"
+msgid "Custom site disabled"
+msgstr ""
+
+msgctxt "#33003"
+msgid "Sites"
+msgstr ""
+
+msgctxt "#33004"
+msgid "Favourite videos"
+msgstr ""
+
+msgctxt "#33005"
+msgid "Download folder"
+msgstr ""
+
+msgctxt "#33006"
+msgid "Create custom list"
+msgstr ""
+
+msgctxt "#33007"
+msgid "WARNING:"
+msgstr ""
+
+msgctxt "#33008"
+msgid "This addon contains adult material.[CR]You may enter only if you are at least 18 years of age."
+msgstr ""
+
+msgctxt "#33009"
+msgid "Custom site disabled due to errors."
+msgstr ""
+
+msgctxt "#33010"
+msgid "Listing custom site"
+msgstr ""
+
+msgctxt "#33011"
+msgid "Clear local cache"
+msgstr ""
+
+msgctxt "#33012"
+msgid "Cached Data has been cleared"
+msgstr ""
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr ""
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr ""
