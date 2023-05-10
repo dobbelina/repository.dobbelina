@@ -24,7 +24,7 @@ broken sites/catchers, or make a pull request.**
 
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/dobbelina/repository.dobbelina)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/dobbelina/repository.dobbelina)
-[![Latest Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=latest%20addon%20version&query=%2Faddon%2F@version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdobbelina%2Frepository.dobbelina%2Fmaster%2Fplugin.video.cumination%2Fplugin.video.cumination%2Faddon.xml)](https://github.com/dobbelina/repository.dobbelina)
+[![Latest Version](https://img.shields.io/badge/dynamic/xml?color=blue&label=latest%20addon%20version&query=%2Faddon%2F@version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdobbelina%2Frepository.dobbelina%2Fmaster%2Fplugin.video.cumination%2Faddon.xml)](https://github.com/dobbelina/repository.dobbelina)
 <div align="center">
 
 [![Visitors](https://api.visitorbadge.io/api/daily?path=https%3A%2F%2Fgithub.com%2Fdobbelina%2Frepository.dobbelina&label=Visitors%20Today&countColor=%23eca90b&style=flat)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fdobbelina%2Frepository.dobbelina)

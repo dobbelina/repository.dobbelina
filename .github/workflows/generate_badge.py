@@ -2,7 +2,7 @@ import requests
 import xml.etree.ElementTree as ET
 
 # Replace this with the raw URL of your XML file on GitHub
-xml_url = "https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/plugin.video.cumination/plugin.video.cumination/addon.xml"
+xml_url = "https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/plugin.video.cumination/addon.xml"
 
 # Download the XML file from its URL
 response = requests.get(xml_url)
