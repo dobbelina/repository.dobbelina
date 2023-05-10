@@ -8,8 +8,11 @@ xml_url = "https://raw.githubusercontent.com/dobbelina/repository.dobbelina/mast
 response = requests.get(xml_url)
 
 # Parse the XML file and extract the version information
-root = ET.fromstring(response.content)
-version = root.find(".//version").text
+try:
+    root = ET.fromstring(response.content)
+    version = root.find(".//version").text
+except AttributeError:
+    version = "Not Found"
 
 # Generate the badge URL
 badge_url = "https://img.shields.io/badge/version-{}-green.svg".format(version)
