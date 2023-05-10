@@ -3,7 +3,7 @@ name: Update Version Info Badge
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   update-badge:
