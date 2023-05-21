@@ -78,7 +78,11 @@ def List(url, page=1):
             private = ""
         name = private + name
 
-        contextmenu = None
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                          + "?mode=" + str('javbangers.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
         if jblogged:
             contextadd = (utils.addon_sys
                           + "?mode=" + str('javbangers.ContextMenu')
@@ -116,6 +120,14 @@ def List(url, page=1):
                 nurl = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
             else:
                 utils.kodilog(' favorites pagination error')
+                nurl = url
+        elif '/members/' in url:
+            if '?mode' not in url:
+                url += '?mode=async&function=get_block&block_id=list_videos_uploaded_videos&sort_by=&from_videos=01'
+            if 'from_videos={0:02d}'.format(page) in url:
+                nurl = url.replace('from_videos={0:02d}'.format(page), 'from_videos={0:02d}'.format(npage))
+            else:
+                utils.kodilog(' members pagination error')
                 nurl = url
         elif '/playlists/' in url:
             if '?mode' not in url:
@@ -302,3 +314,50 @@ def get_cookies():
     if jblogged and 'kt_member' not in cookiestr:
         JBLogin(False)
     return cookiestr
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    models = re.compile('/(models/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if models:
+        for url, model in models:
+            model = "Actor - " + model.strip()
+            infodict[model] = site.url + url
+    
+    
+    categories = re.compile('/(categories/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if categories:
+        for url, cat in categories:
+            cat = "Category - " + cat.strip()
+            infodict[cat] = site.url + url
+
+    tags = re.compile('/(tags[^"]+)">[^<]+<[^<]+</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = site.url + url
+            
+    members = re.compile('/(members/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if members:
+        for url, member in members:
+            member = "Uploader - " + member.strip()
+            infodict[member] = site.url + url + '/videos/'           
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('javbangers.List')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No models, channels, uploader or tags found for this video')
+    return
