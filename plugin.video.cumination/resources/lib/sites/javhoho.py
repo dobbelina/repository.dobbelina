@@ -28,7 +28,7 @@ site = AdultSite('javhoho', '[COLOR hotpink]JavHoHo[/COLOR]', 'https://www1.javh
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + 'all-porn-videos/')
+    List(site.url)
 
 
 @site.register()
@@ -37,7 +37,7 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
-    match = re.compile('div id="post(.+?)href="([^"]+)".+?data-lazy-src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('div id="post(.+?)href="([^"]+)".+?src="([^"]+)".+?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for badges, videopage, img, name in match:
         badge = ''
         if '4k-porn-icon.png' in badges.lower():
@@ -66,7 +66,7 @@ def List(url):
 @site.register()
 def Collection(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r"data-token='([^']+)'\s*data-account-id='([^']+)'\s*data-drive-id='([^']+)'.+?data-path='([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'data-token="([^"]+)"\s*data-account-id="([^"]+)"\s*data-drive-id="([^"]+)".+?data-path="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         listtoken, account_id, drive_id, folderPath = match[0]
         posturl = 'https://www1.javhoho.com/wp-admin/admin-ajax.php'
@@ -120,7 +120,6 @@ def Cat(url):
     cathtml = cathtml.split('id="categories-3"')[-1].split('</div>')[0]
     match = re.compile('href="([^"]+)".*?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
-        # name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
 
@@ -132,7 +131,7 @@ def Playvid(url, name, download=None):
 
     listhtml = utils.getHtml(url, site.url)
     listhtml = listhtml.split('Free Player<')[1].split('>VIP Download')[0]
-    match = re.compile('data-lazy-src="([^"]+)"',).findall(listhtml)
+    match = re.compile('src="([^"]+)"',).findall(listhtml)
     videoArray = {}
     for item in match:
         vp.progress.update(30, "[CR]Loading video page[CR]")
