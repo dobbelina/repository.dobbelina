@@ -68,8 +68,8 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     phtml = utils.getHtml(url, site.url)
     sources = re.compile(r'class="box\s.+?href="([^"]+)', re.DOTALL | re.IGNORECASE).findall(phtml)
-    if not sources and utils.addon.getSetting("universal_resolvers") == "true":
-        sources = re.compile(r'class="ocult".+?Enlaces"[^>]+>(?:<b>)?(.*?)(?:...)?<', re.DOTALL | re.IGNORECASE).findall(phtml)
+    if utils.addon.getSetting("universal_resolvers") == "true":
+        sources += re.compile(r'class="ocult".+?Enlaces"[^>]+>(?:<b>)?(.*?)(?:...)?<', re.DOTALL | re.IGNORECASE).findall(phtml)
     links = {}
     for link in sources:
         if vp.resolveurl.HostedMediaFile(link).valid_url():
