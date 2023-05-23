@@ -122,25 +122,16 @@ def Playvid(url, name, download=None):
     if not videourl:
         vp.progress.close()
         return
-    
-    headers = {'Referer': site.url,
-                'Origin': site.url[:-1],
-                'User-Agent': utils.USER_AGENT}  
 
     if any(x in videourl for x in ['.mp4', '.webm']):
         videourl = videourl + '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, site.url)
-
 
     sub = re.search("subUrl: '([^']+)'", vpage, re.IGNORECASE | re.DOTALL)
     if videourl:
         if sub:
             subtitle = sub.group(1)
-            sub_file = utils.TRANSLATEPATH('special://temp/{0}.ass'.format(name))
-            req = utils.Request(subtitle, headers=headers)
-            subdata = utils.urlopen(req).read()
-            with xbmcvfs.File(sub_file, 'w') as f:
-                f.write(subdata)
-            utils.playvid(videourl, name, subtitle=sub_file)
+            subtitle = subtitle + '|User-Agent={0}&Referer={1}&Origin={2}'.format(utils.USER_AGENT, site.url, site.url[:-1])
+            utils.playvid(videourl, name, subtitle=subtitle)
         else:
             vp.play_from_direct_link(videourl)
     else:
