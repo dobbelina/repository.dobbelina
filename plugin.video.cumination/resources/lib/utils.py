@@ -366,7 +366,7 @@ def refresh():
     xbmc.executebuiltin('Container.Refresh')
 
 
-def playvid(videourl, name, download=None):
+def playvid(videourl, name, download=None, subtitle=None):
     if download == 1:
         downloadVideo(videourl, name)
     else:
@@ -402,7 +402,10 @@ def playvid(videourl, name, download=None):
                 listitem.setProperty('inputstream.adaptive.manifest_type', 'ism')
                 listitem.setMimeType('application/vnd.ms-sstr+xml')
             listitem.setContentLookup(False)
-
+            
+            if subtitle:
+                listitem.setSubtitles([subtitle])
+            
         if int(sys.argv[1]) == -1:
             xbmc.Player().play(videourl, listitem)
         else:
