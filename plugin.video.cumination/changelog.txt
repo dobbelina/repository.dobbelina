@@ -7,4 +7,6 @@ JavHoho - fix listing
 Blendporn - fix pagination
 YrPrno - fix pagination
 JavBangers - Lookup info
-Naughtyblog - new site
+Naughtyblog - new site  (works best with a debrid service like Real-Debrid)
+SeaPorn - new site  (works best with a debrid service like Real-Debrid)
+Hentai Moon - new site
