@@ -112,7 +112,7 @@ def Playvid(url, name, download=None):
     videos = re.compile("src: '([^']+(?:mpd|mp4|webm))'", re.DOTALL | re.IGNORECASE).findall(vpage)
 
     for video in videos:
-        quali = re.search(r"(\d+)(?:(?:/manifest\.mpd)|(?:p\.mp4))", video)
+        quali = re.search(r"(\d+)(?:(?:/manifest\.mpd)|(?:p\.mp4)|(?:p\.webm))", video)
         if quali:
             sources.update({quali.group(1): video})
         else:
@@ -122,15 +122,20 @@ def Playvid(url, name, download=None):
     if not videourl:
         vp.progress.close()
         return
+    
+    headers = {'Referer': site.url,
+                'Origin': site.url[:-1],
+                'User-Agent': utils.USER_AGENT}  
+
+    if any(x in videourl for x in ['.mp4', '.webm']):
+        videourl = videourl + '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, site.url)
+
 
     sub = re.search("subUrl: '([^']+)'", vpage, re.IGNORECASE | re.DOTALL)
     if videourl:
         if sub:
             subtitle = sub.group(1)
             sub_file = utils.TRANSLATEPATH('special://temp/{0}.ass'.format(name))
-            headers = {'Referer': site.url,
-                        'Origin': site.url[:-1],
-                        'User-Agent': utils.USER_AGENT}   
             req = utils.Request(subtitle, headers=headers)
             subdata = utils.urlopen(req).read()
             with xbmcvfs.File(sub_file, 'w') as f:
