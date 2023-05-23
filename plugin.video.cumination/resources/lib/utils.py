@@ -403,8 +403,8 @@ def playvid(videourl, name, download=None, subtitle=None):
                 listitem.setMimeType('application/vnd.ms-sstr+xml')
             listitem.setContentLookup(False)
             
-            if subtitle:
-                listitem.setSubtitles([subtitle])
+        if subtitle:
+            listitem.setSubtitles([subtitle])
             
         if int(sys.argv[1]) == -1:
             xbmc.Player().play(videourl, listitem)
