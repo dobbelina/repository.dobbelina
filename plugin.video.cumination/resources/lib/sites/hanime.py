@@ -138,10 +138,10 @@ def get_videos(url, member=False):
         session_token = utils.addon.getSetting('session_token')
         build_number = utils.addon.getSetting('build_number')
         headers.update({"X-Session-Token": session_token})
-        video_api = f"{apiurl}/rapi/v4/downloads/{url}?v={build_number}"
+        video_api = "{0}/rapi/v4/downloads/{1}?v={2}".format(apiurl, url, build_number)
     else:
         headers = hanime_headers
-        video_api = f"https://hanime.tv/rapi/v7/videos_manifests/{url}"
+        video_api = "https://hanime.tv/rapi/v7/videos_manifests/{0}".format(url)
 
     videojson = utils.getHtml(video_api, headers=headers)
     if videojson:
@@ -211,7 +211,7 @@ def makeXheaders():
     return {
         "X-Signature-Version": "web2",
         "X-Claim"            : t(),
-        "X-Signature"        : sha256(f"9944822{t}8{t}113"),
+        "X-Signature"        : sha256("9944822{0}8{0}113".format(t)),
         "User-Agent"         : "okhttp/3.12.1"
     }
 

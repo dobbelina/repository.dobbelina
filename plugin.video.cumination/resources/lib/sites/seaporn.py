@@ -69,10 +69,9 @@ def Playvid(url, name, download=None):
     sources = re.compile('<a href="([^"]+)" class="autohyperlink">https*://([^/]+)', re.DOTALL | re.IGNORECASE).findall(sitehtml)
     links = {}
     for link, hoster in sources:
-        utils.kodilog(f"link: {link} hoster: {hoster}")
         if vp.resolveurl.HostedMediaFile(link).valid_url():
             filename = link.split('/')[-1]
-            hoster = f"{hoster} {filename}"
+            hoster = "{0} {1}".format(hoster, filename)
             links[hoster] = link
     videourl = utils.selector('Select link', links)
     if not videourl:
@@ -101,7 +100,7 @@ def Categories(url):
         if any(cat in name for cat in ['Galleries', 'Magazines', 'Pictures', 'Siterips', 'Mobile']):
             continue
         
-        name = f"{name} - {videos.strip()} videos"
+        name = "{0} - {1} videos".format(name, videos.strip())
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
 

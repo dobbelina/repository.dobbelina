@@ -22,7 +22,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR] [COLOR red][Debrid only]', 'https://www.naughtyblog.org/', 'https://www.naughtyblog.org/wp-content/images/logo/main_logo.png', 'naughtyblog')
+site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR]  [COLOR red][Debrid only][/COLOR]', 'https://www.naughtyblog.org/', 'https://www.naughtyblog.org/wp-content/images/logo/main_logo.png', 'naughtyblog')
 
 
 @site.register(default_mode=True)
@@ -73,7 +73,7 @@ def Playvid(url, name, download=None):
         if vp.resolveurl.HostedMediaFile(link).valid_url():
             linkparts = link.split('.')
             quality = linkparts[-3] if link.endswith('.html') else linkparts[-2]
-            hoster = f"{hoster} {quality}"
+            hoster = "{0} {1}".format(hoster, quality)
             links[hoster] = link
     videourl = utils.selector('Select link', links)
     if not videourl:
@@ -99,7 +99,7 @@ def Categories(url):
     match = re.compile('href="([^"]+)"[^>]+>([^<]+)<span class="pocetvideicat">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for catpage, name, videos in match:
         name = utils.cleantext(name.strip())
-        name = f"{name} - {videos.strip()} videos"
+        name = "{0} - {1} videos".format(name, videos.strip())
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
 

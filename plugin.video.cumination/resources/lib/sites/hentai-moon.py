@@ -59,7 +59,7 @@ def List(url):
         if pagelookup:
             page = pagelookup.group(2)
             fromtxt = pagelookup.group(1)
-            url = url.replace(f"{fromtxt}={page}", f"{fromtxt}={np}")
+            url = url.replace("{0}={1}".format(fromtxt, page), "{0}={1}".format(fromtxt, np))
             site.add_dir(f'Next Page ({np})', url, 'List', site.img_next)
 
     utils.eod()
@@ -102,7 +102,7 @@ def Series(url):
         if pagelookup:
             page = pagelookup.group(2)
             fromtxt = pagelookup.group(1)
-            url = url.replace(f"{fromtxt}={page}", f"{fromtxt}={np}")
+            url = url.replace("{0}={1}".format(fromtxt, page), "{0}={1}".format(fromtxt, np))
             site.add_dir(f'Next Page ({np})', url, 'Series', site.img_next)
     utils.eod()
 
@@ -114,7 +114,7 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ', '-')
         searchq = keyword.replace(' ', '+')
-        url = f"{url}{title}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={searchq}&cat_ids=&sort_by=&from_videos=1"
+        url = "{0}{1}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={2}&cat_ids=&sort_by=&from_videos=1".format(url, title, searchq)
         List(url)
 
 
@@ -191,7 +191,6 @@ def Lookupinfo(url):
         contexturl = (utils.addon_sys
                       + "?mode=" + str('hentai-moon.List')
                       + "&url=" + urllib_parse.quote_plus(selected_item))
-        utils.kodilog(f"selected_item: {selected_item}")
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     else:
         utils.notify('Notify', 'No categories, tags or serie found for this video')
