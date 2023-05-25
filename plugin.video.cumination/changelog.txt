@@ -12,3 +12,4 @@ SeaPorn - new site  (works best with a debrid service like Real-Debrid)
 Hentai Moon - new site
 Hentaistream - new site
 Iflix - new site
+Palimas - fix Lookup info

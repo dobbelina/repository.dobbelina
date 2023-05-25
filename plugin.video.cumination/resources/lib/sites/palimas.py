@@ -163,13 +163,13 @@ def Lookupinfo(url):
 
     infodict = {}
 
-    categories = re.compile(r"<a href='([^']+)'>([^<]+)</a>", re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Categories:<')[-1].split('</span>')[0])
+    categories = re.compile(r'''<a href=['"]([^'"]+)['"]>([^<]+)</a>''', re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Categories:<')[-1].split('</span>')[0])
     if categories:
         for url, cat in categories:
             cat = "Cat - " + cat.strip()
             infodict[cat] = site.url[:-1] + url
 
-    models = re.compile(r"<a href='([^']+)'>([^<]+)</a>", re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Pornstars:<')[-1].split('</span>')[0])
+    models = re.compile(r'''<a href=['"]([^'"]+)['"]>([^<]+)</a>''', re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Pornstars:<')[-1].split('</span>')[0])
     if models:
         for url, model in models:
             model = "Model - " + model.strip()
