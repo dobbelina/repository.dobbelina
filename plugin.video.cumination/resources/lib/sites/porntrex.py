@@ -68,7 +68,6 @@ def PTLength():
 
 @site.register()
 def PTList(url, page=1):
-    utils.kodilog(url)
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     try:
@@ -98,8 +97,6 @@ def PTList(url, page=1):
             img, private, hd, duration, videopage, name, age = match[0]
             name = utils.cleantext(name)
             if 'private' in private.lower():
-                utils.kodilog(video)
-                utils.kodilog(private)
                 if not ptlogged:
                     continue
                 private = "[COLOR blue][PV][/COLOR] "
@@ -124,9 +121,9 @@ def PTList(url, page=1):
             img = img + '|Referer=' + url
             contextmenu = []
             contexturl = (utils.addon_sys
-                          + "?mode=" + str('porntrex.PTCheck_pornstars')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-            contextmenu.append(('[COLOR deeppink]Lookup pornstars[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+                        + "?mode=" + str('porntrex.Lookupinfo')
+                        + "&url=" + urllib_parse.quote_plus(videopage))
+            contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
             if ptlogged:
                 if '/models' in url:
                     contexturl = (utils.addon_sys
@@ -145,16 +142,10 @@ def PTList(url, page=1):
                                   + "&url=" + urllib_parse.quote_plus(videopage)
                                   + "&fav=add")
                     contextmenu.append(('[COLOR deeppink]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
-
-            contexturl = (utils.addon_sys
-                          + "?mode=" + str('porntrex.PTCheck_tags')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-            contextmenu.append(('[COLOR deeppink]Lookup tags[/COLOR]', 'RunPlugin(' + contexturl + ')'))
             plot = '{}\n{}'.format(name, age)
             site.add_download_link(name, videopage, 'PTPlayvid', img, plot, contextm=contextmenu, duration=duration, quality=hd)
         else:
-            utils.kodilog('regex error')
-            utils.kodilog(video)
+            utils.notify("Oh oh", "No videos found")
     if re.search('<li class="next">', videos[-1], re.DOTALL | re.IGNORECASE):
         search = True
         if not page:
@@ -169,43 +160,6 @@ def PTList(url, page=1):
             url = url.replace('/{}/'.format(str(page)), '/{}/'.format(str(npage)))
         else:
             url += '{}/'.format(str(npage))
-
-        # if url.endswith('/latest-updates/'):
-        #     url += '{}/'.format(str(npage))
-        #     search = True
-        # elif url.endswith('/{}/'.format(str(page))):
-        #     url = url.replace('/{}/'.format(str(page)), '/{}/'.format(str(npage)))
-        #     search = True
-        # elif 'list_videos_latest_videos_list' in url:
-        #     url = url.replace('from=' + str(page), 'from=' + str(npage))
-        #     search = True
-        # elif '/categories/' in url:
-        #     url = url.replace('from=' + str(page), 'from=' + str(npage))
-        #     search = True
-        # elif 'list_videos_common_videos_list_norm' in url:
-        #     if len(match) == 120:
-        #         url = url.replace('from4=' + str(page), 'from4=' + str(npage))
-        #         search = True
-        # elif '/search/' in url:
-        #     utils.kodilog(url)
-        #     if '?' in url:
-        #         url = url.replace('from=' + str(page), 'from=' + str(npage))
-        #     else:
-        #         url += '?from=' + str(npage)
-        #     search = True
-        # elif 'from_my_subscriptions_videos' in url:
-        #     if len(match) == 10:
-        #         url = url.replace('from_my_subscriptions_videos=' + str(page), 'from_my_subscriptions_videos=' + str(npage))
-        #         search = True
-        # elif '/favourites/' in url:
-        #     if 'from_my_fav_videos={0:02d}'.format(page) in url:
-        #         url = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
-        #         search = True
-        #     else:
-        #         utils.kodilog(' favorites pagination error')
-        # else:
-        #     url = url.replace('/' + str(page) + '/', '/' + str(npage) + '/')
-        #     search = True
 
         lastp = re.compile(r'class="pagination".+data-max="(\d+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
         if lastp:
@@ -353,59 +307,6 @@ def PTSubscriptions(url, page=1):
 
 
 @site.register()
-def PTCheck_tags(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
-    tags = {}
-    matches = re.compile('<a href="([^"]+tags[^"]+)">([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if matches:
-        for url, tag in matches:
-            tag = tag.strip()
-            tags[tag] = url
-        selected_tag = utils.selector('Pick a tag to look up videos', tags, show_on_one=True)
-        if not selected_tag:
-            return
-
-        tagurl = selected_tag + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('porntrex.PTList')
-                      + "&url=" + urllib_parse.quote_plus(tagurl))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No tags found at this video')
-        return
-
-
-@site.register()
-def PTCheck_pornstars(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
-    pornstars = {}
-    matches = re.compile('<a href="([^"]+models[^"]+)"><i class="fa fa-star"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if matches:
-        for url, model in matches:
-            model = model.strip()
-            pornstars[model] = url
-        selected_model = utils.selector('Choose model to view', pornstars, sort_by=lambda x: x[1], show_on_one=True)
-        if not selected_model:
-            return
-
-        modelurl = selected_model + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('porntrex.PTList')
-                      + "&url=" + urllib_parse.quote_plus(modelurl))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-
-    else:
-        utils.notify('Notify', 'No tagged pornstars found in this video')
-    return
-
-
-@site.register()
 def PTSubscribe_pornstar(url, id=None, what='subscribe'):
     if not id:
         url2 = url.split('?')[0]
@@ -518,3 +419,48 @@ def PTModels(url, page=1):
         url = url.replace('from=' + str(page), 'from=' + str(npage))
         site.add_dir('Next Page', url, 'PTModels', site.img_next, npage)
     utils.eod()
+
+
+@site.register()
+def Lookupinfo(url):
+    try:
+        listhtml = utils.getHtml(url)
+    except:
+        return None
+
+    infodict = {}
+
+    categories = re.compile('/(categories/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if categories:
+        for url, cat in categories:
+            cat = "Cat - " + cat.strip()
+            infodict[cat] = site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+
+    models = re.compile('/(models[^"]+)"><i class="fa fa-star"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if models:
+        for url, model in models:
+            model = "Model - " + model.strip()
+            infodict[model] = site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+
+    tags = re.compile('/(tags[^"]+)">([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if tags:
+        for url, tag in tags:
+            tag = "Tag - " + tag.strip()
+            infodict[tag] = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+
+    uploader = re.compile('/(members/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if uploader:
+        member = "More from uploader: " + uploader[0][1].strip()
+        infodict[member] = site.url + uploader[0][0] + 'videos/'
+
+    if infodict:
+        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
+        if not selected_item:
+            return
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('porntrex.PTList')
+                      + "&url=" + urllib_parse.quote_plus(selected_item))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    else:
+        utils.notify('Notify', 'No categories , tags, models or uploader found for this video')
+    return
