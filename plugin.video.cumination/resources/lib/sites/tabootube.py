@@ -127,42 +127,20 @@ def Search(url, keyword=None):
 
 @site.register()
 def Lookupinfo(url):
-    utils.kodilog(url)
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    class TabootubeLookup(utils.LookupInfo):
+        def url_constructor(self, url):
+            ajaxpart = '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+            if 'categories/' in url:
+                return url + ajaxpart
+            if any(x in url for x in ['models/', 'tags/']):
+                return site.url + url + ajaxpart
+            
+    lookup_list = [
+        ("Cat", r'Categories:\s*?<a href="([^"]+)">([^<]+)<', ''),
+        ("Tag", '/(tags/[^"]+)">([^<]+)<', ''),
+        ("Actor", '/(models/[^"]+)">([^<]+)<', ''),
+        #("Studio", r'/(studios[^"]+)">([^<]+)</a>', ''),
+    ]
 
-    infodict = {}
-
-    categories = re.compile(r'Categories:\s*?<a href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, cat in categories:
-            cat = "Cat - " + cat.strip()
-            infodict[cat] = url
-
-    actors = re.compile('/(models/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    tags = re.compile('/(tags/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        selected_item + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('tabootube.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item)
-                      + "&page=1")
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No actors, studios or genres found for this video')
-    return
+    lookupinfo = TabootubeLookup(site.url, url, 'tabootube.List', lookup_list)
+    lookupinfo.getinfo()

@@ -156,33 +156,10 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Cat", '/(categories/[^"]+)">([^<]+)<', ''),
+        ("Model", ["<label>Pornstars:.*?<label>", '/(pornstar[^"]+)">([^<]+)</a>'], '')
+    ]
 
-    infodict = {}
-
-    categories = re.compile(r'''<a href=['"]([^'"]+)['"]>([^<]+)</a>''', re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Categories:<')[-1].split('</span>')[0])
-    if categories:
-        for url, cat in categories:
-            cat = "Cat - " + cat.strip()
-            infodict[cat] = site.url[:-1] + url
-
-    models = re.compile(r'''<a href=['"]([^'"]+)['"]>([^<]+)</a>''', re.DOTALL | re.IGNORECASE).findall(listhtml.split('<label>Pornstars:<')[-1].split('</span>')[0])
-    if models:
-        for url, model in models:
-            model = "Model - " + model.strip()
-            infodict[model] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('palimas.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No categories or models found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'palimas.List', lookup_list)
+    lookupinfo.getinfo()

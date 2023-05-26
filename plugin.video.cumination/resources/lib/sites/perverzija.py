@@ -95,42 +95,21 @@ def Stars(url):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    class PerverzijaLookup(utils.LookupInfo):
+        def url_constructor(self, url):
+            if 'studio/' in url:
+                return url
+            if any(x in url for x in ['stars/', 'tag/']):
+                return site.url + url
 
-    infodict = {}
+    lookup_list = [
+        ("Studio", 'href="([^"]+)" rel="category tag">([^<]+)', ''),
+        ("Tag", '(tag/[^"]+)" rel="tag">([^<]+)', ''),
+        ("Actor", '(stars/[^"]+)" rel="tag">([^<]+)', ''),
+    ]
 
-    studios = re.compile('href="([^"]+)" rel="category tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if studios:
-        for url, studio in studios:
-            studio = "Studio - " + studio.strip()
-            infodict[studio] = url
-
-    actors = re.compile('(stars/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    tags = re.compile('(tag/[^"]+)" rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('perverzija.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No actors, studios or tags found for this video')
-    return
+    lookupinfo = PerverzijaLookup(site.url, url, 'perverzija.List', lookup_list)
+    lookupinfo.getinfo()
 
 
 @site.register()

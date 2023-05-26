@@ -14,3 +14,4 @@ Hentaistream - new site
 Iflix - new site
 Palimas - fix Lookup info
 Porntrex - Changes in contextmenu (Lookup info)
+Codebase - added diagnostic exception trace logger

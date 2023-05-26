@@ -423,44 +423,20 @@ def PTModels(url, page=1):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    class PorntrexLookup(utils.LookupInfo):
+        def url_constructor(self, url):
+            if 'categories/' in url:
+                return site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+            if any(x in url for x in ['models/', 'tags/']):
+                return site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+            if 'members/' in url:
+                return site.url + url + 'videos/'
 
-    infodict = {}
-
-    categories = re.compile('/(categories/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, cat in categories:
-            cat = "Cat - " + cat.strip()
-            infodict[cat] = site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
-
-    models = re.compile('/(models[^"]+)"><i class="fa fa-star"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if models:
-        for url, model in models:
-            model = "Model - " + model.strip()
-            infodict[model] = site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
-
-    tags = re.compile('/(tags[^"]+)">([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
-
-    uploader = re.compile('/(members/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if uploader:
-        member = "More from uploader: " + uploader[0][1].strip()
-        infodict[member] = site.url + uploader[0][0] + 'videos/'
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('porntrex.PTList')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No categories , tags, models or uploader found for this video')
-    return
+    lookup_list = [
+        ("Cat", r'/(categories/[^"]+)">([^<]+)<', ''),
+        ("Model", r'/(models[^"]+)"><i class="fa fa-star"></i>([^<]+)</a>', ''),
+        ("Tag", r'/(tags[^"]+)">([^<]+)</a>', ''),
+        ("Uploader", r'/(members/[^"]+)">([^<]+)<', '')
+    ]
+    lookupinfo = PorntrexLookup(site.url, url, 'porntrex.PTList', lookup_list)
+    lookupinfo.getinfo()

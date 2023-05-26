@@ -107,40 +107,10 @@ def v7_play(url, name, download=None):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Studios", '<a class="" href="https://vidoz8.com/(channel/[^"]+)">([^<]+)', ''),
+        ("Tag", r'<a class="" href="https://vidoz8\.com/(tag/[^"]+)">([^<]+)<', ''),
+        ("Actor", '<a href="https://vidoz8.com/(tag/[^"]+)">([^<]+)', '')]
 
-    infodict = {}
-
-    studios = re.compile('<a class="" href="https://vidoz8.com/(channel/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if studios:
-        for url, studio in studios:
-            studio = "Studio - " + studio.strip()
-            infodict[studio] = site.url + url
-
-    actors = re.compile('<a href="https://vidoz8.com/(tag/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    tags = re.compile("<span class='llist'>.*?</div>", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    tags = re.compile('(tag/[^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('vidz7.v7_list')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No actors, studios or tags found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'vidz7.v7_list', lookup_list)
+    lookupinfo.getinfo()

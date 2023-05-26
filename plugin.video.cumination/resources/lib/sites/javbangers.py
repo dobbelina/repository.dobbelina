@@ -308,45 +308,19 @@ def get_cookies():
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    class SiteLookup(utils.LookupInfo):
+        def url_constructor(self, url):
+            if 'members/' in url:
+                return site.url + url + '/videos/'
+            if any(x in url for x in ['models/', 'tags/', 'categories/']):
+                return site.url + url
 
-    infodict = {}
+    lookup_list = [
+        ("Cat", '/(categories/[^"]+)">([^<]+)<', ''),
+        ("Tag", '/(tags[^"]+)">[^<]+<[^<]+</i>([^<]+)<', ''),
+        ("Actor", '/(models/[^"]+)">([^<]+)<', ''),
+        ("Uploader", '/(members/[^"]+)">([^<]+)<', ''),
+    ]
 
-    models = re.compile('/(models/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if models:
-        for url, model in models:
-            model = "Actor - " + model.strip()
-            infodict[model] = site.url + url
-
-    categories = re.compile('/(categories/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, cat in categories:
-            cat = "Category - " + cat.strip()
-            infodict[cat] = site.url + url
-
-    tags = re.compile('/(tags[^"]+)">[^<]+<[^<]+</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    members = re.compile('/(members/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if members:
-        for url, member in members:
-            member = "Uploader - " + member.strip()
-            infodict[member] = site.url + url + '/videos/'
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('javbangers.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No models, channels, uploader or tags found for this video')
-    return
+    lookupinfo = SiteLookup(site.url, url, 'javbangers.List', lookup_list)
+    lookupinfo.getinfo()

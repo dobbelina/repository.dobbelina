@@ -155,35 +155,13 @@ def getHQWO(url):
             videourl = 'https:' + videourl
         return videourl
 
+
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Actor", 'href="(/actress/[^"]+)"[^>]+>([^<]+)<', ''),
+        ("Tag", 'href="(/category/[^"]+)"[^>]+>([^<]+)<', '')
+    ]
 
-    infodict = {}
-
-    actors = re.compile('href="(/actress/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    tags = re.compile('href="(/category/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('hqporner.HQLIST')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No actors, studios or tags found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'hqporner.HQLIST', lookup_list)
+    lookupinfo.getinfo()

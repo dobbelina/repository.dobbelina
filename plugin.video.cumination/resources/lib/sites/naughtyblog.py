@@ -106,39 +106,11 @@ def Categories(url):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Cat", r'/((?:category|tag)/[^"]+)"\s*?rel="(?:category )*?tag">([^<]+)<', ''),
+        ("Site", r'(site/[^"]+)"\s*?rel="tag">([^<]+)', ''),
+        ("Model", r'/(pornstar/[^"]+)"\s*?rel="tag">([^<]+)<', '')
+    ]
 
-    infodict = {}
-
-    categories = re.compile(r'/((?:category|tag)/[^"]+)"\s*?rel="(?:category )*?tag">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, cat in categories:
-            cat = "Cat - " + cat.strip()
-            infodict[cat] = site.url + url
-
-    sites = re.compile(r'(site/[^"]+)"\s*?rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if sites:
-        for url, sitename in sites:
-            sitename = "Site - " + sitename.strip()
-            infodict[sitename] = site.url + url
-
-    models = re.compile(r'/(pornstar/[^"]+)"\s*?rel="tag">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if models:
-        for url, model in models:
-            model = "Model - " + model.strip()
-            infodict[model] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('naughtyblog.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No models, categories or sites found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'naughtyblog.List', lookup_list)
+    lookupinfo.getinfo()

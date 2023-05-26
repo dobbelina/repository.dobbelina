@@ -188,41 +188,14 @@ def Search(url, keyword=None):
         searchUrl = searchUrl + title
         List(searchUrl)
 
+
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Genre", '(genres/[^"]+)" title="([^"]+)', ''),
+        ("Studio", '(director/[^"]+)" title="([^"]+)', ''),
+        ("Actor", '(pornstars/[^"]+)" title="([^"]+)', ''),
+    ]
 
-    infodict = {}
-
-    studios = re.compile('(director/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if studios:
-        for url, studio in studios:
-            studio = "Studio - " + studio.strip()
-            infodict[studio] = site.url + url
-
-    actors = re.compile('(pornstars/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    genres = re.compile('(genres/[^"]+)" title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if genres:
-        for url, genre in genres:
-            genre = "Genre - " + genre.strip()
-            infodict[genre] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('speedporn.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No actors, studios or genres found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'speedporn.List', lookup_list)
+    lookupinfo.getinfo()

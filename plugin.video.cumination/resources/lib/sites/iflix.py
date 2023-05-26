@@ -109,28 +109,14 @@ def tags(url):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
-
-    infodict = {}
-
-    tags = re.compile(r"<a class='studiolink\d+' href='([^']+)'>([^<]+)</a>", re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
+    class SiteLookup(utils.LookupInfo):
+        def url_constructor(self, url):
             url = 'http:' + url if url.startswith('//') else url
-            infodict[tag] = url + '/page/1'
+            return url + '/page/1'
 
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('iflix.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No tags found for this video')
-    return
+    lookup_list = [
+        ("Tag", r"<a class='studiolink\d+' href='([^']+)'>([^<]+)</a>", '')
+    ]
+
+    lookupinfo = SiteLookup(site.url, url, 'iflix.List', lookup_list)
+    lookupinfo.getinfo()

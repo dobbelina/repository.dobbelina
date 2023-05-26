@@ -113,39 +113,11 @@ def Tags(url):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Cat", r'(category/[^"]+)"\s*class="label"\s*title="([^"]+)"', ''),
+        ("Tag", r'(tag/[^"]+)"\s*class="label"\s*title="([^"]+)"', ''),
+        ("Actor", r'(actor[^"]+)"\s*title="([^"]+)"', '')
+    ]
 
-    infodict = {}
-
-    categories = re.compile(r'(category/[^"]+)"\s*class="label"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, category in categories:
-            category = "Cat - " + category.strip()
-            infodict[category] = site.url + url    
-
-    actors = re.compile(r'(actor[^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if actors:
-        for url, actor in actors:
-            actor = "Actor - " + actor.strip()
-            infodict[actor] = site.url + url
-
-    tags = re.compile(r'(tag/[^"]+)"\s*class="label"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('taboofantazy.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No categories, actors or tags found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'taboofantazy.List', lookup_list)
+    lookupinfo.getinfo()

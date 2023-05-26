@@ -159,41 +159,11 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Cat", '/(categories/[^"]+)">([^<]+)<', ''),
+        ("Tag", '/(tags[^"]+)">([^<]+)<', ''),
+        ("Serie", '/(series/[^"]+)">([^<]+)<', '')
+    ]
 
-    infodict = {}
-
-    categories = re.compile('/(categories/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if categories:
-        for url, cat in categories:
-            cat = "Cat - " + cat.strip()
-            infodict[cat] = site.url + url
-    
-
-    tags = re.compile('/(tags[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-            
-    series = re.compile('/(series/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if series:
-        for url, serie in series:
-            serie = "Serie - " + serie.strip()
-            infodict[serie] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        selected_item = selected_item + ajaxcommon
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('hentai-moon.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No categories, tags or serie found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'hentai-moon.List', lookup_list)
+    lookupinfo.getinfo()

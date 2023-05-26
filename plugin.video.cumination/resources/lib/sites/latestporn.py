@@ -111,27 +111,9 @@ def Tags(url):
 
 @site.register()
 def Lookupinfo(url):
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
+    lookup_list = [
+        ("Tag", r'/(tag/[^"]+)"\s*rel="tag">([^<]+)', '')
+    ]
 
-    infodict = {}
-
-    tags = re.compile(r'/(tag/[^"]+)"\s*rel="tag">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if tags:
-        for url, tag in tags:
-            tag = "Tag - " + tag.strip()
-            infodict[tag] = site.url + url
-
-    if infodict:
-        selected_item = utils.selector('Choose item', infodict, show_on_one=True)
-        if not selected_item:
-            return
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('latestporn.List')
-                      + "&url=" + urllib_parse.quote_plus(selected_item))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    else:
-        utils.notify('Notify', 'No tags found for this video')
-    return
+    lookupinfo = utils.LookupInfo(site.url, url, 'latestporn.List', lookup_list)
+    lookupinfo.getinfo()
