@@ -20,6 +20,8 @@ import re
 from resources.lib import utils
 from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
+from six.moves import urllib_parse
+import xbmc
 
 site = AdultSite('celebsroulette', '[COLOR hotpink]CelebsRoulette[/COLOR]', 'https://celebsroulette.com/', 'https://celebsroulette.com/images/logo.png', 'celebsroulette')
 
@@ -38,11 +40,20 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
+    if '/models/' in url or '/categories/' in url or '/tags/' in url:
+        listhtml = listhtml.split('New Naked Celebs Scenes')[0]
     match = re.compile(r'class="item.+?href="([^"]+)"\s+title="([^"]+)".+?data-original="([^"]+)".+?</strong>', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
-    for video, name, img in match:
+    for videopage, name, img in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, video, 'Playvid', img, name)
+
+        cm = []
+        cm_lookupinfo = (utils.addon_sys + "?mode=" + str('celebsroulette.Lookupinfo') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+        cm_related = (utils.addon_sys + "?mode=" + str('celebsroulette.Related') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=cm)
 
     nextp = re.compile(r':(\d+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if nextp:
@@ -63,7 +74,7 @@ def List(url):
 
 
 @site.register()
-def List2(url):
+def ListPL(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'class="item.+?item="([^"]+).+?original="([^"]+).+?title">\s*([^<\n]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
@@ -80,7 +91,7 @@ def List2(url):
             next_page = url + '{0}/'.format(np)
         lp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
         lp = '/' + lp[0] if lp else ''
-        site.add_dir('Next Page (' + np + lp + ')', next_page, 'List2', site.img_next)
+        site.add_dir('Next Page (' + np + lp + ')', next_page, 'ListPL', site.img_next)
 
     utils.eod()
 
@@ -92,7 +103,7 @@ def Playlist(url):
     for lpage, img, name, count in match:
         name = utils.cleantext(name) + "[COLOR deeppink] {0}[/COLOR]".format(count)
         lpage += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=&from=01'
-        site.add_dir(name, lpage, 'List2', img)
+        site.add_dir(name, lpage, 'ListPL', img)
 
     nextp = re.compile(r':(\d+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if nextp:
@@ -169,8 +180,27 @@ def Playvid(url, name, download=None):
         if surl.startswith('function/'):
             license = re.findall(r"license_code:\s*'([^']+)", html)[0]
             surl = kvs_decode(surl, license)
+            surl = utils.getVideoLink(surl)
+            surl += '|Referer=' + site.url
     else:
         vp.progress.close()
         return
     vp.progress.update(75, "[CR]Video found[CR]")
     vp.play_from_direct_link(surl)
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Model", '(models/[^"]+)">([^<]+)<', ''),
+        ("Categorie", '(categories/[^"]+)">([^<]+)<', ''),
+        ("Tag", '(tags/[^"]+)">([^<]+)<', '')
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'celebsroulette.List', lookup_list)
+    lookupinfo.getinfo()
+
+
+@site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('celebsroulette.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')

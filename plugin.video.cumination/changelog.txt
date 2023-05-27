@@ -15,3 +15,5 @@ Iflix - new site
 Palimas - fix Lookup info
 Porntrex - Changes in contextmenu (Lookup info)
 Codebase - added diagnostic exception trace logger
+CelebsRoulette - fix playback
+CelebsRoulette - Lookup info & Related videos
