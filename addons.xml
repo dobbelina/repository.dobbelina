@@ -8,6 +8,7 @@
         <import addon="script.module.resolveurl.xxx" version="2.0.1" />
         <import addon="script.common.plugin.cache" />
         <import addon="script.module.websocket" version="0.50.0" />
+	<import addon="script.module.inputstreamhelper" />    
         <import addon="script.module.requests" optional="true" />
     </requires>
     <extension library="default.py" point="xbmc.python.pluginsource">
