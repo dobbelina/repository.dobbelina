@@ -17,3 +17,4 @@ Porntrex - Changes in contextmenu (Lookup info)
 Codebase - added diagnostic exception trace logger
 CelebsRoulette - fix playback
 CelebsRoulette - Lookup info & Related videos
+Inputstream.adaptive - gets installed when not installed (for HentaiStream 4k streams, also fixes Hanime m3u8?)

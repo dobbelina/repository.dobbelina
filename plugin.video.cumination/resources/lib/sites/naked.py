@@ -121,7 +121,7 @@ def Playvid(url, name):
     if playmode == 0:
         sdata = vdata.get('hls')[0]
         if sdata:
-            videourl = 'is://https:{0}'.format(sdata.get('url'))
+            videourl = 'https:{0}'.format(sdata.get('url'))
         else:
             utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
             return
