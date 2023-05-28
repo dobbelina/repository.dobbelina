@@ -91,9 +91,9 @@ def SiteMain(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".*?src="([^"]+)".+?italic">(.+?)</div>.+?<a\s*href="/source[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videourl, name, thumb, info, provider in match:
-        name = '[COLOR yellow][{}] [/COLOR]'.format(provider) + utils.cleantext(name)
+    match = re.compile(r'class="item-link.+?href="([^"]+).+?<img.+?src="([^"]+).+?rounded">(.*?)</div.+?<h3.+?>([^<]+).+?text-sm"><a.+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videourl, thumb, info, name, provider in match:
+        name = '[COLOR yellow][{}][/COLOR] {}'.format(provider, utils.cleantext(name))
         hd = 'HD' if ' HD' in info else ''
         duration = re.findall(r'([\d:]+)', info)[0]
         site.add_download_link(name, siteurl[:-1] + videourl.replace('&amp;', '&'), 'Playvid', thumb, name, duration=duration, quality=hd)
@@ -132,7 +132,7 @@ def Tags(url):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'href="(/category/[^"]+)"\s*title="([^"]+)".+?src="([^"]+)".+?fa-video[^<]+</i>\s*([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="item-link\s*relative\s*block"\s*href="([^"]+)"\s*title="([^"]+).+?<img.+?src="([^"]+).+?fa-video[^<]+</i>\s*([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, image, videos in match:
         name = utils.cleantext(name) + " [COLOR deeppink](" + videos + " videos)[/COLOR]"
         site.add_dir(name, siteurl[:-1] + catpage + '?pricing=free', 'List', image)
@@ -154,10 +154,10 @@ def Playvid(url, name, download=None):
         else:
             found = True
     vp.progress.update(50, "[CR]Scraping video page[CR]")
-    utils.kodilog(vlink)
     if not vp.resolveurl.HostedMediaFile(vlink):
         utils.notify('Oh Oh', 'No Videos found')
         vp.progress.close()
+        utils.kodilog(vlink)
         return
 
     vp.play_from_link_to_resolve(vlink)
