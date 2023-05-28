@@ -1,2 +1,2 @@
-[B]Version 1.1.77[/B]
-Inputstream.adaptive - installed when not present, used in HentaiStream 4k streams and Naked (also fixes Hanime m3u8?)
+[B]Version 1.1.78[/B]
+
