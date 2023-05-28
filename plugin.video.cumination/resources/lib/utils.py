@@ -383,9 +383,28 @@ def playvid(videourl, name, download=None, subtitle=None):
         else:
             listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
 
-        videourl, listitem = inputstream_check(videourl, listitem)
-
+        if videourl.startswith('is://') or '.mpd' in videourl:
+            videourl = videourl[5:] if videourl.startswith('is://') else videourl
+            if PY2:
+                listitem.setProperty('inputstreamaddon', 'inputstream.adaptive')
+            else:
+                listitem.setProperty('inputstream', 'inputstream.adaptive')
+            if '|' in videourl:
+                videourl, strhdr = videourl.split('|')
+                listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
+            if '.m3u8' in videourl:
+                listitem.setProperty('inputstream.adaptive.manifest_type', 'hls')
+                listitem.setMimeType('application/vnd.apple.mpegstream_url')
+            elif '.mpd' in videourl:
+                listitem.setProperty('inputstream.adaptive.manifest_type', 'mpd')
+                listitem.setMimeType('application/dash+xml')
+            elif '.ism' in videourl:
+                listitem.setProperty('inputstream.adaptive.manifest_type', 'ism')
+                listitem.setMimeType('application/vnd.ms-sstr+xml')
+            listitem.setContentLookup(False)
+            
         if subtitle:
+            #kodilog('Playing with subtitle: ' + subtitle)
             listitem.setSubtitles([subtitle])
             
         if int(sys.argv[1]) == -1:
@@ -394,38 +413,6 @@ def playvid(videourl, name, download=None, subtitle=None):
             listitem.setPath(str(videourl))
             xbmcplugin.setResolvedUrl(addon_handle, True, listitem)
 
-
-def inputstream_check(url, listitem):
-    supported_endings = [[".m3u8", 'application/vnd.apple.mpegstream_url'], 
-                         [".hls", 'application/vnd.apple.mpegstream_url'], 
-                         [".mpd", 'application/dash+xml'], 
-                         [".ism", 'application/vnd.ms-sstr+xml']]
-    for ending in supported_endings:
-        if ending[0] in url:
-            if ending[0]  == ".m3u8":
-                adaptive_type = "hls"
-            else:
-                adaptive_type = ending[0][1:]
-            mime_type = ending[1]
-
-    from inputstreamhelper import Helper
-    is_helper = Helper(adaptive_type)
-    if not is_helper.check_inputstream():
-        return url, listitem
-    
-    IA = 'inputstream' if six.PY3 else 'inputstreamaddon'
-    listitem.setProperty(IA, 'inputstream.adaptive')
-    
-    if '|' in url:
-        url, strhdr = url.split('|')
-        listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
-        
-    listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)
-    listitem.setMimeType(mime_type)
-    listitem.setContentLookup(False)
-    
-    return url, listitem
-    
 
 @url_dispatcher.register()
 def PlayStream(name, url):
