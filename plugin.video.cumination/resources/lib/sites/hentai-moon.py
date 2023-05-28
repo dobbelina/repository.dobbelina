@@ -62,7 +62,7 @@ def List(url):
             page = pagelookup.group(2)
             fromtxt = pagelookup.group(1)
             url = url.replace("{0}={1}".format(fromtxt, page), "{0}={1}".format(fromtxt, np))
-            site.add_dir(f'Next Page ({np})', url, 'List', site.img_next)
+            site.add_dir('Next Page ({0})'.format(np), url, 'List', site.img_next)
 
     utils.eod()
 
@@ -105,7 +105,7 @@ def Series(url):
             page = pagelookup.group(2)
             fromtxt = pagelookup.group(1)
             url = url.replace("{0}={1}".format(fromtxt, page), "{0}={1}".format(fromtxt, np))
-            site.add_dir(f'Next Page ({np})', url, 'Series', site.img_next)
+            site.add_dir('Next Page ({0})'.format(np), url, 'Series', site.img_next)
     utils.eod()
 
 

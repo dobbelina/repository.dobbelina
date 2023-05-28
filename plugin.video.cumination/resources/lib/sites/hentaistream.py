@@ -58,7 +58,7 @@ def List(url, episodes=True):
         if pagelookup:
             np = int(pagelookup) + 1
             url = url.replace("page={0}".format(pagelookup), "page={0}".format(np))
-            site.add_dir(f'Next Page ({np})', url, 'List', site.img_next)
+            site.add_dir('Next Page ({0})'.format(np), url, 'List', site.img_next)
     utils.eod()
 
 
