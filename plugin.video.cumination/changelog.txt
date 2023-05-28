@@ -1,20 +1,2 @@
-[B]Version 1.1.76[/B]
-Freeomovie Category directory fix
-Hanime.tv - Also play the mp4 videos (needs a free member account)
-awmnetwork - 35 new sites
-JustFullPorn - new site
-JavHoho - fix listing
-Blendporn - fix pagination
-YrPrno - fix pagination
-JavBangers - Lookup info and Go to page
-Naughtyblog - new site  (works best with a debrid service like Real-Debrid)
-SeaPorn - new site  (works best with a debrid service like Real-Debrid)
-Hentai Moon - new site
-Hentaistream - new site
-Iflix - new site
-Palimas - fix Lookup info
-Porntrex - Changes in contextmenu (Lookup info)
-Codebase - added diagnostic exception trace logger
-CelebsRoulette - fix playback
-CelebsRoulette - Lookup info & Related videos
-Inputstream.adaptive - gets installed when not installed (for HentaiStream 4k streams, also fixes Hanime m3u8?)
+[B]Version 1.1.77[/B]
+
