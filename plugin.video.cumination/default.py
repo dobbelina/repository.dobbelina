@@ -31,6 +31,7 @@ from resources.lib import favorites
 from resources.lib import pin
 from resources.lib.adultsite import AdultSite
 from resources.lib.sites import *  # noqa
+from resources.lib import exception_logger
 
 socket.setdefaulttimeout(60)
 
@@ -141,11 +142,12 @@ else:
 
 
 def main(argv=None):
-    if sys.argv:
-        argv = sys.argv
-    queries = utils.parse_query(argv[2])
-    mode = queries.get('mode', None)
-    url_dispatcher.dispatch(mode, queries)
+    with exception_logger.log_exception():
+        if sys.argv:
+            argv = sys.argv
+        queries = utils.parse_query(argv[2])
+        mode = queries.get('mode', None)
+        url_dispatcher.dispatch(mode, queries)
 
 
 if __name__ == '__main__':
