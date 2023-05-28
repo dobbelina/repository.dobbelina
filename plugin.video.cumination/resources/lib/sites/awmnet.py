@@ -73,7 +73,7 @@ def getBaselink(url):
 @site.register(default_mode=True)
 def Main():
     for pornsite in sorted(sitelist):
-        site.add_dir(f'[COLOR hotpink]{pornsite[0]}[/COLOR]', pornsite[2], 'SiteMain', pornsite[1])
+        site.add_dir('[COLOR hotpink]{0}[/COLOR]'.format(pornsite[0]), pornsite[2], 'SiteMain', pornsite[1])
     utils.eod()
 
 
