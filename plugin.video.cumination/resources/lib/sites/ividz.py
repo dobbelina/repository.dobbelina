@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'class=clip-link data-id=\d+ title="([^"]+)" href=([^>]+/).*?src=([^ ]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="clip-link" data-id="\d+" title="([^"]+)" href="([^"]+)".*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for name, videopage, img in match:
         name = utils.cleantext(name)
 
@@ -51,7 +51,7 @@ def List(url):
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile("/(category[^ ]+)\s*>([^<]+)", re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'/(category[^ ]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         name = utils.cleantext(name)
         site.add_dir(name, site.url + catpage + '?orderby=date', 'List')
@@ -82,4 +82,3 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex=r"""<iframe[.\n]*.*?src\s*=\s*?["']*?([^'" ]+)""")
     vp.play_from_site_link(url)
-
