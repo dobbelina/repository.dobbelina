@@ -255,6 +255,7 @@ def Playvid(url, name, download=None):
         videourl = txxx.Tdecode(r.group(1)) + '|Referer=' + siteurl
         if not videourl.startswith('http'):
             videourl = siteurl[:-1] + videourl
+            videourl = utils.getVideoLink(videourl, referer=siteurl)
         vp.play_from_direct_link(videourl)
     else:
         vp.progress.close()
