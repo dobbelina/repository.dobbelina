@@ -383,7 +383,9 @@ def playvid(videourl, name, download=None, subtitle=None):
         else:
             listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
 
-        videourl, listitem = inputstream_check(videourl, listitem)
+        skip_ia = True if addon.getSetting("skip_ia") == "true" else False
+        if not skip_ia:
+            videourl, listitem = inputstream_check(videourl, listitem)
 
         if subtitle:
             listitem.setSubtitles([subtitle])

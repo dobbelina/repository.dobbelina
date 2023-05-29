@@ -72,6 +72,10 @@ msgctxt "#30014"
 msgid "Most viewed"
 msgstr "Mest visade"
 
+msgctxt "#30016"
+msgid "Don't use Inputstream Adaptive"
+msgstr "Använd inte Inputstream Adaptive"
+
 msgctxt "#30021"
 msgid "Select Sort method for Movies"
 msgstr "Välj sorteringsmetod för filmer"
@@ -139,18 +143,6 @@ msgstr "Cam-webbplatser"
 msgctxt "#30055"
 msgid "Preferred Playback mode"
 msgstr "Föredraget uppspelningsläge"
-
-msgctxt "#30056"
-msgid "RTMP needs a patched inpustream.rtmp from:"
-msgstr "RTMP behöver en lappad inpustream.rtmp från:"
-
-msgctxt "#30057"
-msgid "With RTMP, no audio on some SD streams though,"
-msgstr "Med RTMP, inget ljud på vissa SD-strömmar,"
-
-msgctxt "#30058"
-msgid "because of missing Speex codec in Kodi"
-msgstr "på grund av saknad Speex-kod i Kodi"
 
 msgctxt "#30059"
 msgid "Favourites and keywords"

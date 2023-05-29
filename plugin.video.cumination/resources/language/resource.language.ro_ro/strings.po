@@ -72,6 +72,10 @@ msgctxt "#30014"
 msgid "Most viewed"
 msgstr "Cele mai vazute"
 
+msgctxt "#30016"
+msgid "Don't use Inputstream Adaptive"
+msgstr "Nu utilizați Inputstream Adaptive"
+
 msgctxt "#30021"
 msgid "Select Sort method for Movies"
 msgstr "Alege metoda de sortare pentru filme"
@@ -139,18 +143,6 @@ msgstr "Pagini Cam"
 msgctxt "#30055"
 msgid "Preferred Playback mode"
 msgstr "Modul preferat de redare"
-
-msgctxt "#30056"
-msgid "RTMP needs a patched inpustream.rtmp from:"
-msgstr "RTMP are nevoie de inputstream.rtmp de la:"
-
-msgctxt "#30057"
-msgid "With RTMP, no audio on some SD streams though,"
-msgstr "Cu RTMP, fara audio pentru unele streamuri SD"
-
-msgctxt "#30058"
-msgid "because of missing Speex codec in Kodi"
-msgstr "din cauza lipsei codecului Speex in Kodi"
 
 msgctxt "#30059"
 msgid "Favourites and keywords"

@@ -3,7 +3,7 @@
         <setting id="sortwxf" type="enum" lvalues="30012|30013|30014" label="30011" default="0"/>
         <setting id="sortxt" type="enum" lvalues="30022|30023|30024|30025" label="30021" default="0"/>
         <setting id="customview" label="30008" type="bool" default="false" />
-        <setting id="chaturbate" label="30003" type="bool" default="false" />
+        <setting id="skip_ia" label="30016" type="bool" default="false" />
         <setting id="paradisehill" label="30004" type="bool" default="false" />
         <setting id="posterfanart" label="30005" type="bool" default="false" />
         <setting id="quality_in_name" label="30009" type="bool" default="true" />
@@ -26,6 +26,7 @@
         <setting id="open_smr_settings" type="action" label="30027" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=main.smrSettings)" />
     </category>
     <category label="30054">
+        <setting id="chaturbate" label="30003" type="bool" default="false" />
         <setting type="lsep" label="30110" />
         <setting id="chatfemale" type="bool" label="30111" default="true" />
         <setting id="chatmale" type="bool" label="30112" default="true" />
@@ -33,10 +34,6 @@
         <setting id="chattrans" type="bool" label="30114" default="true" />
         <setting type="lsep" label="30055" />
         <setting id="chatplay" type="enum" label="30100" lvalues="30101|30103" default="0" />
-        <setting type="lsep" label="30056" />
-        <setting label="https://keybase.pub/jairoxyz/kodi-builds/" />
-        <setting label="30057" />
-        <setting label="30058" />
     </category>
     <category label="30059">
         <setting id="compressbackup" label="30200" type="bool" default="true" />

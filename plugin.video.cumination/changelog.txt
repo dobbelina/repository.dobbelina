@@ -3,3 +3,4 @@ awmnet - fix regex
 ipv - removed dead site
 ividz - fix listing, categories
 WhoresTube - new site
+Settings - added option to not use Inputstream Adaptive, also moved clear webcam images to 'cam' section.
