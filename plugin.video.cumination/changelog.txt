@@ -2,3 +2,4 @@
 awmnet - fix regex
 ipv - removed dead site
 ividz - fix listing, categories
+WhoresTube - new site
