@@ -389,7 +389,7 @@ def playvid(videourl, name, download=None, subtitle=None):
 
         if subtitle:
             listitem.setSubtitles([subtitle])
-            
+
         if int(sys.argv[1]) == -1:
             xbmc.Player().play(videourl, listitem)
         else:
@@ -398,14 +398,14 @@ def playvid(videourl, name, download=None, subtitle=None):
 
 
 def inputstream_check(url, listitem):
-    supported_endings = [[".m3u8", 'application/vnd.apple.mpegstream_url'], 
-                         [".hls", 'application/vnd.apple.mpegstream_url'], 
-                         [".mpd", 'application/dash+xml'], 
+    supported_endings = [[".m3u8", 'application/vnd.apple.mpegstream_url'],
+                         [".hls", 'application/vnd.apple.mpegstream_url'],
+                         [".mpd", 'application/dash+xml'],
                          [".ism", 'application/vnd.ms-sstr+xml']]
     adaptive_type = None
     for ending in supported_endings:
         if ending[0] in url:
-            if ending[0]  == ".m3u8":
+            if ending[0] == ".m3u8":
                 adaptive_type = "hls"
             else:
                 adaptive_type = ending[0][1:]
@@ -416,20 +416,20 @@ def inputstream_check(url, listitem):
         is_helper = Helper(adaptive_type)
         if not is_helper.check_inputstream():
             return url, listitem
-        
+
         IA = 'inputstream' if six.PY3 else 'inputstreamaddon'
         listitem.setProperty(IA, 'inputstream.adaptive')
-        
+
         if '|' in url:
             url, strhdr = url.split('|')
             listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
-            
+
         listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)
         listitem.setMimeType(mime_type)
         listitem.setContentLookup(False)
-    
+
     return url, listitem
-    
+
 
 @url_dispatcher.register()
 def PlayStream(name, url):
@@ -1601,9 +1601,9 @@ class LookupInfo:
                 if match:
                     listhtml = match[0]
                     pattern = pattern[1]
-            
+
             matches = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(listhtml)
-                
+
             if matches:
                 for url, name in matches:
                     name = "{} - {}".format(item_name, name.strip())
