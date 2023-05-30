@@ -42,16 +42,16 @@ def List(url):
         return
     for name, img, genre, videopage in match:
         name = utils.cleantext(name)
-        
+
         if genre:
             match = re.search(">([^<]+)<", genre, re.IGNORECASE | re.DOTALL)
             if match:
                 name = "{0} - {1}".format(name, match.group(1))
-                
+
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('javgg.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('javgg.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
@@ -75,7 +75,7 @@ def Playvid(url, name, download=None):
         ajaxhtml = utils.getHtml(ajaxurl, url)
         ajaxjson = json.loads(ajaxhtml)
         sources.append('"{0}"'.format(ajaxjson['embed_url']))
-    vp.progress.update(50, "[CR]Loading video page[CR]")    
+    vp.progress.update(50, "[CR]Loading video page[CR]")
     vp.play_from_html(', '.join(sources))
 
 
