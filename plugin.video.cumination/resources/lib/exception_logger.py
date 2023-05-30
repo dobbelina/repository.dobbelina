@@ -20,7 +20,10 @@ import sys
 from contextlib import contextmanager
 from platform import uname
 from pprint import pformat
-from typing import Text, Callable, Generator
+try:
+    from typing import Text, Callable, Generator
+except ImportError:
+    pass
 
 import xbmc
 
