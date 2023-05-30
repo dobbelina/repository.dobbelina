@@ -3,7 +3,7 @@
         <setting id="sortwxf" type="enum" lvalues="30012|30013|30014" label="30011" default="0"/>
         <setting id="sortxt" type="enum" lvalues="30022|30023|30024|30025" label="30021" default="0"/>
         <setting id="customview" label="30008" type="bool" default="false" />
-        <setting id="skip_ia" label="30016" type="bool" default="false" />
+        <setting id="m3u8_use_ia" label="30016" type="bool" default="false" />
         <setting id="paradisehill" label="30004" type="bool" default="false" />
         <setting id="posterfanart" label="30005" type="bool" default="false" />
         <setting id="quality_in_name" label="30009" type="bool" default="true" />

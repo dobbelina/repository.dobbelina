@@ -383,9 +383,7 @@ def playvid(videourl, name, download=None, subtitle=None):
         else:
             listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
 
-        skip_ia = True if addon.getSetting("skip_ia") == "true" else False
-        if not skip_ia:
-            videourl, listitem = inputstream_check(videourl, listitem)
+        videourl, listitem = inputstream_check(videourl, listitem)
 
         if subtitle:
             listitem.setSubtitles([subtitle])
@@ -398,10 +396,13 @@ def playvid(videourl, name, download=None, subtitle=None):
 
 
 def inputstream_check(url, listitem):
-    supported_endings = [[".m3u8", 'application/vnd.apple.mpegstream_url'],
-                         [".hls", 'application/vnd.apple.mpegstream_url'],
+    supported_endings = [[".hls", 'application/vnd.apple.mpegstream_url'],
                          [".mpd", 'application/dash+xml'],
                          [".ism", 'application/vnd.ms-sstr+xml']]
+
+    m3u8_use_ia = True if addon.getSetting("m3u8_use_ia") == "true" else False
+    if m3u8_use_ia:
+        supported_endings.append([".m3u8", 'application/x-mpegURL'])
     adaptive_type = None
     for ending in supported_endings:
         if ending[0] in url:

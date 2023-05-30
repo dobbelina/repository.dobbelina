@@ -73,7 +73,7 @@ msgid "Most viewed"
 msgstr ""
 
 msgctxt "#30016"
-msgid "Don't use Inputstream Adaptive"
+msgid "Play m3u8 streams with Inputstream Adaptive"
 msgstr ""
 
 msgctxt "#30021"

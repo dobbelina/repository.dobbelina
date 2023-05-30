@@ -73,8 +73,8 @@ msgid "Most viewed"
 msgstr "Cele mai vazute"
 
 msgctxt "#30016"
-msgid "Don't use Inputstream Adaptive"
-msgstr "Nu utilizați Inputstream Adaptive"
+msgid "Play m3u8 streams with Inputstream Adaptive"
+msgstr "Redați fluxuri m3u8 cu Inputstream Adaptive"
 
 msgctxt "#30021"
 msgid "Select Sort method for Movies"

@@ -73,8 +73,8 @@ msgid "Most viewed"
 msgstr "Meest bekeken"
 
 msgctxt "#30016"
-msgid "Don't use Inputstream Adaptive"
-msgstr "Gebruik geen Inputstream Adaptive"
+msgid "Play m3u8 streams with Inputstream Adaptive"
+msgstr "Speel m3u8 streams via Inputstream Adaptive"
 
 msgctxt "#30021"
 msgid "Select Sort method for Movies"
