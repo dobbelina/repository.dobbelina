@@ -11,6 +11,7 @@
         <setting id="download_path" type="folder" source="video" label="30052"  option="writeable" default=""/>
         <setting id="setpin" type="action" label="30028" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=pin.SetPin)" />
         <setting id="content" type="enum" label="30500" lvalues="30501|30502" default="0" />
+        <setting id="debuglog" type="action" label="30017" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=utils.ToggleDebug)" />
     </category>
     <category label="30065">
         <setting type="lsep" label="30029" />

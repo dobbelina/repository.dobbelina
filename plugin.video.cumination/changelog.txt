@@ -6,3 +6,4 @@ WhoresTube - new site
 Settings - added option to play m3u8 streams with Inputstream Adaptive
 JavGG - new site
 xhamster - fix categories
+Settings - added a button to quickly toggle Kodi Debug log on/off. It's on the bottom in General.

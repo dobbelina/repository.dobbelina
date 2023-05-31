@@ -38,6 +38,7 @@ from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
                                   favoritesdb, keys, searchDir)
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
+from resources.lib.jsonrpc import toggle_debug
 from six.moves import (html_parser, http_cookiejar, urllib_error, urllib_parse,
                        urllib_request)
 
@@ -1654,3 +1655,9 @@ class logger:
     @staticmethod
     def warning(message):
         logger.log(message, xbmc.LOGWARNING)
+
+
+@url_dispatcher.register()
+def ToggleDebug():
+    result = toggle_debug()
+    return result

@@ -76,6 +76,10 @@ msgctxt "#30016"
 msgid "Don't use Inputstream Adaptive"
 msgstr "Spela m3u8-strömmar med Inputstream Adaptive"
 
+msgctxt "#30017"
+msgid "Toggle Kodi Debug Log on or off"
+msgstr "Växla Kodi Debug Logga in eller av"
+
 msgctxt "#30021"
 msgid "Select Sort method for Movies"
 msgstr "Välj sorteringsmetod för filmer"

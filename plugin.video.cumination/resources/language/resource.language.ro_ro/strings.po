@@ -76,6 +76,10 @@ msgctxt "#30016"
 msgid "Play m3u8 streams with Inputstream Adaptive"
 msgstr "Redați fluxuri m3u8 cu Inputstream Adaptive"
 
+msgctxt "#30017"
+msgid "Toggle Kodi Debug Log on or off"
+msgstr "Activați sau dezactivați Kodi Debug Log"
+
 msgctxt "#30021"
 msgid "Select Sort method for Movies"
 msgstr "Alege metoda de sortare pentru filme"
