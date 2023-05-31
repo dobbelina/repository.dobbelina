@@ -20,8 +20,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import json
 from six.moves import urllib_parse
-import xbmc
-import xbmcgui
+from kodi_six import xbmc, xbmcgui, xbmcplugin
 import datetime
 
 site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster2.com/', 'xhamster.png', 'xhamster')
@@ -64,6 +63,8 @@ def List(url):
         videos = jdata["searchResult"]["models"]
     elif "pagesNewestComponent" in jdata:
         videos = jdata["pagesNewestComponent"]["videoListProps"]["models"]
+    elif "pagesCategoryComponent" in jdata:
+        videos = jdata["pagesCategoryComponent"]["trendingVideoListProps"]["models"]
     else:
         utils.notify('Cumination', 'No video found.')
 
@@ -89,6 +90,12 @@ def List(url):
             lp = jdata["pagesNewestComponent"]["paginationProps"]["lastPageNumber"] + 1
             if lp >= np:
                 npurl = jdata["pagesNewestComponent"]["paginationProps"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+    elif "pagesCategoryComponent" in jdata:
+        if "paginationProps" in jdata["pagesCategoryComponent"]:
+            np = jdata["pagesCategoryComponent"]["paginationProps"]["currentPageNumber"] + 1
+            lp = jdata["pagesCategoryComponent"]["paginationProps"]["lastPageNumber"] + 1
+            if lp >= np:
+                npurl = jdata["pagesCategoryComponent"]["paginationProps"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
     elif "paginationComponent" in jdata:
         np = jdata["paginationComponent"]["currentPageNumber"] + 1
         lp = jdata["paginationComponent"]["lastPageNumber"]
@@ -127,10 +134,24 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile('class="root-9d8b4[^"]*" href="([^"]+)">((?:Popular|.))<').findall(cathtml)
-    for url, name in match:
-        site.add_dir(name.strip(), url, 'CategoriesA', '')
+    match = re.compile(r'class="item-6b822.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
+    for url, thumb, name in match:
+        site.add_dir(utils.cleantext(name), url, 'List', thumb)
     utils.eod()
+
+
+# @site.register()
+# def Categories(url):
+#     cat = get_setting('category')
+#     if cat == 'gay':
+#         url = url.replace('/categories', '/gay/categories')
+#     elif cat == 'shemale':
+#         url = url.replace('/categories', '/shemale/categories')
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile('class="root-9d8b4[^"]*" href="([^"]+)">((?:Popular|.))<').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(name.strip(), url, 'CategoriesA', '')
+#     utils.eod()
 
 
 @site.register()
@@ -165,6 +186,7 @@ def ChannelsA(url):
     match = re.compile(r'<div class="item">\s*<a href="([^"]+/channels/[^"]+)"[^>]*>([^<]+)<').findall(cathtml)
     for url, name in match:
         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
@@ -188,6 +210,7 @@ def PornstarsA(url):
     match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
     for url, name in match:
         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
@@ -211,6 +234,7 @@ def CelebritiesA(url):
     match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
     for url, name in match:
         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
