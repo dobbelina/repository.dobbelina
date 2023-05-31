@@ -38,19 +38,19 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url)
     html = listhtml.split('>SHOULD WATCH<')[0]
-    match = re.compile(r'video-uid="\d*?".*?href="([^"]+)"\s*title="([^"]+)">.*?data-src="([^"]+)"(.*?)</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'video-uid="\d*?".*?href="([^"]+)"\s*title="([^"]+)">.*?data-src="([^"]+)"(.*?)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
-        for videourl, name, img, hd, duration in match:
+        for videourl, name, img, hd in match:
             name = utils.cleantext(name)
             hd = 'HD' if 'HD' in hd else ''
 
             contextmenu = []
             contexturl = (utils.addon_sys
-                        + "?mode=" + str('taboofantazy.Lookupinfo')
-                        + "&url=" + urllib_parse.quote_plus(videourl))
+                          + "?mode=" + str('taboofantazy.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videourl))
             contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
-            site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu, duration=duration, quality=hd)
+            site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu, quality=hd)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
