@@ -1,10 +1,1 @@
-[B]Version 1.1.78[/B]
-awmnet - fix regex
-ipv - removed dead site
-ividz - fix listing, categories
-WhoresTube - new site
-Settings - added option to play m3u8 streams with Inputstream Adaptive
-JavGG - new site
-xhamster - fix categories
-Settings - added a button to quickly toggle Kodi Debug log on/off, it's on the bottom in General
-Taboofantazy - fixed listing
+[B]Version 1.1.79[/B]
