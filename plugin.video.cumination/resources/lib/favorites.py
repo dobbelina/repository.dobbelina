@@ -518,7 +518,7 @@ def install_custom_sites_from_folder():
     successful = []
     unsuccessful = []
     for idx, zip in enumerate(zips):
-        progress.update(int(idx / len(zips)), "", "Processing {}".format(zip))
+        progress.update(int(idx / len(zips)), "[CR]Processing {}".format(zip))
         success = process_custom_site_zip(os.path.join(path, zip))
         if success:
             successful.append(zip)
