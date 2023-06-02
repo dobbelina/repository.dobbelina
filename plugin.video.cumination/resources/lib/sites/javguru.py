@@ -19,6 +19,7 @@
 import re
 import base64
 import json
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -49,7 +50,14 @@ def List(url):
     match = re.compile(r'''class="inside-article".+?href='([^']+)'><img src='([^']+)'.+?<a title="([^"]+)"''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, video, 'Play', img, name)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('javguru.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(video))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+
+        site.add_download_link(name, video, 'Play', img, name, contextm=contextmenu)
 
     match = re.compile(r'''class='current'.+?href="([^"]+)">(\d+)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
@@ -153,3 +161,19 @@ def Play(url, name, download=None):
         vp.play_from_html(', '.join(sources))
     else:
         return
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Cat", r'/(category/[^"]+)"\s*?rel="category tag">([^<]+)<', ''),
+        ("Tags", r'/(tag/[^"]+)"\s*?rel="tag">([^<]+)</a', ''),
+        ("Studio", r'/(maker/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+        ("Label", r'/(studio/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+        ("Series", r'/(series/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+        ("Actor", r'/(actor/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+        ("Actress", r'/(actress/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+    ]
+
+    lookupinfo = utils.LookupInfo(site.url, url, 'javguru.List', lookup_list)
+    lookupinfo.getinfo()
