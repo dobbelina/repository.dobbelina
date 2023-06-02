@@ -269,7 +269,7 @@ def Tags(url, page=1):
     for tag in jdata["hashtags"]:
         name = tag["hashtag"]
         count = tag["room_count"]
-        img = tag["top_rooms"][0]["img"]
+        img = tag["top_rooms"][0].get("img", '') if tag["top_rooms"] else ''
         tagurl = bu + 'tag/' + name + category
         name += ' [COLOR hotpink][' + str(count) + '][/COLOR]'
         site.add_dir(name, tagurl, 'List', img, 1)
