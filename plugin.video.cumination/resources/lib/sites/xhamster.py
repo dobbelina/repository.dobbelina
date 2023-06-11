@@ -101,6 +101,11 @@ def List(url):
         lp = jdata["paginationComponent"]["lastPageNumber"]
         if lp >= np:
             npurl = jdata["paginationComponent"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+    elif "pagination" in jdata:
+        np = jdata["pagination"]["next"]
+        lp = jdata["pagination"]["maxPages"]
+        if lp >= np:
+            npurl = jdata["pagination"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
     elif "page" in jdata:
         np = jdata["page"] + 1
         lp = None
@@ -111,7 +116,7 @@ def List(url):
             if match:
                 npurl = match.group(1)
     if npurl:
-        npurl = npurl.replace('&#x3D;', '=')
+        npurl = npurl.replace('&#x3D;', '=').replace('&amp;', '&')
         cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
         npage = str(np) + '/' + str(lp) if lp else str(np)
