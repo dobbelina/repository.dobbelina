@@ -3,3 +3,5 @@ Chaturbate - fix tags
 Jav.Guru - added series, tags and Lookup Info, also picks up links like Rapidgator
 xhamster - fix pagination
 Vidoz8 - removed broken site
+AllureTube - new site
+
