@@ -22,19 +22,31 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('alluretube', '[COLOR hotpink]Allure Tube[/COLOR]', 'https://www.alluretube.com/', 'https://www.alluretube.com/images/logo/logo.png', 'alluretube')
+site2 = AdultSite('desihoes', '[COLOR hotpink]Desi Hoes[/COLOR]', 'https://www.desihoes.com/', 'https://www.desihoes.com/images/logo/logo.png', 'desihoes')
+
+
+def getBaselink(url):
+    if 'desihoes.com' in url:
+        siteurl = 'https://www.desihoes.com/'
+    elif 'alluretube.com' in url:
+        siteurl = 'https://www.alluretube.com/'
+    return siteurl
 
 
 @site.register(default_mode=True)
-def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Cats', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos/', 'Search', site.img_search)
-    List(site.url + 'videos?o=mr&page=1')
+@site2.register(default_mode=True)
+def Main(url):
+    siteurl = getBaselink(url)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Cats', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl, 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos/', 'Search', site.img_search)
+    List(siteurl + 'videos?o=mr&page=1')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, '')
     match = re.compile(r'lg-4\s+">\s+<a href="([^"]+)">.*?src="([^"]+)"\s+title="([^"]+)"[^>]+>\s+<div class="duration">([^\d]+)(\d[^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
@@ -43,7 +55,7 @@ def List(url):
         name = utils.cleantext(name)
         duration = utils.cleantext(duration.strip())
         hd = 'HD' if 'hd' in hd.lower() else ''
-        videopage = site.url + videopage
+        videopage = siteurl + videopage
 
         contextmenu = []
         contexturl = (utils.addon_sys
@@ -79,12 +91,13 @@ def Search(url, keyword=None):
 
 @site.register()
 def Cats(url):
-    listhtml = utils.getHtml(url, site.url)
+    siteurl = getBaselink(url)
+    listhtml = utils.getHtml(url, siteurl)
     match = re.compile(r'/(videos/[^"]+)">.*?src="([^"]+)"\s+title="([^"]+)".*?float-right">([^<]+)</', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for catpage, img, name, videos in match:
         name = '{} - [COLOR hotpink]{}[/COLOR]'.format(utils.cleantext(name), videos.strip())
-        catpage = site.url + catpage + '?o=mr&page=1'
-        img = site.url + img
+        catpage = siteurl + catpage + '?o=mr&page=1'
+        img = siteurl + img
         site.add_dir(name, catpage, 'List', img)
 
     utils.eod()
@@ -92,19 +105,21 @@ def Cats(url):
 
 @site.register()
 def Tags(url):
-    listhtml = utils.getHtml(url, site.url)
+    siteurl = getBaselink(url)
+    listhtml = utils.getHtml(url, siteurl)
     match = re.compile(r"name:\s+'([^']+)', type:\s+'([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, videos in sorted(match):
         name = '{} - [COLOR hotpink]{}[/COLOR]'.format(utils.cleantext(tagpage), videos)
-        site.add_dir(name, site.url + 'search/videos/', 'Search', '', keyword=tagpage)
+        site.add_dir(name, siteurl + 'search/videos/', 'Search', '', keyword=tagpage)
     utils.eod()
 
 
 @site.register()
 def Lookupinfo(url):
+    siteurl = getBaselink(url)
     lookup_list = [
         ("Tag", r'class="tag"\s+href="/(search/[^"]+)">([^<]+)<', '')
     ]
 
-    lookupinfo = utils.LookupInfo(site.url, url, 'alluretube.List', lookup_list)
+    lookupinfo = utils.LookupInfo(siteurl, url, 'alluretube.List', lookup_list)
     lookupinfo.getinfo()
