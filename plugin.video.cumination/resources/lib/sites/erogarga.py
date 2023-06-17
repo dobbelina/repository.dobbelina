@@ -139,7 +139,7 @@ def Play(url, name, download=None):
     if 'spankbang' in videolink:
         videolink = videolink.replace('/embed/', '/video/')
         Playvid(videolink, name, download=download)
-    elif 'xhamster' in videolink:
+    elif 'xhamster' in videolink or 'eporner' in videolink:
         vp.play_from_link_to_resolve(videolink)
     else:
         vp.play_from_direct_link(videolink)
