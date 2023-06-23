@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -46,18 +45,18 @@ def List(url):
         if 'static.keep2share' in img:
             continue
 
-        contextmenu = []
-        contexturl = (utils.addon_sys
-                          + "?mode=" + str('seaporn.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+        img = img + '|verifypeer=false'
 
+        contexturl = (utils.addon_sys
+                      + "?mode=seaporn.Lookupinfo"
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
         site.add_download_link(name, videopage, 'Playvid', img, plot, contextm=contextmenu)
 
     np = re.compile('page-numbers" href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'List', site.img_next)
+        page_number = np[1].split('/')[-2]
+        site.add_dir('Next Page (' + page_number + ')', np[1], 'List', site.img_next)
     utils.eod()
 
 
@@ -82,13 +81,12 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '+')
-        searchUrl = searchUrl + title
-        List(searchUrl)
+        url = url + title
+        List(url)
 
 
 @site.register()
@@ -99,7 +97,7 @@ def Categories(url):
         name = utils.cleantext(name.strip())
         if any(cat in name for cat in ['Galleries', 'Magazines', 'Pictures', 'Siterips', 'Mobile']):
             continue
-        
+
         name = "{0} - {1} videos".format(name, videos.strip())
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
