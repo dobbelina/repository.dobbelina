@@ -77,10 +77,10 @@ def List(url):
         length = str(datetime.timedelta(seconds=video["duration"]))
         if length.startswith('0:'):
             length = length[2:]
-        hd = "4k" if video["isUHD"] else "HD" if video["isHD"] else ""
-        name = '[COLOR blue][VR][/COLOR] ' + name if video["isVR"] else name
-        name = name + ' [COLOR blue][Full Video][/COLOR]' if video["hasProducerBadge"] else name
-        name = name + ' [COLOR orange][Amateur][/COLOR]' if video["hasAmateurBadge"] else name
+        hd = "4k" if video.get("isUHD", False) else "HD" if video.get("isHD", False) else ""
+        name = '[COLOR blue][VR][/COLOR] ' + name if video.get("isVR", False) else name
+        name = name + ' [COLOR blue][Full Video][/COLOR]' if video.get("hasProducerBadge", False) else name
+        name = name + ' [COLOR orange][Amateur][/COLOR]' if video.get("hasAmateurBadge", False) else name
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
     npurl = None
