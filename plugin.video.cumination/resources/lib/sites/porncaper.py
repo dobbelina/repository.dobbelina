@@ -57,7 +57,7 @@ def List(url, page=1):
 
     np = re.compile(r'class="next">.*?;from[^\d]*:(\d+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        np = int(np[1])
+        np = int(np.group(1))
         if 'from_videos=' in url:
             nextp = url.replace('from_videos={}'.format(page), 'from_videos={}'.format(np))
         else:
@@ -73,7 +73,7 @@ def Playvid(url, name, download=None):
     html = utils.getHtml(url, site.url)
     surl = re.search(r"video_url:\s*'([^']+)'", html)
     if surl:
-        surl = surl[1]
+        surl = surl.group(1)
         if surl.startswith('function/'):
             license = re.findall(r"license_code:\s*'([^']+)", html)[0]
             surl = kvs_decode(surl, license)

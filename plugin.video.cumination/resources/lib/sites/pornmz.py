@@ -54,7 +54,7 @@ def List(url):
 
     np = re.compile('href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        site.add_dir('Next Page... ({0})'.format(np[1].split('/')[-1].split('?')[0]), np[1], 'List', site.img_next)
+        site.add_dir('Next Page... ({0})'.format(np.group(1).split('/')[-1].split('?')[0]), np.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -69,7 +69,7 @@ def Categories(url):
             site.add_dir(name, siteurl, 'List', img)
         np = re.search(r'current">\d</a></li><li><a\s+href="([^"]+)"', cathtml, re.IGNORECASE | re.DOTALL)
         if np:
-            url = np[1]
+            url = np.group(1)
         else:
             break
     utils.eod()

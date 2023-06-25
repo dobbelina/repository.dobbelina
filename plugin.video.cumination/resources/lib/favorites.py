@@ -944,7 +944,7 @@ def load_custom_list(url):
             img = img if img.lower().startswith('http') else img.split('/')[-1].split('\\')[-1]
             img = basics.cum_image(img, custom)
         keyword_match = re.compile(r'\[COLOR [a-z]*\](.*?)\[\/COLOR\]', re.IGNORECASE).search(name)
-        keyword = keyword_match[1] if keyword_match else ''
+        keyword = keyword_match.group(1) if keyword_match else ''
         ins = AdultSite.get_site_by_name(mode.split('.')[0])
         if ins:
             if ins.default_mode == mode:

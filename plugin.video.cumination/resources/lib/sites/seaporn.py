@@ -55,8 +55,8 @@ def List(url):
 
     np = re.compile('page-numbers" href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        page_number = np[1].split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np[1], 'List', site.img_next)
+        page_number = np.group(1).split('/')[-2]
+        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'List', site.img_next)
     utils.eod()
 
 
