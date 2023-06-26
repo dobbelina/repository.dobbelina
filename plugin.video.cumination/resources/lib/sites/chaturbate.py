@@ -315,7 +315,7 @@ def login():
     url = 'https://chaturbate.com/followed-cams/'
     loginurl = 'https://chaturbate.com/auth/login/?next=/followed-cams/'
 
-    loginhtml = utils._getHtml(url, site.url)
+    loginhtml = utils._getHtml(url, site.url, error=True)
     if '<h1>Chaturbate Login</h1>' not in loginhtml:
         return
 
