@@ -42,7 +42,7 @@ def List(url):
         if videopage.startswith('//'):
             videopage = 'https:' + videopage
         if img.startswith('//'):
-            img = 'https:' + img
+            img = 'https:' + img.replace(' ', '%20')
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     nextp = re.compile(r"class='next'><a\s*href='([^']+)'>Next", re.DOTALL | re.IGNORECASE).search(html)
@@ -87,7 +87,7 @@ def Playvid(url, name, download=None):
 
     source = re.compile(r'<source.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(video_page)
     if source:
-        vp.play_from_direct_link(source.group(1))
+        vp.play_from_direct_link(source.group(1) + '|verifypeer=false')
     else:
         vp.progress.close()
         utils.notify('Oh Oh', 'No Videos found')
