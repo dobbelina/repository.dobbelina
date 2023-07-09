@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2023 Team Cumination
@@ -17,6 +18,7 @@
 '''
 
 import re
+import json
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -33,30 +35,66 @@ def Main():
 
 
 @site.register()
-def List(url):
-    listhtml = utils.getHtml(url, '')
-    match = re.compile('entry-title"><a href="([^"]+)"[^>]+>([^<]+).*?<time[^>]+>([^<]+)<.*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if not match:
-        return
-    for videopage, name, posted, img in match:
-        name = utils.cleantext(name)
-        plot = "{}\n{}".format(utils.cleantext(name), utils.cleantext(posted))
+def List(url, page=1):
+    videodict = {}
 
-        if 'static.keep2share' in img:
-            continue
+    progress = utils.progress
+    progress.create('SeaPorn', 'Loading videos..')
 
-        img = img + '|verifypeer=false'
+    while len(videodict) < 40:
+        listhtml = utils.getHtml(url, '')
+        match = re.compile('entry-title"><a href="([^"]+)"[^>]+>([^<]+).*?<time[^>]+>([^<]+)<.*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        if not match:
+            break
+        for videopage, rlsname, posted, img in match:
+            rlsname = utils.cleantext(rlsname)
+            name = rlsname.split('– ')[:-1][0] if '– ' in rlsname else rlsname
+            plot = "{}\n{}".format(utils.cleantext(name), utils.cleantext(posted))
 
+            if 'static.keep2share' in img:
+                continue
+
+            img = img + '|verifypeer=false'
+            videodict.setdefault(name, []).append((rlsname, videopage, img, plot))
+            progress.update(int(len(videodict.keys()) * 100 / 40), 'Loading video {}'.format(len(videodict.keys()) + 1))
+        if progress.iscanceled():
+            break
+
+        np = re.compile('page-numbers" href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
+        if not np:
+            break
+
+        url = np.group(1)
+        page += 1
+
+    progress.close()
+
+    for name, videos in videodict.items():
+        if (len(videos) == 1):
+            rlsname, videopage, img, plot = videos[0]
+            contexturl = (utils.addon_sys
+                          + "?mode=seaporn.Lookupinfo"
+                          + "&url=" + urllib_parse.quote_plus(videopage))
+            contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+            site.add_download_link(rlsname, videopage, 'Playvid', img, plot, contextm=contextmenu)
+        else:
+            name = '{} [{}]'.format(name, len(videos))
+            site.add_dir(name, json.dumps(videos), 'Rlslist', videos[0][2], videos[0][3])
+
+    if np:
+        site.add_dir('Next Page (' + str(page) + ')', np.group(1), 'List', site.img_next, page=page)
+    utils.eod()
+
+
+@site.register()
+def Rlslist(url):
+    videos = json.loads(url)
+    for rlsname, videopage, img, plot in videos:
         contexturl = (utils.addon_sys
                       + "?mode=seaporn.Lookupinfo"
                       + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
-        site.add_download_link(name, videopage, 'Playvid', img, plot, contextm=contextmenu)
-
-    np = re.compile('page-numbers" href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'List', site.img_next)
+        site.add_download_link(rlsname, videopage, 'Playvid', img, plot, contextm=contextmenu)
     utils.eod()
 
 
