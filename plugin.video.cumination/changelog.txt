@@ -1,4 +1,2 @@
-[B]Version 1.1.81[/B]
-Fix for 2.7 compatibility
-Chaturbate - fix for login
-Homemoviestube - fix images and playback
+[B]Version 1.1.82[/B]
+Hanime - fix playing free member videos

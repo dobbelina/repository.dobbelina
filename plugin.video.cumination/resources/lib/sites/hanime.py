@@ -101,7 +101,7 @@ def hanime_list(url='', search='', page=0):
         tags = ', '.join(sorted(video['tags']))
         plot = '[COLOR hotpink][I]Tags: {1}[/I][/COLOR]\n\n{0}'.format(plot, tags)
         contexturl = (utils.addon_sys
-                      + "?mode=" + str('hanime.hanime_eps')
+                      + "?mode=hanime.hanime_eps"
                       + "&url=" + urllib_parse.quote_plus(videoid))
         contextmenu = ('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contexturl + ')')
         site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=True, contextm=contextmenu, fanart=fanart)
@@ -174,8 +174,11 @@ def hanime_play_combined(url, name, download=None):
         vp = utils.VideoPlayer(name, download=download)
         videourl = utils.selector('Select quality', videos, setting_valid='qualityask', sort_by=lambda x: int(x), reverse=True)
         if videourl:
-            videourl = videourl + '|User-Agent:' + ua
-            vp.play_from_direct_link(videourl)
+            if vp.resolveurl.HostedMediaFile(videourl).valid_url():
+                vp.play_from_link_to_resolve(videourl)
+            else:
+                videourl = videourl + '|User-Agent:' + ua
+                vp.play_from_direct_link(videourl)
 
 
 @site.register()
@@ -197,8 +200,8 @@ def hanime_eps(url):
         selected_episode = utils.selector('Choose episode', eps, show_on_one=True)
         if not selected_episode:
             return
-        hanime_play(selected_episode, [x for x, y in eps.items() if y is selected_episode][0])
-    except:
+        hanime_play_combined(selected_episode, [x for x, y in eps.items() if y is selected_episode][0])
+    except Exception:
         utils.notify('Notify', 'No other episodes found')
 
 
@@ -207,24 +210,23 @@ def sha256(s):
 
 
 def makeXheaders():
-    t = lambda: str(int(time.time()))
+    t = str(int(time.time()))
     return {
         "X-Signature-Version": "web2",
-        "X-Claim"            : t(),
-        "X-Signature"        : sha256("9944822{0}8{0}113".format(t)),
-        "User-Agent"         : "okhttp/3.12.1"
+        "X-Claim": t,
+        "X-Signature": sha256("9944822{0}8{0}113".format(t)),
+        "User-Agent": "okhttp/3.12.1"
     }
 
 
-    
 @site.register()
 def hanime_login(action='login'):
     htvlogged = utils.addon.getSetting('htvlogged')
-    
+
     if not htvlogged or htvlogged == 'false':
-        htvuser = utils.addon.getSetting('htvuser') if utils.addon.getSetting('htvuser') else ''
-        htvpass = utils.addon.getSetting('htvpass') if utils.addon.getSetting('htvpass') else ''
-        
+        htvuser = utils.addon.getSetting('htvuser') or ''
+        htvpass = utils.addon.getSetting('htvpass') or ''
+
         if htvuser == '':
             htvuser = getinput(default=htvuser, heading='Input your Hanime.tv member email')
             htvpass = getinput(default=htvpass, heading='Input your Hanime.tv password', hidden=True)
@@ -234,7 +236,7 @@ def hanime_login(action='login'):
         data = json.dumps({'burger': htvuser, 'fries': htvpass})
         headers = makeXheaders()
         headers.update({"Content-Type": "application/json"})
-        response = utils._getHtml(apiurl+'/rapi/v4/sessions', data=data, headers=headers)
+        response = utils._getHtml(apiurl + '/rapi/v4/sessions', data=data, headers=headers)
         if response:
             response_dict = json.loads(response)
             apidata = response_dict['env']['mobile_apps']
@@ -255,7 +257,7 @@ def hanime_login(action='login'):
         utils.addon.setSetting('session_token', response_dict['session_token'])
         utils.addon.setSetting('build_number', str(apidata))
         utils.addon.setSetting('htvlogged', 'true')
-        
+
         if action == 'login':
             utils.notify('Notify', 'Login successful')
             xbmc.executebuiltin('Container.Refresh')
@@ -268,8 +270,6 @@ def hanime_login(action='login'):
             utils.addon.setSetting('session_token', '')
             utils.addon.setSetting('build_number', '')
             utils.addon.setSetting('htvlogged', 'false')
-            
-            contexturl = (utils.addon_sys
-                          + "?mode=" + str('hanime.hanime_main'))
-            xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+            xbmc.executebuiltin('Container.Refresh')
     return True
