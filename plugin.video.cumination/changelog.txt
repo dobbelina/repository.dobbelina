@@ -1,3 +1,3 @@
 [B]Version 1.1.82[/B]
-Hanime - fix playing free member videos
+Hanime - fix playing free member videos, fix when using wrong user/pass
 Seaporn - bundle the same releases, with different resolution/codec, under 1 listitem

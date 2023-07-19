@@ -131,8 +131,7 @@ def hanime_filter():
         hanime_list(stags, '', 0)
 
 
-def get_videos(url, member=False):
-    videos = {}
+def get_video_api(url, member=False, premium_member=False):
     if member:
         headers = makeXheaders()
         session_token = utils.addon.getSetting('session_token')
@@ -140,32 +139,69 @@ def get_videos(url, member=False):
         headers.update({"X-Session-Token": session_token})
         video_api = "{0}/rapi/v4/downloads/{1}?v={2}".format(apiurl, url, build_number)
     else:
-        headers = hanime_headers
+        if premium_member:
+            headers = makeXheaders()
+            session_token = utils.addon.getSetting('session_token')
+            build_number = utils.addon.getSetting('build_number')
+            headers.update({"X-Session-Token": session_token})
+        else:
+            headers = hanime_headers
         video_api = "https://hanime.tv/rapi/v7/videos_manifests/{0}".format(url)
 
+    data = ''
     videojson = utils.getHtml(video_api, headers=headers)
     if videojson:
         data = json.loads(videojson)
         if member:
-            videos = {video['height']: video['url'] for video in data['transcodes'] if video['url']}
+            if data["user"]["is_able_to_access_premium"] is True:
+                utils.addon.setSetting('htvpremium', 'true')
+    return data
+
+
+def get_videos(url, member=False):
+    videos = {}
+    premium = utils.addon.getSetting('htvpremium') == 'true'
+    data = get_video_api(url, member=True) if member else get_video_api(url, premium_member=premium)
+
+    if data:
+        if member:
+            videos = {video['height']: {'url': video['url'], 'type': 'member'} for video in data['transcodes'] if video['url']}
         else:
             streams = data['videos_manifest']['servers'][0]['streams']
-            videos = {stream.get('height'): stream.get('url') for stream in streams if stream.get('url')}
+            videos = {stream.get('height'): {'url': stream['url'], 'type': 'free'} for stream in streams if stream.get('url')}
     return videos
+
+
+@site.register()
+def hanime_play(url, name, download=None):
+    hanime_play_combined(url, name, download)
+
+
+def getVideoLink(videourl, type):
+    for video in videourl:
+        if video['type'] == type:
+            return video['url']
+    return None
 
 
 @site.register()
 def hanime_play_combined(url, name, download=None):
     htvlogged = utils.addon.getSetting('htvlogged') == 'true'
     videos = {}
+    member_videos = None
 
     try:
         if htvlogged and hanime_login(action='refresh'):
             member_videos = get_videos(url, member=True)
-            videos.update(member_videos)
-        if not videos:
-            free_videos = get_videos(url)
-            videos.update(free_videos)
+        free_videos = get_videos(url)
+
+        if member_videos:
+            for resolution, url in member_videos.items():
+                videos[resolution] = [url]  # Ensure that we're always starting with a list
+
+        for resolution, url in free_videos.items():
+            videos[resolution] = videos.get(resolution, [])  # This will be a list if it exists
+            videos[resolution].append(url)
     except Exception as e:
         utils.notify('Notify', str(e))
         return
@@ -174,11 +210,23 @@ def hanime_play_combined(url, name, download=None):
         vp = utils.VideoPlayer(name, download=download)
         videourl = utils.selector('Select quality', videos, setting_valid='qualityask', sort_by=lambda x: int(x), reverse=True)
         if videourl:
-            if vp.resolveurl.HostedMediaFile(videourl).valid_url():
-                vp.play_from_link_to_resolve(videourl)
-            else:
-                videourl = videourl + '|User-Agent:' + ua
-                vp.play_from_direct_link(videourl)
+            member_video = getVideoLink(videourl, 'member')
+            free_video = getVideoLink(videourl, 'free')
+
+            if member_video:
+                member_video = member_video + '|verifypeer=false'
+                if vp.resolveurl.HostedMediaFile(member_video).valid_url():
+                    try:
+                        member_video = vp.resolveurl.HostedMediaFile(member_video).resolve()
+                    except Exception:
+                        member_video = None
+
+            free_video = free_video + '|User-Agent:' + ua
+            play_video = member_video or free_video
+
+            vp.name = "{} [{}]".format(name, 'MP4' if member_video else 'M3U8')
+
+            vp.play_from_direct_link(play_video)
 
 
 @site.register()
@@ -252,7 +300,8 @@ def hanime_login(action='login'):
                 return False
         else:
             utils.notify('Error', 'Could not login')
-            utils.addon.setSetting('htvlogged', 'false')
+            utils.addon.setSetting('htvuser', '')
+            utils.addon.setSetting('htvpass', '')
             return False
         utils.addon.setSetting('session_token', response_dict['session_token'])
         utils.addon.setSetting('build_number', str(apidata))
