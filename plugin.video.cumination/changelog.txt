@@ -3,3 +3,4 @@ Hanime - fix playing free member videos, fix when using wrong user/pass
 Seaporn - bundle the same releases, with different resolution/codec, under 1 listitem
 Xhamster - fix listing
 Pornhub - fix listing in UK
+Jav Guru - fix listing

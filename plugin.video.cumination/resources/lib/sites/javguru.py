@@ -47,7 +47,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''class="inside-article".+?href='([^']+)'><img src='([^']+)'.+?<a title="([^"]+)"''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'''class="inside-article".+?href="([^"]+)"><img src="([^"]+)".+?<a title="([^"]+)"''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
 
@@ -59,7 +59,7 @@ def List(url):
 
         site.add_download_link(name, video, 'Play', img, name, contextm=contextmenu)
 
-    match = re.compile(r'''class='current'.+?href="([^"]+)">(\d+)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'''class="current".+?href="([^"]+)">(\d+)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         npage, np = match[0]
         lp = re.compile(r''' href="[^"]+page/(\d+)/[^"]*">Last''', re.DOTALL | re.IGNORECASE).findall(listhtml)
