@@ -55,7 +55,7 @@ def hanime_main():
     if not htvlogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', apiurl, 'hanime_login', site.img_search, Folder=False)
     else:
-        site.add_dir('[COLOR hotpink]Logout[/COLOR]', apiurl, 'hanime_login', site.img_search)
+        site.add_dir('[COLOR hotpink]Logout[/COLOR]', apiurl, 'hanime_login', site.img_search, Folder=False)
     hanime_list('', '', 0)
 
 
@@ -104,7 +104,8 @@ def hanime_list(url='', search='', page=0):
                       + "?mode=hanime.hanime_eps"
                       + "&url=" + urllib_parse.quote_plus(videoid))
         contextmenu = ('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contexturl + ')')
-        site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=True, contextm=contextmenu, fanart=fanart)
+        nodownload = not htvlogged
+        site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
 
     if 'nbPages' in hits:
         totalp = hits['nbPages']
@@ -225,6 +226,9 @@ def hanime_play_combined(url, name, download=None):
             play_video = member_video or free_video
 
             vp.name = "{} [{}]".format(name, 'MP4' if member_video else 'M3U8')
+            if '.m3u' in play_video:
+                vp.download = False
+                utils.notify('Notify', 'M3U8 links are not supported for downloading')
 
             vp.play_from_direct_link(play_video)
 
@@ -296,12 +300,11 @@ def hanime_login(action='login'):
                     break
             if type(apidata) != int:
                 utils.notify('Error', 'Could not find build number')
-                utils.addon.setSetting('htvlogged', 'false')
+                clear_login(True)
                 return False
         else:
             utils.notify('Error', 'Could not login')
-            utils.addon.setSetting('htvuser', '')
-            utils.addon.setSetting('htvpass', '')
+            clear_login(True)
             return False
         utils.addon.setSetting('session_token', response_dict['session_token'])
         utils.addon.setSetting('build_number', str(apidata))
@@ -312,13 +315,19 @@ def hanime_login(action='login'):
             xbmc.executebuiltin('Container.Refresh')
     elif action != 'refresh':
         clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
-        if clear:
-            if clear == 'Yes':
-                utils.addon.setSetting('htvuser', '')
-                utils.addon.setSetting('htvpass', '')
-            utils.addon.setSetting('session_token', '')
-            utils.addon.setSetting('build_number', '')
-            utils.addon.setSetting('htvlogged', 'false')
-
-            xbmc.executebuiltin('Container.Refresh')
+        if clear == 'Yes':
+            clear_login(True)
+        else:
+            clear_login()
+        xbmc.executebuiltin('Container.Refresh')
     return True
+
+
+def clear_login(clear_user=False):
+    if clear_user:
+        utils.addon.setSetting('htvuser', '')
+        utils.addon.setSetting('htvpass', '')
+    utils.addon.setSetting('session_token', '')
+    utils.addon.setSetting('build_number', '')
+    utils.addon.setSetting('htvlogged', 'false')
+    utils.addon.setSetting('htvpremium', 'false')
