@@ -69,18 +69,20 @@ def List(url):
         utils.notify('Cumination', 'No video found.')
 
     for video in videos:
+        if video.get('isBlockedByGeo', False):
+            continue
         name = video["title"] if utils.PY3 else video["title"].encode('utf8')
         videolink = video["pageURL"]
-        img = video["thumbURL"]
+        img = video.get("thumbURL", '')
         if not img:
             continue
         length = str(datetime.timedelta(seconds=video["duration"]))
         if length.startswith('0:'):
             length = length[2:]
-        hd = "4k" if video.get("isUHD", False) else "HD" if video.get("isHD", False) else ""
-        name = '[COLOR blue][VR][/COLOR] ' + name if video.get("isVR", False) else name
-        name = name + ' [COLOR blue][Full Video][/COLOR]' if video.get("hasProducerBadge", False) else name
-        name = name + ' [COLOR orange][Amateur][/COLOR]' if video.get("hasAmateurBadge", False) else name
+        hd = "4k" if video.get("isUHD", '') else "HD" if video.get("isHD", '') else ""
+        name = '[COLOR blue][VR][/COLOR] ' + name if video.get('isVR', '') else name
+        name = name + ' [COLOR blue][Full Video][/COLOR]' if video.get("hasProducerBadge", '') else name
+        name = name + ' [COLOR orange][Amateur][/COLOR]' if video.get("hasAmateurBadge", '') else name
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
     npurl = None
@@ -287,11 +289,11 @@ def ContextQuality():
 
 def get_setting(x):
     if x == 'category':
-        ret = utils.addon.getSetting('xhamstercat') if utils.addon.getSetting('xhamstercat') else 'straight'
+        ret = utils.addon.getSetting('xhamstercat') or 'straight'
     if x == 'length':
-        ret = utils.addon.getSetting('xhamsterlen') if utils.addon.getSetting('xhamsterlen') else 'ALL'
+        ret = utils.addon.getSetting('xhamsterlen') or 'ALL'
     if x == 'quality':
-        ret = utils.addon.getSetting('xhamsterqual') if utils.addon.getSetting('xhamsterqual') else 'ALL'
+        ret = utils.addon.getSetting('xhamsterqual') or 'ALL'
     return ret
 
 
