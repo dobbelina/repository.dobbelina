@@ -50,17 +50,6 @@ def List(url):
 
 
 @site.register()
-def Tags(url):
-    taghtml = utils.getHtml(url, site.url)
-    match = re.compile(r'tag-item"><a\s+href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(taghtml)
-    for tagpage, name in match:
-        name = utils.cleantext(name)
-        tagpage = tagpage + '/page/1?filter=latest'
-        site.add_dir(name, tagpage, 'List', '')
-    utils.eod()
-
-
-@site.register()
 def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
