@@ -512,6 +512,8 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                                 return ''
                             else:
                                 raise
+            elif e.code == 403 and '__cf_chl_f_tk' in result:
+                notify(i18n('oh_oh'), 'This site has a Cloudflare Captcha.')
             elif 400 < e.code < 500:
                 if not e.code == 403:
                     notify(i18n('oh_oh'), i18n('not_exist'))
