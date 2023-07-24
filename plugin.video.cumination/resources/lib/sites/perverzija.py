@@ -58,7 +58,7 @@ def List(url):
 
     nextp = re.compile(r'label="Next\s*Page"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
-        pgtxt = re.compile(r"class='pages'>([^<]+)", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        pgtxt = re.compile("""class=["']pages["']>([^<]+)""", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         site.add_dir('Next Page... (Currently in {0})'.format(pgtxt), nextp.group(1), 'List', site.img_next)
     utils.eod()
 

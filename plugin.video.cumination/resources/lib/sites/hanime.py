@@ -100,10 +100,18 @@ def hanime_list(url='', search='', page=0):
             plot = plot.encode('ascii', 'ignore')
         tags = ', '.join(sorted(video['tags']))
         plot = '[COLOR hotpink][I]Tags: {1}[/I][/COLOR]\n\n{0}'.format(plot, tags)
-        contexturl = (utils.addon_sys
-                      + "?mode=hanime.hanime_eps"
-                      + "&url=" + urllib_parse.quote_plus(videoid))
-        contextmenu = ('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contexturl + ')')
+        contextmenu = []
+        contextepisodes = (utils.addon_sys
+                           + "?mode=hanime.hanime_eps"
+                           + "&url=" + urllib_parse.quote_plus(videoid))
+        contextmenu.append(('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contextepisodes + ')'))
+        if htvlogged:
+            contextm3u8 = (utils.addon_sys
+                           + "?mode=hanime.hanime_play_combined"
+                           + "&url=" + urllib_parse.quote_plus(videoid)
+                           + "&only_m3u8=true"
+                           + "&name=" + urllib_parse.quote_plus(name))
+            contextmenu.append(('[COLOR deeppink]Play M3U8[/COLOR]', 'RunPlugin(' + contextm3u8 + ')'))
         nodownload = not htvlogged
         site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
 
@@ -186,7 +194,7 @@ def getVideoLink(videourl, type):
 
 
 @site.register()
-def hanime_play_combined(url, name, download=None):
+def hanime_play_combined(url, name, download=None, only_m3u8=False):
     htvlogged = utils.addon.getSetting('htvlogged') == 'true'
     videos = {}
     member_videos = None
@@ -223,12 +231,14 @@ def hanime_play_combined(url, name, download=None):
                         member_video = None
 
             free_video = free_video + '|User-Agent:' + ua
-            play_video = member_video or free_video
+            play_video = free_video if only_m3u8 else member_video or free_video
 
-            vp.name = "{} [{}]".format(name, 'MP4' if member_video else 'M3U8')
-            if '.m3u' in play_video:
+            vp.name = "{} [{}]".format(name, 'M3U8' if '.m3u8' in play_video else 'MP4')
+            if '.m3u' in play_video and download:
                 vp.download = False
                 utils.notify('Notify', 'M3U8 links are not supported for downloading')
+                vp.progress.close()
+                return
 
             vp.play_from_direct_link(play_video)
 
@@ -279,11 +289,15 @@ def hanime_login(action='login'):
         htvuser = utils.addon.getSetting('htvuser') or ''
         htvpass = utils.addon.getSetting('htvpass') or ''
 
-        if htvuser == '':
+        if htvuser == '' or htvpass == '':
             htvuser = getinput(default=htvuser, heading='Input your Hanime.tv member email')
             htvpass = getinput(default=htvpass, heading='Input your Hanime.tv password', hidden=True)
-            utils.addon.setSetting('htvuser', htvuser)
-            utils.addon.setSetting('htvpass', htvpass)
+            if htvuser != '' and htvpass != '':
+                utils.addon.setSetting('htvuser', htvuser)
+                utils.addon.setSetting('htvpass', htvpass)
+            else:
+                utils.notify('Error', 'No user or password entered')
+                return False
 
         data = json.dumps({'burger': htvuser, 'fries': htvpass})
         headers = makeXheaders()
