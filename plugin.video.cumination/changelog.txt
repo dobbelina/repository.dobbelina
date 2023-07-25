@@ -3,3 +3,4 @@ Hanime - added contextmenu to force m3u8 playback (when logged in)
 Perverzija - fixed listing
 Utils - show notify when Cloudflare captcha protected site
 WhereIsMyPorn - new site
+Seaporn - all the different codec/resolution releases per video are now playable from contextmenu
