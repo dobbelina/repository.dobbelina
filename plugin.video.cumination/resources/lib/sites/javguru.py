@@ -47,7 +47,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''class="inside-article".+?href="([^"]+)"><img src="([^"]+)".+?<a title="([^"]+)"''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile("""class=['"]inside-article['"].+?href=['"]([^"']+)['"]><img src=['"]([^"']+)['"].+?<a title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
 
@@ -59,10 +59,10 @@ def List(url):
 
         site.add_download_link(name, video, 'Play', img, name, contextm=contextmenu)
 
-    match = re.compile(r'''class="current".+?href="([^"]+)">(\d+)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r"""class=["']current["'].+?href=["']([^"']+)["']>(\d+)<""", re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         npage, np = match[0]
-        lp = re.compile(r''' href="[^"]+page/(\d+)/[^"]*">Last''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        lp = re.compile(r"""href=["'][^"']+page/(\d+)/[^"']*["']>Last""", re.DOTALL | re.IGNORECASE).findall(listhtml)
         lp = '/' + lp[0] if lp else ''
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0}{1})'.format(np, lp), npage, 'List', site.img_next)
     utils.eod()
@@ -96,7 +96,7 @@ def Toplist(url):
     site.add_dir('[COLOR hotpink]Full list, by number of videos[/COLOR]', url, 'Cat', site.img_cat)
     cathtml = utils.getHtml(url)
     match = re.compile(r'<a href="([^"]+)">\s+?<div[^<]+<img src="([^"]+)".*?tagname">([^<]+)<[^>]+>[^>]+>([^<]+).*?</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for caturl, img, name, plot, count in match:
+    for caturl, img, name, plot, count in sorted(match, key=lambda x: x[2]):
         name = '{0} ({1})'.format(utils.cleantext(name), count)
         site.add_dir(name, caturl, 'List', img)
     utils.eod()
