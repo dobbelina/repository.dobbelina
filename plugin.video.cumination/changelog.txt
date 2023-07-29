@@ -5,3 +5,4 @@ Utils - show notify when Cloudflare captcha protected site
 WhereIsMyPorn - new site
 Seaporn - all the different codec/resolution releases per video are now playable from contextmenu
 Javguru - fix listing
+Fullporner - new site
