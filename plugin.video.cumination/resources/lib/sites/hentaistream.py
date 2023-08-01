@@ -17,8 +17,6 @@
 """
 
 import re
-import xbmc
-import xbmcvfs
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -43,7 +41,7 @@ def List(url, episodes=True):
         videopage = site.url + videopage
         img = site.url + img
         contexturl = (utils.addon_sys
-                      + "?mode=" + str('hentaistream.Lookupinfo')
+                      + "?mode=hentaistream.Lookupinfo"
                       + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu = ('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')
         if episodes:
@@ -77,10 +75,8 @@ def Tags(url):
 def Episodes(url):
     listhtml = utils.getHtml(url)
 
-    img = ''
     imgmatch = re.search('<img src="/([^"]+)" class', listhtml, re.IGNORECASE | re.DOTALL)
-    if imgmatch:
-        img = site.url + imgmatch.group(1)
+    img = site.url + imgmatch.group(1) if imgmatch else ''
 
     match = re.compile(r'data-index="\d+">\s+?<a href="/([^"]+)".*?title">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for seriepage, name in match:
@@ -104,7 +100,6 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-
     vpage = utils.getHtml(url, site.url)
 
     videourl = None
@@ -114,11 +109,11 @@ def Playvid(url, name, download=None):
     for video in videos:
         quali = re.search(r"(\d+)(?:(?:/manifest\.mpd)|(?:p\.mp4)|(?:p\.webm))", video)
         if quali:
-            sources.update({quali.group(1): video})
+            sources[quali.group(1)] = video
         else:
-            sources.update({'00': video})
-            
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: int(x), reverse=True)
+            sources['00'] = video
+
+    videourl = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
     if not videourl:
         vp.progress.close()
         return
@@ -126,8 +121,8 @@ def Playvid(url, name, download=None):
     if any(x in videourl for x in ['.mp4', '.webm']):
         videourl = videourl + '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, site.url)
 
-    sub = re.search("subUrl: '([^']+)'", vpage, re.IGNORECASE | re.DOTALL)
     if videourl:
+        sub = re.search("subUrl: '([^']+)'", vpage, re.IGNORECASE | re.DOTALL)
         if sub:
             subtitle = sub.group(1)
             subtitle = subtitle + '|User-Agent={0}&Referer={1}&Origin={2}'.format(utils.USER_AGENT, site.url, site.url[:-1])
@@ -137,4 +132,3 @@ def Playvid(url, name, download=None):
     else:
         vp.progress.close()
         utils.notify('Oh Oh', 'No Videos found')
-
