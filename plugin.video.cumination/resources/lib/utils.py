@@ -514,6 +514,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                                 raise
             elif e.code == 403 and '__cf_chl_f_tk' in result:
                 notify(i18n('oh_oh'), 'This site has a Cloudflare Captcha.')
+                raise
             elif 400 < e.code < 500:
                 if not e.code == 403:
                     notify(i18n('oh_oh'), i18n('not_exist'))
@@ -1277,6 +1278,7 @@ class VideoPlayer():
         self.download = download
         self.progress = progress
         self.progress.create(i18n('plyng_vid'), "[CR]{0}[CR]".format(i18n('srch_vid')))
+        self.bypass_string = addon.getSetting('filter_hosters') or None
 
         import resolveurl
         self.resolveurl = resolveurl
@@ -1317,6 +1319,28 @@ class VideoPlayer():
                 new_list.append(source)
         return new_list
 
+    def bypass_hosters(self, video_list):
+        if not self.bypass_string:
+            return video_list
+
+        bypass_list = self.bypass_string.split(';')
+        original_videos = video_list.copy()
+        video_list = [video for video in video_list if not any(hoster.lower() in video.lower() for hoster in bypass_list)]
+
+        if not video_list:
+            video_list = original_videos
+
+        return video_list
+
+    def bypass_hosters_single(self, videourl):
+        if not self.bypass_string:
+            return False
+
+        bypass_list = self.bypass_string.split(';')
+        if any(x.lower() in videourl.lower() for x in bypass_list):
+            return True
+        return False
+
     def play_from_site_link(self, url, referrer=''):
         self.progress.update(25, "[CR]{0}[CR]".format(i18n('load_vpage')))
         html = getHtml(url, referrer)
@@ -1347,6 +1371,7 @@ class VideoPlayer():
     @_cancellable
     def play_from_link_list(self, links):
         use_universal = True if addon.getSetting("universal_resolvers") == "true" else False
+        links = self.bypass_hosters(links)
         sources = self._clean_urls([self.resolveurl.HostedMediaFile(x, title=x.split('/')[2], include_universal=use_universal) for x in links])
         if not sources:
             notify(i18n('oh_oh'), i18n('not_found'))

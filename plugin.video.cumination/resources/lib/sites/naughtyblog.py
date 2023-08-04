@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -48,8 +47,8 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('naughtyblog.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=naughtyblog.Lookupinfo"
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, plot, contextm=contextmenu)
@@ -70,6 +69,10 @@ def Playvid(url, name, download=None):
     sources = re.compile(r'href="([^"]+)"\s+?title="([^\s]+)\s', re.DOTALL | re.IGNORECASE).findall(downloads)
     links = {}
     for link, hoster in sources:
+        if utils.addon.getSetting('filter_hosters'):
+            bypasslist = utils.addon.getSetting('filter_hosters').split(';')
+            if any(x.lower() in link.lower() for x in bypasslist):
+                continue
         if vp.resolveurl.HostedMediaFile(link).valid_url():
             linkparts = link.split('.')
             quality = linkparts[-3] if link.endswith('.html') else linkparts[-2]
@@ -86,7 +89,7 @@ def Playvid(url, name, download=None):
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
-        site.search_dir(url, 'Search')
+        site.search_dir(searchUrl, 'Search')
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title

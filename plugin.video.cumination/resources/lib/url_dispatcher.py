@@ -20,7 +20,9 @@ try:
     from inspect import getargspec
 except ImportError:
     from inspect import getfullargspec as getargspec
-from resources.lib.basics import addDir, addDownLink, addImgLink, searchDir, cum_image
+from resources.lib.basics import addDir, addDownLink, addImgLink, searchDir, cum_image, addon
+
+filter_listing = addon.getSetting('filter_listing') or None
 
 
 class URL_Dispatcher(object):
@@ -71,6 +73,10 @@ class URL_Dispatcher(object):
 
     def add_download_link(self, name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
         mode = self.get_full_mode(mode)
+        if filter_listing:
+            bypass_list = filter_listing.split(';')
+            if all(x.lower() in name.lower() for x in bypass_list):
+                return
         addDownLink(name, url, mode, iconimage, desc, stream, fav, noDownload, contextm, fanart, duration, quality)
 
     def add_img_link(self, name, url, mode):

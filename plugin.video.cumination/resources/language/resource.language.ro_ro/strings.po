@@ -603,3 +603,27 @@ msgstr "Toate cookie-urile au fost șterse"
 msgctxt "#33014"
 msgid "The keyword already exists!"
 msgstr "Cuvântul cheie există deja!"
+
+msgctxt "#33015"
+msgid "Advanced"
+msgstr "Avansat"
+
+msgctxt "#33016"
+msgid "Advanced settings, use at your own risk"
+msgstr "Setări avansate, folosiți pe propriul risc"
+
+msgctxt "#33017"
+msgid "Filter out keywords from the video listings (separator ;)"
+msgstr "Filtrează cuvintele cheie din listările video (separator ;)"
+
+msgctxt "#33018"
+msgid "Filter out hosters for videos (separator ;)"
+msgstr "Filtrează gazdele pentru videoclipuri (separator ;)"
+
+msgctxt "#33019"
+msgid "Debug Log Options"
+msgstr "Opțiuni pentru jurnal de depanare"
+
+msgctxt "#33020"
+msgid "Start Kodi Logfile Uploader"
+msgstr "Porniți Kodi Logfile Uploader"

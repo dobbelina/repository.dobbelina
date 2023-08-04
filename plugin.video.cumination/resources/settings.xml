@@ -11,7 +11,6 @@
         <setting id="download_path" type="folder" source="video" label="30052"  option="writeable" default=""/>
         <setting id="setpin" type="action" label="30028" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=pin.SetPin)" />
         <setting id="content" type="enum" label="30500" lvalues="30501|30502" default="0" />
-        <setting id="debuglog" type="action" label="30017" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=utils.ToggleDebug)" />
     </category>
     <category label="30065">
         <setting type="lsep" label="30029" />
@@ -61,5 +60,13 @@
         <setting id="install_custom_site" type="action" label="30302" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.install_custom_site)" />
         <setting id="uninstall_custom_site" type="action" label="30303" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.uninstall_custom_site)" />
         <setting id="install_custom_sites_from_folder" type="action" label="30309" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.install_custom_sites_from_folder)" />
+    </category>
+    <category label="33015">
+        <setting type="lsep" label="33016" />
+        <setting id="filter_listing" label="33017" type="text" default=""/>
+        <setting id="filter_hosters" label="33018" type="text" default=""/>
+        <setting type="lsep" label="33019" />
+        <setting id="debuglog" type="action" label="30017" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=utils.ToggleDebug)" />
+        <setting id="startlog" type="action" label="33020" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=main.openLogUploader)" />
     </category>
 </settings>

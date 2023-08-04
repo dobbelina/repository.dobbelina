@@ -635,3 +635,27 @@ msgstr ""
 msgctxt "#33014"
 msgid "The keyword already exists!"
 msgstr ""
+
+msgctxt "#33015"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#33016"
+msgid "Advanced settings, use at your own risk"
+msgstr ""
+
+msgctxt "#33017"
+msgid "Filter out keywords from the video listings (separator ;)"
+msgstr ""
+
+msgctxt "#33018"
+msgid "Filter out hosters for videos (separator ;)"
+msgstr ""
+
+msgctxt "#33019"
+msgid "Debug Log Options"
+msgstr ""
+
+msgctxt "#33020"
+msgid "Start Kodi Logfile Uploader"
+msgstr ""

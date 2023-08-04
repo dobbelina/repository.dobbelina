@@ -108,6 +108,15 @@ def smrSettings():
 
 
 @url_dispatcher.register()
+def openLogUploader():
+    from resources.lib.jsonrpc import check_addon
+    if check_addon('script.kodi.loguploader'):
+        xbmc.executebuiltin("RunScript(script.kodi.loguploader)")
+    else:
+        dialog.ok('Kodi Logfile Uploader', 'Installing Kodi Logfile Uploader unsuccesful\nPlease install it manually from the Kodi repository')
+
+
+@url_dispatcher.register()
 def about_site(name, about, custom):
     heading = '{0} {1}'.format(utils.i18n('about'), name)
     dir = basics.customSitesDir if custom else basics.aboutDir

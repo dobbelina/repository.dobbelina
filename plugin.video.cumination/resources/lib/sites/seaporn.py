@@ -132,6 +132,8 @@ def Playvid(url, name, download=None):
     sources = re.compile('<a href="([^"]+)" class="autohyperlink">https*://([^/]+)', re.DOTALL | re.IGNORECASE).findall(sitehtml)
     links = {}
     for link, hoster in sources:
+        if vp.bypass_hosters_single(link):
+            continue
         if vp.resolveurl.HostedMediaFile(link).valid_url():
             filename = link.split('/')[-1]
             hoster = "{0} {1}".format(hoster, filename)

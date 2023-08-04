@@ -635,3 +635,27 @@ msgstr "Alle cookies zijn gewist"
 msgctxt "#33014"
 msgid "The keyword already exists!"
 msgstr "Het zoekwoord bestaat al!"
+
+msgctxt "#33015"
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+msgctxt "#33016"
+msgid "Advanced settings, use at your own risk"
+msgstr "Geavanceerde instellingen, gebruik op eigen risico"
+
+msgctxt "#33017"
+msgid "Filter out keywords from the video listings (separator ;)"
+msgstr "Filter trefwoorden uit de videolijsten (scheidingsteken ;)"
+
+msgctxt "#33018"
+msgid "Filter out hosters for videos (separator ;)"
+msgstr "Filter hosters voor video's uit (scheidingsteken ;)"
+
+msgctxt "#33019"
+msgid "Debug Log Options"
+msgstr "Debug Log Opties"
+
+msgctxt "#33020"
+msgid "Start Kodi Logfile Uploader"
+msgstr "Start Kodi Logfile Uploader"

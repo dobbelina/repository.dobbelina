@@ -635,3 +635,27 @@ msgstr "Alla cookies har raderats"
 msgctxt "#33014"
 msgid "The keyword already exists!"
 msgstr "Nyckelordet finns redan!"
+
+msgctxt "#33015"
+msgid "Advanced"
+msgstr "Avancerad"
+
+msgctxt "#33016"
+msgid "Advanced settings, use at your own risk"
+msgstr "Avancerade inställningar, använd på egen risk"
+
+msgctxt "#33017"
+msgid "Filter out keywords from the video listings (separator ;)"
+msgstr "Filtrera bort nyckelord från videolistorna (separator ;)"
+
+msgctxt "#33018"
+msgid "Filter out hosters for videos (separator ;)"
+msgstr "Filtrera bort värdar för videor (separator ;)"
+
+msgctxt "#33019"
+msgid "Debug Log Options"
+msgstr "Alternativ för felsökningslogg"
+
+msgctxt "#33020"
+msgid "Start Kodi Logfile Uploader"
+msgstr "Starta Kodi Logfile Uploader"
