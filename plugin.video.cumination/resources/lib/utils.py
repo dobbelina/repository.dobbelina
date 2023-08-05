@@ -1614,9 +1614,9 @@ class LookupInfo:
         # Default url_constructor - can be overridden in derived classes
         return 'http:' + url if url.startswith('//') else self.siteurl + url
 
-    def getinfo(self):
+    def getinfo(self, headers=base_hdrs):
         try:
-            listhtml = getHtml(self.url)
+            listhtml = getHtml(self.url, headers=headers)
         except:
             return None
 
