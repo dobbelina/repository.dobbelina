@@ -1,16 +1,2 @@
-[B]Version 1.1.83[/B]
-Hanime - added contextmenu to force m3u8 playback (when logged in)
-Perverzija - fixed listing
-Utils - show notify when Cloudflare captcha protected site
-WhereIsMyPorn - new site
-Seaporn - all the different codec/resolution releases per video are now playable from contextmenu
-Javguru - fix listing
-Fullporner - new site
-DrTuber - new site
-HentaiStream - fix quality selection
-Settings - moved Enable/Disable Debug Log to new 'Advanced' section
-         - added item to start Kodi Logfile Uploader (under enable debug log)
-         - added item to filter out keywords (separated by a ;) from every video listing
-         - added item to filter out hosters (separated by a ;), for example you can add k2s.cc
-PornTN - new site
-Netflav - new site
+[B]Version 1.1.84[/B]
+Netflav - fix headers

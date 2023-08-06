@@ -26,10 +26,13 @@ from six.moves import urllib_parse
 
 site = AdultSite('netflav', '[COLOR hotpink]Netflav[/COLOR]', 'https://netflav.com/', 'https://netflav.com/static/assets/logo.svg', 'netflav')
 
-headers = utils.base_hdrs
-headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'
-headers['Accept-Encoding'] = 'gzip, deflate, br'
-headers['Cookie'] = 'i18next=en'
+
+def make_netflav_headers():
+    netflav_headers = utils.base_hdrs
+    netflav_headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'
+    netflav_headers['Accept-Encoding'] = 'gzip, deflate, br'
+    netflav_headers['Cookie'] = 'i18next=en'
+    return netflav_headers
 
 
 @site.register(default_mode=True)
@@ -46,7 +49,7 @@ def Main():
 @site.register()
 def List(url, section='all'):
     try:
-        listhtml = utils.getHtml(url, headers=headers)
+        listhtml = utils.getHtml(url, headers=make_netflav_headers())
     except Exception:
         return None
     if section == 'search':
@@ -86,7 +89,7 @@ def List(url, section='all'):
 @site.register()
 def Genres(url):
     try:
-        genrehtml = utils.getHtml(url, headers=headers)
+        genrehtml = utils.getHtml(url, headers=make_netflav_headers())
     except Exception:
         return None
     sections = re.compile('container_header_title_large"[^>]+>([^<]+)<(.*?)<iframe', re.DOTALL | re.IGNORECASE).findall(genrehtml)
@@ -155,4 +158,4 @@ def Lookupinfo(url):
     ]
 
     lookupinfo = NetflavLookup(site.url, url, 'netflav.List', lookup_list)
-    lookupinfo.getinfo(headers=headers)
+    lookupinfo.getinfo(headers=make_netflav_headers())
