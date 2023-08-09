@@ -32,7 +32,7 @@ from math import ceil
 import six
 import StorageServer
 from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs, xbmcaddon
-from resources.lib import cloudflare, random_ua, strings
+from resources.lib import cloudflare, random_ua, strings, jsunpack
 from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
                                   cookiePath, cum_image, cuminationicon, eod,
                                   favoritesdb, keys, searchDir)
@@ -1601,6 +1601,23 @@ def _bencode(text):
 
 def _bdecode(text):
     return six.ensure_str(base64.b64decode(text))
+
+
+def get_packed_data(html):
+    packed_data = ''
+    for match in re.finditer(r'''(eval\s*\(function\(p,a,c,k,e,.*?)</script>''', html, re.DOTALL | re.I):
+        r = match.group(1)
+        t = re.findall(r'(eval\s*\(function\(p,a,c,k,e,)', r, re.DOTALL | re.IGNORECASE)
+        if len(t) == 1:
+            if jsunpack.detect(r):
+                packed_data += jsunpack.unpack(r)
+        else:
+            t = r.split('eval')
+            t = ['eval' + x for x in t if x]
+            for r in t:
+                if jsunpack.detect(r):
+                    packed_data += jsunpack.unpack(r)
+    return packed_data
 
 
 class LookupInfo:

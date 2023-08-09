@@ -20,10 +20,11 @@ import re
 import base64
 import six
 import json
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('javhdporn', '[COLOR hotpink]JavHD Porn[/COLOR]', 'https://www2.javhdporn.net/', 'https://img.pornfhd.com/logo.png', 'javhdporn')
+site = AdultSite('javhdporn', '[COLOR hotpink]JavHD Porn[/COLOR]', 'https://www4.javhdporn.net/', 'https://img.pornfhd.com/logo.png', 'javhdporn')
 
 
 @site.register(default_mode=True)
@@ -31,7 +32,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'pornstars/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List('https://www2.javhdporn.net/')
+    List(site.url)
     utils.eod()
 
 
@@ -92,16 +93,19 @@ def Play(url, name, download=None):
         hdr.update({'Origin': site.url[:-1],
                     'Referer': site.url})
         r = utils.postHtml('https://video.javhdporn.net/api/play/', form_data=pdata, headers=hdr)
-        eurl = json.loads(r).get('data')
-        eurl = dex(m.group(1), eurl, '2')
+        jd = json.loads(r)
+        eurl = dex(m.group(1), jd.get('data'), jd.get('ver'))
         eurl = 'https:' + eurl if eurl.startswith('//') else eurl
         hdr.pop('Origin')
         vp.progress.update(75, "[CR]Loading embed page[CR]")
         r = utils.getHtml(eurl, headers=hdr)
-        match = re.compile(r"f8_0x5add\('([^']+)", re.DOTALL | re.IGNORECASE).search(r)
+        r = utils.get_packed_data(r).replace('\\', '')
+        match = re.compile(r"sources:\s*\[\{file:\s*[^']+'([^']+)", re.DOTALL | re.IGNORECASE).search(r)
         if match:
-            link = dex('cGxheWVyaWQ9cFhI', match.group(1), '2', mtype=0)
-            vp.play_from_link_to_resolve(link)
+            key = six.ensure_str(base64.b64encode(six.ensure_binary(urllib_parse.urlsplit(eurl).path)))[16:]
+            ehost = urllib_parse.urljoin(eurl, '/')
+            link = dex(key, match.group(1), '0', mtype=0)
+            vp.play_from_direct_link('{0}|Referer={1}&User-Agent={2}'.format(link, ehost, utils.USER_AGENT))
             return
     vp.progress.close()
     utils.notify('Oh oh', 'No video found')
@@ -112,6 +116,8 @@ def dex(key, data, dver, use_alt=False, mtype=1):
     part = '_0x583715' if mtype == 0 else '_0x58fe15'
     if dver == '1' and use_alt:
         part = 'QxLUF1bgIAdeQX'
+    elif dver == '2':
+        part = 'SyntaxError'
 
     mid = base64.b64encode(six.b(key + part))[::-1]
     x = 0
