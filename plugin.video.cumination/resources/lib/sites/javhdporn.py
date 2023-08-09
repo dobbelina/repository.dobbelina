@@ -17,8 +17,6 @@
 '''
 
 import re
-import base64
-import six
 import json
 from six.moves import urllib_parse
 from resources.lib import utils
@@ -98,14 +96,18 @@ def Play(url, name, download=None):
         eurl = 'https:' + eurl if eurl.startswith('//') else eurl
         hdr.pop('Origin')
         vp.progress.update(75, "[CR]Loading embed page[CR]")
-        r = utils.getHtml(eurl, headers=hdr)
+        try:
+            r = utils.getHtml(eurl, headers=hdr)
+        except:
+            vp.progress.close()
+            return
         r = utils.get_packed_data(r).replace('\\', '')
         match = re.compile(r"sources:\s*\[\{file:\s*[^']+'([^']+)", re.DOTALL | re.IGNORECASE).search(r)
         if match:
-            key = utils._bencode(urllib_parse.urlsplit(eurl).path)[16:]
+            key = utils._bencode(urllib_parse.urlsplit(eurl).path)[16:32]
             ehost = urllib_parse.urljoin(eurl, '/')
             link = dex(key, match.group(1), '0', mtype=0)
-            vp.play_from_direct_link('{0}|Referer={1}&User-Agent={2}'.format(link, ehost, utils.USER_AGENT))
+            vp.play_from_direct_link('{0}|Referer={1}&Origin={2}&User-Agent={3}'.format(link, ehost, ehost[:-1], utils.USER_AGENT))
             return
     vp.progress.close()
     utils.notify('Oh oh', 'No video found')
@@ -119,21 +121,21 @@ def dex(key, data, dver, use_alt=False, mtype=1):
     elif dver == '2':
         part = 'SyntaxError'
 
-    mid = base64.b64encode(six.b(key + part))[::-1]
+    mid = utils._bencode(key + part)[::-1]
     x = 0
     ct = ''
     y = list(range(256))
 
     for r in range(256):
-        x = (x + y[r] + (mid[r % len(mid)] if isinstance(mid[r % len(mid)], int) else ord(mid[r % len(mid)]))) % 256
+        x = (x + y[r] + ord(mid[r % len(mid)])) % 256
         y[r], y[x] = y[x], y[r]
 
     s = 0
     x = 0
-    ddata = base64.b64decode(data)
+    ddata = utils._bdecode(data, binary=True)
     for r in range(len(ddata)):
         s = (s + 1) % 256
         x = (x + y[s]) % 256
         y[s], y[x] = y[x], y[s]
         ct += chr((ddata[r] if isinstance(ddata[r], int) else ord(ddata[r])) ^ y[(y[s] + y[x]) % 256])
-    return six.ensure_str(base64.b64decode(ct))
+    return utils._bdecode(ct)

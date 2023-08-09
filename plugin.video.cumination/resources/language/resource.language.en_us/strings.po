@@ -659,3 +659,7 @@ msgstr ""
 msgctxt "#33020"
 msgid "Start Kodi Logfile Uploader"
 msgstr ""
+
+msgctxt "#33021"
+msgid "Enable Enhanced Debug Log"
+msgstr ""

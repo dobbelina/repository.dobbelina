@@ -627,3 +627,7 @@ msgstr "Opțiuni pentru jurnal de depanare"
 msgctxt "#33020"
 msgid "Start Kodi Logfile Uploader"
 msgstr "Porniți Kodi Logfile Uploader"
+
+msgctxt "#33021"
+msgid "Enable Enhanced Debug Log"
+msgstr "Activați jurnalul de depanare îmbunătățit"

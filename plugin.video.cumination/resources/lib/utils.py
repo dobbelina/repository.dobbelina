@@ -1599,8 +1599,9 @@ def _bencode(text):
     return six.ensure_str(base64.b64encode(six.ensure_binary(text)))
 
 
-def _bdecode(text):
-    return six.ensure_str(base64.b64decode(text))
+def _bdecode(text, binary=False):
+    r = base64.b64decode(text)
+    return r if binary else six.ensure_str(r)
 
 
 def get_packed_data(html):

@@ -659,3 +659,7 @@ msgstr "Alternativ för felsökningslogg"
 msgctxt "#33020"
 msgid "Start Kodi Logfile Uploader"
 msgstr "Starta Kodi Logfile Uploader"
+
+msgctxt "#33021"
+msgid "Enable Enhanced Debug Log"
+msgstr "Aktivera förbättrad felsökningslogg"

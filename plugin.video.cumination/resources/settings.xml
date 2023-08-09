@@ -66,6 +66,7 @@
         <setting id="filter_listing" label="33017" type="text" default=""/>
         <setting id="filter_hosters" label="33018" type="text" default=""/>
         <setting type="lsep" label="33019" />
+        <setting id="enh_debug" type="bool" label="33021" default="true" />
         <setting id="debuglog" type="action" label="30017" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=utils.ToggleDebug)" />
         <setting id="startlog" type="action" label="33020" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=main.openLogUploader)" />
     </category>
