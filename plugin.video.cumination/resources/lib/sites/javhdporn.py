@@ -102,7 +102,7 @@ def Play(url, name, download=None):
         r = utils.get_packed_data(r).replace('\\', '')
         match = re.compile(r"sources:\s*\[\{file:\s*[^']+'([^']+)", re.DOTALL | re.IGNORECASE).search(r)
         if match:
-            key = six.ensure_str(base64.b64encode(six.ensure_binary(urllib_parse.urlsplit(eurl).path)))[16:]
+            key = utils._bencode(urllib_parse.urlsplit(eurl).path)[16:]
             ehost = urllib_parse.urljoin(eurl, '/')
             link = dex(key, match.group(1), '0', mtype=0)
             vp.play_from_direct_link('{0}|Referer={1}&User-Agent={2}'.format(link, ehost, utils.USER_AGENT))
