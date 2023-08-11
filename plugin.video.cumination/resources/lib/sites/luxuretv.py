@@ -17,8 +17,13 @@
 '''
 
 import re
+import os
+import json
+from six.moves import http_cookiejar
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.flaresolverr import FlareSolverrManager
+from resources.lib.random_ua import set_ua
 
 site = AdultSite('luxuretv', '[COLOR hotpink]LuxureTV[/COLOR]', 'https://luxuretv.com/', 'https://luxuretv.com/images/logo.png', 'luxuretv')
 
@@ -66,5 +71,6 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
+    listhtml = utils.getHtml(url, url)
     vp = utils.VideoPlayer(name, download=download, regex=None, direct_regex=r'<source\s*src="([^"]+)')
-    vp.play_from_site_link(url, url)
+    vp.play_from_html(listhtml)

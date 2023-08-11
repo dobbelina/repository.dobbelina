@@ -663,3 +663,15 @@ msgstr "Start Kodi Logfile Uploader"
 msgctxt "#33021"
 msgid "Enable Enhanced Debug Log"
 msgstr "Schakel Verbeterd foutopsporingslogboek in"
+
+msgctxt "#33022"
+msgid "Enable Flaresolverr"
+msgstr "Flaresolverr inschakelen"
+
+msgctxt "#33023"
+msgid "Address where Flaresolverr is running"
+msgstr "Adres waar Flaresolverr draait"
+
+msgctxt "#33024"
+msgid "Flaresolverr"
+msgstr "Flaresolverr"

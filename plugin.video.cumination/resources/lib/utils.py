@@ -481,40 +481,43 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
             else:
                 result = e.read()
             result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
-            if e.code == 503 and 'cf-browser-verification' in result:
-                result = cloudflare.solve(url, cj, USER_AGENT)
-            elif e.code == 403 and 'cf-alert-error' in result:
-                # Drop to TLS1.2 and try again
-                ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-                handle = [urllib_request.HTTPSHandler(context=ctx)]
-                opener = urllib_request.build_opener(*handle)
-                try:
-                    response = opener.open(req, timeout=30)
-                except urllib_error.HTTPError as e:
-                    if e.info().get('Content-Encoding', '').lower() == 'gzip':
-                        buf = six.BytesIO(e.read())
-                        f = gzip.GzipFile(fileobj=buf)
-                        result = f.read()
-                        f.close()
+            if 'cloudflare' in e.info().get('Server', '').lower():
+                if e.code == 403 and 'cf-alert-error' in result:
+                    # Drop to TLS1.2 and try again
+                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+                    handle = [urllib_request.HTTPSHandler(context=ctx)]
+                    opener = urllib_request.build_opener(*handle)
+                    try:
+                        response = opener.open(req, timeout=30)
+                    except urllib_error.HTTPError as e:
+                        if e.info().get('Content-Encoding', '').lower() == 'gzip':
+                            buf = six.BytesIO(e.read())
+                            f = gzip.GzipFile(fileobj=buf)
+                            result = f.read()
+                            f.close()
+                        else:
+                            result = e.read()
+                        if e.code == 403 and 'cf-alert-error' in result:
+                            # Drop to TLS1.1 and try again
+                            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+                            handle = [urllib_request.HTTPSHandler(context=ctx)]
+                            opener = urllib_request.build_opener(*handle)
+                            try:
+                                response = opener.open(req, timeout=30)
+                            except:
+                                notify(i18n('oh_oh'), i18n('site_down'))
+                                if 'return' in error:
+                                    # Give up
+                                    return ''
+                                else:
+                                    raise
+                elif any(x == e.code for x in [403, 429, 503]) and any(x in result for x in ['__cf_chl_f_tk', '__cf_chl_jschl_tk__=', '/cdn-cgi/challenge-platform/']):
+                    if addon.getSetting('fs_enable') == 'true':
+                        notify('Flaresolverr', 'Cloudflare detected, retrying with Flaresolverr.')
+                        return flaresolve(url, referer)
                     else:
-                        result = e.read()
-                    if e.code == 403 and 'cf-alert-error' in result:
-                        # Drop to TLS1.1 and try again
-                        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
-                        handle = [urllib_request.HTTPSHandler(context=ctx)]
-                        opener = urllib_request.build_opener(*handle)
-                        try:
-                            response = opener.open(req, timeout=30)
-                        except:
-                            notify(i18n('oh_oh'), i18n('site_down'))
-                            if 'return' in error:
-                                # Give up
-                                return ''
-                            else:
-                                raise
-            elif e.code == 403 and '__cf_chl_f_tk' in result:
-                notify(i18n('oh_oh'), 'This site has a Cloudflare Captcha.')
-                raise
+                        notify(i18n('oh_oh'), 'This site has a Cloudflare Challenge.')
+                        raise
             elif 400 < e.code < 500:
                 if not e.code == 403:
                     notify(i18n('oh_oh'), i18n('not_exist'))
@@ -586,6 +589,47 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
         headers['Cookie'] = get_sucuri_cookie(result)
         result = getHtml(url, referer, headers=headers)
     return result
+
+
+def flaresolve(url, referer):
+    from resources.lib.flaresolverr import FlareSolverrManager
+    flaresolverr = FlareSolverrManager()
+    listjson = flaresolverr.request(url).json()
+    solution = listjson['solution']
+    if solution['status'] != 200:
+        raise
+    listhtml = listjson['solution']['response']
+    savecookies(listjson)
+    return listhtml
+
+
+def savecookies(flarejson):
+    cj_cf = cj
+    for cookie in flarejson['solution']['cookies']:
+        c = http_cookiejar.Cookie(
+            version=0,
+            name=cookie['name'],
+            value=cookie['value'],
+            port=None,
+            port_specified=False,
+            domain=cookie['domain'],
+            domain_specified=False,
+            domain_initial_dot=False,
+            path=cookie['path'],
+            path_specified=True,
+            secure=cookie['secure'],
+            expires=cookie.get('expiry'),
+            discard=True,
+            comment=None,
+            comment_url=None,
+            rest={'HttpOnly': cookie['httpOnly']},
+            rfc2109=False
+        )
+
+        cj_cf.set_cookie(c)
+    cj_cf.save(cookiePath, ignore_discard=True)
+    UA = flarejson['solution']['userAgent']
+    random_ua.set_ua(UA)
 
 
 def get_sucuri_cookie(html):

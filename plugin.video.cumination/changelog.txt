@@ -1,2 +1,3 @@
-[B]Version 1.1.84[/B]
-Netflav - fix headers
+[B]Version 1.1.85[/B]
+JavHDPorn - fixes
+Flaresolverr support added, for sites being protected by Cloudflare (https://github.com/FlareSolverr/FlareSolverr)

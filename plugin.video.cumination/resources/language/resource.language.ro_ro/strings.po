@@ -631,3 +631,15 @@ msgstr "Porniți Kodi Logfile Uploader"
 msgctxt "#33021"
 msgid "Enable Enhanced Debug Log"
 msgstr "Activați jurnalul de depanare îmbunătățit"
+
+msgctxt "#33022"
+msgid "Enable Flaresolverr"
+msgstr "Activează Flaresolverr"
+
+msgctxt "#33023"
+msgid "Address where Flaresolverr is running"
+msgstr "Adresa unde rulează Flaresolverr"
+
+msgctxt "#33024"
+msgid "Flaresolverr"
+msgstr "Flaresolverr"

@@ -663,3 +663,15 @@ msgstr ""
 msgctxt "#33021"
 msgid "Enable Enhanced Debug Log"
 msgstr ""
+
+msgctxt "#33022"
+msgid "Enable Flaresolverr"
+msgstr ""
+
+msgctxt "#33023"
+msgid "Address where Flaresolverr is running"
+msgstr ""
+
+msgctxt "#33024"
+msgid "Flaresolverr"
+msgstr ""
