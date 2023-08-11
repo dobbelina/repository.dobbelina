@@ -47,3 +47,15 @@ def get_ua():
     else:
         user_agent = get_setting('current_ua')
     return user_agent
+
+
+def force_ua():
+    index = random.randrange(len(RAND_UAS))
+    versions = {'win_ver': random.choice(WIN_VERS), 'feature': random.choice(FEATURES), 'br_ver': random.choice(BR_VERS[index])}
+    user_agent = RAND_UAS[index].format(**versions)
+    return user_agent
+
+
+def set_ua(ua):
+    set_setting('current_ua', ua)
+    set_setting('last_ua_create', str(int(time.time())))

@@ -593,7 +593,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
 
 def flaresolve(url, referer):
     from resources.lib.flaresolverr import FlareSolverrManager
-    flaresolverr = FlareSolverrManager()
+    flaresolverr = FlareSolverrManager(addon.getSetting('fs_host'))
     listjson = flaresolverr.request(url).json()
     solution = listjson['solution']
     if solution['status'] != 200:
