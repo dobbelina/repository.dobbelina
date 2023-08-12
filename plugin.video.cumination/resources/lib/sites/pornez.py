@@ -22,7 +22,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('pornez', '[COLOR hotpink]PornEZ[/COLOR]', 'https://pornez.net/', 'pornez.png', 'pornez')
+site = AdultSite('pornez', '[COLOR hotpink]PornEZ[/COLOR]', 'https://pornezoo.net', 'pornez.png', 'pornez')
 
 
 @site.register(default_mode=True)
@@ -92,14 +92,18 @@ def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     videohtml = utils.getHtml(url)
     match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    utils.kodilog(match)
     if not match:
         return
     playerurl = match[0]
-    playerhtml = utils.getHtml(playerurl, url)
-    match = re.compile(r'src="([^"]+)" title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
-    videos = {}
-    for m in match:
-        videos[m[1]] = m[0]
-    videourl = utils.prefquality(videos, sort_by=lambda x: int(x[:-1]), reverse=True)
-    if videourl:
-        vp.play_from_direct_link(videourl)
+    if vp.resolveurl.HostedMediaFile(playerurl):
+        vp.play_from_link_to_resolve(playerurl)
+    else:
+        playerhtml = utils.getHtml(playerurl, url)
+        match = re.compile(r'src="([^"]+)" title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
+        videos = {}
+        for m in match:
+            videos[m[1]] = m[0]
+        videourl = utils.prefquality(videos, sort_by=lambda x: int(x[:-1]), reverse=True)
+        if videourl:
+            vp.play_from_direct_link(videourl)

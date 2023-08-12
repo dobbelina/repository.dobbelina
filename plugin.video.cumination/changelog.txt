@@ -3,3 +3,4 @@ JavHDPorn - fixes
 Flaresolverr support added, for sites being protected by Cloudflare.
 More info here https://github.com/dobbelina/repository.dobbelina/wiki/Cloudflare-Challenges-and-Flaresolverr-Integration-with-Cumination
 JavGuru - fix listing
+PornEZ - domain change + fix playback
