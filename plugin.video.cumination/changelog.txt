@@ -5,3 +5,4 @@ More info here https://github.com/dobbelina/repository.dobbelina/wiki/Cloudflare
 JavGuru - fix listing
 PornEZ - domain change + fix playback
 Porn One - fix listing
+Porn Hoarder - fix search results pagination

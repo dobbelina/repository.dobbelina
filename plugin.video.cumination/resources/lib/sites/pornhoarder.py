@@ -44,7 +44,6 @@ def List(url, page=1):
     search = ''
     if not url.startswith('https://'):
         search = url
-        url = site.url + 'ajax_search.php'
     data = Createdata(page, search)
     listhtml = utils.postHtml('https://pornhoarder.tv/ajax_search.php', headers=headers, form_data=data)
     match = re.compile('href="([^"]+)".*?data-src="([^"]+)"(.*?)h1>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -64,7 +63,7 @@ def List(url, page=1):
     np = re.compile('next"><span class="pagination-button" data-page="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         page_number = np.group(1)
-        site.add_dir('Next Page (' + page_number + ')', site.url + 'ajax_search.php', 'List', site.img_next, page=int(page_number))
+        site.add_dir('Next Page (' + page_number + ')', url, 'List', site.img_next, page=int(page_number))
     utils.eod()
 
 
