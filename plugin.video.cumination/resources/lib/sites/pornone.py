@@ -35,15 +35,17 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="\s*relative.+?<span\s*class="text(.*?)>([\d:]+).+?img\s*src="([^"]+).+?"block[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="vidLinkFX.+?<span\s*class="text(.*?)>([\d:]+).+?data-src="([^"]+).+?"block[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, hd, duration, img, name in match:
         name = utils.cleantext(name)
         hd = 'HD' if 'HD Video' in hd else ''
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
-    np = re.compile(r'<a\s*href="([^"]+)"\s*title="Next\s*Page"').search(listhtml)
+    np = re.compile(r'<link rel="next" href="([^"]+)">').search(listhtml)
     if np:
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np.group(1).split('/')[-2]), np.group(1), 'List', site.img_next)
+        np = np.group(1)
+        npage = re.findall(r'/(\d+)[/\?]', np)[-1]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(npage), np, 'List', site.img_next)
     utils.eod()
 
 
