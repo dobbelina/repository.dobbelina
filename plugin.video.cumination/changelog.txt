@@ -1,3 +1,4 @@
 [B]Version 1.1.86[/B]
 Supjav - fix listing
 Whereismyporn - fix listing
+LatestPorn - fix listing
