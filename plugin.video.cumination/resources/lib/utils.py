@@ -1679,7 +1679,7 @@ class LookupInfo:
     def getinfo(self, headers=base_hdrs):
         try:
             listhtml = getHtml(self.url, headers=headers)
-        except:
+        except Exception:
             return None
 
         infodict = {}
@@ -1690,10 +1690,11 @@ class LookupInfo:
             if isinstance(pattern, list):
                 match = re.compile(pattern[0], re.DOTALL | re.IGNORECASE).findall(listhtml)
                 if match:
-                    listhtml = match[0]
+                    matchhtml = match[0]
                     pattern = pattern[1]
-
-            matches = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(listhtml)
+                    matches = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(matchhtml)
+            else:
+                matches = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(listhtml)
 
             if matches:
                 for url, name in matches:

@@ -2,3 +2,4 @@
 Supjav - fix listing
 Whereismyporn - fix listing
 LatestPorn - fix listing
+Pornhits - fix listing and added Lookup info contextmenu

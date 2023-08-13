@@ -47,12 +47,19 @@ def List(url):
 
     if 'Related Videos' in listhtml:
         listhtml = listhtml.split('Related Videos')[-1].split('<div class="thumb-slider">')[0]
-    delimiter = '<div class="item">'
+    delimiter = '<article class="item">'
     re_videopage = 'a href="([^"]+)"'
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
     re_duration = 'duration">([^<]+)<'
-    utils.videos_list(site, 'pornhits.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='pornhits.Related')
+
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=pornhits.Lookupinfo&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=pornhits.Related&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+    
+    utils.videos_list(site, 'pornhits.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
     match = re.compile(r'class="pagination.+?data-page="(\d+)"\s+data-count="(\d+)"\s+data-total="(\d+)"', re.IGNORECASE | re.DOTALL).findall(listhtml)
     if match:
@@ -152,3 +159,15 @@ def GotoPage(url, np, lp):
             return
         contexturl = (utils.addon_sys + "?mode=pornhits.List" + "&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Porn Site", ["Porn Site:(.*?)</h3>", 'href="([^"]+)"[^>]*>([^<]+)<'], ''),
+        ("Network", ["Network:(.*?)</h3>", 'href="([^"]+)"[^>]*>([^<]+)<'], ''),
+        ("Cat", ["Categories:(.*?)</h3>", 'href="([^"]+)"[^>]*>([^<]+)<'], ''),
+        ("Stars", ["Porn-stars:(.*?)</h3>", 'href="([^"]+)"[^>]*>([^<]+)<'], ''),
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'pornhits.List', lookup_list)
+    lookupinfo.getinfo()
