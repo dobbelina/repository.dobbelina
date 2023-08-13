@@ -45,9 +45,11 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
+    cookiestring = get_cookies()
     match = re.compile(r'class="post">.+?data-original="([^"]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         name = utils.cleantext(name)
+        img = img + '|Referer=' + url + '&Cookie=' + cookiestring + '&User-Agent=' + utils.USER_AGENT
         site.add_download_link(name, videopage, 'Playvid', img, name)
     p = re.compile(r'active"><span>\d+</span></li>(.*?)</ul>').search(listhtml)
     if p:
@@ -111,3 +113,17 @@ def Playvid(url, name, download=None):
         return
 
     vp.play_from_link_to_resolve(videourl)
+
+
+def get_cookies():
+    domain = site.url.split('/')[2]
+    utils.kodilog(domain)
+    cookiestr = ''
+    for cookie in utils.cj:
+        utils.kodilog(cookie.domain)
+        utils.kodilog(cookie.name)
+        if domain in cookie.domain and cookie.name == 'cf_clearance':
+            cookiestr += 'cf_clearance=' + cookie.value
+        if domain in cookie.domain and cookie.name == 'PHPSESSID':
+            cookiestr += '; PHPSESSID=' + cookie.value
+    return cookiestr

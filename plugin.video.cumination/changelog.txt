@@ -1,2 +1,2 @@
 [B]Version 1.1.86[/B]
-Supjav - listing fix (no images though)
+Supjav - listing fix
