@@ -49,21 +49,14 @@ def List(url):
     for img, videopage, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
-    p = re.compile(r'class="pagination"><ul>(.+?)</ul>').search(listhtml)
+    p = re.compile(r'active"><span>\d+</span></li>(.*?)</ul>').search(listhtml)
     if p:
-        li = re.compile(r'(<li.+?</li>)').findall(p.group(1))
+        li = re.compile(r'(<li>.+?</li>)').findall(p.group(1))
         next_page = ''
-        if 'href' in li[-1]:
-            next_page, np = re.findall(r'href="([^"]+(\d+)[^"]*)', li[-1])[0]
-        else:
-            for page in li:
-                if 'active' in page:
-                    active = li.index(page)
-                    break
-            if active + 2 < len(li):
-                next_page, np = re.findall(r"href='([^']+)'>(\d+)", li[active + 1])[0]
+        if 'href' in li[0]:
+            next_page, np = re.findall(r"""href=["']([^"']+(\d+)[^"']*)""", li[0])[0]
         if next_page:
-            lp = re.findall(r"href='[^']+'>(\d+)", li[-2])[0]
+            lp = re.findall(r"""href=["'][^'"]+["']>(\d+)""", li[-1])[0]
             site.add_dir('Next Page ({0}/{1})'.format(np, lp), next_page, 'List', site.img_next)
     utils.eod()
 
@@ -72,7 +65,7 @@ def List(url):
 def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
-        site.search_dir(url, 'Search')
+        site.search_dir(searchUrl, 'Search')
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
@@ -90,9 +83,9 @@ def Cat(url):
 
 @site.register()
 def Playvid(url, name, download=None):
+    videopage = utils.getHtml(url, site.url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videopage = utils.getHtml(url, site.url)
     videourl = ''
 
     ediv = re.compile(r'<div\s*class="btns(?:\sactive)?">(.+?)(?:<div\s*class="downs">|<script)', re.DOTALL | re.IGNORECASE).findall(videopage)[0]

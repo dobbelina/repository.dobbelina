@@ -1,8 +1,2 @@
-[B]Version 1.1.85[/B]
-JavHDPorn - fixes
-Flaresolverr support added, for sites being protected by Cloudflare.
-More info here https://github.com/dobbelina/repository.dobbelina/wiki/Cloudflare-Challenges-and-Flaresolverr-Integration-with-Cumination
-JavGuru - fix listing
-PornEZ - domain change + fix playback
-Porn One - fix listing
-Porn Hoarder - fix search results pagination
+[B]Version 1.1.86[/B]
+Supjav - listing fix (no images though)
