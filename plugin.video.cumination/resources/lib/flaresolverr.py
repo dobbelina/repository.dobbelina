@@ -16,6 +16,10 @@ class FlareSolverrManager:
 
         self.flaresolverr_session = session_create_response.json().get("session")
 
+    def __del__(self):
+        session_destroy_request = {"cmd": "sessions.destroy", "session": self.flaresolverr_session}
+        requests.post(self.flaresolverr_url, json=session_destroy_request)
+
     def clear_flaresolverr_sessions(self):
         # Get session list
         session_list_request = {"cmd": "sessions.list"}
