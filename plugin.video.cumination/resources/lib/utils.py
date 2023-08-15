@@ -1129,10 +1129,10 @@ def backup_keywords():
     else:
         try:
             if PY3:
-                with gzip.open(path + filename, "wt", encoding="utf-8") as fav_file:
+                with open(path + filename, "wt", encoding="utf-8") as fav_file:
                     json.dump(backup_content, fav_file)
             else:
-                with gzip.open(path + filename, "wb") as fav_file:
+                with open(path + filename, "wb") as fav_file:
                     json.dump(backup_content, fav_file)
         except IOError:
             progress.close()
@@ -1180,10 +1180,10 @@ def restore_keywords():
     else:
         try:
             if PY3:
-                with gzip.open(path, "rt", encoding="utf-8") as fav_file:
+                with open(path, "rt", encoding="utf-8") as fav_file:
                     backup_content = json.load(fav_file)
             else:
-                with gzip.open(path, "rb") as fav_file:
+                with open(path, "rb") as fav_file:
                     backup_content = json.load(fav_file)
 
         except (ValueError, IOError):
