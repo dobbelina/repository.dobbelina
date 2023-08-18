@@ -27,6 +27,8 @@ site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR]  [COLOR red]
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Sites[/COLOR]', site.url + 'sites/?letter=', 'SitesABC', site.img_cat)
+    site.add_dir('[COLOR hotpink]Popular pornstars[/COLOR]', site.url + 'popular-pornstars/', 'PornstarsAndSites', site.img_cat)
     site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/movies/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'category/clips/')
@@ -104,6 +106,32 @@ def Categories(url):
         name = utils.cleantext(name.strip())
         name = "{0} - {1} videos".format(name, videos.strip())
         site.add_dir(name, catpage, 'List', '')
+    utils.eod()
+
+
+@site.register()
+def SitesABC(url):
+    letters = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    for letter in letters:
+        sitepage = '{}{}'.format(url, letter.lower() if letter != '#' else '0')
+        site.add_dir(letter, sitepage, 'PornstarsAndSites', '')
+    utils.eod()
+
+
+@site.register()
+def PornstarsAndSites(url):
+    listhtml = utils.getHtml(url)
+    match = re.compile('<li><a href="([^"]+)"[^>]+>([^<]+)<span[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for listpage, name, videos in match:
+        name = utils.cleantext(name.strip())
+        name = "{0} - {1} videos".format(name, videos.strip())
+        if listpage.startswith('/'):
+            listpage = site.url + listpage[1:]
+        site.add_dir(name, listpage, 'List', '')
+    np = re.compile('class="next page-numbers" href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if np:
+        page_number = np.group(1).split('/')[-2]
+        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'PornstarsAndSites', site.img_next)
     utils.eod()
 
 
