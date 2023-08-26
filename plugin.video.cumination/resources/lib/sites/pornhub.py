@@ -23,7 +23,8 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('pornhub', '[COLOR hotpink]PornHub[/COLOR]', 'https://www.pornhub.com/', 'pornhub.png', 'pornhub')
-cookiehdr = {'Cookie': 'accessAgeDisclaimerPH=1; accessAgeDisclaimerUK=1'}
+cookiehdr = {'accessAgeDisclaimerPH=':'1',
+             'accessAgeDisclaimerUK=' : '1' }
 
 
 @site.register(default_mode=True)
