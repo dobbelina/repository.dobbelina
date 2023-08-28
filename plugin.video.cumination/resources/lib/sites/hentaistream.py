@@ -17,6 +17,7 @@
 """
 
 import re
+import json
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -26,29 +27,21 @@ site = AdultSite("hentaistream", "[COLOR hotpink]HentaiStream[/COLOR]", 'https:/
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'search?order=recently-uploaded&page=1', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?s=', 'Search', site.img_search)
-    List(site.url + 'hentai/search?order=latest&page=1', False)
+    List(site.url + 'search?order=recently-uploaded&page=1')
 
 
 @site.register()
 def List(url, episodes=True):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile('<article.*?href="/([^"]+)".*?typez[^>]+>([^<]+)<.*?src="/([^"]+)".*?<h2[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, hd, img, name in match:
+    match = re.compile('<div class="w-full.*?href="([^"]+)".*?<img alt="([^"]+)".*?src="/([^"]+)".*?<p[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, name, img, hd in match:
         name = utils.cleantext(name)
         hd = " [COLOR orange]{0}[/COLOR]".format(hd.upper())
-        videopage = site.url + videopage
         img = site.url + img
-        contexturl = (utils.addon_sys
-                      + "?mode=hentaistream.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu = ('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')
-        if episodes:
-            name = name + hd
-            site.add_dir(name, videopage, 'Episodes', img)
-        else:
-            site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, quality=hd)
+        site.add_download_link(name, videopage, 'Playvid', img, name, quality=hd)
+
     nextregex = 'rel="next"' if episodes else 'nextPage'
     np = re.compile(nextregex, re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
@@ -63,26 +56,11 @@ def List(url, episodes=True):
 @site.register()
 def Tags(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('/(tags[^"]+)" title[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('for="genre-list-([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name in match:
         name = utils.cleantext(name)
-        tagpage = site.url + tagpage + '?page=1'
+        tagpage = site.url + 'search?order=recently-uploaded&page=1&tags[0]={}'.format(tagpage)
         site.add_dir(name, tagpage, 'List', '', name)
-    utils.eod()
-
-
-@site.register()
-def Episodes(url):
-    listhtml = utils.getHtml(url)
-
-    imgmatch = re.search('<img src="/([^"]+)" class', listhtml, re.IGNORECASE | re.DOTALL)
-    img = site.url + imgmatch.group(1) if imgmatch else ''
-
-    match = re.compile(r'data-index="\d+">\s+?<a href="/([^"]+)".*?title">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for seriepage, name in match:
-        name = utils.cleantext(name)
-        seriepage = site.url + seriepage
-        site.add_download_link(name, seriepage, 'Playvid', img, name)
     utils.eod()
 
 
@@ -92,43 +70,70 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        url = url + title
+        url = url + title + '&order=recently-uploaded'
         List(url)
 
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
     vpage = utils.getHtml(url, site.url)
+    videoid = re.search('id="e_id" type="hidden" value="([^"]+)"', vpage)
 
-    videourl = None
-    sources = {}
-    videos = re.compile("src: '([^']+(?:mpd|mp4|webm))'", re.DOTALL | re.IGNORECASE).findall(vpage)
-
-    for video in videos:
-        quali = re.search(r"(\d+)(?:(?:/manifest\.mpd)|(?:p\.mp4)|(?:p\.webm))", video)
-        if quali:
-            sources[quali.group(1)] = video
-        else:
-            sources['00'] = video
-
-    videourl = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
-    if not videourl:
-        vp.progress.close()
+    if videoid:
+        videoid = videoid.group(1)
+    else:
+        utils.notify('Oh Oh', 'No Videos found')
         return
 
-    if any(x in videourl for x in ['.mp4', '.webm']):
-        videourl = videourl + '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, site.url)
+    payload = {'episode_id': videoid}
 
-    if videourl:
-        sub = re.search("subUrl: '([^']+)'", vpage, re.IGNORECASE | re.DOTALL)
-        if sub:
-            subtitle = sub.group(1)
-            subtitle = subtitle + '|User-Agent={0}&Referer={1}&Origin={2}'.format(utils.USER_AGENT, site.url, site.url[:-1])
-            utils.playvid(videourl, name, subtitle=subtitle)
-        else:
-            vp.play_from_direct_link(videourl)
-    else:
-        vp.progress.close()
+    hstreamhdrs = utils.base_hdrs
+    xsrftoken = get_cookies()
+    xsrftoken = urllib_parse.unquote(xsrftoken)
+    if not xsrftoken:
         utils.notify('Oh Oh', 'No Videos found')
+        return
+
+    hstreamhdrs['x-xsrf-token'] = xsrftoken
+    hstreamhdrs['content-type'] = 'application/json'
+
+    videojson = utils._postHtml(site.url + 'player/api', headers=hstreamhdrs, json_data=payload)
+    videojson = json.loads(videojson)
+
+    if videojson['legacy'] == 0:
+        qualities = {'2160': '/2160/manifest.mpd',
+                     '1080': '/1080/manifest.mpd',
+                     '720': '/720/manifest.mpd'}
+    else:
+        qualities = {'2160': '/av1.2160p.webm',
+                     '1080': '"/av1.1080p.webm',
+                     '720': '/x264.720p.mp4'}
+
+    if videojson['resolution'] == '1080':
+        qualities.pop('2160')
+    elif videojson['resolution'] == '720':
+        qualities.pop('2160')
+        qualities.pop('1080')
+
+    videoquality = utils.prefquality(qualities, sort_by=lambda x: int(x), reverse=True)
+    if not videoquality:
+        utils.notify('Oh Oh', 'No Videos found')
+        return
+
+    videourl = 'https://str.h-dl.xyz/{}{}'.format(videojson['stream_url'], videoquality)
+    suburl = 'https://str.h-dl.xyz/{}/eng.ass'.format(videojson['stream_url'])
+
+    if utils.checkUrl(suburl):
+        utils.playvid(videourl, name, subtitle=suburl)
+    else:
+        vp = utils.VideoPlayer(name, download)
+        vp.progress.update(50, "[CR]Loading video[CR]")
+        vp.play_from_direct_link(videourl)
+
+
+def get_cookies():
+    domain = site.url.split('/')[2]
+    for cookie in utils.cj:
+        if domain in cookie.domain and cookie.name == 'XSRF-TOKEN':
+            return cookie.value
+    return ''
