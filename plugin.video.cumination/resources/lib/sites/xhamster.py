@@ -67,6 +67,7 @@ def List(url):
         videos = jdata["pagesCategoryComponent"]["trendingVideoListProps"]["models"]
     else:
         utils.notify('Cumination', 'No video found.')
+        return
 
     for video in videos:
         if video.get('isBlockedByGeo', False):
