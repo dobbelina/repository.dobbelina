@@ -17,6 +17,7 @@
 '''
 
 import re
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -40,9 +41,11 @@ def List(url):
         return
     for videopage, name, img in match:
         name = utils.cleantext(name)
-
-        site.add_download_link(name, videopage, 'Playvid', img, name)
-
+        contexturl = (utils.addon_sys
+                      + "?mode={}.Lookupinfo".format(site.module_name)
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
     np = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         page_number = np.group(1).split('/')[-2]
@@ -100,3 +103,14 @@ def Everything(url):
         name = utils.cleantext(name.strip())
         site.add_download_link(name, movielink, 'Playvid', '', name)
     utils.eod()
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Cat", r'porn4k\.to/([^"]+)" rel="category tag[^>]+>([^<]+)<', ''),
+        ("Tag", '/(tag[^"]+)" rel="tag[^>]+>([^<]+)<', '')
+    ]
+
+    lookupinfo = utils.LookupInfo(site.url, url, '{}.List'.format(site.module_name), lookup_list)
+    lookupinfo.getinfo()
