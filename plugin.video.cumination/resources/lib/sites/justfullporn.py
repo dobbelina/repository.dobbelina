@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -43,12 +42,10 @@ def List(url):
     for videopage, name, img in match:
         name = utils.cleantext(name)
 
-        contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('justfullporn.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-
+                      + "?mode=justfullporn.Lookupinfo"
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
     np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
@@ -66,12 +63,11 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '+')
-        searchUrl = searchUrl + title + '&filter=latest'
+        searchUrl = url + title + '&filter=latest'
         List(searchUrl)
 
 
@@ -82,7 +78,6 @@ def Categories(url):
     for catpage, name, img in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip())
         site.add_dir(name, catpage + '?filter=latest', 'List', img)
-
 
     np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

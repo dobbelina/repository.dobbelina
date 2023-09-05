@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -46,8 +45,8 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('hdporn92.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('hdporn92.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
@@ -83,7 +82,6 @@ def Categories(url):
     for catpage, name, img in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip())
         site.add_dir(name, catpage + '?filter=latest', 'List', img)
-
 
     np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

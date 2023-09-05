@@ -17,8 +17,6 @@
 '''
 
 import re
-import json
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -46,11 +44,10 @@ def List(url):
         img = 'https:' + img if img.startswith('//') else img
         videopage = site.url + videopage
 
-        contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('americass.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+                      + "?mode=americass.Lookupinfo"
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration)
 
@@ -71,19 +68,18 @@ def Playvid(url, name, download=None):
 
     videourl = re.compile(r"src=\\u0022([^ ]+)\\u0022", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
 
-    videourl = videourl.replace('\/', '/')
+    videourl = videourl.replace('\\/', '/')
     vp.progress.update(75, "[CR]Video found[CR]")
     vp.play_from_direct_link(videourl)
 
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        searchUrl = searchUrl + title
+        searchUrl = url + title
         List(searchUrl)
 
 
@@ -116,7 +112,7 @@ def Actor(url):
         name = utils.cleantext(name.strip())
         img = site.url + img
         site.add_dir(name, site.url + actorpage, 'List', img)
-        
+
     nextp = re.compile(r'rel="next"\s*href="/([^"]+)">', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if nextp:
         np = nextp[0]

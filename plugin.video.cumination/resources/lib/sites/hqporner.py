@@ -17,7 +17,6 @@
 """
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -50,8 +49,8 @@ def HQLIST(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('hqporner.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videourl))
+                      + "?mode=" + str('hqporner.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videourl))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration, contextm=contextmenu)
