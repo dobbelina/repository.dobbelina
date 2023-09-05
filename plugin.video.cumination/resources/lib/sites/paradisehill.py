@@ -103,7 +103,7 @@ def Playvid(url, name, download=None):
     videos = []
     for i, j in enumerate(videodict):
         videourl = videodict[i]['sources'][0]['src']
-        part = 'Part {}'.format(i + 1)
+        part = 'Part {}/{}'.format(i + 1, len(videodict))
         videos.append((videourl, part))
 
     # if len(videos) < 1:
