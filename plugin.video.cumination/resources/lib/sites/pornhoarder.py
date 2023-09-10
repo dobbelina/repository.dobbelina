@@ -22,7 +22,7 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
 
-headers = {
+ph_headers = {
     'Origin': 'https://pornhoarder.tv',
     'User-Agent': utils.USER_AGENT,
     'X-Requested-With': 'XMLHttpRequest',
@@ -32,8 +32,8 @@ headers = {
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url, 'Search', site.img_search)
     List(site.url + 'ajax_search.php')
     utils.eod()
@@ -41,11 +41,9 @@ def Main():
 
 @site.register()
 def List(url, page=1):
-    search = ''
-    if not url.startswith('https://'):
-        search = url
+    search = '' if url.startswith('https://') else url
     data = Createdata(page, search)
-    listhtml = utils.postHtml('https://pornhoarder.tv/ajax_search.php', headers=headers, form_data=data)
+    listhtml = utils.postHtml('https://ww1.pornhoarder.tv/ajax_search.php', headers=ph_headers, form_data=data)
     match = re.compile('href="([^"]+)".*?data-src="([^"]+)"(.*?)h1>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
@@ -67,8 +65,33 @@ def List(url, page=1):
     utils.eod()
 
 
+@site.register()
+def List2(url, page=1):
+    listhtml = utils.getHtml(url)
+    match = re.compile(r'article>\s+<a href="([^"]+)".*?data-src="([^"]+)"(.*?)h1>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if not match:
+        return
+    for videopage, img, length, name in match:
+        name = utils.cleantext(name)
+        videopage = site.url[:-1] + videopage
+
+        if 'length' in length:
+            length = re.search('length">([^<]+)<', length, re.IGNORECASE | re.DOTALL).group(1)
+        else:
+            length = ''
+
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=length)
+
+    np = re.compile('next"><a href="([^"]+)".*?data-page="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if np:
+        page_number = np.group(2)
+        nextpage = np.group(1)
+        site.add_dir('Next Page (' + page_number + ')', site.url + nextpage, 'List2', site.img_next, page=int(page_number))
+    utils.eod()
+
+
 def Createdata(page=1, search=''):
-    data = [
+    return [
         ('search', search),
         ('sort', '0'),
         ('date', '0'),
@@ -83,10 +106,8 @@ def Createdata(page=1, search=''):
         ('servers[]', '31'),
         ('servers[]', '17'),
         ('author', '0'),
-        ('page', page)
+        ('page', page),
     ]
-
-    return data
 
 
 @site.register()
@@ -95,7 +116,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url)
     videopage = re.compile('iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
-    vidhtml = utils.postHtml(videopage, headers=headers, form_data={'play': ''})
+    vidhtml = utils.postHtml(videopage, headers=ph_headers, form_data={'play': ''})
     vp.progress.update(75, "[CR]Video found[CR]")
     vp.play_from_html(vidhtml)
 
@@ -122,5 +143,36 @@ def Categories(url):
         page_link = nextp[0]
         page_nr = re.findall(r'\d+', page_link)[-1]
         site.add_dir('Next Page ({})'.format(page_nr), site.url + page_link, 'Categories', site.img_next)
+    utils.eod()
 
+
+@site.register()
+def Pornstars(url):
+    listhtml = utils.getHtml(url)
+    match = re.compile(r'article>\s*<a href="([^"]+)".*?data-src="/??([^"]+)".*?h2>([^<]+)<.*?meta">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for catpage, img, name, videos in match:
+        name = utils.cleantext(name.strip())
+        img = site.url + img if img.startswith('/') else img
+        name = '{} [COLOR deeppink]{}[/COLOR]'.format(name, videos.strip())
+        catpage = site.url + catpage + 'videos/'
+        site.add_dir(name, catpage, 'List2', img)
+
+    nextp = re.compile('class="next"><a href="/([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if nextp:
+        page_link = nextp[0]
+        page_nr = re.findall(r'\d+', page_link)[-1]
+        site.add_dir('Next Page ({})'.format(page_nr), site.url + page_link, 'Pornstars', site.img_next)
+    utils.eod()
+
+
+@site.register()
+def Studios(url):
+    listhtml = utils.getHtml(url)
+    match = re.compile(r'article>\s*<a href="([^"]+)".*?<h2>([^<]+)<.*?conunt">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for catpage, img, name, videos in match:
+        name = utils.cleantext(name.strip())
+        img = site.url + img if img.startswith('/') else img
+        name = '{} [COLOR deeppink]{}[/COLOR]'.format(name, videos.strip())
+        catpage = site.url + catpage + 'videos/'
+        site.add_dir(name, catpage, 'List2', img)
     utils.eod()
