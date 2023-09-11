@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import base64
 import re
 import xbmc
 import xbmcgui
@@ -44,17 +43,17 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = '\t<li>'
-    re_videopage = 'href="([^"]+)">'
+    delimiter = '<li style='
+    re_videopage = 'href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
-    re_img = 'src="([^"]+)"'
+    re_img = 'img src="([^"]+)"'
     re_duration = r'class="duration">[\s\t]*([\d:]+)'
-    utils.videos_list(site, 'uflash.Playvid', html.split('VIDEOS')[-1].split('THUMBS')[0], delimiter, re_videopage, re_name, re_img, re_duration=re_duration)
+    utils.videos_list(site, 'uflash.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration)
 
     re_npurl = r'href="([^"]+)"\s*class="prevnext">Next'
     re_npnr = r'(\d+)"\s*class="prevnext">Next'
     re_lpnr = r'>(\d+)</a></li><li><a[^>]+Next'
-    utils.next_page(site, 'uflash.List', html.split('PAGINATION')[-1].split('THUMBS')[0], re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='uflash.GotoPage')
+    utils.next_page(site, 'uflash.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='uflash.GotoPage')
     utils.eod()
 
 
@@ -103,15 +102,17 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download)
+    vp = utils.VideoPlayer(name, download, direct_regex=r'video_source\s*=\s*"([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
-    html = utils.getHtml(url, site.url, headers=headers)
-    match = re.compile(r'_8xHp9vZ2\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
-    if match:
-        videourl = base64.b64decode(match[0]).decode("utf-8")
-        vp.play_from_direct_link(videourl + '|Referer=' + url)
-    else:
-        utils.notify('Oh Oh', 'No Videos found')
-        vp.progress.close()
-        return
+    vp.play_from_site_link(url)
+
+    # headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
+    # html = utils.getHtml(url, site.url, headers=headers)
+    # match = re.compile(r'_8xHp9vZ2\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
+    # if match:
+    #     videourl = base64.b64decode(match[0]).decode("utf-8")
+    #     vp.play_from_direct_link(videourl + '|Referer=' + url)
+    # else:
+    #     utils.notify('Oh Oh', 'No Videos found')
+    #     vp.progress.close()
+    #     return
