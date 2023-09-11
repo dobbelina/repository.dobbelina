@@ -1,0 +1,11 @@
+This program sits in the system tray and monitors if kodi is running.
+If it is, flaresolverr will be started without the console showing.
+If kodi is shutdown, flaresolverr will also be shut down.
+It polls for these processes once every 10 seconds.
+
+If you want FlareKodi.exe to autostart with windows, create a shortcut to it
+and place here:
+%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup
+
+FlareKodi.exe must be copied to the same folder as flaresolverr.exe
+
