@@ -48,7 +48,8 @@ def List(url):
     re_name = 'alt="([^"]+)"'
     re_img = 'img src="([^"]+)"'
     re_duration = r'class="duration">[\s\t]*([\d:]+)'
-    utils.videos_list(site, 'uflash.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration)
+    skip = 'adultfriendfinder.com'
+    utils.videos_list(site, 'uflash.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip)
 
     re_npurl = r'href="([^"]+)"\s*class="prevnext">Next'
     re_npnr = r'(\d+)"\s*class="prevnext">Next'
@@ -102,17 +103,20 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r'video_source\s*=\s*"([^"]+)"')
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    vp.play_from_site_link(url)
 
-    # headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
-    # html = utils.getHtml(url, site.url, headers=headers)
+    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
+    html = utils.getHtml(url, site.url, headers=headers)
+    match = re.compile(r'video_source\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
+    if match:
+        videourl = match[0]
+        vp.play_from_direct_link(videourl + '|Referer=' + url)
+    else:
+        utils.notify('Oh Oh', 'No Videos found')
+        vp.progress.close()
+
     # match = re.compile(r'_8xHp9vZ2\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
     # if match:
     #     videourl = base64.b64decode(match[0]).decode("utf-8")
     #     vp.play_from_direct_link(videourl + '|Referer=' + url)
-    # else:
-    #     utils.notify('Oh Oh', 'No Videos found')
-    #     vp.progress.close()
-    #     return
