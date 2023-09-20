@@ -20,8 +20,6 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-
-
 site = AdultSite('noodlemagazine', '[COLOR hotpink]Noodlemagazine[/COLOR]', 'https://noodlemagazine.com/', 'noodlemagazine', 'noodlemagazine')
 
 data = {
@@ -71,10 +69,9 @@ def Main(url):
 
 @site.register()
 def List(url, page=0):
-    utils.kodilog('Url: ' + url)
     try:
         listhtml = utils.getHtml(url, '')
-    except:
+    except Exception:
         return None
 
     match = re.compile(r'class="item">\s+?<a href="/([^"]+)".*?data-src="([^"]+)".*?alt="([^"]+)">(.*?)</div>.*?</svg> ([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
@@ -82,7 +79,7 @@ def List(url, page=0):
         name = utils.cleantext(name)
         videopage = site.url + videopage
         hd = " [COLOR orange]HD[/COLOR]" if 'hd_mark' in hd else ''
-        img = img.replace('&amp;', '&') + '|Referer=' + site.url
+        img = img.replace('&amp;', '&') + '|User-Agent=' + utils.USER_AGENT
 
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
@@ -99,46 +96,44 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    srcs = re.compile('/player/([^"]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    if srcs:
-        surl = srcs[0]
-        vp.progress.update(50, "[CR]Video found[CR]")
-        surl = site.url + 'playlist/' + surl
-        sources = {}
-        plhtml = utils.getHtml(surl, site.url)
+    playerid = re.compile('src="/player/([^"]+)', re.DOTALL | re.IGNORECASE).findall(html)
+    if playerid:
+        playerurl = site.url + 'player/' + playerid[0]
+        playerhtml = utils.getHtml(playerurl, site.url)
+        playlistid = re.compile("/playlist/([^']+)", re.DOTALL | re.IGNORECASE).findall(playerhtml)[0]
+        plisturl = site.url + 'playlist/' + playlistid
+        plhtml = utils.getHtml(plisturl, site.url)
         videos = re.compile('file": "([^"]+)", "label": "([^"]+)"', re.IGNORECASE | re.DOTALL).findall(plhtml)
-        for src, quality in videos:
-            sources[quality] = src
+        sources = {quality: src for src, quality in videos}
         videourl = utils.prefquality(sources, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
         videourl = videourl + '|Referer=' + site.url
         vp.play_from_direct_link(videourl)
     else:
-        vp.progress.close()
         utils.notify('Oh oh', 'No video found')
         return
 
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        searchUrl = searchUrl + title +  getFilters(0)
+        searchUrl = url + title + getFilters(0)
         List(searchUrl, 0)
+
 
 @site.register()
 def Babepedia(url):
     try:
         listhtml = utils.getHtml(url, '')
-    except:
+    except Exception:
         return None
 
     match = re.compile('class="(?:thumbimg|thumbimg lazy)" border="0" (?:data-)*src="([^"]+)" alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, name in match:
         name = utils.cleantext(name)
-        img = 'https://www.babepedia.com'  + img
+        img = 'https://www.babepedia.com' + img
         videopage = site.url + 'video/' + name.replace(' ', '%20') + getFilters(0)
         site.add_dir(name, videopage, 'List', img, page=0)
     utils.eod()
@@ -158,17 +153,17 @@ def setFilters():
 
 def getFilters(page):
     defaults = getDefaults()
-    sortvalue = utils.addon.getSetting('noodlesort') if utils.addon.getSetting('noodlesort') else next(iter(defaults['sort'].keys()))
-    hdvalue = utils.addon.getSetting('noodlehd') if utils.addon.getSetting('noodlehd') else next(iter(defaults['hd'].keys()))
-    lenvalue = utils.addon.getSetting('noodlelen') if utils.addon.getSetting('noodlelen') else next(iter(defaults['len'].keys()))
+    sortvalue = utils.addon.getSetting('noodlesort') or next(iter(defaults['sort'].keys()))
+    hdvalue = utils.addon.getSetting('noodlehd') or next(iter(defaults['hd'].keys()))
+    lenvalue = utils.addon.getSetting('noodlelen') or next(iter(defaults['len'].keys()))
     return '?sort={}&hd={}&len={}&p={}'.format(sortvalue, hdvalue, lenvalue, page)
 
 
 def getFilterLabels():
     defaults = getDefaults()
-    sortvalue = utils.addon.getSetting('noodlesort') if utils.addon.getSetting('noodlesort') else next(iter(defaults['sort'].keys()))
-    hdvalue = utils.addon.getSetting('noodlehd') if utils.addon.getSetting('noodlehd') else next(iter(defaults['hd'].keys()))
-    lenvalue = utils.addon.getSetting('noodlelen') if utils.addon.getSetting('noodlelen') else next(iter(defaults['len'].keys()))
+    sortvalue = utils.addon.getSetting('noodlesort') or next(iter(defaults['sort'].keys()))
+    hdvalue = utils.addon.getSetting('noodlehd') or next(iter(defaults['hd'].keys()))
+    lenvalue = utils.addon.getSetting('noodlelen') or next(iter(defaults['len'].keys()))
 
     sortlabel = data['sort'][sortvalue]['label']
     hdlabel = data['hd'][hdvalue]['label']
