@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: Cumination Wiki Pages
     url: https://github.com/dobbelina/repository.dobbelina/wiki
