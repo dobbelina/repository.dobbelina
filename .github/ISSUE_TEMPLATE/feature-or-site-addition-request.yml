@@ -1,0 +1,35 @@
+name: Feature or site addition request
+description: Suggest an idea for this project
+labels: Request
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature or site addition request!
+
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      options:
+        - label: I have searched the issue tracker to avoid opening a duplicate issue.
+          required: true
+
+  - type: textarea
+    attributes:
+      label: Description
+      description: Description of the feature you have issues with or want added
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: If it's a site addition request, add url below
+      description: Sites with no DMCA information will not be added
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: URL to DMCA information
+    validations:
+      required: false
