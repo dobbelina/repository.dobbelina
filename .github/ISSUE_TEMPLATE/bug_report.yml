@@ -1,6 +1,10 @@
 name: Bug Report
-description: Logfile Mandatory!
-body: 
+body:
+- type: markdown
+  attributes:
+    value: Thanks for taking the time to fill out this bug report!
+- type: markdown
+
   - type: checkboxes
     attributes:
       label: Prerequisites.
