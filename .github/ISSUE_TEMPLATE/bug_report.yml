@@ -38,7 +38,7 @@ body:
     validations:
       required: true
       
-   - type: input
+  - type: input
     attributes:
       label: URL to log file
     validations:
