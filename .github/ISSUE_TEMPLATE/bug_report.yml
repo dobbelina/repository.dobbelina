@@ -24,7 +24,7 @@ body:
 
   - type: input
     attributes:
-      label: What site/s are you having an issue with
+      label: Kodi version
     validations:
       required: true
 
