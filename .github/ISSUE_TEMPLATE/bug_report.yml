@@ -1,24 +1,23 @@
 name: Bug Report
 body:
-- type: markdown
-  attributes:
-    value: |
-    Thanks for taking the time to fill out this bug report!
-- type: markdown
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
 
   - type: checkboxes
     attributes:
-      label: Prerequisites.
+      label: Prerequisites
       options:
         - label: I have searched the issue tracker to avoid opening a duplicate issue.
           required: true
-        - label: I have read the [documentation](https://github.com/dobbelina/repository.dobbelina/wiki/Cumination:-Debug-Logging-and-Uploading) how to create a log file.
+        - label: I have read the [documentation](https://github.com/dobbelina/repository.dobbelina/wiki/Cumination:-Debug-Logging-and-Uploading) on how to create a log file.
           required: true
 
   - type: textarea
     attributes:
       label: Description
-      description: Description of the bug.
+      description: Description of the bug
     validations:
       required: true
 
@@ -27,7 +26,7 @@ body:
       label: What site/s are you having an issue with
     validations:
       required: true
-    
+
   - type: input
     attributes:
       label: Cumination version
@@ -39,9 +38,9 @@ body:
       label: Operating System and version
     validations:
       required: true
-      
+
   - type: input
     attributes:
       label: URL to log file
     validations:
-      required: false     
+      required: false
