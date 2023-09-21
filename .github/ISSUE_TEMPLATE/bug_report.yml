@@ -2,7 +2,7 @@ name: Bug Report
 description: Logfile Mandatory!
 body:
   - type: markdown
-  
+    value:
   - type: checkboxes
     attributes:
       label: Prerequisites.
