@@ -1,4 +1,5 @@
 name: Bug Report
+description: Log file is mandatory!
 body:
   - type: markdown
     attributes:
