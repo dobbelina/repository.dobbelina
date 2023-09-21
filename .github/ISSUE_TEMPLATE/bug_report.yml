@@ -1,6 +1,8 @@
 name: Bug Report
 description: Logfile Mandatory!
-
+body:
+  - type: markdown
+    attributes:
   - type: checkboxes
     attributes:
       label: Prerequisites.
@@ -35,7 +37,7 @@ description: Logfile Mandatory!
     validations:
       required: true
       
-  - type: input
+   - type: input
     attributes:
       label: URL to log file
     validations:
