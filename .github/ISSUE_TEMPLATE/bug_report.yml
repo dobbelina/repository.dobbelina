@@ -3,7 +3,7 @@ description: Logfile Mandatory!
 body:
   - type: markdown
     attributes:
-    value: 
+    value: | 
   - type: checkboxes
     attributes:
       label: Prerequisites.
