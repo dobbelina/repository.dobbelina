@@ -43,5 +43,6 @@ body:
   - type: input
     attributes:
       label: URL to debug log file
+      placeholder: https://paste.kodi.tv/
     validations:
       required: false
