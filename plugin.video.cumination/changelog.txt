@@ -1,6 +1,2 @@
-[B]Version 1.1.88[/B]
-WatchMDH - New site
-Pornhoarder - Fix listings
-Uflash - Fix
-NoodleMagazine - Fix playback and images
+[B]Version 1.1.89[/B]
 XFreeHD - Fix playback
