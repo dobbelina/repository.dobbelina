@@ -34,14 +34,14 @@ def xfreehd_main():
     search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
     search_order = utils.addon.getSetting("xfreeorder") or 'Relevance'
     search_order = search_order if search_order in search_orders.keys() else 'Relevance'
-    context = (utils.addon_sys + "?mode=" + str('xfreehd.Sortorder'))
+    context = (utils.addon_sys + "?mode=xfreehd.Sortorder")
     contextmenu = [('[COLOR orange]Search Order[/COLOR]', 'RunPlugin(' + context + ')')]
 
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'xfreehd_cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'xfreehd_search', site.img_search, contextm=contextmenu)
     if not xflogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', '', Folder=False)
-    elif xflogged:
+    else:
         xfuser = utils.addon.getSetting('xfuser')
         site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', '', Folder=False)
     xfreehd_list(site.url + 'videos?o=mr')
@@ -64,16 +64,14 @@ def xfreehd_list(url):
     match = re.compile(r'''class="well\s*well-sm.+?href="([^"]+).+?src="(.+?).\s*title[^>]+>(.+?)duration-new">\s*([^\s]+).+?title-new.+?>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, hd, duration, name in match:
         if '>PRIVATE<' in hd:
-            if not xflogged:
-                continue
-            else:
+            if xflogged:
                 name = '[COLOR blue][PV][/COLOR] ' + utils.cleantext(name)
+            else:
+                continue
         hd = 'HD' if '>HD<' in hd else ''
-        if 'data-src' in img:
-            img = img.split('data-src="')[1]
-        else:
-            img = site.url[:-1] + img
-        site.add_download_link(name, site.url[:-1] + video, 'xfreehd_play', img, name, duration=duration, quality=hd)
+        img = img.split('data-src="')[1] if 'data-src' in img else site.url[:-1] + img
+        videourl = video if video.startswith('http') else site.url[:-1] + video
+        site.add_download_link(name, videourl, 'xfreehd_play', img, name, duration=duration, quality=hd)
 
     match = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if match:
@@ -87,7 +85,16 @@ def xfreehd_list(url):
         next_page = match.group(1).replace('&amp;', '&')
         page_number = ''.join([nr for nr in next_page.split('=')[-1] if nr.isdigit()])
 
-        cm_page = (utils.addon_sys + "?mode=xfreehd.GotoPage" + "&url=" + urllib_parse.quote_plus(next_page) + "&np=" + str(page_number) + "&lp=" + str(pages))
+        cm_page = (
+            utils.addon_sys
+            + "?mode=xfreehd.GotoPage"
+            + "&url="
+            + urllib_parse.quote_plus(next_page)
+            + "&np="
+            + page_number
+            + "&lp="
+            + str(pages)
+        )
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
         site.add_dir('Next Page (' + page_number + last_page + ')', next_page, 'xfreehd_list', site.img_next, contextm=cm)
