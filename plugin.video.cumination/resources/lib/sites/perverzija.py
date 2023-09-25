@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -123,7 +122,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download)
+    vp = utils.VideoPlayer(name, download=download, IA_check='skip')
     videohtml = utils.getHtml(url)
     match = re.compile(r'iframe\s*src="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
     if match:
