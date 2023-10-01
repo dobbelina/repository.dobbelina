@@ -75,7 +75,7 @@ class URL_Dispatcher(object):
         mode = self.get_full_mode(mode)
         if filter_listing:
             bypass_list = filter_listing.split(';')
-            if all(x.lower() in name.lower() for x in bypass_list):
+            if any(x.lower() in name.lower() for x in bypass_list):
                 return
         addDownLink(name, url, mode, iconimage, desc, stream, fav, noDownload, contextm, fanart, duration, quality)
 
