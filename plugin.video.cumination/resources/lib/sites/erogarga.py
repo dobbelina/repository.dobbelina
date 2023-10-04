@@ -48,7 +48,13 @@ def List(url):
         if match:
             videourl, img, name = match[0]
             name = utils.cleantext(name)
-            site.add_download_link(name, videourl, 'Play', img, name)
+
+            contexturl = (utils.addon_sys
+                          + "?mode={}.Lookupinfo".format(site.module_name)
+                          + "&url=" + urllib_parse.quote_plus(videourl))
+            contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+
+            site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
@@ -134,7 +140,8 @@ def Play(url, name, download=None):
                 vp.play_from_site_link(videolink, url)
                 return
         else:
-            videolink = playerurl
+            itemprop = re.compile('itemprop="contentURL" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+            videolink = itemprop[0] if itemprop else playerurl
 
     if 'spankbang' in videolink:
         videolink = videolink.replace('/embed/', '/video/')
@@ -143,3 +150,14 @@ def Play(url, name, download=None):
         vp.play_from_link_to_resolve(videolink)
     else:
         vp.play_from_direct_link(videolink)
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Tag", r'/(ero/[^"]+)"\s*?class="label"\s*?title="([^"]+)"', ''),
+        ("Actor", r'/(actor[^"]+)"\s*?title="([^"]+)"', ''),
+    ]
+
+    lookupinfo = utils.LookupInfo(site.url, url, '{}.List'.format(site.module_name), lookup_list)
+    lookupinfo.getinfo()
