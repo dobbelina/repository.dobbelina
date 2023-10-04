@@ -2,3 +2,4 @@
 Fix for keyword filter
 Fuxmovies - new site
 Erogarga - fix video playback and added Lookup info
+XFreeHD - fix categories

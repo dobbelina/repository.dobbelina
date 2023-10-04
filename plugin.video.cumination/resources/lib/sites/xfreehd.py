@@ -53,7 +53,7 @@ def xfreehd_list(url):
     hdr['Cookie'] = get_cookies()
     try:
         listhtml = utils.getHtml(url, site.url, headers=hdr)
-    except:
+    except Exception:
         return None
 
     if xflogged and '"/user">My Profile<' not in listhtml:
@@ -88,12 +88,9 @@ def xfreehd_list(url):
         cm_page = (
             utils.addon_sys
             + "?mode=xfreehd.GotoPage"
-            + "&url="
-            + urllib_parse.quote_plus(next_page)
-            + "&np="
-            + page_number
-            + "&lp="
-            + str(pages)
+            + "&url=" + urllib_parse.quote_plus(next_page)
+            + "&np=" + page_number
+            + "&lp=" + str(pages)
         )
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
@@ -107,7 +104,8 @@ def xfreehd_cat(url):
     match = re.compile(r'''class="col-xs-6\s*col-sm-4\scol.+?href="([^"]+).+?data-src="([^"]+)"\s*title="([^"]+).+?badge">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for catpage, img, name, videos in match:
         name = utils.cleantext(name.strip()) + " [COLOR hotpink]%s Videos[/COLOR]" % videos
-        site.add_dir(name, site.url[:-1] + catpage, 'xfreehd_list', site.url[:-1] + img)
+        caturl = site.url[:-1] + catpage if catpage.startswith('/') else catpage
+        site.add_dir(name, caturl, 'xfreehd_list', site.url[:-1] + img)
     utils.eod()
 
 
