@@ -59,7 +59,7 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                      + "?mode=" + str('alluretube.Lookupinfo')
+                      + "?mode=alluretube.Lookupinfo"
                       + "&url=" + urllib_parse.quote_plus(videopage))
 
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
@@ -75,18 +75,27 @@ def List(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.play_from_site_link(url, url)
+    siteurl = getBaselink(url)
+    listhtml = utils.getHtml(url, '')
+    sources = {}
+    match = re.compile('label":"([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for quality in match:
+        sources[quality[:-1]] = siteurl + 'media/videos/h264/{}_{}.mp4'.format(url.split('/')[-2], quality)
+
+    videourl = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
+    if not videourl:
+        return
+
+    vp.play_from_direct_link(videourl)
 
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '-')
-        searchUrl = searchUrl + title + '?o=mr&page=1'
-        List(searchUrl)
+        List(url + title + '?o=mr&page=1')
 
 
 @site.register()
