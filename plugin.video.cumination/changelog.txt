@@ -4,3 +4,4 @@ Fuxmovies - new site
 Erogarga - fix video playback and added Lookup info
 XFreeHD - fix categories
 Allure Tube - fix video playback
+Reallifecan.to - fix video playback
