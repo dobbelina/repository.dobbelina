@@ -1,7 +1,2 @@
-[B]Version 1.1.90[/B]
-Fix for keyword filter
-Fuxmovies - new site
-Erogarga - fix video playback and added Lookup info
-XFreeHD - fix categories
-Allure Tube - fix video playback
-Reallifecan.to - fix video playback
+[B]Version 1.1.91[/B]
+Fuxmovies - Fix video listing

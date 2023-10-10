@@ -43,7 +43,7 @@ def List(url):
     except Exception:
         return None
 
-    match = re.compile(r'fullthumbvid"><a\s*?href="/([^"]+)"\s*?title="([^"]+)".*?data-src="([^"]+)".*?class="timer">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'fullthumbvid"><a\s*?href="/([^"]+)"\s*?title="([^"]+)".*?data-(?:lazy-)*src="([^"]+)".*?class="timer">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = videopage if videopage.startswith('http') else site.url + videopage
@@ -85,7 +85,7 @@ def Categories(url):
         cathtml = utils.getHtml(url, '')
     except Exception:
         return None
-    match = re.compile(r'class="fullthumb">\s*?<a\s*?href="/([^"]+)".*?data-src="/([^"]+)"[^<]+<[^>]+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="fullthumb">\s*?<a\s*?href="/([^"]+)".*?data-(?:lazy-)*src="/([^"]+)"[^<]+<[^>]+?>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, img, name in sorted(match, key=lambda x: x[1]):
         name = utils.cleantext(name)
         img = img if img.startswith('http') else site.url + img
