@@ -38,14 +38,11 @@ def Main():
 def List(url):
     html = utils.getHtml(url, site.url)
 
-    match = re.compile(r'class="thumbnail.+?<img.+?data-src="([^"]+)(.+?)bottom-1\sright.+?>([^<]+).+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    for img, unc, duration, videopage, name in match:
-        name = utils.cleantext(name)
-        info = re.compile(r'bottom-1 left.+?>([^<]+)', re.DOTALL | re.IGNORECASE).search(unc)
-        if info:
-            name += ' [COLOR yellow]{0}[/COLOR]'.format(info.group(1).strip())
+    match = re.compile(r'<div\s*@mouseenter.+?img.+?data-src="([^"]+).+?alt="([^"]+).+?href="([^"]+)"\s*alt="([^""]+).+?<span.+?>\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(html)
+    for img, info, videopage, name, duration in match:
+        info = utils.cleantext(info)
         duration = utils.cleantext(duration)
-        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, noDownload=True, fanart=img)
+        site.add_download_link(name, videopage, 'Playvid', img, info, duration=duration, noDownload=True, fanart=img)
     match = re.compile(r'aria-label="Go to page \d+">\s*(\d+)\s*</a>\s*<a href="([^"]+page=(\d+))"\s+rel="next"', re.DOTALL | re.IGNORECASE).findall(html)
     if match:
         lp, npurl, np = match[0]
