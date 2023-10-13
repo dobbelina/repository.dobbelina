@@ -22,9 +22,9 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('jav789', '[COLOR hotpink]JAV 789[/COLOR]', 'https://jav789.com/', 'jav789.png', 'jav789')
-site1 = AdultSite('javbuz', '[COLOR hotpink]JAV Buz[/COLOR]', 'https://javbuz.com/', 'javbuz.png', 'javbuz')
-site2 = AdultSite('javhihi', '[COLOR hotpink]JAV HiHi[/COLOR]', 'https://javkiki.com/', 'javhihi.png', 'javhihi')
-site3 = AdultSite('letfap', '[COLOR hotpink]Let FAP[/COLOR]', 'https://letfap.com/', 'letfap.png', 'letfap')
+# site1 = AdultSite('javbuz', '[COLOR hotpink]JAV Buz[/COLOR]', 'https://javbuz.com/', 'javbuz.png', 'javbuz')
+# site2 = AdultSite('javhihi', '[COLOR hotpink]JAV HiHi[/COLOR]', 'https://javkiki.com/', 'javhihi.png', 'javhihi')
+# site3 = AdultSite('letfap', '[COLOR hotpink]Let FAP[/COLOR]', 'https://letfap.com/', 'letfap.png', 'letfap')
 
 
 def getBaselink(url):
@@ -40,9 +40,9 @@ def getBaselink(url):
 
 
 @site.register(default_mode=True)
-@site1.register(default_mode=True)
-@site2.register(default_mode=True)
-@site3.register(default_mode=True)
+# @site1.register(default_mode=True)
+# @site2.register(default_mode=True)
+# @site3.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'movie', 'Categories', site.img_cat)
@@ -89,8 +89,9 @@ def Playvid(url, name, download=None):
         sources = re.compile(r'"file":\s*"([^"]+).+?"label":\s"([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
         if sources:
             sources = {key: value for value, key in sources}
-            videourl = utils.prefquality(sources, reverse=True)
-            vp.play_from_direct_link(videourl)
+            vidurl = utils.prefquality(sources, reverse=True)
+            vidurl += '|Referer={0}&verifypeer=false'.format(url)
+            vp.play_from_direct_link(vidurl)
 
 
 @site.register()
