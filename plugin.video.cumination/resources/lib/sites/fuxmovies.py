@@ -68,7 +68,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    mydaddy_id = re.search(r'embed_one.php\?id=([^"]+)"', html)
+    mydaddy_id = re.search(r'iframe src="/embeda/([^"\.]+)', html)
     if mydaddy_id:
         mydaddy_id = mydaddy_id.group(1)
         mydaddy_url = 'https://mydaddy.cc/video/{}/'.format(mydaddy_id)

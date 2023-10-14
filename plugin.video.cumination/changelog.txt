@@ -1,4 +1,4 @@
 [B]Version 1.1.91[/B]
-Fuxmovies - Fix video listing
+Fuxmovies - Fix video listing & playback
 MissAV - Fix video listing
 JAV789 - Fix Video playback
