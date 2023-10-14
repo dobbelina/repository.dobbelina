@@ -169,10 +169,9 @@ def Pornstars(url):
 def Studios(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'article>\s*<a href="([^"]+)".*?<h2>([^<]+)<.*?conunt">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for catpage, img, name, videos in match:
+    for catpage, name, videos in match:
         name = utils.cleantext(name.strip())
-        img = site.url + img if img.startswith('/') else img
         name = '{} [COLOR deeppink]{}[/COLOR]'.format(name, videos.strip())
         catpage = site.url + catpage + 'videos/'
-        site.add_dir(name, catpage, 'List2', img)
+        site.add_dir(name, catpage, 'List2', '')
     utils.eod()
