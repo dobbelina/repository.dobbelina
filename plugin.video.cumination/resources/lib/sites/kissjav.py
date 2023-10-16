@@ -26,8 +26,10 @@ site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'videos/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_cat)
     site.add_dir('[COLOR hotpink]Playlists[/COLOR]', site.url + 'playlists/recent/', 'Playlists', site.img_cat)
+    site.add_dir('[COLOR hotpink]Japan[/COLOR]', 'Japan', 'Countries', site.img_cat)
+    site.add_dir('[COLOR hotpink]Korea[/COLOR]', 'Korea', 'Countries', site.img_cat)
+    site.add_dir('[COLOR hotpink]Asian[/COLOR]', 'Asian', 'Countries', site.img_cat)
     site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'videos/asian-porn-movies/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/video/?s=', 'Search', site.img_search)
     List(site.url + 'videos/')
@@ -67,21 +69,23 @@ def Categories(url):
 
 
 @site.register()
-def Models(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div\s*id="model-\d+.+?data-src="([^"]+).+?href="([^"]+)">([^<]+).+?video"[^\d]+(\d+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for img, caturl, name, count in match:
-        name = utils.cleantext(name) + ' [COLOR hotpink]({0} videos)[/COLOR]'.format(count)
-        site.add_dir(name, caturl, 'List', site.url[:-1] + img)
-
-    nextp = re.compile(r'<a href="([^"]+)"\s*class="pagination-next">', re.DOTALL | re.IGNORECASE).search(cathtml)
-    if nextp:
-        np = nextp.group(1)
-        if np.startswith('/'):
-            np = site.url[:-1] + np
-        curr_pg = re.findall(r'class="pagination-link\s*is-current[^>]+>([^<]+)', cathtml)[0]
-        last_pg = re.findall(r'class="pagination-link[^>]+>([^<]+)', cathtml)[-1]
-        site.add_dir('[COLOR hotpink]Next Page[/COLOR] (Currently in Page {0} of {1})'.format(curr_pg, last_pg), np, 'Models', site.img_next)
+def Countries(url):
+    if url == 'Japan':
+        site.add_dir('[COLOR hotpink]JAV Censored[/COLOR]', site.url + 'videos/jav-censored/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]JAV Uncensored[/COLOR]', site.url + 'videos/jav-uncensored/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]JAV Amateur[/COLOR]', site.url + 'videos/jav-amateur/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]JAV Reducing Mosaic[/COLOR]', site.url + 'videos/reducing-mosaic/', 'List', site.img_cat)
+    elif url == 'Korea':
+        site.add_dir('[COLOR hotpink]Korean Porn[/COLOR]', site.url + 'videos/korean-porn/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Korean BJ[/COLOR]', site.url + 'videos/korean-bj/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Korean BJ Couple[/COLOR]', site.url + 'videos/korean-bj-couple/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Korean BJ Uncensored[/COLOR]', site.url + 'videos/korean-bj-uncensored/', 'List', site.img_cat)
+    elif url == 'Asian':
+        site.add_dir('[COLOR hotpink]China[/COLOR]', site.url + 'videos/china-porn/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Singapore[/COLOR]', site.url + 'videos/singapore-porn/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Malaysia[/COLOR]', site.url + 'videos/malaysia-porn/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Taiwan[/COLOR]', site.url + 'videos/taiwan-porn/', 'List', site.img_cat)
+        site.add_dir('[COLOR hotpink]Hong Kong[/COLOR]', site.url + 'videos/hong-kong-porn/', 'List', site.img_cat)
     utils.eod()
 
 
