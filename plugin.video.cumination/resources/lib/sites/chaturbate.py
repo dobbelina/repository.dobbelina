@@ -23,10 +23,13 @@ from six.moves import urllib_parse
 import six
 import json
 import random
+import time
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 bu = 'https://chaturbate.com/'
+rapi = 'https://chaturbate.com/api/ts/roomlist/room-list/'
+tapi = 'https://chaturbate.com/api/ts/hashtags/tag-table-data/'
 site = AdultSite('chaturbate', '[COLOR hotpink]Chaturbate[/COLOR]', bu, 'chaturbate.png', 'chaturbate', True)
 
 addon = utils.addon
@@ -35,133 +38,160 @@ HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X)
 
 @site.register(default_mode=True)
 def Main():
-    female = True if addon.getSetting("chatfemale") == "true" else False
-    male = True if addon.getSetting("chatmale") == "true" else False
-    couple = True if addon.getSetting("chatcouple") == "true" else False
-    trans = True if addon.getSetting("chattrans") == "true" else False
+    female = addon.getSetting("chatfemale") == "true"
+    male = addon.getSetting("chatmale") == "true"
+    couple = addon.getSetting("chatcouple") == "true"
+    trans = addon.getSetting("chattrans") == "true"
 
     site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', bu + '?keywords=', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
-    site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
-    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
-    site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
-
+    # site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', bu + '?keywords=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
+    # site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
+    # site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
+    # site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
     if female:
-        site.add_dir('[COLOR violet]Female[/COLOR]', bu + 'female-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=f&limit=50', 'Tags', '', '')
-        site.add_dir('[COLOR hotpink]New Cams - Female[/COLOR]', bu + 'new-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Female[/COLOR]', bu + 'teen-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]18 to 21 Cams - Female[/COLOR]', bu + '18to21-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]20 to 30 Cams - Female[/COLOR]', bu + '20to30-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]30 to 50 Cams - Female[/COLOR]', bu + '30to50-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Female[/COLOR]', bu + 'mature-cams/female/?page=1', 'List', '', '')
-        # site.add_dir('[COLOR hotpink]HD Cams - Female[/COLOR]', bu + 'hd-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]North American Cams - Female[/COLOR]', bu + 'north-american-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]South American Cams - Female[/COLOR]', bu + 'south-american-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Euro Russian Cams - Female[/COLOR]', bu + 'euro-russian-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Asian Cams - Female[/COLOR]', bu + 'asian-cams/female/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Other Region Cams - Female[/COLOR]', bu + 'other-region-cams/female/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Female[/COLOR]', rapi + '?genders=f&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', tapi + '?sort=ht&page=1&g=f&limit=100', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]New Cams - Female[/COLOR]', rapi + '?genders=f&new_cams=true&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Female[/COLOR]', rapi + '?genders=f&limit=100&from_age=18&to_age=19&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]20 to 30 Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&from_age=20&to_age=30&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]30 to 50 Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&from_age=30&to_age=50&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Female[/COLOR]', rapi + '?genders=f&limit=100&from_age=50&to_age=200&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]North American Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&regions=NA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]South American Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&regions=SA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Euro Russian Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&regions=ER&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Asian Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&regions=AS&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Other Region Cams - Female[/COLOR]', rapi + '?genders=f&limit=100&regions=O&offset=0', 'List', '', '')
     if couple:
-        site.add_dir('[COLOR violet]Couple[/COLOR]', bu + 'couple-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Couple[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=c&limit=50', 'Tags', '', '')
-        site.add_dir('[COLOR hotpink]New Cams - Couple[/COLOR]', bu + 'new-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Couple[/COLOR]', bu + 'teen-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]18 to 21 Cams - Couple[/COLOR]', bu + '18to21-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]20 to 30 Cams - Couple[/COLOR]', bu + '20to30-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]30 to 50 Cams - Couple[/COLOR]', bu + '30to50-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Couple[/COLOR]', bu + 'mature-cams/couple/?page=1', 'List', '', '')
-        # site.add_dir('[COLOR hotpink]HD Cams - Couple[/COLOR]', bu + 'hd-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]North American Cams - Couple[/COLOR]', bu + 'north-american-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]South American Cams - Couple[/COLOR]', bu + 'south-american-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Euro Russian Cams - Couple[/COLOR]', bu + 'euro-russian-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Asian Cams - Couple[/COLOR]', bu + 'asian-cams/couple/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Other Region Cams - Couple[/COLOR]', bu + 'other-region-cams/couple/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Couple[/COLOR]', rapi + '?genders=c&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Couple[/COLOR]', tapi + '?sort=ht&page=1&g=c&limit=100', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]New Cams - Couple[/COLOR]', rapi + '?genders=c&new_cams=true&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Couple[/COLOR]', rapi + '?genders=c&limit=100&from_age=18&to_age=19&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]20 to 30 Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&from_age=20&to_age=30&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]30 to 50 Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&from_age=30&to_age=50&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Couple[/COLOR]', rapi + '?genders=c&limit=100&from_age=50&to_age=200&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]North American Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&regions=NA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]South American Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&regions=SA&offCoupleMaleset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Euro Russian Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&regions=ER&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Asian Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&regions=AS&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Other Region Cams - Couple[/COLOR]', rapi + '?genders=c&limit=100&regions=O&offset=0', 'List', '', '')
     if male:
-        site.add_dir('[COLOR violet]Male[/COLOR]', bu + 'male-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Male[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=m&limit=50', 'Tags', '', '')
-        site.add_dir('[COLOR hotpink]New Cams - Male[/COLOR]', bu + 'new-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Male[/COLOR]', bu + 'teen-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]18 to 21 Cams - Male[/COLOR]', bu + '18to21-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]20 to 30 Cams - Male[/COLOR]', bu + '20to30-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]30 to 50 Cams - Male[/COLOR]', bu + '30to50-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Male[/COLOR]', bu + 'mature-cams/male/?page=1', 'List', '', '')
-        # site.add_dir('[COLOR hotpink]HD Cams - Male[/COLOR]', bu + 'hd-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]North American Cams - Male[/COLOR]', bu + 'north-american-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]South American Cams - Male[/COLOR]', bu + 'south-american-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Euro Russian Cams - Male[/COLOR]', bu + 'euro-russian-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Asian Cams - Male[/COLOR]', bu + 'asian-cams/male/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Other Region Cams - Male[/COLOR]', bu + 'other-region-cams/male/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]Male[/COLOR]', rapi + '?genders=m&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - Male[/COLOR]', tapi + '?sort=ht&page=1&g=m&limit=100', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]New Cams - Male[/COLOR]', rapi + '?genders=m&new_cams=true&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Male[/COLOR]', rapi + '?genders=m&limit=100&from_age=18&to_age=19&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]20 to 30 Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&from_age=20&to_age=30&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]30 to 50 Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&from_age=30&to_age=50&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Male[/COLOR]', rapi + '?genders=m&limit=100&from_age=50&to_age=200&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]North American Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&regions=NA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]South American Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&regions=SA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Euro Russian Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&regions=ER&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Asian Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&regions=AS&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Other Region Cams - Male[/COLOR]', rapi + '?genders=m&limit=100&regions=O&offset=0', 'List', '', '')
     if trans:
-        site.add_dir('[COLOR violet]Transsexual[/COLOR]', bu + 'trans-cams/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Tags - Transsexual[/COLOR]', bu + 'api/ts/hashtags/tag-table-data/?sort=ht&page=1&g=t&limit=50', 'Tags', '', '')
-        site.add_dir('[COLOR hotpink]New Cams - Transsexual[/COLOR]', bu + 'new-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Teen Cams (18+) - Transsexual[/COLOR]', bu + 'teen-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]18 to 21 Cams - Transsexual[/COLOR]', bu + '18to21-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]20 to 30 Cams - Transsexual[/COLOR]', bu + '20to30-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]30 to 50 Cams - Transsexual[/COLOR]', bu + '30to50-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Mature Cams (50+) - Transsexual[/COLOR]', bu + 'mature-cams/trans/?page=1', 'List', '', '')
-        # site.add_dir('[COLOR hotpink]HD Cams - Transsexual[/COLOR]', bu + 'hd-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]North American Cams - Transsexual[/COLOR]', bu + 'north-american-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]South American Cams - Transsexual[/COLOR]', bu + 'south-american-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Euro Russian Cams - Transsexual[/COLOR]', bu + 'euro-russian-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Asian Cams - Transsexual[/COLOR]', bu + 'asian-cams/trans/?page=1', 'List', '', '')
-        site.add_dir('[COLOR hotpink]Other Region Cams - Transsexual[/COLOR]', bu + 'other-region-cams/trans/?page=1', 'List', '', '')
+        site.add_dir('[COLOR violet]TransSexual[/COLOR]', rapi + '?genders=t&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Tags - TransSexual[/COLOR]', tapi + '?sort=ht&page=1&g=t&limit=100', 'Tags', '', '')
+        site.add_dir('[COLOR hotpink]New Cams - TransSexual[/COLOR]', rapi + '?genders=t&new_cams=true&limit=100&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Teen Cams (18+) - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&from_age=18&to_age=19&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]20 to 30 Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&from_age=20&to_age=30&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]30 to 50 Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&from_age=30&to_age=50&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Mature Cams (50+) - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&from_age=50&to_age=200&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]North American Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&regions=NA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]South American Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&regions=SA&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Euro Russian Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&regions=ER&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Asian Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&regions=AS&offset=0', 'List', '', '')
+        site.add_dir('[COLOR hotpink]Other Region Cams - TransSexual[/COLOR]', rapi + '?genders=t&limit=100&regions=O&offset=0', 'List', '', '')
 
     utils.eod()
 
 
+def Online(stamp):
+    mins, secs = divmod(int(time.time()) - stamp, 60)
+    hours, mins = divmod(mins, 60)
+    return '{:2d} hours {:2d} minutes'.format(hours, mins)
+
+
 @site.register()
 def List(url, page=1):
-    if 'followed' in url and 'offline' not in url:
-        site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', site.url + 'followed-cams/offline/', 'List', '', '')
-        if 'followed' in url:
-            login()
-    if addon.getSetting("chaturbate") == "true":
-        clean_database(False)
+    # if 'followed' in url and 'offline' not in url:
+    #     site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', site.url + 'followed-cams/offline/', 'List', '', '')
+    #     if 'followed' in url:
+    #         login()
+    # if addon.getSetting("chaturbate") == "true":
+    #     clean_database(False)
 
     listhtml = utils._getHtml(url)
-    match = re.compile(r'room_list_room.+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, status, name, age, data in match:
-        subject, location, duration, viewers = '', '', '', ''
-        if '/followed-cams/offline/' in url:
-            match = re.compile(r'class="cams">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(data)
-            if match:
-                age = match[0].strip()
-        else:
-            match = re.compile(r'>.+?>(.*?)</li.+?location.+?>([^<]*).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(data)
-            if match:
-                subject, location, duration, viewers = match[0]
-
-        follow = 'title="Follow"' in data
-        name = utils.cleantext(name)
-        age = age.replace('&nbsp;', '')
-        tags = re.findall(r'>#([^<]+)', subject)
-        subject = re.sub(r'<.+>', '', subject)
-        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" \
-            + "[COLOR deeppink]Duration: [/COLOR]" + utils.cleantext(duration) + "[CR]" \
-            + "[COLOR deeppink]Watching: [/COLOR]" + utils.cleantext(viewers)
+    listhtml = json.loads(listhtml)
+    models = listhtml.get('rooms')
+    for model in models:
+        name = model.get('username')
+        videopage = '{0}{1}/'.format(bu, name)
+        age = model.get('display_age')
+        age = 'Unknown' if age is None else age
+        subject = model.get('subject')
+        subject = re.sub(r'<a.+', '', subject).strip()
+        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model.get('location')) + "[CR]" \
+            + "[COLOR deeppink]Duration: [/COLOR]{0}[CR]".format(Online(model.get('start_timestamp'))) \
+            + "[COLOR deeppink]Watching: [/COLOR]{0}[CR]".format(model.get('num_users')) \
+            + "[COLOR deeppink]Followers: [/COLOR]{0}".format(model.get('num_followers'))
+        tags = model.get('tags')
         if tags:
             tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
             subject += "[CR][CR]" + tags
-        status = utils.cleantext(status.replace("[CR]", ""))
-        if status:
-            status = status.split('>')[1].split('<')[0]
-        name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
-        id = videopage[1:-1]
-        videopage = bu[:-1] + videopage
+        name = '{0} [COLOR deeppink][{1}][/COLOR] {2}'.format(name, age, model.get('current_show'))
+        img = model.get('img')
+        site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
 
-        contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
-        contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
-        contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
-
-        site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
-
-    nextp = re.compile(r'<a\s*href="([^"]+)"\s*class="next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    total_items = listhtml.get('total_count')
+    nextp = (page * 100) < total_items
     if nextp:
-        page = page + 1 if page else 2
-        next = bu[:-1] + nextp.group(1)
-        site.add_dir('Next Page (' + str(page) + ')', next, 'List', site.img_next, page)
+        next = (page * 100) + 1
+        lastpg = -1 * (-total_items // 100)
+        page = page + 1
+        nurl = re.sub(r'offset=\d+', 'offset={0}'.format(next), url)
+        site.add_dir('Next Page.. (Currently in Page {0} of {1})'.format(page - 1, lastpg), nurl, 'List', site.img_next, page)
+
+    # match = re.compile(r'room_list_room.+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    # for videopage, img, status, name, age, data in match:
+    #     subject, location, duration, viewers = '', '', '', ''
+    #     if '/followed-cams/offline/' in url:
+    #         match = re.compile(r'class="cams">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(data)
+    #         if match:
+    #             age = match[0].strip()
+    #     else:
+    #         match = re.compile(r'>.+?>(.*?)</li.+?location.+?>([^<]*).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(data)
+    #         if match:
+    #             subject, location, duration, viewers = match[0]
+
+    #     follow = 'title="Follow"' in data
+    #     name = utils.cleantext(name)
+    #     age = age.replace('&nbsp;', '')
+    #     tags = re.findall(r'>#([^<]+)', subject)
+    #     subject = re.sub(r'<.+>', '', subject)
+    #     subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" \
+    #         + "[COLOR deeppink]Duration: [/COLOR]" + utils.cleantext(duration) + "[CR]" \
+    #         + "[COLOR deeppink]Watching: [/COLOR]" + utils.cleantext(viewers)
+    #     if tags:
+    #         tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
+    #         subject += "[CR][CR]" + tags
+    #     status = utils.cleantext(status.replace("[CR]", ""))
+    #     if status:
+    #         status = status.split('>')[1].split('<')[0]
+    #     name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
+    #     id = videopage[1:-1]
+    #     videopage = bu[:-1] + videopage
+
+    #     contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
+    #     contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
+    #     contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
+
+    #     site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
+
+    # nextp = re.compile(r'<a\s*href="([^"]+)"\s*class="next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    # if nextp:
+    #     page = page + 1 if page else 2
+    #     next = bu[:-1] + nextp.group(1)
+    #     site.add_dir('Next Page (' + str(page) + ')', next, 'List', site.img_next, page)
 
     utils.eod()
 
@@ -255,13 +285,13 @@ def topCams(url):
 @site.register()
 def Tags(url, page=1):
     cat = re.search(r'&g=([^&]*)', url).group(1)
-    categories = {
-        'f': '/female/',
-        'c': '/couple/',
-        'm': '/male/',
-        't': '/trans/',
-    }
-    category = categories.get(cat, '/')
+    # categories = {
+    #     'f': '/female/',
+    #     'c': '/couple/',
+    #     'm': '/male/',
+    #     't': '/trans/',
+    # }
+    # category = categories.get(cat, '/')
 
     html = utils.getHtml(url, site.url)
     jdata = json.loads(html)
@@ -270,7 +300,8 @@ def Tags(url, page=1):
         name = tag["hashtag"]
         count = tag["room_count"]
         img = tag["top_rooms"][0].get("img", '') if tag["top_rooms"] else ''
-        tagurl = bu + 'tag/' + name + category
+        # tagurl = bu + 'tag/' + name + category
+        tagurl = rapi + '?genders={0}&hashtags={1}&limit=100&offset=0'.format(cat, name)
         name += ' [COLOR hotpink][' + str(count) + '][/COLOR]'
         site.add_dir(name, tagurl, 'List', img, 1)
     if page * 50 <= total:
