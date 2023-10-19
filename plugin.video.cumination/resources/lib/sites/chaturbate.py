@@ -128,15 +128,20 @@ def List(url, page=1):
         videopage = '{0}{1}/'.format(bu, name)
         age = model.get('display_age')
         age = 'Unknown' if age is None else age
+        location = model.get('location')
+        location = location.encode('utf8') if six.PY2 else location
+        location = utils.cleantext(location)
         subject = model.get('subject')
+        subject = subject.encode('utf8') if six.PY2 else subject
         subject = re.sub(r'<a.+', '', subject).strip()
-        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model.get('location')) + "[CR]" \
+        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + location + "[CR]" \
             + "[COLOR deeppink]Duration: [/COLOR]{0}[CR]".format(Online(model.get('start_timestamp'))) \
             + "[COLOR deeppink]Watching: [/COLOR]{0}[CR]".format(model.get('num_users')) \
             + "[COLOR deeppink]Followers: [/COLOR]{0}".format(model.get('num_followers'))
         tags = model.get('tags')
         if tags:
             tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
+            tags = tags.encode('utf-8') if six.PY2 else tags
             subject += "[CR][CR]" + tags
         name = '{0} [COLOR deeppink][{1}][/COLOR] {2}'.format(name, age, model.get('current_show'))
         img = model.get('img')
@@ -304,9 +309,10 @@ def Tags(url, page=1):
         tagurl = rapi + '?genders={0}&hashtags={1}&limit=100&offset=0'.format(cat, name)
         name += ' [COLOR hotpink][' + str(count) + '][/COLOR]'
         site.add_dir(name, tagurl, 'List', img, 1)
-    if page * 50 <= total:
+    if page * 100 < total:
+        lastpg = -1 * (-total // 100)
         np_url = url.replace('&page={}'.format(page), '&page={}'.format(page + 1))
-        site.add_dir('Next Page (' + str(page + 1) + ')', np_url, 'Tags', site.img_next, page=page + 1)
+        site.add_dir('Next Page.. (Currently in Page {0} of {1})'.format(page, lastpg), np_url, 'Tags', site.img_next, page=page + 1)
     utils.eod()
 
 
