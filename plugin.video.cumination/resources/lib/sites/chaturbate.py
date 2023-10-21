@@ -44,9 +44,9 @@ def Main():
     trans = addon.getSetting("chattrans") == "true"
 
     site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
-    # site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', bu + '?keywords=', 'Search', site.img_search)
-    # site.add_dir('[COLOR hotpink]Featured[/COLOR]', bu + '?page=1', 'List', '', '')
-    # site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
+    site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', rapi + '?limit=100&offset=0&keywords=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
+    site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     # site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
     # site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
     if female:
@@ -280,7 +280,7 @@ def topCams(url):
     jsonTop = json.loads(response)['top']
     for iTop in jsonTop:
         subject = '[COLOR deeppink]Name: [/COLOR]' + iTop['room_user'] + '[CR]' \
-            + '[CR][COLOR deeppink]Duration: [/COLOR]' + str(iTop['points']) + '[CR]' \
+            + '[CR][COLOR deeppink]Points: [/COLOR]' + str(iTop['points']) + '[CR]' \
             + '[COLOR deeppink]Watching: [/COLOR]' + str(iTop['viewers'])
         site.add_download_link(iTop['room_user'], bu + iTop['room_user'] + '/', 'Playvid',
                                iTop['image_url'], subject, noDownload=True)
@@ -290,14 +290,6 @@ def topCams(url):
 @site.register()
 def Tags(url, page=1):
     cat = re.search(r'&g=([^&]*)', url).group(1)
-    # categories = {
-    #     'f': '/female/',
-    #     'c': '/couple/',
-    #     'm': '/male/',
-    #     't': '/trans/',
-    # }
-    # category = categories.get(cat, '/')
-
     html = utils.getHtml(url, site.url)
     jdata = json.loads(html)
     total = jdata["total"]
@@ -305,7 +297,6 @@ def Tags(url, page=1):
         name = tag["hashtag"]
         count = tag["room_count"]
         img = tag["top_rooms"][0].get("img", '') if tag["top_rooms"] else ''
-        # tagurl = bu + 'tag/' + name + category
         tagurl = rapi + '?genders={0}&hashtags={1}&limit=100&offset=0'.format(cat, name)
         name += ' [COLOR hotpink][' + str(count) + '][/COLOR]'
         site.add_dir(name, tagurl, 'List', img, 1)
