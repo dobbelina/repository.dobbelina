@@ -16,33 +16,35 @@
 import os
 import sqlite3
 import json
-import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('bongacams', '[COLOR hotpink]bongacams.com[/COLOR]', 'https://bongacams.com/', 'bongacams.png', 'bongacams', True)
+site = AdultSite('bongacams', '[COLOR hotpink]BongaCams[/COLOR]', 'https://en.bongacams.xxx/', 'bongacams.png', 'bongacams', True)
 
 
 @site.register(default_mode=True)
 def Main():
-    female = True if utils.addon.getSetting("chatfemale") == "true" else False
-    male = True if utils.addon.getSetting("chatmale") == "true" else False
-    couple = True if utils.addon.getSetting("chatcouple") == "true" else False
-    trans = True if utils.addon.getSetting("chattrans") == "true" else False
+    female = utils.addon.getSetting("chatfemale") == "true"
+    male = utils.addon.getSetting("chatmale") == "true"
+    couple = utils.addon.getSetting("chatcouple") == "true"
+    trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh bongacams.com images[/COLOR]', '', 'clean_database', '', Folder=False)
-
+    site.add_dir('Hour\'s TOP chat rooms', 'https://en.bongacams.xxx/contest/top-room?cp=1', 'List2', '', '')
     bu = "http://tools.bongacams.com/promo.php?c=226355&type=api&api_type=json&categories[]="
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
+        site.add_dir('  International - Queen of Queens', site.url + 'contest/queen-of-queens-international', 'List3', '', '')
+        site.add_dir('  North America & Western Europe\'s - Queen of Queens', site.url + 'contest/queen-of-queens', 'List3', '', '')
+        site.add_dir('  Latin American - Queen of Queens', site.url + 'contest/queen-of-queens-latin-america', 'List3', '', '')
     if couple:
         site.add_dir('[COLOR hotpink]Couples[/COLOR]', '{0}couples'.format(bu), 'List', '', '')
+        site.add_dir('  Couples\' Top 50', site.url + 'contest/top-couple-models', 'List3', '', '')
     if male:
         site.add_dir('[COLOR hotpink]Male[/COLOR]', '{0}male'.format(bu), 'List', '', '')
+        site.add_dir('  Guys and Trans\' Top 10', site.url + 'contest/top-male-models', 'List3', '', '')
     if trans:
         site.add_dir('[COLOR hotpink]Transsexual[/COLOR]', '{0}transsexual'.format(bu), 'List', '', '')
-    site.add_dir('Hour\'s TOP chat rooms', 'https://bongacams.com/ajax-top-room-contest', 'List2', '', '')
-    site.add_dir('New North America & Western Europe\'s contest - Queen of Queens', 'https://bongacams.com/ajax-queen-of-queens-contest', 'List3', '', '')
-    site.add_dir('New international contest - Queen of Queens', 'https://bongacams.com/ajax-queen-of-queens-contest-international', 'List3', '', '')
+        site.add_dir('  Guys and Trans\' Top 10', site.url + 'contest/top-male-models', 'List3', '', '')
 
     utils.eod()
 
@@ -128,11 +130,7 @@ def Playvid(url, name):
             ('args[]', '')
         ]
         hdr = utils.base_hdrs
-        hdr.update({
-            'Cookie': 'bonga20120608=4dc36bf33c316636a744faef8379be54',
-            'X-ab-Split-Group': 'f2085b5fd8de2b4f7c9542009568798a157a99eeeb710d9679acca6621f17672793720ada24e7a68',
-            'X-Requested-With': 'XMLHttpRequest'
-        })
+        hdr.update({'X-Requested-With': 'XMLHttpRequest'})
         response = utils._postHtml('{0}tools/amf.php'.format(site.url), form_data=postRequest, headers=hdr, compression=False)
     except:
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
@@ -177,15 +175,22 @@ def List2(url):
         clean_database(False)
     headers = {'X-Requested-With': 'XMLHttpRequest'}
     data = utils._getHtml(url, site.url, headers=headers)
-    match = re.compile('class="top_ranks(.+?)class="title_h3', re.I | re.M | re.S).findall(data)
-    if not match:
-        match = re.compile('class="top_others(.+?)class="title_h3', re.I | re.M | re.S).findall(data)
-    match = re.compile('class="top_thumb".+?href="([^"]+)".+?src="([^"]+)".+?class="mn_lc">(.+?)</span>', re.I | re.M | re.S).findall(match[0])
-    for url, img, name in match:
-        if 'profile' in url:
-            name = '[COLOR hotpink][Offline][/COLOR] ' + name
-            url = "  "
-        site.add_download_link(name, url[1:], 'Playvid', 'https:' + img, '')
+    items = json.loads(data).get('result').get('chatActivities')
+    for item in items:
+        username = item.get('user').get('username')
+        name = item.get('user').get('displayName')
+        name = name.encode('utf8') if utils.PY2 else name
+        img = 'https:' + item.get('user').get('profileImageUrls').get('thumb_xbig_lq')
+        if item.get('user').get('isOnline'):
+            status = 'Online'
+        else:
+            status = 'Offline'
+            username = ' '
+        subject = 'Status: {0}[CR]'.format(status)
+        subject += 'Place: {0}[CR]'.format(item.get('chatActivity').get('place'))
+        subject += 'Viewers: {0}[CR]'.format(item.get('chatActivity').get('viewers'))
+        subject += 'Prize: {0}[CR]'.format(item.get('chatActivity').get('prizeFormatted'))
+        site.add_download_link(name, username, 'Playvid', img, subject, noDownload=True)
     utils.eod()
 
 
@@ -202,13 +207,22 @@ def List3(url):
         clean_database(False)
     headers = {'X-Requested-With': 'XMLHttpRequest'}
     data = utils._getHtml(url, site.url, headers=headers)
-    match = re.compile('class="top_ranks(.+?)trs_actions', re.I | re.M | re.S).findall(data)
-    match = re.compile('class="top_thumb".+?href="([^"]+)".+?src="([^"]+)".+?class="mn_lc">(.+?)</span>', re.I | re.M | re.S).findall(match[0])
-    for url, img, name in match:
-        if 'profile' in url:
-            name = '[COLOR hotpink][Offline][/COLOR] ' + name
-            url = "  "
-        site.add_download_link(name, url[1:], 'Playvid', 'https:' + img, '')
+    items = json.loads(data).get('result').get('contestItems')
+    for item in items:
+        username = item.get('user').get('username')
+        name = item.get('user').get('displayName')
+        name = name.encode('utf8') if utils.PY2 else name
+        img = 'https:' + item.get('user').get('profileImageUrls').get('thumb_xbig_lq')
+        if item.get('user').get('isOnline'):
+            status = 'Online'
+        else:
+            status = 'Offline'
+            username = ' '
+        subject = 'Status: {0}[CR]'.format(status)
+        subject += 'Place: {0}[CR]'.format(item.get('contestItem').get('place'))
+        subject += 'Points: {0}[CR]'.format(item.get('contestItem').get('points'))
+        subject += 'Prize: {0}[CR]'.format(item.get('contestItem').get('prizeFormatted'))
+        site.add_download_link(name, username, 'Playvid', img, subject, noDownload=True)
     utils.eod()
 
 

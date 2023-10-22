@@ -1,4 +1,5 @@
 [B]Version 1.1.92[/B]
 KissJAV - remove defunct Models category
         - add country menus
-
+Chaturbate - fix listings, tags, search
+BongaCams - fix contests, playback
