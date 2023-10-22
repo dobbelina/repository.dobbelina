@@ -17,11 +17,10 @@ import os
 import random
 import sqlite3
 import json
-import time
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('camsoda', '[COLOR hotpink]Camsoda[/COLOR]', 'https://www.camsoda.com', 'camsoda.png', 'camsoda', True)
+site = AdultSite('camsoda', '[COLOR hotpink]Camsoda[/COLOR]', 'https://www.camsoda.app', 'camsoda.png', 'camsoda', True)
 
 
 @site.register(default_mode=True)
@@ -38,34 +37,38 @@ def List(url):
     response = utils._getHtml(url)
     camgirls = json.loads(response)['results']
     for camgirl in camgirls:
-        if 'tpl' in list(camgirl.keys()):
-            camgirl = camgirl.get('tpl')
-            if type(camgirl) is dict:
-                name = camgirl.get('2')
-                name = name if utils.PY3 else name.encode('utf8')
-                subject = camgirl.get('6')
-                subject += u'[CR][CR][COLOR deeppink] Viewers: [/COLOR]{}[CR]'.format(camgirl.get('4'))
-                if camgirl.get('3'):
-                    subject += u'[COLOR deeppink] Status: [/COLOR]{}[CR]'.format(camgirl.get('3'))
-                subject = subject if utils.PY3 else subject.encode('utf8')
-                id = camgirl.get('1')
-                img = camgirl.get('10')
-                img = 'http:' + img if img.startswith('//)') else img.replace('https:', 'http:')
-                fanart = 'http:' + camgirl.get('15') if camgirl.get('15') else None
-            elif type(camgirl) is list:
-                name = camgirl[2]
-                name = name if utils.PY3 else name.encode('utf8')
-                subject = camgirl[6]
-                subject = subject if utils.PY3 else subject.encode('utf8')
-                id = camgirl[1]
-                img = 'http:' + camgirl[10]
-                fanart = None
+        camgirl = camgirl.get('tpl')
+        if isinstance(camgirl, dict):
+            name = camgirl.get('2')
+            name = name if utils.PY3 else name.encode('utf8')
+            subject = camgirl.get('6')
+            subject += u'[CR][CR][COLOR deeppink] Viewers: [/COLOR]{}[CR]'.format(camgirl.get('4'))
+            if camgirl.get('3'):
+                subject += u'[COLOR deeppink] Status: [/COLOR]{}[CR]'.format(camgirl.get('3'))
+            subject = subject if utils.PY3 else subject.encode('utf8')
+            cid = camgirl.get('1')
+            img = camgirl.get('10')
+            if img:
+                img = 'http:' + img
+            fanart = camgirl.get('15')
+            if fanart:
+                fanart = 'http:' + fanart
         else:
-            name = camgirl['display_name'] if utils.PY3 else camgirl['display_name'].encode('utf8')
-            subject = camgirl['subject_html'] if utils.PY3 else camgirl['subject_html'].encode('utf8')
-            id = camgirl['username']
-            img = 'https://md.camsoda.com/thumbs/%s.jpg?cb=%s' % (id, int(time.time()))
-        videourl = '{0}/api/v1/video/vtoken/{1}'.format(site.url, id)
+            name = camgirl[2]
+            name = name if utils.PY3 else name.encode('utf8')
+            subject = camgirl[6]
+            subject += u'[CR][CR][COLOR deeppink] Viewers: [/COLOR]{}[CR]'.format(camgirl[6])
+            if camgirl[3]:
+                subject += u'[COLOR deeppink] Status: [/COLOR]{}[CR]'.format(camgirl[3])
+            subject = subject if utils.PY3 else subject.encode('utf8')
+            cid = camgirl[1]
+            img = 'http:' + camgirl[10]
+            if len(camgirl) < 16:
+                fanart = None
+            else:
+                fanart = 'http:' + camgirl[15]
+
+        videourl = '{0}/api/v1/video/vtoken/{1}'.format(site.url, cid)
         site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True, fanart=fanart)
     utils.eod()
 
@@ -94,9 +97,7 @@ def Playvid(url, name):
     url = url + "?username=guest_" + str(random.randrange(100, 55555))
     response = utils._getHtml(url)
     data = json.loads(response)
-    if "camhouse" in data['stream_name']:
-        videourl = "https://camhouse.camsoda.com/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
-    elif "enc" in data['stream_name']:
+    if "enc" in data['stream_name']:
         if len(data['edge_servers']) > 0:
             videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['app'] + "/mp4:" + data['stream_name'] + "_h264_aac_480p/playlist.m3u8?token=" + data['token']
         else:

@@ -3,3 +3,4 @@ KissJAV - remove defunct Models category
         - add country menus
 Chaturbate - fix listings, tags, search
 BongaCams - fix contests, playback
+Camsoda - fix listings
