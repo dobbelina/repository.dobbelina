@@ -4,3 +4,4 @@ KissJAV - remove defunct Models category
 Chaturbate - fix listings, tags, search
 BongaCams - fix contests, playback
 Camsoda - fix listings
+naked - disable rtmp stream code

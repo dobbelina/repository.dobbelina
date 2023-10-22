@@ -92,7 +92,7 @@ def clean_database(showdialog=True):
 
 @site.register()
 def Playvid(url, name):
-    playmode = int(utils.addon.getSetting('chatplay'))
+    playmode = 0  # int(utils.addon.getSetting('chatplay'))
     url = "{0}&t={1}".format(url, int(time.time() * 1000))
     params = urllib_parse.parse_qs(url.split('?')[1])
     murl = '{0}webservices/chat-room-interface.php?a=login_room&model_id={1}&t={2}'.format(
