@@ -119,6 +119,8 @@ def List(url, page=1):
     #         login()
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)
+    if not isinstance(page, int):
+        page = 1
 
     listhtml = utils._getHtml(url)
     listhtml = json.loads(listhtml)
@@ -191,12 +193,6 @@ def List(url, page=1):
     #     contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
 
     #     site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
-
-    # nextp = re.compile(r'<a\s*href="([^"]+)"\s*class="next', re.DOTALL | re.IGNORECASE).search(listhtml)
-    # if nextp:
-    #     page = page + 1 if page else 2
-    #     next = bu[:-1] + nextp.group(1)
-    #     site.add_dir('Next Page (' + str(page) + ')', next, 'List', site.img_next, page)
 
     utils.eod()
 
