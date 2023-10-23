@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -47,8 +46,8 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('freshporno.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('freshporno.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)

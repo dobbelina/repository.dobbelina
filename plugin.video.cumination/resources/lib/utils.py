@@ -427,7 +427,8 @@ def inputstream_check(url, listitem):
             url, strhdr = url.split('|')
             listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
 
-        listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)
+        if KODIVER < 20.0:
+            listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)
         listitem.setMimeType(mime_type)
         listitem.setContentLookup(False)
 
@@ -449,7 +450,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
     url = urllib_parse.quote(url, r':/%?+&=')
 
     if data:
-        if type(data) != str:
+        if not isinstance(data, six.string_types):
             data = urllib_parse.urlencode(data)
         data = data if PY2 else six.b(data)
     if headers is None:

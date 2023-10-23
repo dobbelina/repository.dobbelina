@@ -47,7 +47,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', rapi + '?limit=100&offset=0&keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
-    # site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
+    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
     # site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', rapi + '?genders=f&limit=100&offset=0', 'List', '', '')
@@ -117,8 +117,8 @@ def List(url, page=1):
     #     site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', site.url + 'followed-cams/offline/', 'List', '', '')
     #     if 'followed' in url:
     #         login()
-    # if addon.getSetting("chaturbate") == "true":
-    #     clean_database(False)
+    if addon.getSetting("chaturbate") == "true":
+        clean_database(False)
 
     listhtml = utils._getHtml(url)
     listhtml = json.loads(listhtml)

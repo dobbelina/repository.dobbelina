@@ -16,10 +16,12 @@
 import os
 import sqlite3
 import json
+import re
+from six.moves import urllib_parse, urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('bongacams', '[COLOR hotpink]BongaCams[/COLOR]', 'https://en.bongacams.xxx/', 'bongacams.png', 'bongacams', True)
+site = AdultSite('bongacams', '[COLOR hotpink]BongaCams[/COLOR]', 'https://bongacams.com/', 'bongacams.png', 'bongacams', True)
 
 
 @site.register(default_mode=True)
@@ -29,7 +31,7 @@ def Main():
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh bongacams.com images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('Hour\'s TOP chat rooms', 'https://en.bongacams.xxx/contest/top-room?cp=1', 'List2', '', '')
+    site.add_dir('Hour\'s TOP chat rooms', 'https://bongacams.com/contest/top-room?cp=1', 'List2', '', '')
     bu = "http://tools.bongacams.com/promo.php?c=226355&type=api&api_type=json&categories[]="
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
@@ -141,7 +143,7 @@ def Playvid(url, name):
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return
 
-    if amf_json.get('performerData', {}).get('showType') == 'private':
+    if 'private' in amf_json.get('performerData', {}).get('showType'):
         utils.notify(name, 'Model in private chat', icon='thumb')
         vp.progress.close()
         return
@@ -156,8 +158,18 @@ def Playvid(url, name):
         videourl = 'https:' + amf + '/hls/stream_' + url + '.m3u8'
     else:
         videourl = 'https:' + amf + '/hls/stream_' + url + '/playlist.m3u8'
+        try:
+            m3u8 = utils._getHtml(videourl, referer=site.url)
+        except urllib_error.HTTPError:
+            utils.notify(name, 'Model Offline', icon='thumb')
+            vp.progress.close()
+            return
+        quals = re.findall(r'\d+x(\d+).+\n(.+)', m3u8)
+        if quals:
+            sources = {qual: urllib_parse.urljoin(videourl, vurl) for qual, vurl in quals}
+            videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: int(x.split('x')[-1]), reverse=True)
 
-    videourl += '|User-Agent={0}'.format(utils.USER_AGENT)
+    videourl += '|User-Agent={0}&Referer={1}&Origin={2}'.format(utils.USER_AGENT, site.url, site.url[:-1])
     vp.progress.update(75, "[CR]Found Stream[CR]")
     vp.play_from_direct_link(videourl)
 
