@@ -17,6 +17,7 @@
 """
 
 import re
+import time
 from resources.lib import utils
 from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
@@ -26,7 +27,8 @@ site = AdultSite('rule34video', '[COLOR hotpink]Rule34 Video[/COLOR]', 'https://
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tag', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cats', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'TagMenu', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'latest-updates/')
     utils.eod()
@@ -69,12 +71,52 @@ def Search(url, keyword=None):
 
 
 @site.register()
+def TagMenu(url):
+    taghtml = utils.getHtml(url, site.url)
+    items = re.compile(r'data-block-id="list_tags_tags_list"\s*data-parameters="section:([^"]+)">([^<]+)', re.IGNORECASE | re.DOTALL).findall(taghtml)
+    for tagpage, name in items:
+        tagurl = '{0}?mode=async&function=get_block&block_id=list_tags_tags_list&section={1}&_={2}'.format(
+            url,
+            tagpage,
+            int(time.time() * 1000)
+        )
+        site.add_dir(name, tagurl, 'Tag')
+    utils.eod()
+
+
+@site.register()
 def Tag(url):
     taghtml = utils.getHtml(url, site.url)
     items = re.compile(r'item">\s+<a href="([^"]+)">\s+<strong>([^<]+)<.strong>\s+<span>([^<]+)<', re.IGNORECASE | re.DOTALL).findall(taghtml)
     for tagpage, name, videos in items:
         name = '{} [COLOR orange]{}[/COLOR]'.format(name, videos)
         site.add_dir(name, tagpage, 'List')
+    utils.eod()
+
+
+@site.register()
+def Cats(url):
+    if '?' not in url:
+        url = '{0}?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_={1}'.format(
+            url,
+            int(time.time() * 1000)
+        )
+    cathtml = utils.getHtml(url, site.url)
+    items = re.compile(r'item">\s*<a\s*class="th"\s*href="([^"]+).+?<img.+?src="([^"]+).+?title">([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for catpage, img, name in items:
+        name = utils.cleantext(name)
+        site.add_dir(name, catpage, 'List', img)
+
+    nextp = re.compile(r'class="item\s*pager\s*next">.+?data-parameters=.+?from:(\d+)', re.DOTALL | re.IGNORECASE).search(cathtml)
+
+    if nextp:
+        currpg = re.compile(r'class="item\s*active">.+?data-parameters=.+?from:0?(\d+)', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
+        lastpg = re.compile(r'class="item">.+?data-parameters=.+?from:0?(\d+)">\s*Last', re.DOTALL | re.IGNORECASE).findall(cathtml)[-1]
+        if '&from=' in url:
+            nextpg = re.sub(r'&from=\d+', '', url)
+        nextpg = re.sub(r'&_=\d+', '&from={0}&_={1}'.format(nextp.group(1), int(time.time() * 1000)), url)
+        site.add_dir('Next Page... (Currently in Page {} of {})'.format(currpg, lastpg), nextpg, 'Cats', site.img_next)
+
     utils.eod()
 
 
