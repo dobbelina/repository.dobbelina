@@ -165,7 +165,7 @@ def Categories(url):
             continue
 
         name = "{0} - {1} videos".format(name, videos.strip())
-        site.add_dir(name, catpage, 'List', '')
+        site.add_dir(name, catpage, 'List', '', 1)
     utils.eod()
 
 
