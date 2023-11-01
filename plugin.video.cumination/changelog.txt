@@ -1,2 +1,5 @@
 [B]Version 1.1.94[/B]
 - porndig videoplayer fix
+- remove cherry.tv as they only deliver webrtc streams now
+- remove thumbnails from mfc as they were incorrect
+- camsoda domain change

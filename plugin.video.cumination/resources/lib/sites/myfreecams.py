@@ -47,16 +47,16 @@ def Main():
 
 @site.register()
 def List(url, page=1):
-    MFC_SERVERS = getMFC()
+    # MFC_SERVERS = getMFC()
     listhtml = utils._getHtml(url)
     res = re.compile(r"broadcaster_id:(\d+).+?avatar_border.+?src=([^\s]+).+?:19px;'>([^<]+).+?<X>(.+?)<X>", re.IGNORECASE | re.DOTALL).findall(listhtml)
 
     for model_id, pic, name, plot in res:
         pic = pic.replace('100x100', '300x300')
-        idx = random.choice(list(MFC_SERVERS['H5SERVERS'].keys()))
-        imgserver = MFC_SERVERS.get('H5SERVERS').get(idx)[5:]
-        img = 'https://snap.mfcimg.com/snapimg/{0}/640x480/mfc_{1}?no-cache={2}'.format(imgserver, int(model_id) + 100000000, random.random())
-        site.add_download_link(name, name, 'Playvid', pic, utils.cleantext(plot), noDownload=True, fanart=img)
+        # idx = random.choice(list(MFC_SERVERS['H5SERVERS'].keys()))
+        # imgserver = MFC_SERVERS.get('H5SERVERS').get(idx)[5:]
+        # img = 'https://snap.mfcimg.com/snapimg/{0}/853x480/mfc_{1}?no-cache={2}'.format(imgserver, int(model_id) + 100000000, random.random())
+        site.add_download_link(name, name, 'Playvid', pic, utils.cleantext(plot), noDownload=True)
 
     if len(res) >= 50:
         page += 1

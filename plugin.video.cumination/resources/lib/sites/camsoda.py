@@ -20,7 +20,7 @@ import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('camsoda', '[COLOR hotpink]Camsoda[/COLOR]', 'https://www.camsoda.app', 'camsoda.png', 'camsoda', True)
+site = AdultSite('camsoda', '[COLOR hotpink]Camsoda[/COLOR]', 'https://www.camsoda.com', 'camsoda.png', 'camsoda', True)
 
 
 @site.register(default_mode=True)
