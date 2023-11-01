@@ -427,7 +427,7 @@ def inputstream_check(url, listitem):
             url, strhdr = url.split('|')
             listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
 
-        if KODIVER < 20.0:
+        if KODIVER < 20.8:
             listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)
         listitem.setMimeType(mime_type)
         listitem.setContentLookup(False)
