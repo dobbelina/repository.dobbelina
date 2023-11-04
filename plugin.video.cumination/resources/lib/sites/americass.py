@@ -21,7 +21,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('americass', '[COLOR hotpink]Americass[/COLOR]', 'https://americass.net/', '', 'americass')
+site = AdultSite('americass', '[COLOR hotpink]Americass[/COLOR]', 'https://americass.net/', 'americass.png', 'americass')
 
 
 @site.register(default_mode=True)
@@ -63,6 +63,8 @@ def List(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
+    if 'interstice-ad?path=/' in url:
+        url = url.replace('interstice-ad?path=/', '')
     url = url + '/resolve'
     videopage = utils.getHtml(url, site.url)
 

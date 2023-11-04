@@ -3,3 +3,4 @@
 - remove cherry.tv as they only deliver webrtc streams now
 - remove thumbnails from mfc as they were incorrect
 - camsoda domain change
+- americass playback fix
