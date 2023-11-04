@@ -48,7 +48,8 @@ def Main():
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
-    # site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', site.url + 'followed-cams/', 'List', '', '')
+    site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=false&offset=0', 'List', '', '')
+
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', rapi + '?genders=f&limit=100&offset=0', 'List', '', '')
         site.add_dir('[COLOR hotpink]Tags - Female[/COLOR]', tapi + '?sort=ht&page=1&g=f&limit=100', 'Tags', '', '')
@@ -106,17 +107,34 @@ def Main():
 
 
 def Online(stamp):
+    days, weeks, years = None, None, None
     mins, secs = divmod(int(time.time()) - stamp, 60)
     hours, mins = divmod(mins, 60)
-    return '{:2d} hours {:2d} minutes'.format(hours, mins)
+    if hours > 23:
+        days, hours = divmod(hours, 24)
+    if days and days > 6:
+        weeks, days = divmod(days, 7)
+    if weeks and weeks > 51:
+        years, weeks = divmod(weeks, 52)
+    if years:
+        ret = '{:2d} years {:2d} weeks'.format(years, weeks)
+    elif weeks:
+        ret = '{:2d} weeks {:2d} days'.format(weeks, days)
+    elif days:
+        ret = '{:2d} days {:2d} hours'.format(days, hours)
+    else:
+        ret = '{:2d} hours {:2d} minutes'.format(hours, mins)
+    ret = re.sub(r'(\s0\s\S+)', '', ret)
+    ret = re.sub(r'(\s1\s\S+)s', r'\1', ret)
+    return ret
 
 
 @site.register()
 def List(url, page=1):
-    # if 'followed' in url and 'offline' not in url:
-    #     site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', site.url + 'followed-cams/offline/', 'List', '', '')
-    #     if 'followed' in url:
-    #         login()
+    if 'follow=true' in url and 'offline=false' in url:
+        site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=true&offset=0', 'List', '', '')
+    if 'follow=true' in url:
+        login()
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)
     if not isinstance(page, int):
@@ -131,23 +149,42 @@ def List(url, page=1):
         age = model.get('display_age')
         age = 'Unknown' if age is None else age
         location = model.get('location')
-        location = location.encode('utf8') if six.PY2 else location
-        location = utils.cleantext(location)
+        if location:
+            location = location.encode('utf8') if six.PY2 else location
+            location = utils.cleantext(location)
+        else:
+            location = ''
+
         subject = model.get('subject')
         subject = subject.encode('utf8') if six.PY2 else subject
         subject = re.sub(r'<a.+', '', subject).strip()
-        subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + location + "[CR]" \
-            + "[COLOR deeppink]Duration: [/COLOR]{0}[CR]".format(Online(model.get('start_timestamp'))) \
-            + "[COLOR deeppink]Watching: [/COLOR]{0}[CR]".format(model.get('num_users')) \
-            + "[COLOR deeppink]Followers: [/COLOR]{0}".format(model.get('num_followers'))
+        if 'offline=true' not in url:
+            subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + location + "[CR]" \
+                + "[COLOR deeppink]Duration: [/COLOR]{0}[CR]".format(Online(model.get('start_timestamp'))) \
+                + "[COLOR deeppink]Watching: [/COLOR]{0}[CR]".format(model.get('num_users')) \
+                + "[COLOR deeppink]Followers: [/COLOR]{0}".format(model.get('num_followers'))
+            name = '{0} [COLOR deeppink][{1}][/COLOR] {2}'.format(name, age, model.get('current_show'))
+        else:
+            subject = utils.cleantext(subject)
+            if model.get('start_timestamp'):
+                ago = re.sub(r'^\s*(\d+\s+\S+).*$', r'\1', Online(model.get('start_timestamp')))
+                name = '{0} [COLOR deeppink][{1}][/COLOR] [COLOR blue]{2} ago[/COLOR]'.format(name, age, ago)
+            else:
+                name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
         tags = model.get('tags')
         if tags:
             tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
             tags = tags.encode('utf-8') if six.PY2 else tags
             subject += "[CR][CR]" + tags
-        name = '{0} [COLOR deeppink][{1}][/COLOR] {2}'.format(name, age, model.get('current_show'))
         img = model.get('img')
-        site.add_download_link(name, videopage, 'Playvid', img, subject, noDownload=True)
+
+        id = model.get('username')
+        follow = model.get('is_following')
+        contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
+        contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
+        contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if not follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
+
+        site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
 
     total_items = listhtml.get('total_count')
     nextp = (page * 100) < total_items
@@ -157,42 +194,6 @@ def List(url, page=1):
         page = page + 1
         nurl = re.sub(r'offset=\d+', 'offset={0}'.format(next), url)
         site.add_dir('Next Page.. (Currently in Page {0} of {1})'.format(page - 1, lastpg), nurl, 'List', site.img_next, page)
-
-    # match = re.compile(r'room_list_room.+?href="([^"]+).+?src="([^"]+).+?</a>(.*?)<div class="details.+?href[^>]+>([^<]+)<.+?age">([^<]*).+?class="subject"(.+?)data-slug=', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    # for videopage, img, status, name, age, data in match:
-    #     subject, location, duration, viewers = '', '', '', ''
-    #     if '/followed-cams/offline/' in url:
-    #         match = re.compile(r'class="cams">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(data)
-    #         if match:
-    #             age = match[0].strip()
-    #     else:
-    #         match = re.compile(r'>.+?>(.*?)</li.+?location.+?>([^<]*).+?time">([^<]+).+?viewers">([^<]+)', re.DOTALL | re.IGNORECASE).findall(data)
-    #         if match:
-    #             subject, location, duration, viewers = match[0]
-
-    #     follow = 'title="Follow"' in data
-    #     name = utils.cleantext(name)
-    #     age = age.replace('&nbsp;', '')
-    #     tags = re.findall(r'>#([^<]+)', subject)
-    #     subject = re.sub(r'<.+>', '', subject)
-    #     subject = utils.cleantext(subject) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(location) + "[CR]" \
-    #         + "[COLOR deeppink]Duration: [/COLOR]" + utils.cleantext(duration) + "[CR]" \
-    #         + "[COLOR deeppink]Watching: [/COLOR]" + utils.cleantext(viewers)
-    #     if tags:
-    #         tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(tags)
-    #         subject += "[CR][CR]" + tags
-    #     status = utils.cleantext(status.replace("[CR]", ""))
-    #     if status:
-    #         status = status.split('>')[1].split('<')[0]
-    #     name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
-    #     id = videopage[1:-1]
-    #     videopage = bu[:-1] + videopage
-
-    #     contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
-    #     contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
-    #     contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
-
-    #     site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
 
     utils.eod()
 
@@ -359,7 +360,7 @@ def login():
                    "password": password,
                    "rememberme": "on"}
     response = utils._postHtml(loginurl, headers=hdr, form_data=postRequest)
-    if 'title="Username Dropdown">{}<'.format(username) not in response:
+    if '<h1>Chaturbate Login</h1>' in response:
         utils.notify('Chaturbate', 'Login failed please check your username and password')
 
 

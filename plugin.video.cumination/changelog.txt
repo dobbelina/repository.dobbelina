@@ -4,3 +4,4 @@
 - remove thumbnails from mfc as they were incorrect
 - camsoda domain change
 - americass playback fix
+- chaturbate followed cams fix
