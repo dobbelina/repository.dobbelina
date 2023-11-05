@@ -66,7 +66,10 @@ def Playvid(url, name, download=None):
     direct = re.compile("video=([^&]+)&", re.DOTALL | re.IGNORECASE).findall(phtml)
     if direct:
         links['Direct'] = direct[0]
+    iframe = re.compile(r'iframe\s*?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(phtml)
     sources = re.compile(r'href="??([^"\s]+)"??\s*rel="??noopener"??', re.DOTALL | re.IGNORECASE).findall(phtml)
+    if iframe:
+        sources = sources + iframe
     for link in sources:
         if '.rar' in link:
             continue
