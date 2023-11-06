@@ -18,18 +18,23 @@
 
 import re
 import json
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'https://sextb.net/images/logo.png?v=123', 'sextb')
 enames = {'VV': 'VideoVard',
           'TV': 'TurboVIPlay',
+          'TB': 'TurboVIPlay',
           'JP': 'JAVPoll',
           'ST': 'StreamTape',
           'DD': 'DoodStream',
           'VS': 'Voe',
-          'SB': 'StreamSB',
-          'NJ': 'NinjaStream'}
+          'SW': 'StreamWish',
+          'NJ': 'NinjaStream',
+          'NT': 'Netu',
+          'FL': 'FileLions',
+          'VG': 'Vidguard'}
 
 
 @site.register(default_mode=True)
@@ -41,7 +46,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Subtitle[/COLOR]', site.url + 'subtitle/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studio', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studio', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'uncensored/pg-1')
     utils.eod()
@@ -53,14 +58,16 @@ def List(url):
     if 'No Video were found that matched your search query' in html or len(html) < 10:
         utils.eod()
         return
-    match = re.compile(r'<div class="tray-item.*?href="([^"]+)".*?data-src="([^"]+)" alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
-    for videopage, img, name in match:
+    match = re.compile(r'<div class="tray-item(?:\s*tray|").+?href="([^"]+)".+?data-src="([^"]+).+?title">([^<]+).+?time">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
+    for videopage, img, name, duration in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     nextp = re.compile(r'''href=["']([^'"]+)["']>Next''', re.DOTALL | re.IGNORECASE).search(html)
     if nextp:
         np = nextp.group(1)
+        if np.startswith('/'):
+            np = urllib_parse.urljoin(site.url, np)
         pgtxt = re.compile(r'''class=['"]current['"]\s*id[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(html)[0]
         site.add_dir('Next Page... (Currently in Page {0})'.format(pgtxt), np, 'List', site.img_next)
     utils.eod()
@@ -73,6 +80,20 @@ def Categories(url):
     for caturl, name, count in match:
         name = utils.cleantext(name) + ' [COLOR hotpink](' + str(count) + ')[/COLOR]'
         name = name.replace('Genre ', '').replace('Studio ', '')
+        if caturl.startswith('/'):
+            caturl = urllib_parse.urljoin(site.url, caturl)
+        site.add_dir(name, caturl, 'List', '')
+    utils.eod()
+
+
+@site.register()
+def Studios(url):
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'<div class="tray-item\s*tray.+?href="([^"]+).+?/i>\s*([^<]+).+?total">([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, name, count in match:
+        name = utils.cleantext(name) + ' [COLOR hotpink]' + count + '[/COLOR]'
+        if caturl.startswith('/'):
+            caturl = urllib_parse.urljoin(site.url, caturl)
         site.add_dir(name, caturl, 'List', '')
     utils.eod()
 
@@ -83,10 +104,14 @@ def Actress(url):
     match = re.compile(r'class="tray-item-actress".+?href="([^"]+)".+?data-src="([^"]+)".+?actress-title">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name in match:
         name = utils.cleantext(name)
+        if caturl.startswith('/'):
+            caturl = urllib_parse.urljoin(site.url, caturl)
         site.add_dir(name, caturl, 'List', img)
     nextp = re.compile(r'''href=["']([^'"]+)["']>Next''', re.DOTALL | re.IGNORECASE).search(cathtml)
     if nextp:
         np = nextp.group(1)
+        if np.startswith('/'):
+            np = urllib_parse.urljoin(site.url, np)
         pgtxt = re.compile(r'''class=['"]current['"]\s*id[^>]+>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(cathtml)[0]
         site.add_dir('Next Page... (Currently in Page {0})'.format(pgtxt), np, 'Actress', site.img_next)
     utils.eod()
@@ -105,6 +130,8 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
+    if url.startswith('/'):
+        url = urllib_parse.urljoin(site.url, url)
     video_page = utils.getHtml(url, site.url)
     videourl = ''
     ajaxurl = 'https://sextb.net/ajax/player'
@@ -115,7 +142,7 @@ def Playvid(url, name, download=None):
         filmid, episode = source.split('$$')
         formdata = {'filmId': filmid, 'episode': episode}
         player = json.loads(utils.postHtml(ajaxurl, form_data=formdata)).get('player')
-        videourl = re.findall(r'src="([^?"]+)', player)[0]
+        videourl = re.findall(r'src="([^?"]+)', player)[0] + '$$' + site.url
 
     if not videourl:
         vp.progress.close()
