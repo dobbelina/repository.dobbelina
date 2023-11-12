@@ -1,2 +1,3 @@
 [B]Version 1.1.96[/B]
 - custom lists: removed 'edit keyword' and 'remove keyword' from the context menu
+- ThePornFull: fix listing
