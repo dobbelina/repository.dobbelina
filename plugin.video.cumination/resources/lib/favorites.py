@@ -943,8 +943,6 @@ def load_custom_list(url):
             custom = 'custom_sites' in img
             img = img if img.lower().startswith('http') else img.split('/')[-1].split('\\')[-1]
             img = basics.cum_image(img, custom)
-        keyword_match = re.compile(r'\[COLOR [a-z]*\](.*?)\[\/COLOR\]', re.IGNORECASE).search(name)
-        keyword = keyword_match.group(1) if keyword_match else ''
         ins = AdultSite.get_site_by_name(mode.split('.')[0])
         if ins:
             if ins.default_mode == mode:
@@ -954,7 +952,7 @@ def load_custom_list(url):
                 name = ins.title + ' - ' + name
                 custom = False
                 about = None
-            basics.addDir(name, url, mode, img, about=about, custom=custom, list_avail=False, listitem_id=rowid, keyword=keyword)
+            basics.addDir(name, url, mode, img, about=about, custom=custom, list_avail=False, listitem_id=rowid)
     conn.close()
     if 'main' not in url:
         utils.eod(utils.addon_handle)

@@ -1,3 +1,2 @@
-[B]Version 1.1.95[/B]
-- Latestporn - also use iframe for video source
-- sextb update fixes
+[B]Version 1.1.96[/B]
+- custom lists: removed 'edit keyword' and 'remove keyword' from the context menu
