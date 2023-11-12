@@ -1,7 +1,3 @@
-[B]Version 1.1.94[/B]
-- porndig videoplayer fix
-- remove cherry.tv as they only deliver webrtc streams now
-- remove thumbnails from mfc as they were incorrect
-- camsoda domain change
-- americass playback fix
-- chaturbate followed cams fix
+[B]Version 1.1.95[/B]
+- Latestporn - also use iframe for video source
+- sextb update fixes
