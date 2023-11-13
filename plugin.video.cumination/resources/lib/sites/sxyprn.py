@@ -17,6 +17,7 @@
 '''
 
 import re
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -27,7 +28,6 @@ site = AdultSite("sxyprn", "[COLOR hotpink]Sxy Prn[/COLOR]", "https://sxyprn.com
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Top Networks[/COLOR]', site.url, 'Nets', site.img_cat)
     site.add_dir('[COLOR hotpink]Top Pornstars[/COLOR]', site.url, 'Stars', site.img_cat)
     site.add_dir('[COLOR hotpink]Top rated last week[/COLOR]', site.url + 'popular/top-rated.html', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Top POP last week[/COLOR]', site.url + 'popular/top-pop.html', 'List', site.img_cat)
@@ -53,9 +53,8 @@ def List(url):
             urls = re.findall(r'(http[^\s]+)', name)
             name = re.sub(r'(http[^\s]+)', '', name)
             iurl = '|'.join(urls) + '@'
-        else:
-            if iurl.startswith('/'):
-                iurl = site.url[:-1] + iurl
+        elif iurl.startswith('/'):
+            iurl = site.url[:-1] + iurl
 
         info = utils.cleantext(name)
         if name.startswith('#'):
@@ -92,7 +91,16 @@ def List(url):
         if t:
             quality = t.group(1)
 
-        site.add_download_link(name, iurl, 'Playvid', thumb, info, duration=duration, quality=quality)
+        v = re.search("href='([^']+)' aria-label", item, re.IGNORECASE | re.DOTALL)
+        if v:
+            videopage = site.url + v.group(1)
+
+        contexturl = (utils.addon_sys
+                      + "?mode={}.Lookupinfo".format(site.module_name)
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+
+        site.add_download_link(name, iurl, 'Playvid', thumb, info, duration=duration, quality=quality, contextm=contextmenu)
 
     if "class='ctrl_el'" in listhtml:
         if '/popular/' in url or '/orgasm/' in url:
@@ -137,16 +145,6 @@ def Cat(url):
 
 
 @site.register()
-def Nets(url):
-    cathtml = utils.getHtml(url, site.url)
-    cats = re.compile(r"href='([^']+)'\s*target='_blank'><div\s*class='top_sub_el\s*top_sub_el_sc'><span\s*class='top_sub_el_key_sc'>([^<]+)").findall(cathtml)
-    for caturl, name in cats:
-        caturl = site.url[:-1] + caturl
-        site.add_dir(name, caturl, 'List', '')
-    utils.eod()
-
-
-@site.register()
 def Stars(url):
     cathtml = utils.getHtml(url, site.url)
     cats = re.compile(r"href='([^']+)'\s*target='_blank'><div\s*class='top_sub_el\s*top_sub_el_ps'><span\s*class='top_sub_el_key_ps'>([^<]+)").findall(cathtml)
@@ -158,12 +156,11 @@ def Stars(url):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '_')
-        searchUrl = searchUrl + title + '.html'
+        searchUrl = url + title + '.html'
         List(searchUrl)
 
 
@@ -197,3 +194,14 @@ def Playvid(url, name, download=None):
         vp.play_from_direct_link(videourl)
     else:
         vp.play_from_link_to_resolve(videourl)
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Actor", ["el_wrap'>(.*?)comments_area", "href='([^']+)'>([^<]+)<"], ''),
+        ("Tag", ["el_wrap'>(.*?)comments_area", """href="([^"']+)">([^<]+)<"""], '')
+    ]
+
+    lookupinfo = utils.LookupInfo(site.url, url, '{}.List'.format(site.module_name), lookup_list)
+    lookupinfo.getinfo()
