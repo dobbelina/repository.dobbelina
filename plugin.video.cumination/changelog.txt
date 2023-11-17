@@ -2,3 +2,4 @@
 - custom lists: removed 'edit keyword' and 'remove keyword' from the context menu
 - ThePornFull: fix listing
 - Sxyprn: remove Top Networks, added Lookup info contextmenu
+- Chaturbate: fix Followed Cams, if login is protected by Cloudflare (requires FlareSolverr)
