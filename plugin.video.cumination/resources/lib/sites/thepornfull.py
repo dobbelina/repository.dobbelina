@@ -48,7 +48,7 @@ def thepornfull_list(url):
         site.add_download_link(name, video, 'thepornfull_play', img, name)
 
     re_np = r'class="active"><a\s+href="[^"]+">[^"]+"([^"]+)"\s*>'
-    re_npnr = r'/(\d+)/"\s*>Próximo<'
+    re_npnr = r'rel="next" href="[^"]+/(\d+)/"'
     utils.next_page(site, 'thepornfull.thepornfull_list', listhtml, re_np, re_npnr, contextm='thepornfull.GotoPage')
     utils.eod()
 
