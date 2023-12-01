@@ -310,6 +310,7 @@ def onlineFav(url):
     chaturbate_url = 'https://chaturbate.com/affiliates/api/onlinerooms/?format=json&wm=' + random.choice(wmArray)
     data_chat = utils._getHtml(chaturbate_url, '')
     model_list = json.loads(data_chat)
+    model_lookup = {item['username']: item for item in model_list}
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
@@ -317,18 +318,19 @@ def onlineFav(url):
     result = c.fetchall()
     c.close()
     for (name, url, image) in result:
-        model = [item for item in model_list if item["username"] == name.split('[COLOR')[0].strip()]
-        if model:
-            image = model[0]["image_url"]
+        stripped_name = name.split('[COLOR')[0].strip()
+        if stripped_name in model_lookup:
+            model = model_lookup[stripped_name]
+            image = model["image_url"]
             current_show = ''
-            if "current_show" in model[0]:
-                if model[0]["current_show"] != "public":
-                    current_show = '[COLOR blue] {}[/COLOR]'.format(model[0]["current_show"])
-            subject = model[0]["room_subject"] if utils.PY3 else model[0]["room_subject"].encode('utf8')
-            subject = utils.cleantext(subject.split(' #')[0]) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model[0]["location"]) + "[CR]" \
-                + "[COLOR deeppink]Duration: [/COLOR]" + str(round(model[0]["seconds_online"] / 3600, 1)) + " hrs[CR]" \
-                + "[COLOR deeppink]Watching: [/COLOR]" + str(model[0]["num_users"]) + " viewers"
-            tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(model[0]["tags"])
+            if "current_show" in model:
+                if model["current_show"] != "public":
+                    current_show = '[COLOR blue] {}[/COLOR]'.format(model["current_show"])
+            subject = model["room_subject"] if utils.PY3 else model["room_subject"].encode('utf8')
+            subject = utils.cleantext(subject.split(' #')[0]) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model["location"]) + "[CR]" \
+                + "[COLOR deeppink]Duration: [/COLOR]" + str(round(model["seconds_online"] / 3600, 1)) + " hrs[CR]" \
+                + "[COLOR deeppink]Watching: [/COLOR]" + str(model["num_users"]) + " viewers"
+            tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(model["tags"])
             tags = tags if utils.PY3 else tags.encode('utf8')
             subject += "[CR][CR]" + tags
 
