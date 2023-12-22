@@ -20,6 +20,7 @@ import re
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from six.moves import urllib_parse
 
 site = AdultSite('cumlouder', '[COLOR hotpink]Cum Louder[/COLOR]', 'https://www.cumlouder.com/', 'cumlouder.jpg', 'cumlouder')
 
@@ -38,19 +39,21 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="muestra-escena".+?ClickVideo\((\d+).+?data-src="([^"]+)".+?alt="([^"]+)".+?class="ico-minutos sprite"></span>\s*([^<]+)(.*?)/a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    trim = re.compile(r'class="listado-escenas"(.+?)class="(?:smt-bottom|related)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    match = re.compile(r'class="muestra-escena"\s*href="([^"]+).+?data-src="([^"]+).+?/span>\s*([^<]+).+?minutos\s*sprite"></span>\s*([^<]+)(.*?)</a>', re.DOTALL | re.IGNORECASE).findall(trim)
     for videopage, img, name, duration, hd in match:
         hd = 'HD' if 'hd sprite' in hd else ''
         duration = duration.split(' ')[0] if 'm' in duration else duration.split(' ')[0] + ':00'
         name = utils.cleantext(name)
-        videopage = '{0}embed/{1}/'.format(site.url, videopage)
+        videopage = urllib_parse.urljoin(site.url, videopage)
         if img.startswith('//'):
             img = 'https:' + img
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
 
     nextp = re.compile(r'class="btn-pagination"\s*itemprop="name"\s*href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
-        site.add_dir('Next Page', site.url[:-1] + nextp.group(1), 'List', site.img_next)
+        np = nextp.group(1)
+        site.add_dir('Next Page... ({})'.format(np.split('/')[-2]), site.url[:-1] + np, 'List', site.img_next)
 
     utils.eod()
 
@@ -58,7 +61,16 @@ def List(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
-    vp.play_from_link_to_resolve(url)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+    vpage = utils.getHtml(url, site.url)
+    match = re.compile(r'''<iframe\s*src=["']([^"']+)''', re.DOTALL | re.IGNORECASE).findall(vpage)
+    if match:
+        videourl = match[-1]
+    else:
+        vp.progress.close()
+        return
+    vp.progress.update(75, "[CR]Video found[CR]")
+    vp.play_from_link_to_resolve(videourl)
 
 
 @site.register()
