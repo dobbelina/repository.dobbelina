@@ -17,7 +17,7 @@
 """
 
 import re
-from six.moves import urllib_parse
+from six.moves import urllib_parse, urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -26,9 +26,9 @@ site = AdultSite('hqporner', '[COLOR hotpink]HQPorner[/COLOR]', 'https://hqporne
 
 @site.register(default_mode=True)
 def HQMAIN():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + '/porn-categories.php', 'HQCAT', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + '/porn-studios.php', 'HQCAT', '', '')
-    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + '/porn-actress.php', 'HQCAT', '', '')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + '/categories', 'HQCAT', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + '/studios', 'HQCAT', '', '')
+    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + '/girls', 'HQCAT', '', '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/?q=', 'HQSEARCH', site.img_search)
     HQLIST(site.url + '/hdporn/1')
     utils.eod()
@@ -106,18 +106,34 @@ def HQPLAY(url, name, download=None):
     else:
         utils.notify('Oh oh', 'Couldn\'t find a supported videohost')
         return
-    utils.playvid(videourl, name, download)
+    if videourl:
+        utils.playvid(videourl, name, download)
 
 
 def getBMW(url):
     videopage = utils.getHtml(url, '')
+    vdiv = re.search(r'function do_pl\(\)\s*{(.*)};', videopage)
+    if vdiv:
+        vdiv = vdiv.group(1)
+        s = re.search(r'replaceAll\("([^"]+)",\s*([^)]+)', vdiv)
+        if s:
+            var = s.group(1)
+            params = s.group(2).split('+')
+            repl = ''
+            for param in params:
+                if param.startswith('"'):
+                    repl += param[1:-1]
+                else:
+                    repl += re.findall(r'{0}="([^"]+)'.format(param), vdiv)[0]
+            vdiv = vdiv.replace(var, repl)
+        videopage = vdiv
     videos = re.compile(r'source\s*src=\\"([^\\]+).+?\\"([^\\\s]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
     if not videos:
         videos = re.compile(r'file:\s*"([^"]+mp4)",\s*label:\s*"\d+', re.DOTALL | re.IGNORECASE).findall(videopage)
     if videos:
         videos = {label: url for url, label in videos}
         videourl = utils.prefquality(videos, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
-        if videourl.startswith('//'):
+        if videourl and videourl.startswith('//'):
             videourl = 'https:' + videourl
         return videourl
 
@@ -132,25 +148,31 @@ def getIP(url):
 
 
 def getFly(url):
-    videopage = utils.getHtml(url, '')
+    try:
+        videopage = utils.getHtml(url, '')
+    except urllib_error.HTTPError:
+        return
     videos = re.compile(r'''source\s*src=['"]([^'"]+).+?label=['"]([^'"]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
     if videos:
         videos = {label: url for url, label in videos}
         videourl = utils.prefquality(videos, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
-        if videourl.startswith('//'):
+        if videourl and videourl.startswith('//'):
             videourl = 'https:' + videourl
         return videourl
 
 
 def getHQWO(url):
-    epage = utils.getHtml(url, '')
-    eurl = re.compile(r'''<script[^\n]+src='([^']+)''', re.DOTALL | re.IGNORECASE).findall(epage)[0]
-    videopage = utils.getHtml(eurl, 'https://hqwo.cc/')
-    videos = re.compile(r'''file":\s*"([^"]+).+?label":\s*"([^"]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    videopage = utils.getHtml(url, '')
+    eurl = re.compile(r'''<script[^\n]+src='([^']+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if eurl:
+        videopage = utils.getHtml(eurl[0], 'https://hqwo.cc/')
+        videos = re.compile(r'''file":\s*"([^"]+).+?label":\s*"([^"]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    else:
+        videos = re.compile(r'''src=\\?"([^"\\]+)\\?"\s*title=\\?"([^"\\]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
     if videos:
         videos = {label: url for url, label in videos}
         videourl = utils.prefquality(videos, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
-        if videourl.startswith('//'):
+        if videourl and videourl.startswith('//'):
             videourl = 'https:' + videourl
         return videourl
 
