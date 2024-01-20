@@ -92,7 +92,7 @@ def animeidhentai_play(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
 
-    match = re.compile(r'data-player>\s+<iframe.+?-src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+    match = re.compile(r'data-player>\s+<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
     if match:
         videourl = match.group(1)
         if 'nhplayer.com' in videourl:
