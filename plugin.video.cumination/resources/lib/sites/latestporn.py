@@ -36,7 +36,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'id=post-\d*\s.*?href="??([^"\s]+)"??.*?data-src="??([^"\s]+)"??.*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'(?:pt-cv-content-item|class="post-conten).+?href="??([^"\s]+)"??.*?data-src="??([^"\s]+)"??.*?title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
     for videopage, img, name in match:
@@ -99,7 +99,7 @@ def Search(url, keyword=None):
 @site.register()
 def Tags(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'/(tag/[^\s]+)"??\s*class="??tag-cloud-link.*?aria-label="??([^"\s]+)"??', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'/(tag/[^\s]+)"??[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name in match:
         name = utils.cleantext(name.strip())
         site.add_dir(name, site.url + tagpage, 'List', '')
