@@ -42,6 +42,7 @@ class URL_Dispatcher(object):
         self.img_search = cum_image('cum-search.png')
         self.img_cat = cum_image('cum-cat.png')
         self.img_next = cum_image('cum-next.png')
+        self.widget = False
 
     def get_full_mode(self, mode):
         return mode if '.' in str(mode) else '{}.{}'.format(self.module_name, mode)
@@ -68,8 +69,9 @@ class URL_Dispatcher(object):
     def add_dir(self, name, url, mode, iconimage=None, page=None, channel=None, section=None, keyword='', Folder=True,
                 about=None, custom=False, list_avail=True, listitem_id=None, custom_list=False, contextm=None, desc=''):
         mode = self.get_full_mode(mode)
-        addDir(name, url, mode, iconimage, page, channel, section, keyword, Folder, about,
-               custom, list_avail, listitem_id, custom_list, contextm, desc)
+        if not self.widget or 'Next ' in name:
+            addDir(name, url, mode, iconimage, page, channel, section, keyword, Folder, about,
+                   custom, list_avail, listitem_id, custom_list, contextm, desc)
 
     def add_download_link(self, name, url, mode, iconimage, desc='', stream=None, fav='add', noDownload=False, contextm=None, fanart=None, duration='', quality=''):
         mode = self.get_full_mode(mode)
