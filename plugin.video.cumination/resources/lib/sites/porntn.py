@@ -45,7 +45,7 @@ def List(url, page=1):
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = site.url + videopage
-        img = site.url + img
+        img = site.url + img if not img.startswith('//') else 'https:' + img
 
         contextmenu = []
         contexturl = (utils.addon_sys
