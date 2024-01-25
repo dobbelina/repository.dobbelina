@@ -81,16 +81,17 @@ def Main(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url)
-    match = re.compile(r'(?:class="thumb|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, name, img in match:
+    match = re.compile(r'(?:class="thumb|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)".*?duration_item">([^<]+)</', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for video, name, img, duration in match:
         name = utils.cleantext(name)
         img = 'https:' + img if img.startswith('//') else img
         video = siteurl[:-1] + video if video.startswith('/') else video
+        duration = duration.strip()
 
         cm_related = (utils.addon_sys + "?mode=" + str('pornhat.ContextRelated') + "&url=" + urllib_parse.quote_plus(video))
         cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
 
-        site.add_download_link(name, video, 'Play', img, name, contextm=cm)
+        site.add_download_link(name, video, 'Play', img, name, contextm=cm, duration=duration)
     nextp = re.compile(r'href="([^"]+)"[^>]*>\s*Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
@@ -166,18 +167,26 @@ def Play(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vpage = utils.getHtml(url, siteurl)
     sources = {}
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
-    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
-        for surl, qual in items:
-            qual = '00' if qual == 'preview' else qual
-            surl = kvs_decode(surl, license)
-            sources.update({qual: surl})
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+    if 'license_code:' in vpage:
+        license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
+        patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
+                    r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
+                    r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
+                    r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
+        for pattern in patterns:
+            items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
+            for surl, qual in items:
+                qual = '00' if qual == 'preview' else qual
+                surl = kvs_decode(surl, license)
+                sources.update({qual: surl})
+    elif '<source' in vpage:
+        sources = re.compile(r'<source\s*src="([^"]+)".+?label="([^"]+)', re.DOTALL | re.IGNORECASE).findall(vpage)
+        sources = {quality: videourl for videourl, quality in sources if quality.lower() != 'auto'}
+    else:
+        vp.progress.close()
+        return
+
+    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x.lower() == '4k' else int(x[:-1]), reverse=True)
 
     if not videourl:
         vp.progress.close()
