@@ -39,8 +39,9 @@ def List(url, episodes=True):
     for videopage, name, img, hd in match:
         name = utils.cleantext(name)
         hd = " [COLOR orange]{0}[/COLOR]".format(hd.upper())
-        img = site.url + img
-        site.add_download_link(name, videopage, 'Playvid', img, name, quality=hd)
+        fanart_img = site.url + img
+        cover_img = fanart_img.replace('gallery', 'cover').replace('-0-thumbnail', '')
+        site.add_download_link(name, videopage, 'Playvid', cover_img, name, fanart=fanart_img, quality=hd)
 
     nextregex = 'rel="next"' if episodes else 'nextPage'
     np = re.compile(nextregex, re.DOTALL | re.IGNORECASE).search(listhtml)
@@ -57,7 +58,7 @@ def List(url, episodes=True):
 def Tags(url):
     listhtml = utils.getHtml(url)
     match = re.compile('for="genre-list-([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for tagpage, name in match:
+    for tagpage, name in sorted(match):
         name = utils.cleantext(name)
         tagpage = site.url + 'search?order=recently-uploaded&page=1&tags[0]={}'.format(tagpage)
         site.add_dir(name, tagpage, 'List', '', name)
