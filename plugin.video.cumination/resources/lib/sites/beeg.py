@@ -32,7 +32,9 @@ site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "be
 
 @site.register(default_mode=True)
 def BGMain():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'https://store.externulls.com/tag/facts/tags?get_original=true&slug=index', 'BGCat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'other', 'BGCat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', 'productions', 'BGCat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', 'human', 'BGCat', site.img_cat)
     BGList('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
     utils.eod()
 
@@ -63,19 +65,15 @@ def BGList(url, page=1):
             duration = ''
 
         h = video["file"]["fl_height"]
-        w = video["file"]["fl_width"]
+        # w = video["file"]["fl_width"]
         quality = str(h) + 'p' if "fl_height" in video["file"] else ''
-        th_size = '480x' + str((480 * h) // w)
+        # th_size = '480x' + str((480 * h) // w)
         plot = tag + ' - ' + name + '[CR]' + story
 
-        thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
+        # thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
         videodump = json.dumps(video)
         videopage = base64.b64encode(videodump.encode())
-        # videopage = 'https://store.externulls.com/facts/file/' + str(video["fc_file_id"])
-        if "set_id" in video["file"]:
-            img = 'https://thumbs-015.externulls.com/sets/{0}/thumbs/{0}-{1}.jpg?size={2}'.format(str(video["file"]["set_id"]).zfill(5), thumb.zfill(4), th_size)
-        else:
-            img = 'https://thumbs-015.externulls.com/videos/{0}/{1}.jpg?size={2}'.format(str(video["fc_file_id"]), thumb, th_size)
+        img = 'https://thumbs.externulls.com/videos/{0}/0.webp?size=480x270'.format(video["file"]['data'][0]["cd_file"])
         parts = ''
         if len(fc_facts) > 1:
             parts = '[COLOR blue] ({} parts)[/COLOR]'.format(len(fc_facts))
@@ -208,14 +206,14 @@ def BGPlayvid(url, name, download=None):
 
 @site.register()
 def BGCat(url):
-    listjson = utils.getHtml(url, site.url)
+    listjson = utils.getHtml('https://store.externulls.com/tag/facts/tags?get_original=true&slug=index', site.url)
     jdata = json.loads(listjson)
-    # for cat in jdata:
+    jdata = jdata[url]
     for cat in sorted(jdata, key=lambda x: x["tg_name"]):
         name = cat["tg_name"]
         slug = cat["tg_slug"]
-        thumbs = random.choice(cat["thumbs"]) if "thumbs" in cat else ''
-        img = 'https://thumbs-015.externulls.com/tags/{}/to.jpg?size=480x480'.format(thumbs) if thumbs else ''
+        thumbs = random.choice(cat.get("thumbs")) if cat.get("thumbs") else None
+        img = 'https://thumbs.externulls.com/photos/{}/to.webp?crop_id={}&size_new=112x112'.format(thumbs['id'], thumbs['crops'][0]['id']) if thumbs else ''
         caturl = 'https://store.externulls.com/facts/tag?slug={}&limit=48&offset=0'.format(slug)
         site.add_dir(name, caturl, 'BGList', img)
     utils.eod()
