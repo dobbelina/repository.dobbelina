@@ -58,7 +58,7 @@ def List(url):
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=pornhits.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
-    
+
     utils.videos_list(site, 'pornhits.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
     match = re.compile(r'class="pagination.+?data-page="(\d+)"\s+data-count="(\d+)"\s+data-total="(\d+)"', re.IGNORECASE | re.DOTALL).findall(listhtml)
@@ -107,7 +107,7 @@ def Playvid(url, name, download=None):
     match = re.compile(r'video:url"\s+content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
     if match:
         embedurl = match[0]
-        embedhtml = utils.getHtml(embedurl)
+        embedhtml = utils.getHtml(embedurl, url)
         match = re.compile(r"\s},\s+'([^']+)',\s+null\);", re.IGNORECASE | re.DOTALL).findall(embedhtml)
         if match:
             enc_url = match[0]
