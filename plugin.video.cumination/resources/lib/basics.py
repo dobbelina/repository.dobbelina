@@ -39,6 +39,7 @@ tempDir = os.path.join(profileDir, 'temp')
 cuminationicon = TRANSLATEPATH(os.path.join(rootDir, 'icon.png'))
 changelog = TRANSLATEPATH(os.path.join(rootDir, 'changelog.txt'))
 
+
 if not os.path.exists(profileDir):
     os.makedirs(profileDir)
 
@@ -140,7 +141,9 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     liz = xbmcgui.ListItem(name)
     if KODIVER > 19.8:
         vtag = liz.getVideoInfoTag()
+        vtag.setMediaType('movie')
         vtag.setTitle(name)
+        vtag.setGenres(['Porn'])
         if duration and addon.getSetting('duration_in_name') != 'true':
             vtag.setDuration(secs)
         if desc:
@@ -163,12 +166,13 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
             video_streaminfo = {'codec': 'h264'}
         liz.addStreamInfo('video', video_streaminfo)
 
-    liz.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
     if not fanart:
         fanart = os.path.join(rootDir, 'fanart.jpg')
         if addon.getSetting('posterfanart') == 'true':
             fanart = iconimage
-    liz.setArt({'fanart': fanart})
+
+    liz.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage, 'fanart': fanart})
+
     if stream:
         liz.setProperty('IsPlayable', 'true')
 
