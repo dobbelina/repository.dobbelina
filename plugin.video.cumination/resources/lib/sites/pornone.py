@@ -35,12 +35,12 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="vidLinkFX.+?<span\s*class="text(.*?)>([\d:]+).+?data-src="([^"]+).+?"block[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'href="([^"]+)"\s+class="popbop.+?alt="([^"]+)".+?src="[^"]+">\s*([^<]+\s*)<.+?data-src="([^"]+)".+?whitespace-normal\s*">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, hd, duration, img, name in match:
         name = utils.cleantext(name)
         hd = 'HD' if 'HD Video' in hd else ''
-        name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
+        name = utils.cleantext(name.strip())
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration.strip(), quality=hd)
     np = re.compile(r'<link rel="next" href="([^"]+)">').search(listhtml)
     if np:
         np = np.group(1)
@@ -67,11 +67,9 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="relative[^>]+>\s*<img.*?data-src="([^"]+)[^>]+>\s*<p[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, image, name in match:
-        name = utils.cleantext(name)
-        if image.startswith('/'):
-            image = site.url[:-1] + image
+    match = re.compile(r'<a\s*href="([^"]+)"\s*class="popbop .+?alt="([^"]+)".*?data-src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, name, image in match:
+        name = utils.cleantext(name.replace('Video category ', ''))
         site.add_dir(name, site.url[:-1] + catpage, 'List', image)
     utils.eod()
 
