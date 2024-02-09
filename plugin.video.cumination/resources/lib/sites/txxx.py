@@ -210,8 +210,7 @@ def Models(url, page=1):
     siteurl += '/'
     letter = '' if url == 'models' else url.lower()
     page = 1 if not page else page
-    gender = 'she' if 'shemalez' in siteurl else 'str'
-    gender = 'gay' if 'thegay' in siteurl else 'str'
+    gender = 'she' if 'shemalez' in siteurl else 'gay' if 'thegay' in siteurl else 'str'
     pagesize = 80
     aurl = '{0}api/json/models/86400/{1}/filt.{2}........./most-popular/{3}/{4}.json'.format(siteurl, gender, letter, pagesize, page)
     jdata = json.loads(utils.getHtml(aurl, siteurl))

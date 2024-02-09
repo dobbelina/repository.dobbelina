@@ -1,7 +1,2 @@
-[B]Version 1.1.99[/B]
-- Porn Caper removed
-- FamilypornHD fix playback
-- latestporn fix listing
-- Animeid Hentai fix playback
-- Beeg fix listing & categories
-- Pornhits fix playback
+[B]Version 1.1.100[/B]
+- Shemalez - fix model listing
