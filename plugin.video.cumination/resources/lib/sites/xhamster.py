@@ -59,6 +59,8 @@ def List(url):
     jdata = json.loads(listjson)
     if "trendingVideoListComponent" in jdata:
         videos = jdata["trendingVideoListComponent"]["models"]
+    elif "trendingVideoSectionComponent" in jdata:
+        videos = jdata["trendingVideoSectionComponent"]["videoModels"]
     elif "searchResult" in jdata:
         videos = jdata["searchResult"]["models"]
     elif "pagesNewestComponent" in jdata:
@@ -99,7 +101,7 @@ def List(url):
             lp = jdata["pagesCategoryComponent"]["paginationProps"]["lastPageNumber"] + 1
             if lp >= np:
                 npurl = jdata["pagesCategoryComponent"]["paginationProps"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
-    elif "paginationComponent" in jdata:
+    elif jdata.get("paginationComponent"):
         np = jdata["paginationComponent"]["currentPageNumber"] + 1
         lp = jdata["paginationComponent"]["lastPageNumber"]
         if lp >= np:
@@ -142,9 +144,10 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="item-6b822.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
+    match = re.compile(r'class="item-.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
     for url, thumb, name in match:
         site.add_dir(utils.cleantext(name), url, 'List', thumb)
+    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
@@ -162,14 +165,14 @@ def Categories(url):
 #     utils.eod()
 
 
-@site.register()
-def CategoriesA(url):
-    cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('class="letter-blocks page"')[-1].split('class="search"')[0]
-    match = re.compile('href="([^"]+)" data-role="tag-link"><!-- HTML_TAG_START -->([^<]+)<').findall(cathtml)
-    for url, name in match:
-        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
-    utils.eod()
+# @site.register()
+# def CategoriesA(url):
+#     cathtml = utils.getHtml(url, site.url)
+#     cathtml = cathtml.split('class="letter-blocks page"')[-1].split('class="search"')[0]
+#     match = re.compile('href="([^"]+)" data-role="tag-link"><!-- HTML_TAG_START -->([^<]+)<').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+#     utils.eod()
 
 
 @site.register()
@@ -180,22 +183,43 @@ def Channels(url):
     elif cat == 'shemale':
         url = url.replace('/channels', '/shemale/channels')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'href="([^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
-    for url, name in match:
-        if '0' in name:
-            continue
-        site.add_dir(name.strip(), url, 'ChannelsA', '')
+    match = re.compile(r'class="root-02a.+?ing">#([^<]+).+?href="([^"]+).+?image:\s*url\(([^\)]+).+?link">([^<]+).+?count-.+?>([^<]+)', re.DOTALL).findall(cathtml)
+    for rank, url, image, name, videos in match:
+        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2})[/COLOR]'.format(rank.rjust(4), name, videos)
+        site.add_dir(title, url + '/newest', 'List', image)
+    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
+    if npurl:
+        npurl = npurl.group(1)
+        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
+        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Channels', site.img_next)
     utils.eod()
 
 
-@site.register()
-def ChannelsA(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div class="item">\s*<a href="([^"]+/channels/[^"]+)"[^>]*>([^<]+)<').findall(cathtml)
-    for url, name in match:
-        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
-    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
-    utils.eod()
+# @site.register()
+# def Channels(url):
+#     cat = get_setting('category')
+#     if cat == 'gay':
+#         url = url.replace('/channels', '/gay/channels')
+#     elif cat == 'shemale':
+#         url = url.replace('/channels', '/shemale/channels')
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile(r'href="([^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
+#     for url, name in match:
+#         if '0' in name:
+#             continue
+#         site.add_dir(name.strip(), url, 'ChannelsA', '')
+#     utils.eod()
+
+
+# @site.register()
+# def ChannelsA(url):
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile(r'<div class="item">\s*<a href="([^"]+/channels/[^"]+)"[^>]*>([^<]+)<').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+#     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
+#     utils.eod()
 
 
 @site.register()
@@ -206,20 +230,41 @@ def Pornstars(url):
     elif cat == 'shemale':
         url = url.replace('/pornstars', '/shemale/pornstars')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'href="([^"]+/pornstars/all[^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
-    for url, name in match:
-        site.add_dir(name.strip(), url, 'PornstarsA', '')
+    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
+    for rank, image, url, name, videos in match:
+        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(5), name, videos)
+        site.add_dir(title, url + '/newest', 'List', image)
+    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
+    if npurl:
+        npurl = npurl.group(1)
+        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
+        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Pornstars', site.img_next)
     utils.eod()
 
 
-@site.register()
-def PornstarsA(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
-    for url, name in match:
-        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
-    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
-    utils.eod()
+# @site.register()
+# def Pornstars(url):
+#     cat = get_setting('category')
+#     if cat == 'gay':
+#         url = url.replace('/pornstars', '/gay/pornstars')
+#     elif cat == 'shemale':
+#         url = url.replace('/pornstars', '/shemale/pornstars')
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile(r'href="([^"]+/pornstars/all[^"]+)"[^>]*>(\s*\S\s*)<').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(name.strip(), url, 'PornstarsA', '')
+#     utils.eod()
+
+
+# @site.register()
+# def PornstarsA(url):
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+#     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
+#     utils.eod()
 
 
 @site.register()
@@ -230,20 +275,27 @@ def Celebrities(url):
     elif cat == 'shemale':
         url = url.replace('/celebrities', '/shemale/celebrities')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a class="" href="([^"]+)">\s*(\S)\s*</a>').findall(cathtml)
-    for url, name in match:
-        site.add_dir(name.strip(), url, 'CelebritiesA', '')
+    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
+    for rank, image, url, name, videos in match:
+        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(4), name, videos)
+        site.add_dir(title, url + '/newest', 'List', image)
+    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
+    if npurl:
+        npurl = npurl.group(1)
+        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
+        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Celebrities', site.img_next)
     utils.eod()
 
 
-@site.register()
-def CelebritiesA(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
-    for url, name in match:
-        site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
-    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
-    utils.eod()
+# @site.register()
+# def CelebritiesA(url):
+#     cathtml = utils.getHtml(url, site.url)
+#     match = re.compile(r'<div class="item">\s*<a href="([^"]+)">([^<]+)</a>').findall(cathtml)
+#     for url, name in match:
+#         site.add_dir(utils.cleantext(name.strip()), url + '/newest', 'List', '')
+#     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
+#     utils.eod()
 
 
 @site.register()
