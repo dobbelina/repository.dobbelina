@@ -42,7 +42,7 @@ def List(url):
     for videopage, img, duration, name in match:
         name = utils.cleantext(name)
         img = 'https:' + img if img.startswith('//') else img
-        videopage = site.url + videopage
+        videopage = site.url + videopage.replace('interstice-ad?path=/', '')
 
         contexturl = (utils.addon_sys
                       + "?mode=americass.Lookupinfo"
@@ -63,16 +63,20 @@ def List(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    if 'interstice-ad?path=/' in url:
-        url = url.replace('interstice-ad?path=/', '')
-    url = url + '/resolve'
     videopage = utils.getHtml(url, site.url)
-
-    videourl = re.compile(r"src=\\u0022([^ ]+)\\u0022", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-
-    videourl = videourl.replace('\\/', '/')
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_direct_link(videourl)
+    r = re.compile(r"src=\\u0022([^ ]+)\\u0022", re.DOTALL | re.IGNORECASE).search(videopage)
+    if r:
+        videourl = r.group(1).replace('\\/', '/')
+        vp.progress.update(75, "[CR]Video found[CR]")
+        vp.play_from_direct_link(videourl)
+    else:
+        r = re.compile(r'<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+        if r:
+            vp.progress.update(75, "[CR]Video found[CR]")
+            vp.play_from_link_to_resolve(r.group(1))
+        else:
+            vp.progress.close()
+            utils.notify('Oh oh', 'Couldn\'t find a playable link')
 
 
 @site.register()
