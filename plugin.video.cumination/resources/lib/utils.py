@@ -499,6 +499,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                             f.close()
                         else:
                             result = e.read()
+                        result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
                         if e.code == 403 and 'cf-alert-error' in result:
                             # Drop to TLS1.1 and try again
                             ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
@@ -693,7 +694,7 @@ def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoC
             f.close()
         else:
             result = e.read()
-
+        result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
         if e.code == 503 and 'cf-browser-verification' in result:
             result = cloudflare.solve(url, cj, USER_AGENT)
         elif e.code == 403 and 'cf-alert-error' in result:
@@ -711,6 +712,7 @@ def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoC
                     f.close()
                 else:
                     result = e.read()
+                result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
                 if e.code == 403 and 'cf-alert-error' in result:
                     # Drop to TLS1.1 and try again
                     ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
