@@ -23,13 +23,14 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('nonktube', "[COLOR hotpink]NonkTube[/COLOR]", 'https://www.nonktube.com/', 'https://media.nonktube.com/theme/img/logo.png', 'nonktube')
+site = AdultSite('nonktube', "[COLOR hotpink]NonkTube[/COLOR]", 'https://www.nonktube.com/', 'nonktube.png', 'nonktube')
 
 
 @site.register(default_mode=True)
 def Main():
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos/', 'Search', site.img_search)
-    List(site.url + 'videos?o=mr')
+    List(site.url + '?sorting=latest')
     utils.eod()
 
 
@@ -41,17 +42,34 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = '<div class="well well-sm">'
-    re_videopage = '<a href="([^"]+)"'
+    delimiter = '<div class="video-block'
+    re_videopage = '<a.+?href="([^"]+)"'
     re_name = 'title="([^"]+)"'
     re_img = 'data-src="([^"]+)"'
-    re_duration = '<div class="duration">([^<]+)<'
+    re_duration = '<span class="duration">([^<]+)<'
     utils.videos_list(site, 'nonktube.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='nonktube.Related')
 
-    re_npurl = r'href="([^"]+)"\s*class="prevnext"'
-    re_npnr = r'href="[^"]+page[-=](\d+)"\s*class="prevnext"'
-    re_lpnr = r'>(\d+)<[^"]+"[^"]+"\s*class="prevnext"'
+    re_npurl = r'class="page-link"\s*href="([^"]+)">&raquo;<'
+    re_npnr = r'class="page-link"\s*href="[^"]+page/(\d+).+?">&raquo;<'
+    re_lpnr = r'>&hellip;<.+?href.+?>([^<]+)'
     utils.next_page(site, 'nonktube.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='nonktube.GotoPage')
+    utils.eod()
+
+
+@site.register()
+def Cat(url):
+    cathtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<div\s*class="video-block.+?href="([^"]+).+?data-src="([^"]+).+?title">([^<]+).+?datas">\s+(\d+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, img, name, count in match:
+        name = utils.cleantext(name) + ' [COLOR hotpink]({0} videos)[/COLOR]'.format(count)
+        site.add_dir(name, caturl, 'List', img)
+
+    nextp = re.compile(r'class="page-link"\s*href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).search(cathtml)
+    if nextp:
+        np = nextp.group(1)
+        next_pg = re.findall(r'class="page-link"\s*href="[^"]+page/(\d+).+?">&raquo;<', cathtml)[0]
+        last_pg = re.findall(r'<a\s*class="page-link".+?>(\d+)', cathtml)[-1]
+        site.add_dir('[COLOR hotpink]Next Page[/COLOR] ({0}/{1})'.format(next_pg, last_pg), np, 'Cat', site.img_next)
     utils.eod()
 
 
@@ -60,7 +78,7 @@ def GotoPage(list_mode, url, np, lp):
     dialog = xbmcgui.Dialog()
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
-        url = url.replace('page={}'.format(np), 'page={}'.format(pg)).replace('page-{}'.format(np), 'page-{}'.format(pg))
+        url = url.replace('page/{}'.format(np), 'page/{}'.format(pg)).replace('page-{}'.format(np), 'page-{}'.format(pg))
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
@@ -89,12 +107,8 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'property="og:video:url" content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'<meta itemprop="contentURL" content="([^"]+)"', re.IGNORECASE | re.DOTALL).search(videohtml)
     if match:
-        embedlink = match[0]
-        embedhtml = utils.getHtml(embedlink, url)
-        match = re.compile(r"<source src='([^']+)'", re.IGNORECASE | re.DOTALL).findall(embedhtml)
-        if match:
-            videolink = match[0] + '|Referer:' + site.url
-            vp.progress.update(75, "[CR]Loading video page[CR]")
-            vp.play_from_direct_link(videolink)
+        videolink = match.group(1) + '|Referer:' + site.url
+        vp.progress.update(75, "[CR]Loading video page[CR]")
+        vp.play_from_direct_link(videolink)

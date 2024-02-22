@@ -21,7 +21,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR]  [COLOR red][Debrid only][/COLOR]', 'https://www.naughtyblog.org/', 'https://www.naughtyblog.org/wp-content/images/logo/main_logo.png', 'naughtyblog')
+site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR]  [COLOR red][Debrid only][/COLOR]', 'https://www.naughtyblog.org/', 'naughtyblog.png', 'naughtyblog')
 
 
 @site.register(default_mode=True)

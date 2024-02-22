@@ -25,7 +25,7 @@ from resources.lib.decrypters.kvsplayer import kvs_decode
 
 progress = utils.progress
 
-site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https://netflixporno.net/', 'https://netflixporno.net/scenes/wp-content/uploads/2021/04/netflixporno-1.png', 'netflixporno')
+site = AdultSite('netflixporno', '[COLOR hotpink]NetflixPorno[/COLOR]', 'https://netflixporno.net/', 'netflixporno.png', 'netflixporno')
 
 
 @site.register(default_mode=True)

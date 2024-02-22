@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.li/', 'https://kissjav.li/templates/bula/images/logo.png', 'kissjav')
+site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.com/', 'https://kissjav.com/templates/bula/images/logo.png', 'kissjav')
 
 
 @site.register(default_mode=True)

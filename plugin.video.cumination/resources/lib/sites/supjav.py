@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('supjav', '[COLOR hotpink]SupJav[/COLOR]', 'https://supjav.com/', 'https://supjav.com/img/logo.png', 'supjav')
+site = AdultSite('supjav', '[COLOR hotpink]SupJav[/COLOR]', 'https://supjav.com/', 'supjav.png', 'supjav')
 surl = 'https://lk1.supremejav.com/supjav.php'
 enames = {'VV': 'VideoVard',
           'TV': 'TurboVIPlay',

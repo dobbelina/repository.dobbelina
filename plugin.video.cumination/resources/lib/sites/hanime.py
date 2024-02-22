@@ -312,7 +312,7 @@ def hanime_login(action='login'):
                 if apidata.get(build_number):
                     apidata = apidata[build_number]
                     break
-            if type(apidata) != int:
+            if not isinstance(apidata, int):
                 utils.notify('Error', 'Could not find build number')
                 clear_login(True)
                 return False

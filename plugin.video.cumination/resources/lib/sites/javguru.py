@@ -17,19 +17,12 @@
 '''
 
 import re
-import base64
 import json
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru/', 'https://cdn.javsts.com/wp-content/uploads/2018/12/logofinal6.png', 'javguru')
-
-enames = {'STREAM DD': 'DoodStream',
-          'STREAM FE': 'FEmbed',
-          'STREAM SB': 'StreamsB',
-          'STREAM ST': 'StreamTape',
-          'STREAM VO': 'Voe'}
 
 
 @site.register(default_mode=True)
@@ -47,7 +40,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile("""class=['"]inside-article['"].+?href=['"]([^"']+)['"]>\s*<img src=['"]([^"']+)['"].+?<a title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r"""class=['"]inside-article['"].+?href=['"]([^"']+)['"]>\s*<img src=['"]([^"']+)['"].+?<a title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
 
@@ -134,9 +127,8 @@ def Play(url, name, download=None):
     match = re.compile('iframe_url":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
     if match:
         for i, stream in enumerate(match):
-            link = base64.b64decode(stream).decode('utf-8')
-
-            vp.progress.update(25, "[CR]Loading streaming link {0} page[CR]".format(i + 1))
+            link = utils._bdecode(stream)
+            vp.progress.update(25 + (i * 5), "[CR]Loading streaming link {0} page[CR]".format(i + 1))
             streamhtml = utils.getHtml(link, url, error='raise')
             match = re.compile(r'''var OLID = '([^']+)'.+?src="([^']+)''', re.DOTALL | re.IGNORECASE).findall(streamhtml)
             if match:
@@ -149,15 +141,14 @@ def Play(url, name, download=None):
             sources.append('"{}"'.format(src))
     match = re.compile(r"window\.open\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
     if match:
-        for dllink in match:
-            vp.progress.update(60, "[CR]Loading download link page[CR]")
+        for i, dllink in enumerate(match):
+            vp.progress.update(60 + (i * 5), "[CR]Loading download link {0} page[CR]".format(i + 1))
             dllink = utils.getHtml(dllink)
             match = re.compile('URL=([^"]+)"', re.DOTALL | re.IGNORECASE).findall(dllink)
             if match:
                 sources.append('"{}"'.format(match[0]))
     if sources:
         vp.progress.update(75, "[CR]Loading video page[CR]")
-        utils.kodilog(sources)
         vp.play_from_html(', '.join(sources))
     else:
         return
