@@ -69,8 +69,10 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(html)[0]
-    videourl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)[0]
+    embedurl = re.compile(r'embedURL" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+    embedhtml = utils.getHtml(embedurl, url)
+    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(embedhtml)[0]
+    videourl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(embedhtml)[0]
     videourl = kvs_decode(videourl, license)
     if not videourl:
         vp.progress.close()
