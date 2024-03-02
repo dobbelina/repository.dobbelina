@@ -1,6 +1,2 @@
-[B]Version 1.1.101[/B]
-- Americass - fix playback
-- SextB - fix playback
-- kissjav - domain change
-- nonktube - fix listing, add categories menu
-- porno1 - fix playback
+[B]Version 1.1.102[/B]
+- AagmaalPro - Domain change
