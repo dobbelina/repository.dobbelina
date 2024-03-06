@@ -24,7 +24,7 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://reallifecam.to/', 'https://reallifecam.to/images/logo/logo.png', 'rlc')
 site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
-site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.life[/COLOR]', 'https://voyeur-house.life/', 'https://www.voyeur-house.life/images/logo/logo.png', 'vhlife')
+site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.life[/COLOR]', 'https://www.voyeur-house.life/', 'https://www.voyeur-house.life/images/logo/logo.png', 'vhlife')
 site3 = AdultSite('vhlife1', '[COLOR hotpink]Voyeurhouse.life[/COLOR]', 'https://www.voyeurhouse.life/', 'https://www.voyeurhouse.life/images/logo/logo.png', 'vhlife1')
 site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps.to[/COLOR]', 'https://camcaps.to/', 'https://camcaps.to/images/logo/logo.png', 'camcapsto')
 

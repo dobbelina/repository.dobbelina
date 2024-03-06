@@ -63,10 +63,11 @@ def List(url):
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'class="btn btn-grey" href="([^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="btn btn-grey" href="([^"]+)"\s*>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = match[:-1]
     for caturl, name in match:
         name = utils.cleantext(name)
-        site.add_dir(name, site.url[:-1] + caturl, 'List', '')
+        site.add_dir(name, caturl, 'List', '')
     utils.eod()
 
 
@@ -92,7 +93,6 @@ def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     videohtml = utils.getHtml(url)
     match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
-    utils.kodilog(match)
     if not match:
         return
     playerurl = match[0]
@@ -100,10 +100,11 @@ def Play(url, name, download=None):
         vp.play_from_link_to_resolve(playerurl)
     else:
         playerhtml = utils.getHtml(playerurl, url)
-        match = re.compile(r'src="([^"]+)" title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
-        videos = {}
-        for m in match:
-            videos[m[1]] = m[0]
-        videourl = utils.prefquality(videos, sort_by=lambda x: int(x[:-1]), reverse=True)
+        match = re.compile(r'source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerhtml)
+        # videos = {}
+        # for m in match:
+        #     videos[m[1]] = m[0]
+        # videourl = utils.prefquality(videos, sort_by=lambda x: int(x[:-1]), reverse=True)
+        videourl = match[0]
         if videourl:
             vp.play_from_direct_link(videourl)
