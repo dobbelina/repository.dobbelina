@@ -1617,6 +1617,7 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
                 match = re.search(re_name, video, flags=re.DOTALL | re.IGNORECASE)
                 if match:
                     name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), match.group(1).strip())
+                    name = name.encode('utf-8', 'ignore').decode("utf-8")
                     name = six.ensure_str(name)
                     name = cleantext(name)
             img = ''

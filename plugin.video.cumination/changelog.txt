@@ -2,3 +2,4 @@
 - AagmaalPro - Domain change
 - pornez - fix categories, playback
 - tnaflix - fix
+- pornkai - fix
