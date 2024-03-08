@@ -30,9 +30,9 @@ site = AdultSite('tnaflix', "[COLOR hotpink]T'nAflix[/COLOR]", 'https://www.tnaf
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars?filters[sorting]=2&filter_set=true', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/all/most-viewed/1', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels?page=1', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search.php?what=', 'Search', site.img_search)
-    List(site.url + 'new/?d=all&period=all')
+    List(site.url + 'new/1')
     utils.eod()
 
 
@@ -44,12 +44,12 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = "data-vid='"
-    re_videopage = "'thumb no_ajax' href='([^']+)'"
+    delimiter = 'data-vid="'
+    re_videopage = 'href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
-    re_img = "data-original='([^']+)'"
-    re_quality = 'class="hdIcon">([^<]+)<'
-    re_duration = "class='videoDuration'>([^<]+)<"
+    re_img = 'src="([^"]+)"'
+    re_quality = 'quality">([^<]+)<'
+    re_duration = 'video-duration">([^<]+)<'
     utils.videos_list(site, 'tnaflix.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm='tnaflix.Related')
 
     re_npurl = r'link rel="next"\s*href="([^"]+)"'
@@ -86,8 +86,8 @@ def Related(url):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'class="thumb[^"]*"\s*href="([^"]+)".+?(?:img src|data-original)="([^"]+)".+?class="vidcountSp">([\d,]+)<.+?title="[^"]*">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for caturl, img, count, name in match:
+    match = re.compile(r'class="thumb[^"]*"\s*href="([^"]+)".+?(?:src|data-original)="([^"]+)".+?class="thumb-title">([^<]+)<.+?class="icon-video-camera"></i>([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, img, name, count in match:
         name = utils.cleantext(name) + '[COLOR hotpink] ({} videos)[/COLOR]'.format(count)
         caturl = utils.fix_url(caturl, site.url)
         img = utils.fix_url(img, site.url)
@@ -106,7 +106,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = "{0}{1}&tab=".format(url, keyword.replace(' ', '%20'))
+        url = "{0}{1}&tab=".format(url, keyword.replace(' ', '+'))
         List(url)
 
 
@@ -116,7 +116,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'itemprop="embedUrl"\s*content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'"embedUrl":"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         embedurl = match[0]
         embedhtml = utils.getHtml(embedurl, url)

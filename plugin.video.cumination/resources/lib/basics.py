@@ -122,6 +122,8 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
                 if ':' in duration:
                     if duration.endswith(':'):
                         duration += '0'
+                    if duration.startswith(':'):
+                        duration = '0' + duration
                     secs = sum(int(x) * 60 ** i for i, x in enumerate(reversed(duration.split(':'))))
                 elif duration.isdigit():
                     secs = int(duration)
