@@ -20,10 +20,10 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
+site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://ww2.pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
 
 ph_headers = {
-    'Origin': 'https://pornhoarder.tv',
+    'Origin': 'https://ww2.pornhoarder.tv',
     'User-Agent': utils.USER_AGENT,
     'X-Requested-With': 'XMLHttpRequest',
 }
@@ -43,7 +43,7 @@ def Main():
 def List(url, page=1):
     search = '' if url.startswith('https://') else url
     data = Createdata(page, search)
-    listhtml = utils.postHtml('https://ww1.pornhoarder.tv/ajax_search.php', headers=ph_headers, form_data=data)
+    listhtml = utils.postHtml('https://ww2.pornhoarder.tv/ajax_search.php', headers=ph_headers, form_data=data)
     match = re.compile('href="([^"]+)".*?data-src="([^"]+)"(.*?)h1>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return

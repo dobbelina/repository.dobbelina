@@ -3,3 +3,4 @@
 - pornez - fix categories, playback
 - tnaflix - fix
 - pornkai - fix
+- pornhoarder - fix categories, search
