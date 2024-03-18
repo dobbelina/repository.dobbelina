@@ -203,14 +203,14 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".highwebmedia.com")
+            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".live.mmcdn.com")
             for row in list:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".highwebmedia.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".live.mmcdn.com")
             if showdialog:
                 utils.notify('Finished', 'Chaturbate images cleared')
     except:
@@ -273,6 +273,8 @@ def Search(url, keyword=None):
 
 @site.register()
 def topCams(url):
+    if addon.getSetting("chaturbate") == "true":
+        clean_database(False)
     response = utils._getHtml(url)
     jsonTop = json.loads(response)['top']
     for iTop in jsonTop:
@@ -306,6 +308,9 @@ def Tags(url, page=1):
 
 @site.register()
 def onlineFav(url):
+    if addon.getSetting("chaturbate") == "true":
+        clean_database(False)
+
     wmArray = ["C9m5N", "tfZSl", "jQrKO", "5XO2a", "WXomN", "zM6MR", "Lb2aB", "cIbs3", "zM6MR", "mnzQo", "N6TZA"]
     chaturbate_url = 'https://chaturbate.com/affiliates/api/onlinerooms/?format=json&wm=' + random.choice(wmArray)
     data_chat = utils._getHtml(chaturbate_url, '')
