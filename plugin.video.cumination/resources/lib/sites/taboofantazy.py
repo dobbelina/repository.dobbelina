@@ -96,7 +96,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex='data-wpfc-original-src="([^"]+)"')
+    vp = utils.VideoPlayer(name, download=download, regex='itemprop="embedURL"\s*content="([^"]+)"')
     vp.play_from_site_link(url)
 
 
