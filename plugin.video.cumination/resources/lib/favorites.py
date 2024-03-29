@@ -19,7 +19,6 @@
 import sqlite3
 import datetime
 import os
-import re
 
 import xbmc
 import six
@@ -32,7 +31,7 @@ url_dispatcher = URL_Dispatcher('favorites')
 
 dialog = utils.dialog
 favoritesdb = basics.favoritesdb
-orders = {'random': 'RANDOM()', 'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
+orders = {'random': 'RANDOM()', 'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, DOMAIN, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
 
 conn = sqlite3.connect(favoritesdb)
 c = conn.cursor()
@@ -88,50 +87,91 @@ def List():
     if utils.addon.getSetting("chaturbate") == "true":
         for f in AdultSite.clean_functions:
             f(False)
+
+    adultsites = []
+    for adultsite in AdultSite.get_sites():
+        adultsites.append(adultsite)
+
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
     try:
         if 'folders' in favorder:
             if basics.addon.getSetting('custom_sites') == 'true':
-                sql = "SELECT f.mode, COUNT(*) count FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 1"
+                sql = "SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, " \
+                      "f.mode, COUNT(*) count FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
+                      "WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 2, 1"
             else:
-                sql = "SELECT f.mode, COUNT(*) count FROM favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 1"
+                sql = "SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, " \
+                      "f.mode, COUNT(*) count FROM favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 1"
             c.execute(sql)
-            for (mode, count) in c.fetchall():
+
+            folders = []
+
+            for (domain, mode, count) in c.fetchall():
                 site = mode.split('.')[0]
                 img = ''
+
                 removed = True
-                for s in AdultSite.get_sites():
-                    if s.name == site:
+                for s in adultsites:
+                    if domain in s.url:
                         name = s.title
                         img = s.image
                         removed = False
                         break
+
+                if removed:
+                    for s in adultsites:
+                        if s.name == site:
+                            name = s.title
+                            img = s.image
+                            removed = False
+                            break
+
                 if removed:
                     name = site + ' [COLOR blue](removed)[/COLOR]'
+
                 name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
+                folders.append('{}@{}@{}'.format(name, mode, img))
+
+            folders.sort()
+            for folder in folders:
+                (name, mode, img) = folder.split('@')
                 basics.addDir(name, mode, 'favorites.FavListSite', img)
         else:
             if basics.addon.getSetting('custom_sites') == 'true':
-                sql = "SELECT * FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}".format(orders[favorder])
+                sql = """SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, name, url, mode, image, duration, quality
+                      FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
             else:
-                sql = "SELECT * FROM favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
+                sql = """SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, name, url, mode, image, duration, quality
+                      FROM favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}""".format(orders[favorder])
+
             c.execute(sql)
-            for (name, url, mode, img, duration, quality) in c.fetchall():
+            for (domain, name, url, mode, img, duration, quality) in c.fetchall():
                 duration = '' if duration is None else duration
                 quality = '' if quality is None else quality
+                site = mode.split('.')[0]
+
                 if 'site' in favorder:
-                    site = mode.split('.')[0]
                     removed = True
-                    for s in AdultSite.get_sites():
-                        if s.name == site:
-                            site = s.title
+
+                    for s in adultsites:
+                        if domain in s.url:
+                            sitename = s.title
                             removed = False
                             break
+
                     if removed:
-                        site = site + ' [COLOR blue](removed)[/COLOR]'
-                    name = '[COLOR hotpink][{}][/COLOR] {}'.format(site, name)
+                        for s in adultsites:
+                            if s.name == site:
+                                sitename = s.title
+                                removed = False
+                                break
+
+                    if removed:
+                        sitename = site + ' [COLOR blue](removed)[/COLOR]'
+                    name = '[COLOR hotpink][{}][/COLOR] {}'.format(sitename, name)
+
                 basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
         conn.close()
         utils.eod(utils.addon_handle)
