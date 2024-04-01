@@ -22,6 +22,7 @@ import os
 
 import xbmc
 import six
+import re
 from resources.lib import basics
 from resources.lib import utils
 from resources.lib.url_dispatcher import URL_Dispatcher
@@ -114,7 +115,7 @@ def List():
 
                 removed = True
                 for s in adultsites:
-                    if domain in s.url:
+                    if domain and domain in s.url:
                         name = s.title
                         img = s.image
                         removed = False
@@ -134,7 +135,7 @@ def List():
                 name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
                 folders.append('{}@{}@{}'.format(name, mode, img))
 
-            folders.sort()
+            folders.sort(key=lambda x: re.sub(r'\[COLOR[^\]]+\]\s*', '', x).lower())
             for folder in folders:
                 (name, mode, img) = folder.split('@')
                 basics.addDir(name, mode, 'favorites.FavListSite', img)
@@ -156,7 +157,7 @@ def List():
                     removed = True
 
                     for s in adultsites:
-                        if domain in s.url:
+                        if domain and domain in s.url:
                             sitename = s.title
                             removed = False
                             break

@@ -1,4 +1,2 @@
-[B]Version 1.1.104[/B]
-- chaturbate - fix refresh images
-- taboofantasy - fix playback
+[B]Version 1.1.105[/B]
 - favorites - fix sitenames
