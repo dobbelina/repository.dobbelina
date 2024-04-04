@@ -1,2 +1,3 @@
 [B]Version 1.1.105[/B]
 - favorites - fix sitenames
+- javgg - fix next page

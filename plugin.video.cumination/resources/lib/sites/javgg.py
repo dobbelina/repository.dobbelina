@@ -56,10 +56,9 @@ def List(url):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
-    np = re.compile("""arrow_pag' href="([^"]+)">""", re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'class="current">\d+</span><a\s*href="([^"]+)"\s*class="inactive">(\d+)<', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page...  (Page {0})'.format(page_number), np.group(1), 'List', site.img_next)
+        site.add_dir('Next Page...  (Page {0})'.format(np.group(2)), np.group(1), 'List', site.img_next)
     utils.eod()
 
 
