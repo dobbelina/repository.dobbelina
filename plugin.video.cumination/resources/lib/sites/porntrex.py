@@ -121,8 +121,8 @@ def PTList(url, page=1):
             img = img + '|Referer=' + url
             contextmenu = []
             contexturl = (utils.addon_sys
-                        + "?mode=" + str('porntrex.Lookupinfo')
-                        + "&url=" + urllib_parse.quote_plus(videopage))
+                          + "?mode=" + str('porntrex.Lookupinfo')
+                          + "&url=" + urllib_parse.quote_plus(videopage))
             contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
             if ptlogged:
                 if '/models' in url:
@@ -208,7 +208,7 @@ def PTCat(url):
         if img.startswith('//'):
             img = 'https:' + img
         catpage += lengthChoices[ptlength]
-        catpage += '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+        catpage += '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&from=1'
         name = name + '[COLOR deeppink] ' + videos + '[/COLOR]'
         site.add_dir(name, catpage, 'PTList', img, 1)
     utils.eod()
@@ -396,7 +396,7 @@ def PTModels(url, page=1):
     listhtml = utils.getHtml(url, site.url)
     results = re.findall('(?si)href="([^"]+)" title="([^"]+).*?src="([^"]+)".*?videos">([^<]+)<', listhtml)
     for modelurl, name, img, videos in results:
-        url2 = modelurl + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+        url2 = modelurl + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from=1'
         if img.startswith('//'):
             img = 'https:' + img
             img = img.replace(' ', '%20')
