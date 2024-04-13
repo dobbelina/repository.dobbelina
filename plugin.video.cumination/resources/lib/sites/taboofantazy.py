@@ -52,9 +52,9 @@ def List(url):
 
             site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu, quality=hd)
 
-    re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
-    re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
-    re_lpnr = r'/page/(\d+)[^>]*>Last' if '>Last' in html else r'rel="follow">(\d+)<\D+<\/main>'
+    re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else r'class="current">\d+<[^=]+href="([^"]+)"'
+    re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current">\d+<[^=]+href=[^>]+>(\d+)<'
+    re_lpnr = r'/page/(\d+)[^>]*>Last' if '>Last' in html else r'class="inactive">(\d+)[^=]+="sidebar"'
     utils.next_page(site, 'taboofantazy.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='taboofantazy.GotoPage')
     utils.eod()
 
@@ -96,7 +96,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex='itemprop="embedURL"\s*content="([^"]+)"')
+    vp = utils.VideoPlayer(name, download=download, regex=r'itemprop="embedURL"\s*content="([^"]+)"')
     vp.play_from_site_link(url)
 
 
