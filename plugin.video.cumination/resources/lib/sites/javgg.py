@@ -68,7 +68,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     sources = []
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r"data-post='([^']+)'\s+?data-nume='([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
+    match = re.compile(r'''data-post=['"]([^"']+)['"]\s+?data-nume=['"]([^'"]+)''', re.DOTALL | re.IGNORECASE).findall(videohtml)
     for videoid, vidcount in match:
         ajaxurl = 'https://javgg.net/wp-json/dooplayer/v2/{0}/movie/{1}'.format(videoid, vidcount)
         ajaxhtml = utils.getHtml(ajaxurl, url)
