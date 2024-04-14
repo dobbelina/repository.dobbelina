@@ -37,7 +37,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:data-lazy-)?src="(http[^"]+).+?/div>(.+?)duration"[^\d]+([\d:]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'''<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:data-lazy-src|\ssrc)="(http[^"]+).+?/div>(.+?)duration"[^\d]+([\d:]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img, hd, duration in match:
         name = utils.cleantext(name)
         hd = 'HD' if '>HD<' in hd else ''
@@ -101,12 +101,14 @@ def Play(url, name, download=None):
         except:
             vp.progress.close()
             return
-        r = utils.get_packed_data(r).replace('\\', '')
-        match = re.compile(r"sources:\s*\[\{file:\s*[^']+'([^']+)", re.DOTALL | re.IGNORECASE).search(r)
+        match = re.compile(r'data-fb5c9="([^"]+)', re.DOTALL | re.IGNORECASE).search(r)
         if match:
-            key = utils._bencode(urllib_parse.urlsplit(eurl).path)[16:32]
+            purl = urllib_parse.urlsplit(eurl)
+            key = utils._bencode(purl.path + '?' + purl.query)[8:24]
             ehost = urllib_parse.urljoin(eurl, '/')
-            link = dex(key, match.group(1), '0', mtype=0)
+            sources = json.loads(utils._bdecode(dex(key, match.group(1), '0', mtype=0)))
+            sources = {x.get('label'): x.get('file') for x in sources}
+            link = utils.selector('Select quality', sources, sort_by=lambda x: int(x[:-1]), reverse=True)
             vp.play_from_direct_link('{0}|Referer={1}&Origin={2}&User-Agent={3}'.format(link, ehost, ehost[:-1], utils.USER_AGENT))
             return
     vp.progress.close()
@@ -115,7 +117,7 @@ def Play(url, name, download=None):
 
 
 def dex(key, data, dver, use_alt=False, mtype=1):
-    part = '_0x583715' if mtype == 0 else '_0x58fe15'
+    part = '_0x58a0e3' if mtype == 0 else '_0x58fe15'
     if dver == '1' and use_alt:
         part = 'QxLUF1bgIAdeQX'
     elif dver == '2':
