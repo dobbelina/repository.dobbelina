@@ -30,7 +30,9 @@ enames = {'FS': 'FileStar',
           'sb': 'StreamSB',
           'fembed': 'FEmbed',
           'r': 'RapidVideo',
-          'ST': 'Motonews'}
+          'ST': 'Motonews',
+          'sw': 'StreamWish',
+          'tb': 'TurboVid'}
 
 
 @site.register(default_mode=True)
@@ -153,6 +155,8 @@ def Playvid(url, name, download=None):
         if surl:
             if surl.startswith('//'):
                 surl = 'https:' + surl
+            if not surl.startswith('http'):
+                surl = 'https://gdriveplayer.to/' + surl
             attempt = 1
             while 'redirect' in surl:
                 surl = utils.getVideoLink(surl, headers={'Range': 'bytes=0-'})
@@ -164,6 +168,7 @@ def Playvid(url, name, download=None):
                     surl = ''
             if surl:
                 vp.play_from_direct_link(surl)
+                return
         vp.progress.close()
         utils.notify('Oh oh', 'No video found')
         return
