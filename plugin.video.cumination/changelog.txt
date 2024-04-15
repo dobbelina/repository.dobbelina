@@ -4,3 +4,4 @@
 - javhdporn - fix playback, thumbnails
 - javgg - fix playback
 - javmoe - fix playback
+- favorites - fix sitenames (Sxy Prn)

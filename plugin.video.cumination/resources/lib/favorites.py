@@ -96,15 +96,18 @@ def List():
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
+    sql = """CREATE VIEW IF NOT EXISTS _favorites AS SELECT name, url, mode, image, duration, quality,
+CASE WHEN url like 'http%' THEN	CASE mode WHEN 'sxyprn.Playvid' THEN 'sxyprn.com' ELSE substr(substr(url, instr(url, '//') + 2, 100),0,instr(substr(url, instr(url, '//') + 2, 100), '/')) END
+ELSE mode END domain FROM favorites"""
+    c.executescript(sql)
+
     try:
         if 'folders' in favorder:
             if basics.addon.getSetting('custom_sites') == 'true':
-                sql = "SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, " \
-                      "f.mode, COUNT(*) count FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM _favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
                       "WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 2, 1"
             else:
-                sql = "SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, " \
-                      "f.mode, COUNT(*) count FROM favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 1"
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM _favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 2, 1"
             c.execute(sql)
 
             folders = []
@@ -141,11 +144,10 @@ def List():
                 basics.addDir(name, mode, 'favorites.FavListSite', img)
         else:
             if basics.addon.getSetting('custom_sites') == 'true':
-                sql = """SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, name, url, mode, image, duration, quality
-                      FROM favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
+                sql = """SELECT domain, name, url, mode, image, duration, quality
+                      FROM _favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
             else:
-                sql = """SELECT substr(substr(f.url, instr(f.url, '//') + 2, 100),0,instr(substr(f.url, instr(f.url, '//') + 2, 100), '/')) domain, name, url, mode, image, duration, quality
-                      FROM favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}""".format(orders[favorder])
+                sql = "SELECT domain, name, url, mode, image, duration, quality FROM _favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
 
             c.execute(sql)
             for (domain, name, url, mode, img, duration, quality) in c.fetchall():
