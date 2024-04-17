@@ -96,18 +96,18 @@ def List():
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    sql = """CREATE VIEW IF NOT EXISTS _favorites AS SELECT name, url, mode, image, duration, quality,
+    sql = """CREATE VIEW IF NOT EXISTS __favorites AS SELECT rowid, name, url, mode, image, duration, quality,
 CASE WHEN url like 'http%' THEN	CASE mode WHEN 'sxyprn.Playvid' THEN 'sxyprn.com' ELSE substr(substr(url, instr(url, '//') + 2, 100),0,instr(substr(url, instr(url, '//') + 2, 100), '/')) END
-ELSE mode END domain FROM favorites"""
+ELSE mode END domain FROM favorites ORDER BY rowid;"""
     c.executescript(sql)
 
     try:
         if 'folders' in favorder:
             if basics.addon.getSetting('custom_sites') == 'true':
-                sql = "SELECT domain, f.mode, COUNT(*) count FROM _favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
                       "WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 2, 1"
             else:
-                sql = "SELECT domain, f.mode, COUNT(*) count FROM _favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 2, 1"
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM __favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 2, 1"
             c.execute(sql)
 
             folders = []
@@ -136,18 +136,18 @@ ELSE mode END domain FROM favorites"""
                     name = site + ' [COLOR blue](removed)[/COLOR]'
 
                 name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
-                folders.append('{}@{}@{}'.format(name, mode, img))
+                folders.append('{}@{}@{}@{}'.format(name, mode, domain, img))
 
             folders.sort(key=lambda x: re.sub(r'\[COLOR[^\]]+\]\s*', '', x).lower())
             for folder in folders:
-                (name, mode, img) = folder.split('@')
-                basics.addDir(name, mode, 'favorites.FavListSite', img)
+                (name, mode, domain, img) = folder.split('@')
+                basics.addDir(name, mode + '@' + domain, 'favorites.FavListSite', img)
         else:
             if basics.addon.getSetting('custom_sites') == 'true':
                 sql = """SELECT domain, name, url, mode, image, duration, quality
-                      FROM _favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
+                        FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
             else:
-                sql = "SELECT domain, name, url, mode, image, duration, quality FROM _favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
+                sql = "SELECT domain, name, url, mode, image, duration, quality FROM __favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
 
             c.execute(sql)
             for (domain, name, url, mode, img, duration, quality) in c.fetchall():
@@ -194,7 +194,8 @@ def FavListSite(url):
     conn.text_factory = str
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM favorites WHERE mode = '{}' ORDER BY {}".format(url, orders[favorder]))
+        (mode, domain) = url.split('@')
+        c.execute("SELECT name, url, mode, image, duration, quality FROM __favorites WHERE mode = '{}' and domain ='{}' ORDER BY {}".format(mode, domain, orders[favorder]))
         for (name, url, mode, img, duration, quality) in c.fetchall():
             duration = '' if duration is None else duration
             quality = '' if quality is None else quality
