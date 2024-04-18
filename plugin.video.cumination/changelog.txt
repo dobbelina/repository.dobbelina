@@ -5,3 +5,4 @@
 - javgg - fix playback
 - javmoe - fix playback
 - favorites - fix sitenames (Sxy Prn)
+- LatestPorn removed ceased to exist
