@@ -22,7 +22,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'https://sextb.net/images/logo.png?v=123', 'sextb')
+site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'sextb.png', 'sextb')
 enames = {'VV': 'VideoVard',
           'TV': 'TurboVIPlay',
           'TB': 'TurboVIPlay',
