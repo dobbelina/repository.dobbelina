@@ -484,7 +484,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                 result = e.read()
             result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
             if 'cloudflare' in e.info().get('Server', '').lower():
-                if e.code == 403 and 'cf-alert-error' in result:
+                if e.code == 403 and not e.info().get('Set-Cookie', False):
                     # Drop to TLS1.2 and try again
                     ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
                     handle = [urllib_request.HTTPSHandler(context=ctx)]
@@ -500,7 +500,7 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                         else:
                             result = e.read()
                         result = result.decode('latin-1', errors='ignore') if PY3 else result.encode('utf-8')
-                        if e.code == 403 and 'cf-alert-error' in result:
+                        if e.code == 403 and not e.info().get('Set-Cookie', False):
                             # Drop to TLS1.1 and try again
                             ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
                             handle = [urllib_request.HTTPSHandler(context=ctx)]
