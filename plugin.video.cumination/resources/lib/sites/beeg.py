@@ -53,11 +53,18 @@ def BGList(url, page=1):
                 tag = t["tg_name"]
                 slug = t["tg_slug"]
         tag = tag if utils.PY3 else tag.encode('utf8')
-        name = video["file"]["stuff"]["sf_name"] if "sf_name" in video["file"]["stuff"] else tag
+
+        story = ''
+        for data in video["file"]["data"]:
+            if data["cd_column"] == "sf_name":
+                name = data["cd_value"]
+            if data["cd_column"] == "sf_story":
+                story = data["cd_value"]
+
         name = name if utils.PY3 else name.encode('utf8')
         name = '{} - {}'.format(tag, name)
-        story = video["file"]["stuff"]["sf_story"] if "sf_story" in video["file"]["stuff"] else ''
         story = story if utils.PY3 else story.encode('utf8')
+
         if "fl_duration" in video["file"]:
             m, s = divmod(video["file"]["fl_duration"], 60)
             duration = '{:d}:{:02d}'.format(m, s)
@@ -65,15 +72,13 @@ def BGList(url, page=1):
             duration = ''
 
         h = video["file"]["fl_height"]
-        # w = video["file"]["fl_width"]
         quality = str(h) + 'p' if "fl_height" in video["file"] else ''
-        # th_size = '480x' + str((480 * h) // w)
         plot = tag + ' - ' + name + '[CR]' + story
 
-        # thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
+        thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
         videodump = json.dumps(video)
         videopage = base64.b64encode(videodump.encode())
-        img = 'https://thumbs.externulls.com/videos/{0}/0.webp?size=480x270'.format(video["file"]['data'][0]["cd_file"])
+        img = 'https://thumbs.externulls.com/videos/{0}/{1}.webp?size=480x270'.format(video["file"]['id'], thumb)
         parts = ''
         if len(fc_facts) > 1:
             parts = '[COLOR blue] ({} parts)[/COLOR]'.format(len(fc_facts))
@@ -96,9 +101,10 @@ def BGList(url, page=1):
             cm = ''
 
         site.add_download_link(name, videopage, 'BGPlayvid', img, plot, contextm=cm, duration=duration, quality=quality)
-    if len(jdata) == 48:
+    if len(jdata) >= 48:
         if not page:
             page = 1
+        page = min(page, 100)
         npage = url.split('offset=')[0] + 'offset=' + str(page * 48)
         cm_page = (utils.addon_sys + "?mode=beeg.GotoPage" + "&url=" + urllib_parse.quote_plus(npage) + "&np=" + str(page))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
@@ -111,6 +117,7 @@ def GotoPage(url, np):
     dialog = xbmcgui.Dialog()
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
+        pg = min(int(pg), 101)
         url = url.replace('offset={}'.format(int(np) * 48), 'offset={}'.format(int(pg) * 48))
         contexturl = (utils.addon_sys + "?mode=" + "beeg.BGList&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
