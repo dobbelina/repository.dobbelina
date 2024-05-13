@@ -37,7 +37,7 @@ def Main():
 
 @site.register()
 def List(url):
-    html = utils.getHtml(url, '')
+    html = utils.getHtml(url, site.url)
     if '>No posts found.<' in html or 'Sorry, the page you were looking for was not found' in html:
         utils.notify(msg='Nothing found')
         utils.eod()
