@@ -1,4 +1,4 @@
 [B]Version 1.1.107[/B]
 - beeg - fix listing
 - netfapx - fix listing
-
+- camsoda - fix thumbnails

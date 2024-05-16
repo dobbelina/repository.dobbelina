@@ -48,11 +48,11 @@ def List(url):
             subject = subject if utils.PY3 else subject.encode('utf8')
             cid = camgirl.get('1')
             img = camgirl.get('10')
-            if img:
-                img = 'http:' + img
+            # if img:
+            #     img = 'http:' + img
             fanart = camgirl.get('15')
-            if fanart:
-                fanart = 'http:' + fanart
+            # if fanart:
+            #     fanart = 'http:' + fanart
         else:
             name = camgirl[2]
             name = name if utils.PY3 else name.encode('utf8')
@@ -62,11 +62,13 @@ def List(url):
                 subject += u'[COLOR deeppink] Status: [/COLOR]{}[CR]'.format(camgirl[3])
             subject = subject if utils.PY3 else subject.encode('utf8')
             cid = camgirl[1]
-            img = 'http:' + camgirl[10]
+            # img = 'http:' + camgirl[10]
+            img = camgirl[10]
             if len(camgirl) < 16:
                 fanart = None
             else:
-                fanart = 'http:' + camgirl[15]
+                # fanart = 'http:' + camgirl[15]
+                fanart = camgirl[15]
 
         videourl = '{0}/api/v1/video/vtoken/{1}'.format(site.url, cid)
         site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True, fanart=fanart)
