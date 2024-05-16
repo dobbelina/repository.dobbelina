@@ -2,3 +2,4 @@
 - beeg - fix listing
 - netfapx - fix listing
 - camsoda - fix thumbnails
+- wizzgirl - removed as site is dead
