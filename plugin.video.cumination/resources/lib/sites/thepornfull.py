@@ -24,7 +24,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.jsunpack import unpack
 
-site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://thepornfull.net/', 'https://thepornfull.com/wp-content/uploads/2022/05/Logo-Thepornfull.png', 'thepornfull')
+site = AdultSite('thepornfull', '[COLOR hotpink]Thepornfull[/COLOR]', 'https://thepornfull.net/', 'https://thepornfull.net/wp-content/uploads/2022/05/Logo-Thepornfull.png', 'thepornfull')
 
 
 @site.register(default_mode=True)

@@ -23,7 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('tubxporn', "[COLOR hotpink]TubXporn[/COLOR]", 'https://tubxporn.xxx/', 'https://tubxporn.xxx/images/logo.png?v1', 'tubxporn')
+site = AdultSite('tubxporn', "[COLOR hotpink]TubXporn[/COLOR]", 'https://tubxporn.club/', 'https://tubxporn.club/images/logo.png?v1', 'tubxporn')
 
 
 @site.register(default_mode=True)
@@ -100,18 +100,19 @@ def Categories(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r'(?:src:|source src=)\s*"([^"]+)"')
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     try:
         videohtml = utils.getHtml(url, site.url)
     except:
         videohtml = utils._getHtml(url + '?label_W9dmamG9w9zZg45g93FnLAVbSyd0bBDv=1', site.url)
+
     match = re.compile(r'div data-c="([^"]+)">\D+(\d+p)<', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         sources = {x[1]: x[0] for x in match}
         videolink = utils.prefquality(sources, sort_by=lambda x: int(x[:-1]), reverse=True)
         videolink = videolink.split(';')
-        videourl = 'https://s{0}.stormedia.info/whpvid/{1}/{2}/{3}/{4}/{4}_{5}.mp4'.format(videolink[7], videolink[5], videolink[6], videolink[4][:-3] + '000', videolink[4], videolink[1])
+        videourl = 'https://{0}.vstor.info/whpvid/{1}/{2}/{3}/{4}/{4}_{5}.mp4'.format(videolink[7], videolink[5], videolink[6], videolink[4][:-3] + '000', videolink[4], videolink[1])
         videourl = videourl.replace('_720p', '')
         vp.play_from_direct_link(videourl)

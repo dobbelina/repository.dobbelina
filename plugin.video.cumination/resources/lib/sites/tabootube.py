@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -42,15 +41,15 @@ def List(url, page=1):
     except:
         return None
 
-    match = re.compile(r'class="item item-\d+\s*?">\s+<a href="https://www\.tabootube\.xxx/([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="item item-\d+\s*?">\s*<a href="https://www\.tabootube\.xxx/([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = site.url + videopage
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('tabootube.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('tabootube.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration)
@@ -83,7 +82,6 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         utils.notify('Oh oh', 'No video found')
         return
-
 
 
 @site.register()
@@ -134,12 +132,12 @@ def Lookupinfo(url):
                 return url + ajaxpart
             if any(x in url for x in ['models/', 'tags/']):
                 return site.url + url + ajaxpart
-            
+
     lookup_list = [
         ("Cat", r'Categories:\s*?<a href="([^"]+)">([^<]+)<', ''),
         ("Tag", '/(tags/[^"]+)">([^<]+)<', ''),
         ("Actor", '/(models/[^"]+)">([^<]+)<', ''),
-        #("Studio", r'/(studios[^"]+)">([^<]+)</a>', ''),
+        # ("Studio", r'/(studios[^"]+)">([^<]+)</a>', ''),
     ]
 
     lookupinfo = TabootubeLookup(site.url, url, 'tabootube.List', lookup_list)
