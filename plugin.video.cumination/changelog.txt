@@ -1,8 +1,2 @@
-[B]Version 1.1.107[/B]
-- beeg - fix listing
-- netfapx - fix listing
-- camsoda - fix thumbnails
-- wizzgirl - removed as site is dead
-- thepornfull - fix domain
-- tubxporn - fix domain & playback
-- tabootube - fix listing
+[B]Version 1.1.108[/B]
+- pornhoarder - fix search, studios, categories
