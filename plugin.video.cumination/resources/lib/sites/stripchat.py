@@ -31,7 +31,7 @@ def Main():
     trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
 
-    bu = "https://stripchat.com/api/front/models?limit=1000&parentTag=autoTagNew&sortBy=trending&primaryTag="
+    bu = "https://stripchat.com/api/front/models?limit=80&parentTag=autoTagNew&sortBy=trending&offset=0&primaryTag="
     # site.add_dir('[COLOR hotpink]HD[/COLOR]', '{0}hd&broadcastHD=true'.format(bu), 'List', '', '')
     if female:
         site.add_dir('[COLOR hotpink]Female HD[/COLOR]', '{0}girls&broadcastHD=true'.format(bu), 'List', '', '')
@@ -49,7 +49,7 @@ def Main():
 
 
 @site.register()
-def List(url):
+def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
@@ -67,19 +67,33 @@ def List(url):
         fanart = model.get('previewUrlThumbSmall')
         img = 'https://img.strpst.com/thumbs/{0}/{1}_webp'.format(model.get('snapshotTimestamp'), model.get('id'))
         # img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
-        subject = ''
+        subject = model.get('groupShowTopic')
+        if subject:
+            subject += '[CR]'
         if model.get('country'):
             subject += '[COLOR deeppink]Location: [/COLOR]{0}[CR]'.format(utils.get_country(model.get('country')))
         if model.get('languages'):
             langs = [utils.get_language(x) for x in model.get('languages')]
             subject += '[COLOR deeppink]Languages: [/COLOR]{0}[CR]'.format(', '.join(langs))
         if model.get('broadcastGender'):
-            subject += '[COLOR deeppink]Gender: [/COLOR]{0}[CR][CR]'.format(model.get('broadcastGender'))
+            subject += '[COLOR deeppink]Gender: [/COLOR]{0}[CR]'.format(model.get('broadcastGender'))
+        if model.get('viewersCount'):
+            subject += '[COLOR deeppink]Watching: [/COLOR]{0}[CR][CR]'.format(model.get('viewersCount'))
         if model.get('tags'):
             subject += '[COLOR deeppink]#[/COLOR]'
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
             subject += '[COLOR deeppink] #[/COLOR]'.join(tags)
         site.add_download_link(name, videourl, 'Playvid', img, subject, noDownload=True, fanart=fanart)
+
+    total_items = data.get('filteredCount', 0)
+    nextp = (page * 80) < total_items
+    if nextp:
+        next = (page * 80) + 1
+        lastpg = -1 * (-total_items // 80)
+        page += 1
+        nurl = re.sub(r'offset=\d+', 'offset={0}'.format(next), url)
+        site.add_dir('Next Page.. (Currently in Page {0} of {1})'.format(page - 1, lastpg), nurl, 'List', site.img_next, page)
+
     utils.eod()
 
 
