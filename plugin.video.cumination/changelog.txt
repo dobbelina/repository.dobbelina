@@ -2,3 +2,4 @@
 - pornhoarder - fix search, studios, categories
 - stripchat - fix listing
 - noodlemagazine - fix playback
+- fuxmovies - fix playback
