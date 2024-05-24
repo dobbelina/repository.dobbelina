@@ -99,14 +99,11 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    playerid = re.compile('src="/player/([^"]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    if playerid:
-        playerurl = site.url + 'player/' + playerid[0]
-        playerhtml = utils.getHtml(playerurl, site.url)
-        playlistid = re.compile("/playlist/([^']+)", re.DOTALL | re.IGNORECASE).findall(playerhtml)[0]
-        plisturl = site.url + 'playlist/' + playlistid
+    p = re.compile("playlistUrl='([^']+)", re.DOTALL | re.IGNORECASE).search(html)
+    if p:
+        plisturl = site.url[:-1] + p.group(1)
         plhtml = utils.getHtml(plisturl, site.url)
-        videos = re.compile('file": "([^"]+)", "label": "([^"]+)"', re.IGNORECASE | re.DOTALL).findall(plhtml)
+        videos = re.compile(r'file":\s*"([^"]+)",\s*"label":\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(plhtml)
         sources = {quality: src for src, quality in videos}
         videourl = utils.prefquality(sources, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
         videourl = videourl + '|Referer=' + site.url
