@@ -57,7 +57,7 @@ def List(url, page=1):
 
     videos = listhtml.split('class="item ')
     for video in videos:
-        match = re.compile(r'^([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)class="duration">([\d:]+)', re.DOTALL | re.IGNORECASE).findall(video)
+        match = re.compile(r'^([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|thumb\s*"\s*src)="([^"]+)(.+?)class="duration">([\d:]+)', re.DOTALL | re.IGNORECASE).findall(video)
         for private, videopage, name, img, hd, name2 in match:
             hd = 'HD' if '>HD<' in hd else ''
             name = utils.cleantext(name)
@@ -127,7 +127,7 @@ def Categories(url):
 def Playlists(url, page=1):
     cathtml = utils.getHtml(url, site.url)
     img = str(randint(1, 4))
-    match = re.compile(r'class="item\s*".+?href="([^"]+)"\s*title="([^"]+)".+?class="thumb video' + img + '.+?data-original="([^"]+)".+?class="videos">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="item\s*".+?href="([^"]+)"\s*title="([^"]+)".+?class="thumb video' + img + '.+?src="([^"]+)".+?class="videos">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, img, name2 in match:
         name = utils.cleantext(name) + ' [COLOR cyan][{}][/COLOR]'.format(name2)
         img = 'https:' + img if img.startswith('//') else img
@@ -154,7 +154,7 @@ def ListPL(url, page=1):
         utils.eod()
         return
 
-    match = re.compile(r'class="title">([^<]+)<.+?href="([^"]+)".+?data-original="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="title">([^<]+)<.+?href="([^"]+)".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for name, videopage, img in match:
         name = utils.cleantext(name)
         img = 'https:' + img if img.startswith('//') else img

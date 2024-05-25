@@ -90,5 +90,14 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, regex=None, direct_regex='"mp4":{"link":"([^"]+)"')
-    vp.play_from_site_link(url)
+    vp = utils.VideoPlayer(name, download)
+    html = utils.getHtml(url)
+    match = re.compile(r'__NEXT_DATA__\s*=\s*(.+?})[^,}\]]', re.DOTALL | re.IGNORECASE).findall(html)
+    if match:
+        jdata = json.loads(match[0])
+        files = jdata["props"]["initialState"]["modal"]["video"]["files"]
+        sources = {files[key]["h"]: files[key]["link"] for key in files.keys()}
+        videourl = utils.prefquality(sources, reverse=True)
+        if videourl:
+            utils.kodilog(videourl)
+            vp.play_from_direct_link(videourl + '|verifypeer=false')

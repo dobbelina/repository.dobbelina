@@ -80,9 +80,9 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, regex='<iframe src="([^"]+)"', direct_regex=None)
+    vp = utils.VideoPlayer(name, download, regex='<iframe data-src="([^"]+)"', direct_regex=None)
     videohtml = utils.getHtml(url)
-    if '<iframe src="' in videohtml:
+    if '<iframe data-src="' in videohtml:
         vp.progress.update(25, "[CR]Loading video page[CR]")
         vp.play_from_site_link(url)
     else:
