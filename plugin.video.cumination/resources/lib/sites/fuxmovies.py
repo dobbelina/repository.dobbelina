@@ -46,7 +46,7 @@ def List(url):
     match = re.compile(r'fullthumbvid"><a\s*?href="/([^"]+)"\s*?title="([^"]+)".*?data-(?:lazy-)*src="([^"]+)".*?class="timer">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
-        videopage = videopage if videopage.startswith('http') else site.url + videopage
+        videopage = 'https:/' + videopage if videopage.startswith('/') else videopage
 
         contexturl = (utils.addon_sys
                       + "?mode=fuxmovies.Lookupinfo"

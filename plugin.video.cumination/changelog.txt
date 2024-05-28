@@ -1,8 +1,2 @@
-[B]Version 1.1.108[/B]
-- pornhoarder - fix search, studios, categories
-- stripchat - fix listing
-- noodlemagazine - fix playback
+[B]Version 1.1.109[/B]
 - fuxmovies - fix playback
-- eroticage - fix playback
-- vintagetube - fix playback
-- goodporn - fix listing
