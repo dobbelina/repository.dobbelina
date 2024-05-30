@@ -22,7 +22,7 @@ import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com', 'cam4.png', 'cam4', True)
+site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
 IOS_UA = {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'}
 
 
@@ -38,7 +38,7 @@ def Main():
     if couple:
         site.add_dir('[COLOR hotpink]Couples[/COLOR]', '&broadcastType=male_group&broadcastType=female_group&broadcastType=male_female_group', 'List', '', 1)
     if male:
-        site.add_dir('[COLOR hotpink]Males[/COLOR]', '&gender=male&broadcastType=male_group&broadcastType=solo', 'List', '', 1)
+        site.add_dir('[COLOR hotpink]Males[/COLOR]', '&gender=male&broadcastType=male_group&broadcastType=solo&broadcastType=male_female_group', 'List', '', 1)
     if trans:
         site.add_dir('[COLOR hotpink]Transsexual[/COLOR]', '&gender=shemale', 'List', '', 1)
     utils.eod()
@@ -67,8 +67,8 @@ def clean_database(showdialog=True):
 def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    url = '{0}/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY&resultsPerPage=1500{1}'.format(site.url, url)
-    listhtml = utils._getHtml(url, headers=IOS_UA)
+    listurl = '{0}/api/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY{1}&page={2}&resultsPerPage=60'.format(site.url, url, page)
+    listhtml = utils._getHtml(listurl, headers=IOS_UA)
     cams = json.loads(listhtml).get('users', {})
     for cam in cams:
         name = cam.get('username')
@@ -102,12 +102,18 @@ def List(url, page=1):
         if cam.get('showTags'):
             subject += ', '.join(cam.get('showTags')).encode('utf8') if utils.PY2 else ', '.join(cam.get('showTags'))
 
-        site.add_download_link(name, cam.get('hlsPreviewUrl'), 'Playvid', img, subject, noDownload=True, quality=hd)
+        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, cam.get('username'))
+        site.add_download_link(name, video, 'Playvid', img, subject, noDownload=True, quality=hd)
 
+    if len(cams) == 60:
+        page += 1
+        site.add_dir('Next Page ({})'.format(page), url, 'List', site.img_next, page)
     utils.eod()
 
 
 @site.register()
 def Playvid(url, name):
     vp = utils.VideoPlayer(name)
-    vp.play_from_direct_link(url)
+    html = utils._getHtml(url)
+    video = json.loads(html).get('cdnURL')
+    vp.play_from_direct_link(video)

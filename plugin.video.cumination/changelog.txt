@@ -1,2 +1,3 @@
 [B]Version 1.1.109[/B]
 - fuxmovies - fix playback
+- cam4 - fix favorites (existing CAM4 favorites must be removed and re-added)
