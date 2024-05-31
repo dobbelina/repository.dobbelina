@@ -26,10 +26,10 @@ site = AdultSite('fullporner', '[COLOR hotpink]Fullporner[/COLOR]', 'https://ful
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'actors/', 'Actors', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/', 'Actors', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'actors/page/1/', 'Actors', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + '1a/channels/page/1/', 'Actors', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    List(site.url + '1b/latest-videos/page/1/?filter=latest')
+    List(site.url + '1d/latest-videos/page/1/')
     utils.eod()
 
 
@@ -89,6 +89,6 @@ def Actors(url):
     np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'Categories', site.img_next)
+        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'Actors', site.img_next)
 
     utils.eod()
