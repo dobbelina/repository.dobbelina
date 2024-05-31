@@ -344,6 +344,14 @@ def onlineFav(url):
 
 
 def login():
+    sessionid = addon.getSetting('sessionid')
+    if len(sessionid) == 32:
+        session_cookie = get_cookie()
+        if sessionid not in session_cookie:
+            cookie = {'solution': {"cookies": [{'name': "sessionid", 'domain': ".chaturbate.com", 'value': sessionid, 'path': '/', 'secure': True, 'expiry': None, 'httpOnly': None}],
+                                   "userAgent": utils.USER_AGENT}}
+            utils.savecookies(cookie)
+
     url = 'https://chaturbate.com/followed-cams/'
     loginurl = 'https://chaturbate.com/auth/login/?next=/followed-cams/'
 
@@ -409,3 +417,12 @@ def Follow(id):
     if '"following": true' in response:
         utils.notify('Chaturbate', 'FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))
         utils.refresh()
+
+
+def get_cookie():
+    domain = ".chaturbate.com"
+    cookiestr = ""
+    for cookie in utils.cj:
+        if cookie.domain == domain and cookie.name == 'sessionid':
+            cookiestr = cookie.value
+    return cookiestr

@@ -675,3 +675,11 @@ msgstr ""
 msgctxt "#33024"
 msgid "Flaresolverr"
 msgstr ""
+
+msgctxt "#33025"
+msgid "Chaturbate Authentication Cookie"
+msgstr ""
+
+msgctxt "#33026"
+msgid "sessionid"
+msgstr ""

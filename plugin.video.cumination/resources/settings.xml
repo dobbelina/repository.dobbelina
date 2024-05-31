@@ -72,5 +72,7 @@
         <setting type="lsep" label="33024" />
         <setting id="fs_enable" type="bool" label="33022" default="false" />
         <setting id="fs_host" enable="eq(-1,true)" type="text" label="33023" default="http://localhost:8191/v1"/>
+        <setting type="lsep" label="33025" />
+        <setting id="sessionid" type="text" label="33026" default=""/>
     </category>
 </settings>

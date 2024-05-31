@@ -643,3 +643,11 @@ msgstr "Adresa unde rulează Flaresolverr"
 msgctxt "#33024"
 msgid "Flaresolverr"
 msgstr "Flaresolverr"
+
+msgctxt "#33025"
+msgid "Chaturbate Authentication Cookie"
+msgstr "Cookie de autentificare Chaturbate"
+
+msgctxt "#33026"
+msgid "sessionid"
+msgstr "sessionid"
