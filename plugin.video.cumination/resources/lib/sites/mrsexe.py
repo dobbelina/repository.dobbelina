@@ -25,12 +25,12 @@ site = AdultSite('mrsexe', '[COLOR hotpink]Mr Sexe[/COLOR]', 'https://www.mrsexe
 
 progress = utils.progress
 
-
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Classiques[/COLOR]', site.url + 'classiques/', 'List', '', '')
+    site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series.html', 'Series', '', '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?search=', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'inc/gettags.php', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Stars[/COLOR]', site.url + 'filles/', 'Stars', '', '')
     List(site.url)
     utils.eod()
@@ -70,9 +70,18 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile('value="(/cat[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile('"(/cat[^"]+)".+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name in match:
         site.add_dir(name, site.url[:-1] + catpage, 'List', '')
+    utils.eod()
+
+
+@site.register()
+def Series(url):
+    serieshtml = utils.getHtml(url, '')
+    match = re.compile('<li>.+?<a class="thumbnail".+?href="([^"]+).+?<figcaption>([^<]+).+?class="infos">([0-9]+)', re.DOTALL | re.IGNORECASE).findall(serieshtml)
+    for seriespage, name, count in match:
+        site.add_dir(name + " (" + count + ")", site.url[:-1] + seriespage, 'List', '')
     utils.eod()
 
 
