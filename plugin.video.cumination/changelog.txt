@@ -3,3 +3,4 @@
 - cam4 - fix favorites (existing CAM4 favorites must be removed and re-added)
 - fullporner - fix listing
 - chaturbate - authentication by adding a sessionid cookie in the settings (Settings - Advanced - Chaturbate Authentication Cookie)
+- hentaistream - fix search

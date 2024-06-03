@@ -28,7 +28,7 @@ site = AdultSite("hentaistream", "[COLOR hotpink]HentaiStream[/COLOR]", 'https:/
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'search?order=recently-uploaded&page=1', 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?s=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?search=', 'Search', site.img_search)
     List(site.url + 'search?order=recently-uploaded&page=1')
 
 
@@ -71,7 +71,7 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        url = url + title + '&order=recently-uploaded'
+        url = url + title + '&page=1'
         List(url)
 
 
