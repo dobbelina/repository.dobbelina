@@ -37,7 +37,7 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, site.url)
     html = listhtml.split('>SHOULD WATCH<')[0]
     videos = html.split('article data-video-uid')
     videos.pop(0)
@@ -47,6 +47,7 @@ def List(url):
         match = re.compile(r'href="([^"]+).+?data-src="([^"]+)".+?<span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
         if match:
             videourl, img, name = match[0]
+            img += '|Referer={0}'.format(site.url)
             name = utils.cleantext(name)
 
             contexturl = (utils.addon_sys
@@ -78,7 +79,7 @@ def GotoPage(list_mode, url, np, lp):
 
 @site.register()
 def Cat(url):
-    cathtml = utils.getHtml(url)
+    cathtml = utils.getHtml(url, site.url)
     cathtml = cathtml.split('>TAGS<')[-1].split('/section>')[0]
     match = re.compile(r'<a href="([^"]+)".+?aria-label="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name in match:
@@ -99,7 +100,7 @@ def Search(url, keyword=None):
 @site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"')
-    videohtml = utils.getHtml(url)
+    videohtml = utils.getHtml(url, site.url)
     match = re.compile(r'''<iframe[^>]+src=['"]([^'"]+)['"]''', re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     playerurl = match[0]
