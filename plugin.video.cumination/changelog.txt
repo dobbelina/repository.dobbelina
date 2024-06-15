@@ -2,3 +2,4 @@
 - hentaistream - fix search
 - erogarga - fix listing
 - xfreehd - fix Login
+- hentaistream - fix tags

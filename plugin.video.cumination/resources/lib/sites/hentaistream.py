@@ -57,7 +57,7 @@ def List(url, episodes=True):
 @site.register()
 def Tags(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('for="genre-list-([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('for="tags-([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name in sorted(match):
         name = utils.cleantext(name)
         tagpage = site.url + 'search?order=recently-uploaded&page=1&tags[0]={}'.format(tagpage)
