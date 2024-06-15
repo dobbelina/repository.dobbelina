@@ -141,7 +141,7 @@ def xfreehd_play(url, name, download=None):
     html = utils.getHtml(url, site.url, headers=hdr)
 
     if 'This is a private video.' in html:
-        if '"/user">My Profile<' not in html:
+        if '/user">My Profile<' not in html:
             utils.notify('Cumination', 'Not logged in!')
             return
         match = re.compile(r'data-id="([^"]+)">', re.DOTALL | re.IGNORECASE).findall(html)
@@ -218,11 +218,10 @@ def GotoPage(url, np, lp):
 
 
 def get_cookies():
-    domain = site.url.split('//')[-1][:-1]
     cookiestr = ''
     for cookie in utils.cj:
-        if cookie.domain == domain and cookie.name == 'AVS':
-            cookiestr = 'AVS=' + cookie.value
-    if xflogged and 'AVS=' not in cookiestr:
+        if cookie.domain == '.xfreehd.com' and cookie.name == 'FX':
+            cookiestr = 'FX=' + cookie.value + '; enterModal=1'
+    if xflogged and 'FX=' not in cookiestr:
         Login()
     return cookiestr
