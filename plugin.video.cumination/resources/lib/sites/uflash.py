@@ -22,28 +22,29 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
+import json
 
 site = AdultSite('uflash', '[COLOR hotpink]Uflash[/COLOR]', 'http://www.uflash.tv/', 'http://www.uflash.tv/templates/frontend/default/images/logo.png', 'uflash')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?search_type=videos&search_query=', 'Search', site.img_search)
-    List(site.url + 'videos?o=mr&type=public&page=1')
+    # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?search_type=videos&search_query=', 'Search', site.img_search)
+    List(site.url)
     utils.eod()
 
 
 @site.register()
 def List(url):
     headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
-    html = utils.getHtml(url, headers=headers)
+    html = utils._getHtml(url, headers=headers)
     if 'No videos found!' in html:
         utils.notify(msg='Nothing found')
         utils.eod()
         return
 
-    delimiter = '<li style='
+    delimiter = r'<li\s+style='
     re_videopage = 'href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
     re_img = 'img src="([^"]+)"'
@@ -51,10 +52,12 @@ def List(url):
     skip = 'adultfriendfinder.com'
     utils.videos_list(site, 'uflash.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip)
 
-    re_npurl = r'href="([^"]+)"\s*class="prevnext">Next'
-    re_npnr = r'(\d+)"\s*class="prevnext">Next'
-    re_lpnr = r'>(\d+)</a></li><li><a[^>]+Next'
-    utils.next_page(site, 'uflash.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='uflash.GotoPage')
+    # re_npurl = r'href="([^"]+)"\s*class="prevnext">Next'
+    # re_npnr = r'(\d+)"\s*class="prevnext">Next'
+    # re_lpnr = r'>(\d+)</a></li><li><a[^>]+Next'
+    # utils.next_page(site, 'uflash.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='uflash.GotoPage')
+    site.add_dir('[COLOR hotpink]Show More...[/COLOR]', site.url, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -106,17 +109,11 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
-    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate'}
-    html = utils.getHtml(url, site.url, headers=headers)
-    match = re.compile(r'video_source\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
-    if match:
-        videourl = match[0]
-        vp.play_from_direct_link(videourl + '|Referer=' + url)
-    else:
-        utils.notify('Oh Oh', 'No Videos found')
-        vp.progress.close()
+    headers = {'User-Agent': 'iPad', 'Accept-Encoding': 'deflate', 'X-Requested-With': 'XMLHttpRequest'}
+    id = url.split('/')[4]
+    data = {'vid': '{}'.format(id)}
+    html = utils.getHtml(site.url + 'ajax/getvideo', url, headers=headers, data=data)
+    jdata = json.loads(html)
 
-    # match = re.compile(r'_8xHp9vZ2\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(html)
-    # if match:
-    #     videourl = base64.b64decode(match[0]).decode("utf-8")
-    #     vp.play_from_direct_link(videourl + '|Referer=' + url)
+    videourl = jdata["video_src"]
+    vp.play_from_direct_link(videourl + '|Referer=' + url)
