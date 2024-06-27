@@ -1,9 +1,7 @@
-[B]Version 1.1.110[/B]
-- hentaistream - fix search
-- erogarga - fix listing
+[B]Version 1.1.111[/B]
 - xfreehd - fix Login
 - hentaistream - fix tags
 - voyeur-house.life - new domain (voyeur-house.cc)
 - voyeurhouse.life - new domain (reallifecams.in)
 - uflash - fix listing, playback
-
+- pornhoarder - fix search, categories
