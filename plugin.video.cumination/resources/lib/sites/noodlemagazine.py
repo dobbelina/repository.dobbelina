@@ -19,6 +19,7 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import json
 
 site = AdultSite('noodlemagazine', '[COLOR hotpink]Noodlemagazine[/COLOR]', 'https://noodlemagazine.com/', 'noodlemagazine', 'noodlemagazine')
 
@@ -99,12 +100,11 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    p = re.compile("playlistUrl='([^']+)", re.DOTALL | re.IGNORECASE).search(html)
+    p = re.compile(r'window.playlist\s*=\s*([^;]+);', re.DOTALL | re.IGNORECASE).search(html)
     if p:
-        plisturl = site.url[:-1] + p.group(1)
-        plhtml = utils.getHtml(plisturl, site.url)
-        videos = re.compile(r'file":\s*"([^"]+)",\s*"label":\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(plhtml)
-        sources = {quality: src for src, quality in videos}
+        js = json.loads(p.group(1))
+        src = js["sources"]
+        sources = {x["label"]: x["file"] for x in src}
         videourl = utils.prefquality(sources, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
         videourl = videourl + '|Referer=' + site.url
         vp.play_from_direct_link(videourl)
