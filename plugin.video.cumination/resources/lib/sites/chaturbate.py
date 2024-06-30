@@ -332,7 +332,8 @@ def onlineFav(url):
                 if model["current_show"] != "public":
                     current_show = '[COLOR blue] {}[/COLOR]'.format(model["current_show"])
             subject = model["room_subject"] if utils.PY3 else model["room_subject"].encode('utf8')
-            subject = utils.cleantext(subject.split(' #')[0]) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + utils.cleantext(model["location"]) + "[CR]" \
+            location = model["location"] if utils.PY3 else model["location"].encode('utf8')
+            subject = utils.cleantext(subject.split(' #')[0]) + "[CR][CR][COLOR deeppink]Location: [/COLOR]" + location + "[CR]" \
                 + "[COLOR deeppink]Duration: [/COLOR]" + str(round(model["seconds_online"] / 3600, 1)) + " hrs[CR]" \
                 + "[COLOR deeppink]Watching: [/COLOR]" + str(model["num_users"]) + " viewers"
             tags = '[COLOR deeppink]#[/COLOR]' + ', [COLOR deeppink]#[/COLOR]'.join(model["tags"])
