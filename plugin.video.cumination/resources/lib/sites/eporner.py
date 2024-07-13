@@ -45,9 +45,9 @@ def List(url):
     for i, vid in enumerate(vids):
         if i == 0:
             continue
-        match = re.compile(r'Quality"><span>(.+?)<.+? href="([^"]+)".+?src="(http[^"]+)".+?href.+?>(.+?)<.+?title="Duration">([^"]+)<\/', re.DOTALL | re.IGNORECASE).findall(vid)
+        match = re.compile(r'href="([^"]+)".+?src="(http[^"]+)".+?alt="([^"]+)".+?Quality"><span>([^<]+)<.+?title="Duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(vid)
         if match:
-            hd, videopage, img, name, duration = match[0]
+            videopage, img, name, hd, duration = match[0]
             name = utils.cleantext(name)
             site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
     nextp = re.compile(r"href='([^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(vids[-1])
