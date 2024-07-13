@@ -37,9 +37,9 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'open-popup"\s*href="([^"]+)"\s*title="([^"]+)".*?original="([^"]+)"(.*?)time">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(listhtml)
+    match = re.compile(r'open-popup"\s*href="([^"]+)".*?original="([^"]+)".+?alt="([^"]+)"(.*?)time">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(listhtml)
 
-    for videopage, name, img, hd, duration in match:
+    for videopage, img, name, hd, duration in match:
         name = utils.cleantext(name.strip())
         hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
