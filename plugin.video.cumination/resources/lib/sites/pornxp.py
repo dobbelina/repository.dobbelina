@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -30,13 +29,14 @@ def Main():
     site.add_dir('[COLOR hotpink]New releases[/COLOR]', site.url + 'released/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]HD[/COLOR]', site.url + 'hd/?sort=new', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_cat)
-    #site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?q=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'tags/', 'Search', site.img_search)
     List(site.url)
     utils.eod()
 
 
 @site.register()
 def List(url):
+    utils.kodilog(url)
     listhtml = utils.getHtml(url, '')
     match = re.compile('item_cont">.*?href="/([^"]+)".*?(?:data-)*src="([^"]+jpg)".*?dur">([^<]+)<.*?item_title">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
@@ -48,8 +48,8 @@ def List(url):
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('pornxp.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('pornxp.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration)
@@ -83,13 +83,11 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
-        searchUrl = searchUrl + title
-        List(searchUrl)
+        url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
+        List(url)
 
 
 @site.register()
