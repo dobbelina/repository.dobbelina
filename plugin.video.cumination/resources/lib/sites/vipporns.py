@@ -17,10 +17,10 @@
 """
 
 import re
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
+from random import randint
 
 site = AdultSite('vipporns', '[COLOR hotpink]VIP Porns[/COLOR]', 'https://www.vipporns.com/', 'vipporns.png', 'vipporns')
 
@@ -29,7 +29,7 @@ site = AdultSite('vipporns', '[COLOR hotpink]VIP Porns[/COLOR]', 'https://www.vi
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + 'latest-updates/')
+    List(site.url + 'new-porn-video/')
     utils.eod()
 
 
@@ -44,27 +44,16 @@ def List(url):
         name = utils.cleantext(name.strip())
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
-    nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if nextp:
-        nextp = nextp.group(1)
-        if nextp.startswith('#'):
-            block, pars = re.compile(r'class="next">.+?block-id="([^"]+).+?parameters="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-            pno = re.compile(r'from[^\d]+(\d+)', re.IGNORECASE).findall(pars)[0]
-            query = {'mode': 'async',
-                     'function': 'get_block',
-                     'block_id': block}
-            for par in pars.split(';'):
-                par1, par2 = par.split(':')
-                if '+' in par1:
-                    for spar in par1.split('+'):
-                        query.update({spar: par2})
-                else:
-                    query.update({par1: urllib_parse.unquote(par2)})
-            nextp = "{0}?{1}".format(url.split('?')[0], urllib_parse.urlencode(query))
-        else:
-            nextp = site.url[:-1] + nextp if 'http' not in nextp else nextp
-            pno = nextp.split('/')[-2]
-        site.add_dir('Next Page... ({0})'.format(pno), nextp, 'List', site.img_next)
+    match = re.search(r'class="load-more".+?data-block-id="([^"]+)".+?data-parameters="([^"]+)">Load', listhtml, re.DOTALL | re.IGNORECASE)
+    if match:
+        block_id = match.group(1)
+        params = match.group(2).replace(';', '&').replace(':', '=')
+        npage = params.split('=')[-1]
+        rnd = 1000000000000 + randint(0, 999999999999)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(rnd))
+
+        nurl = nurl.replace('+from_albums', '')
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + npage + ')', nurl, 'List', site.img_next)
 
     utils.eod()
 

@@ -4,3 +4,4 @@
 - rule34video - fix listing
 - pornxp - search option
 - speedporn - fix listing
+- vipporns - fix pagination
