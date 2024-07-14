@@ -17,7 +17,6 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -44,14 +43,14 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
-    match = re.compile(r'class="thumb" href="([^"]+)".+?data-src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="thumb" href="([^"]+)".+?src="([^"]+)".+?span class="title">([^<]+)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
 
         contextmenu = []
         contexturl = (utils.addon_sys
-                          + "?mode=" + str('speedporn.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+                      + "?mode=" + str('speedporn.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu)
@@ -74,8 +73,8 @@ def List_all(url):
                 name = utils.cleantext(name)
                 contextmenu = []
                 contexturl = (utils.addon_sys
-                                + "?mode=" + str('speedporn.Lookupinfo')
-                                + "&url=" + urllib_parse.quote_plus(videopage))
+                              + "?mode=" + str('speedporn.Lookupinfo')
+                              + "&url=" + urllib_parse.quote_plus(videopage))
                 contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
                 site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu)
