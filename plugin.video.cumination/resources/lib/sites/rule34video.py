@@ -75,22 +75,25 @@ def TagMenu(url):
     taghtml = utils.getHtml(url, site.url)
     items = re.compile(r'data-block-id="list_tags_tags_list"\s*data-parameters="section:([^"]+)">([^<]+)', re.IGNORECASE | re.DOTALL).findall(taghtml)
     for tagpage, name in items:
-        tagurl = '{0}?mode=async&function=get_block&block_id=list_tags_tags_list&section={1}&_={2}'.format(
+        tagurl = '{0}?mode=async&function=get_block&block_id=list_tags_tags_list&section={1}&from=1&_={2}'.format(
             url,
             tagpage,
             int(time.time() * 1000)
         )
-        site.add_dir(name, tagurl, 'Tag')
+        site.add_dir(name, tagurl, 'Tag', page=1)
     utils.eod()
 
 
 @site.register()
-def Tag(url):
+def Tag(url, page=1):
     taghtml = utils.getHtml(url, site.url)
-    items = re.compile(r'item">\s+<a href="([^"]+)">\s+<strong>([^<]+)<.strong>\s+<span>([^<]+)<', re.IGNORECASE | re.DOTALL).findall(taghtml)
+    items = re.compile(r'item">\s+<a href="([^"]+)">\s+([^<]+)\s+<span>.+?</svg>([^<]+)<', re.IGNORECASE | re.DOTALL).findall(taghtml)
     for tagpage, name, videos in items:
-        name = '{} [COLOR orange]{}[/COLOR]'.format(name, videos)
+        name = '{} [COLOR orange]{}[/COLOR]'.format(name.strip(), videos.strip())
         site.add_dir(name, tagpage, 'List')
+    if len(items) == 120:
+        nextpg = url.replace('from={}'.format(page), 'from={}'.format(page + 1))
+        site.add_dir('Next Page', nextpg, 'Tag', site.img_next, page=page + 1)
     utils.eod()
 
 

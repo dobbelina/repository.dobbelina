@@ -22,7 +22,6 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
-import json
 
 site = AdultSite('familypornhd', '[COLOR hotpink]Familypornhd[/COLOR]', 'https://familypornhd.com/', 'https://familypornhd.com/wp-content/uploads/2020/06/Light-normal.png', 'familypornhd')
 
@@ -130,7 +129,7 @@ def Playvid(url, name, download=None):
         hdr['X-Requested-With'] = 'XMLHttpRequest'
         data = {'hash': hash, 'r': ''}
         html = utils._getHtml(url1, iframeurl, headers=hdr, data=data)
-        match = re.compile('(https://one.+?&q=(\d+))', re.IGNORECASE | re.DOTALL).findall(html)
+        match = re.compile(r'(https://one.+?&q=(\d+))', re.IGNORECASE | re.DOTALL).findall(html)
         if match:
             links = {quality: link for link, quality in match}
             videourl = utils.prefquality(links, sort_by=lambda x: int(x), reverse=True)

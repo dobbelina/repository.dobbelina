@@ -1,4 +1,5 @@
 [B]Version 1.1.113[/B]
 - speedporn - fix categories
 - familypornhd - fix playback
+- rule34video - fix tags
 
