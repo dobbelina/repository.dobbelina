@@ -35,7 +35,7 @@ def Main():
 @site.register()
 def List(url, episodes=True):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile('<div class="w-full.*?href="([^"]+)".*?<img alt="([^"]+)".*?src="/([^"]+)".*?<p[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<div wire:key.*?href="([^"]+)".*?<img alt="([^"]+)".*?src="/([^"]+)".*?<p[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, hd in match:
         name = utils.cleantext(name)
         hd = " [COLOR orange]{0}[/COLOR]".format(hd.upper())
@@ -101,28 +101,24 @@ def Playvid(url, name, download=None):
     videojson = utils._postHtml(site.url + 'player/api', headers=hstreamhdrs, json_data=payload)
     videojson = json.loads(videojson)
 
-    if videojson['legacy'] == 0:
-        qualities = {'2160': '/2160/manifest.mpd',
-                     '1080': '/1080/manifest.mpd',
-                     '720': '/720/manifest.mpd'}
-    else:
-        qualities = {'2160': '/av1.2160p.webm',
-                     '1080': '"/av1.1080p.webm',
-                     '720': '/x264.720p.mp4'}
-
-    if videojson['resolution'] == '1080':
-        qualities.pop('2160')
-    elif videojson['resolution'] == '720':
-        qualities.pop('2160')
-        qualities.pop('1080')
+    qualities = {'2160': '/2160/manifest.mpd',
+                 '1080': '/1080/manifest.mpd',
+                 '720': '/720/manifest.mpd'}
 
     videoquality = utils.prefquality(qualities, sort_by=lambda x: int(x), reverse=True)
     if not videoquality:
-        utils.notify('Oh Oh', 'No Videos found')
         return
 
-    videourl = 'https://str.h-dl.xyz/{}{}'.format(videojson['stream_url'], videoquality)
-    suburl = 'https://str.h-dl.xyz/{}/eng.ass'.format(videojson['stream_url'])
+    domains = videojson['stream_domains'] + videojson['asia_stream_domains']
+    if not len(domains) > 1 or utils.addon.getSetting("dontask") == "true":
+        domain = domains[0]
+    else:
+        domain = utils.selector('Select videohost', domains)
+    if not domain:
+        return
+
+    videourl = '{}/{}{}'.format(domain, videojson['stream_url'], videoquality)
+    suburl = '{}/{}/eng.ass'.format(domain, videojson['stream_url'])
 
     if utils.checkUrl(suburl):
         utils.playvid(videourl, name, subtitle=suburl)

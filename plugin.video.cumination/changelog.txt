@@ -2,4 +2,5 @@
 - speedporn - fix categories
 - familypornhd - fix playback
 - rule34video - fix tags
+- hentaistream - fix listing, playback
 
