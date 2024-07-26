@@ -1419,7 +1419,7 @@ class VideoPlayer():
 
     @_cancellable
     def play_from_link_list(self, links):
-        use_universal = True if addon.getSetting("universal_resolvers") == "true" else False
+        use_universal = addon.getSetting("universal_resolvers") == "true"
         links = self.bypass_hosters(links)
         sources = self._clean_urls([self.resolveurl.HostedMediaFile(x, title=x.split('/')[2], include_universal=use_universal) for x in links])
         if not sources:

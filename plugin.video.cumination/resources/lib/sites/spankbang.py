@@ -47,38 +47,31 @@ def List(url):
     url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
     listhtml = re.compile(r'<main(.*?)</main>', re.DOTALL).findall(listhtml)[0]
-    videos = listhtml.split('class="video-item')
-    for video in videos:
-        match = re.compile(r'href="([^"]+).+?data-src="([^"]+)"(.+)', re.DOTALL).findall(video)
-        if match:
-            videopage, img, info = match[0]
-            info = info.replace('<strong>', '').replace('</strong>', '')
-            duration = ''
-            hd = ''
-            name = ''
-            if 'class="l"' in info:
-                duration = info.split('class="l">')[-1].split('<')[0]
-            if 'class="h"' in info:
-                hd = info.split('class="h">')[-1].split('<')[0]
-            if 'class="n"' in info:
-                name = info.split('class="n">')[-1].split('<')[0]
-            name = utils.cleantext(name)
-            site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
-    nextp = re.compile(r'href="([^"]+)">&raquo', re.DOTALL | re.IGNORECASE).search(videos[-1])
-    nextps = re.compile(r'href="([^"]+)"\s*class="next">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    videos = re.compile(r'class="video-item.+?href="([^"]+)"\s*title="([^"]+).+?data-src="([^"]+)(.+?)</a>', re.DOTALL).findall(listhtml)
+    for videopage, name, img, info in videos:
+        info = info.replace('<strong>', '').replace('</strong>', '')
+        duration = ''
+        hd = ''
+        if 'class="video-badge l"' in info:
+            duration = info.split('class="video-badge l">')[-1].split('<')[0]
+        if 'class="video-badge h"' in info:
+            hd = info.split('class="video-badge h">')[-1].split('<')[0]
+        name = utils.cleantext(name)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
+    nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
         np = re.findall(r'/(\d+)/', nextp)[-1]
-        lp = re.compile(r'>(\d+)<[^"]+class="next"><', re.DOTALL | re.IGNORECASE).findall(videos[-1])
+        lp = re.compile(r'>(\d+)<[^"]+class="next"><', re.DOTALL | re.IGNORECASE).findall(listhtml)
         if lp:
             lp = '/' + lp[0]
         else:
             lp = ''
-        site.add_dir('Next Page({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
-    elif nextps:
-        nextp = nextps.group(1)
-        pgtxt = re.findall(r'class="status">(.*?)</span', listhtml)[0].replace('<span>/', 'of').capitalize()
-        site.add_dir('Next Page... (Currently in {})'.format(pgtxt), site.url[:-1] + nextp, 'List', site.img_next)
+        site.add_dir('Next Page.. ({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
+    # elif nextps:
+    #     nextp = nextps.group(1)
+    #     pgtxt = re.findall(r'class="status">(.*?)</span', listhtml)[0].replace('<span>/', 'of').capitalize()
+    #     site.add_dir('Next Page... (Currently in {})'.format(pgtxt), site.url[:-1] + nextp, 'List', site.img_next)
 
     utils.eod()
 
