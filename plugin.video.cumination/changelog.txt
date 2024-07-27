@@ -3,4 +3,5 @@
 - familypornhd - fix playback
 - rule34video - fix tags
 - hentaistream - fix listing, playback
+- pornhoarder - fix search/categories
 

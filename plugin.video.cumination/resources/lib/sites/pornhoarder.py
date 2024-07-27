@@ -19,8 +19,13 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import requests
 
-site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://ww6.pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
+if 'ph_url' not in locals():
+    r = requests.head('https://www.pornhoarder.tv/', allow_redirects=True)
+    ph_url = r.url
+
+site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', ph_url, 'pornhoarder.jpg', 'pornhoarder')
 
 ph_headers = {
     'Origin': site.url[:-1],
