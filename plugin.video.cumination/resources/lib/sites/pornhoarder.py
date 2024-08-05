@@ -21,11 +21,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import requests
 
-if 'ph_url' not in locals():
-    r = requests.head('https://www.pornhoarder.tv/', allow_redirects=True)
-    ph_url = r.url
-
-site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', ph_url, 'pornhoarder.jpg', 'pornhoarder')
+site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://www.pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
 
 ph_headers = {
     'Origin': site.url[:-1],
@@ -45,16 +41,18 @@ def Main():
 
 
 @site.register()
-def List(url, page=1):
+def List(url, page=1, section=None):
     search = '' if url.startswith('https://') else url
+    siteurl = section if section else requests.head(site.url, allow_redirects=True).url
+
     data = Createdata(page, search)
-    listhtml = utils.postHtml(site.url + 'ajax_search.php', headers=ph_headers, form_data=data)
+    listhtml = utils.postHtml(siteurl + 'ajax_search.php', headers=ph_headers, form_data=data)
     match = re.compile('href="([^"]+)".*?data-src="([^"]+)"(.*?)h1>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
     for videopage, img, length, name in match:
         name = utils.cleantext(name)
-        videopage = site.url[:-1] + videopage
+        videopage = siteurl[:-1] + videopage
 
         if 'length' in length:
             length = re.search('length">([^<]+)<', length, re.IGNORECASE | re.DOTALL).group(1)
@@ -66,7 +64,7 @@ def List(url, page=1):
     np = re.compile('next"><span class="pagination-button" data-page="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         page_number = np.group(1)
-        site.add_dir('Next Page (' + page_number + ')', url, 'List', site.img_next, page=int(page_number))
+        site.add_dir('Next Page (' + page_number + ')', url, 'List', site.img_next, page=int(page_number), section=siteurl)
     utils.eod()
 
 
