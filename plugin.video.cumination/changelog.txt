@@ -1,9 +1,2 @@
-[B]Version 1.1.113[/B]
-- speedporn - fix categories
-- familypornhd - fix playback
-- rule34video - fix tags
-- hentaistream - fix listing, playback
-- pornhoarder - fix search/categories
-- spankbang - fix missing item titles
-- sextb - fix missing thumbs
-- camsoda - add categories
+[B]Version 1.1.114[/B]
+- pornmz - fix listing, thumbnails, pagination

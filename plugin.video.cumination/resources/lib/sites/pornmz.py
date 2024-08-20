@@ -17,8 +17,9 @@
 '''
 
 import re
-from six.moves import urllib_parse
+import xbmc
 from resources.lib import utils
+from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('pornmz', '[COLOR hotpink]Pornmz[/COLOR]', 'https://pornmz.com/', 'https://pornmz.com/wp-content/uploads/2021/03/PornMZ.png', 'pornmz')
@@ -40,21 +41,24 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'<article [^<]+<a\s+href="([^"]+)"\s+title="([^"]+)".*?src="([^"]+)"[^<]+(.*?)uration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, name, img, hd, duration in match:
-        name = utils.cleantext(name)
-        hd = 'HD' if 'hd' in hd.lower() else ''
 
-        contexturl = (utils.addon_sys
-                      + "?mode=pornmz.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+    delimiter = '<article id="post'
+    re_videopage = 'href="([^"]+)"'
+    re_name = ' title="([^"]+)"'
+    re_img = '(?:img src|img data-src|poster)="([^"]+)"'
+    re_duration = 'duration">([^<]+)<'
+    re_quality = '>HD<'
 
-        site.add_download_link(name, videopage, 'Play', img, name, contextm=contextmenu, duration=duration, quality=hd)
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=pornmz.Lookupinfo&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=pornmz.Related&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    np = re.compile('href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    utils.videos_list(site, 'pornmz.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    np = re.compile(r'class="current">\d+<[^h]+href="([^"]+)"\s*class="inactive">(\d+)<', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        site.add_dir('Next Page... ({0})'.format(np.group(1).split('/')[-1].split('?')[0]), np.group(1), 'List', site.img_next)
+        site.add_dir('Next Page... ({0})'.format(np.group(2)), np.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -112,6 +116,12 @@ def Play(url, name, download=None):
 
 
 @site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('pornmz.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
 def Lookupinfo(url):
     lookup_list = [
         ("Cat", r'href="([^"]+)"[^>]+><i class="fa\s+fa-folder"></i>([^<]+)<', ''),
@@ -119,5 +129,5 @@ def Lookupinfo(url):
         ("Tag", r'href="([^"]+)"[^>]+><i class="fa\s+fa-tag"></i>([^<]+)<', '')
     ]
 
-    lookupinfo = utils.LookupInfo(site.url, url, 'pornmz.List', lookup_list)
+    lookupinfo = utils.LookupInfo('', url, 'pornmz.List', lookup_list)
     lookupinfo.getinfo()
