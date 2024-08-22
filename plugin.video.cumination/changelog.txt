@@ -1,2 +1,3 @@
 [B]Version 1.1.114[/B]
 - pornmz - fix listing, thumbnails, pagination
+- netflixporno - fix listing

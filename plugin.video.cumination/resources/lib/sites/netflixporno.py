@@ -49,7 +49,7 @@ def List(url):
     if len(listhtml) == 0:
         listhtml = 'Empty'
 
-    match = re.compile(r'<article class.+?href="([^"]+)".+?(?:data-lazy-src=|\ssrc=)"([^"]+jpg)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article class.+?href="([^"]+)".+?(?:data-lazy-src=|\ssrc=)"([^"]+\.jpg[^"]*)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, '')
