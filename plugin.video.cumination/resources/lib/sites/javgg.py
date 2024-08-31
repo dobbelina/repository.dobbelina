@@ -18,11 +18,12 @@
 
 import re
 import json
+import requests
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('javgg', '[COLOR hotpink]JavGG[/COLOR]', 'https://javgg.net/', 'https://javgg.net/javgg.png', 'javgg')
+site = AdultSite('javgg', '[COLOR hotpink]JavGG[/COLOR]', 'https://javgg.co/', 'https://javgg.xyz/javgg.png', 'javgg')
 
 
 @site.register(default_mode=True)
@@ -37,16 +38,9 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile('alt="([^"]+)" data-src="([^"]+)"[^>]+>(.*?)<a href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if not match:
-        return
-    for name, img, genre, videopage in match:
+    match = re.compile('<article id=.+?img src="([^"]+)".+?alt="([^"]+)".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, name, videopage in match:
         name = utils.cleantext(name)
-
-        if genre:
-            match = re.search(">([^<]+)<", genre, re.IGNORECASE | re.DOTALL)
-            if match:
-                name = "{0} - {1}".format(name, match.group(1))
 
         contextmenu = []
         contexturl = (utils.addon_sys
@@ -69,11 +63,22 @@ def Playvid(url, name, download=None):
     sources = []
     videohtml = utils.getHtml(url, site.url)
     match = re.compile(r'''data-post=['"]([^"']+)['"]\s+?data-nume=['"]([^'"]+)''', re.DOTALL | re.IGNORECASE).findall(videohtml)
+
+    hdr = utils.base_hdrs.copy()
+    hdr['X-Requested-With'] = 'XMLHttpRequest'
+    hdr['Referer'] = url
+
     for videoid, vidcount in match:
-        ajaxurl = 'https://javgg.net/wp-json/dooplayer/v2/{0}/movie/{1}'.format(videoid, vidcount)
-        ajaxhtml = utils.getHtml(ajaxurl, url)
+        data = {'action': 'doo_player_ajax', 'post': '{}'.format(videoid), 'nume': '{}'.format(vidcount), 'type': 'movie'}
+        ajaxurl = 'https://javgg.net/wp-admin/admin-ajax.php'
+        ajaxhtml = utils.getHtml(ajaxurl, url, headers=hdr, data=data)
         ajaxjson = json.loads(ajaxhtml)
-        sources.append('"{0}"'.format(ajaxjson['embed_url']))
+        aurl = ajaxjson['embed_url']
+
+        r = requests.head(aurl, headers=hdr)
+        vurl = r.headers.get('refresh').split('url=')[-1]
+        sources.append('"{0}"'.format(vurl))
+
     vp.progress.update(50, "[CR]Loading video page[CR]")
     vp.play_from_html(', '.join(sources))
 
