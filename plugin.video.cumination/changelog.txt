@@ -1,8 +1,4 @@
-[B]Version 1.1.114[/B]
-- pornmz - fix listing, thumbnails, pagination
-- netflixporno - fix listing
-- goodporn - removed
-- fuxmovies - removed
-- pornvid69 - removed
+[B]Version 1.1.115[/B]
+- ividz - fix listing
 
 
