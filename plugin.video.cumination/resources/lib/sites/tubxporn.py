@@ -113,6 +113,6 @@ def Playvid(url, name, download=None):
         sources = {x[1]: x[0] for x in match}
         videolink = utils.prefquality(sources, sort_by=lambda x: int(x[:-1]), reverse=True)
         videolink = videolink.split(';')
-        videourl = 'https://{0}.vstor.info/whpvid/{1}/{2}/{3}/{4}/{4}_{5}.mp4'.format(videolink[7], videolink[5], videolink[6], videolink[4][:-3] + '000', videolink[4], videolink[1])
+        videourl = 'https://{0}.vstor.top/whpvid/{1}/{2}/{3}/{4}/{4}_{5}.mp4'.format(videolink[7], videolink[5], videolink[6], videolink[4][:-3] + '000', videolink[4], videolink[1])
         videourl = videourl.replace('_720p', '')
         vp.play_from_direct_link(videourl)
