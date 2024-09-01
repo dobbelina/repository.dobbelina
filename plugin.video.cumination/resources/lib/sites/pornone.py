@@ -35,7 +35,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'href="([^"]+)"[^>]+class="popbop.+?alt="([^"]+)".+?src="[^"]+">\s*([^<]+\s*)<.+?data-src="([^"]+)".+?whitespace-normal\s*">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<a href="([^"]+)" class="popbop(.+?)>(\d[\d:\s]+)<.+?(?:data-src|img src)="([^"]+)"\s*alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, hd, duration, img, name in match:
         name = utils.cleantext(name)
         hd = 'HD' if 'HD Video' in hd else ''
