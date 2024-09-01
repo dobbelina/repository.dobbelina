@@ -23,7 +23,7 @@ from six.moves import urllib_parse
 from kodi_six import xbmc, xbmcgui, xbmcplugin
 import datetime
 
-site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster2.com/', 'xhamster.png', 'xhamster')
+site = AdultSite('xhamster', '[COLOR hotpink]xHamster[/COLOR]', 'https://xhamster.com/', 'xhamster.png', 'xhamster')
 
 
 @site.register(default_mode=True)
@@ -39,13 +39,15 @@ def Main():
 
 @site.register()
 def List(url):
+    utils.kodilog(url)
     url = update_url(url)
+    utils.kodilog(url)
 
     context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
-    context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
+    # context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
     context_quality = (utils.addon_sys + "?mode=" + str('xhamster.ContextQuality'))
     contextmenu = [('[COLOR violet]Category[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('category')), 'RunPlugin(' + context_category + ')'),
-                   ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
+                   # ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
                    ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + context_quality + ')')]
 
     try:
@@ -232,9 +234,9 @@ def ContextCategory():
     if cat:
         utils.addon.setSetting('xhamstercat', cat)
         if cat == 'straight':
-            utils._getHtml('https://xhamster.com/?straight=', site.url)
+            utils._getHtml(site.url + '?straight=', site.url)
         else:
-            utils._getHtml('https://xhamster.com/' + cat, site.url)
+            utils._getHtml(site.url + cat, site.url)
         utils.refresh()
 
 
@@ -318,28 +320,28 @@ def update_url(url):
                 url[0] += 'hd/' if url[0].endswith('/') else '/hd/'
                 url = 'newest'.join(url)
                 url += '&quality=1080p' if '?' in url else '?quality=1080p'
-    length = get_setting('length')
-    if 'max-duration=10' in url:
-        old_length = '0-10 min'
-    elif 'max-duration=40' in url:
-        old_length = '10-40 min'
-    elif 'min-duration=40' in url:
-        old_length = '40+ min'
-    else:
-        old_length = 'ALL'
+    # length = get_setting('length')
+    # if 'max-duration=10' in url:
+    #     old_length = '0-10 min'
+    # elif 'max-duration=40' in url:
+    #     old_length = '10-40 min'
+    # elif 'min-duration=40' in url:
+    #     old_length = '40+ min'
+    # else:
+    #     old_length = 'ALL'
 
-    if length != old_length:
-        url = re.sub(r'[\?&]page=[^\?&]+', '', url)
-        url = re.sub(r'newest/\d+', 'newest', url)
-        url = re.sub(r'[\?&]min-duration=[^\?&]+', '', url)
-        url = re.sub(r'[\?&]max-duration=[^\?&]+', '', url)
-        if length == '0-10 min':
-            url += '&max-duration=10' if '?' in url else '?max-duration=10'
-        elif length == '10-40 min':
-            url += '&min-duration=10' if '?' in url else '?min-duration=10'
-            url += '&max-duration=40'
-        elif length == '40+ min':
-            url += '&min-duration=40' if '?' in url else '?min-duration=40'
+    # if length != old_length:
+    #     url = re.sub(r'[\?&]page=[^\?&]+', '', url)
+    #     url = re.sub(r'newest/\d+', 'newest', url)
+    #     url = re.sub(r'[\?&]min-duration=[^\?&]+', '', url)
+    #     url = re.sub(r'[\?&]max-duration=[^\?&]+', '', url)
+    #     if length == '0-10 min':
+    #         url += '&max-duration=10' if '?' in url else '?max-duration=10'
+    #     elif length == '10-40 min':
+    #         url += '&min-duration=10' if '?' in url else '?min-duration=10'
+    #         url += '&max-duration=40'
+    #     elif length == '40+ min':
+    #         url += '&min-duration=40' if '?' in url else '?min-duration=40'
     return url
 
 
