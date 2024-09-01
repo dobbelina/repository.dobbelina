@@ -229,13 +229,19 @@ def Playvid(url, name, download=None):
     else:
         vp.progress.close()
         return
-    links = re.compile(r'"src":\s*"([^"]+)".+?"label":\s*"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playerpage)
-    links = {x[1].replace('4K', '2160p').replace('UHD', '2160p'): x[0] for x in links}
+
+    match = re.compile(r'window.player_args.push\((.+?)\);', re.DOTALL | re.IGNORECASE).findall(playerpage)
+    videopagejson = json.loads(match[0])
+
+    for data in videopagejson['src']:
+        if data["codec"] == "h264":
+            srcset = data["srcSet"]
+    links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["url"] for x in srcset}
+
     videourl = utils.selector('Choose your video', links, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
     if not videourl:
         vp.progress.close()
         return
-    videourl = videourl.replace("\\", "")
     videourl = utils.getVideoLink(videourl, url)
     vp.play_from_direct_link(videourl)
 
