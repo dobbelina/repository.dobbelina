@@ -94,9 +94,10 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     videoid = url.replace(site.url, '').split('/')[0]
-
     jsonurl = site.url + 'player_config_json/?vid={}&aid=0&domain_id=0&embed=0&ref=null&check_speed=0'.format(videoid)
-    jsondata = utils.getHtml(jsonurl, site.url)
+    hdr = utils.base_hdrs.copy()
+    hdr['accept'] = 'application/json, text/javascript, */*; q=0.01'
+    jsondata = utils.getHtml(jsonurl, url, headers=hdr)
     data = json.loads(jsondata)
     videos = data["files"]
     srcs = {}
