@@ -99,5 +99,5 @@ def Categories(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r'source src=\s*"([^"]+)"')
+    vp = utils.VideoPlayer(name, download, direct_regex=r'og:video:url"\s*content="([^"]+)"')
     vp.play_from_site_link(url)

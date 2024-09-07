@@ -1,12 +1,2 @@
-[B]Version 1.1.115[/B]
-- ividz - fix listing
-- jav789 - removed
-- javgg - fix listing, playback
-- pornone - fix listing
-- drtuber - fix playback
-- tubxporn - fix playback
-- porndig - fix playback
-- thepornfull - removed
-- javhoho - removed
-- mrskin - removed
-- xhamster - length filter removed
+[B]Version 1.1.116[/B]
+- eroticmv - fix playback
