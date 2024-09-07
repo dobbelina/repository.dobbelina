@@ -116,7 +116,7 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
             duration = " [COLOR deeppink]" + duration + "[/COLOR]"
             name = name + duration if six.PY3 else (name.decode('utf-8') + duration).encode('utf-8')
         else:
-            secs = None
+            secs = 0
             try:
                 duration = duration.upper().replace('H', ':').replace('M', ':').replace('S', '').replace('EC', '').replace(' ', '').replace('IN', '0').replace('::', ':').strip()
                 if ':' in duration:
