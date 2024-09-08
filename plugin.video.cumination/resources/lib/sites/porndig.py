@@ -235,14 +235,16 @@ def Playvid(url, name, download=None):
 
     for data in videopagejson['src']:
         if data["codec"] == "h264":
-            srcset = data["srcSet"]
-    links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["url"] for x in srcset}
-
-    videourl = utils.selector('Choose your video', links, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
+            if 'srcSet' in data.keys():
+                srcset = data["srcSet"]
+                links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["url"] for x in srcset}
+                videourl = utils.selector('Choose your video', links, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
+            else:
+                videourl = data['url']
     if not videourl:
         vp.progress.close()
         return
-    videourl = utils.getVideoLink(videourl, url)
+    # videourl = utils.getVideoLink(videourl, url)
     vp.play_from_direct_link(videourl)
 
 
