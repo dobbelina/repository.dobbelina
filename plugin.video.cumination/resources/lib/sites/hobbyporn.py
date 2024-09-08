@@ -36,11 +36,8 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    if 'list_models_most_recent_models_list' in listhtml:
-        listhtml = listhtml.split('list_models_most_recent_models_list')[0]
-    match = re.compile(r'class="item\s*item-video.+?href="([^"]+).+?src="([^"]+).+?duration">([^<]+).+?title">(?:\s*<span.+?</span>)?([^<]+)',
-                       re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videourl, img, duration, name in match:
+    match = re.compile(r'class="item item-video item-lozad.+?href="([^"]+).+?title="([^"]+)".+?src="([^"]+).+?duration">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videourl, name, img, duration in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videourl, 'Playvid', img, name, duration=duration)
 
