@@ -74,7 +74,7 @@ def Playvid(url, name, download=None):
 
     if url.startswith('http'):
         videopage = utils.getHtml(url, site.url)
-        links = re.compile(r'''href="(https?://([^/]+)[^"]+)"[^>]+>Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+        links = re.compile(r'''href="(https?://((?!aagmaal)[^/]+)[^"]+)"[^>]+>.*?Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
     else:
         links = pickle.loads(binascii.unhexlify(url))
 
