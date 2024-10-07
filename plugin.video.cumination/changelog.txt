@@ -1,7 +1,3 @@
-[B]Version 1.1.116[/B]
-- eroticmv - fix playback
-- hpjav - fix listing
-- porndig - fix playback
-- hobbyporn - fix listing
-- familypornhd - fix playback
-- perverzija - fix playback
+[B]Version 1.1.117[/B]
+- fullxcinema - fix playback
+- justporn - new site

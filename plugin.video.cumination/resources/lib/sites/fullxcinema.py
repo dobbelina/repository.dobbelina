@@ -92,7 +92,7 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download, regex='<source src="([^"]+)"')
     videohtml = utils.getHtml(url)
-    match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    match = re.compile(r'player">\s*<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
     if match:
         link = match[0]
         if vp.resolveurl.HostedMediaFile(link):
