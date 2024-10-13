@@ -46,7 +46,7 @@ def List(url):
     re_name = '>([^<]+)</a></h2>'
     re_img = '<img src="([^"]+)"'
     re_duration = r'</div>\s*([\d:]+)\s*h*d*\s*</div>'
-    re_quality = r'\shd\s*</div>'
+    re_quality = r'\s(hd)\s*</div>'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('justporn.Lookupinfo') + "&url=")

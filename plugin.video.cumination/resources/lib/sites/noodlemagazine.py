@@ -81,8 +81,8 @@ def List(url, page=0):
         videopage = site.url + videopage
         hd = " [COLOR orange]HD[/COLOR]" if 'hd_mark' in hd else ''
         if 'getVideoPreview' in img:
-            imgstrip = img.split('/')[6:]
-            img = 'https://' + '/'.join(imgstrip)
+            i1, i2 = img.split('/getVideoPreview')
+            img = 'https://' + i1.split('/')[-1] + '/getVideoPreview' + i2
         img = img.replace('&amp;', '&') + '|User-Agent=' + utils.USER_AGENT
 
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
