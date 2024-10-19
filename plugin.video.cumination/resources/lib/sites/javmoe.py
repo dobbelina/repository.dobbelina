@@ -32,7 +32,8 @@ enames = {'FS': 'FileStar',
           'r': 'RapidVideo',
           'ST': 'Motonews',
           'sw': 'StreamWish',
-          'tb': 'TurboVid'}
+          'tb': 'TurboVid',
+          'vg': 'VidGuard'}
 
 
 @site.register(default_mode=True)
@@ -116,7 +117,7 @@ def Playvid(url, name, download=None):
     videopage = utils.getHtml(url, site.url)
 
     eurls = re.compile(r'<li><a\s*href="([^"]+)"\s*>\s*([^<]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
-    sources = {enames.get(ename): eurl for eurl, ename in eurls}
+    sources = {enames.get(ename): eurl for eurl, ename in eurls if ename in list(enames.keys())}
     eurl = utils.selector('Select Hoster', sources)
     if not eurl:
         vp.progress.close()
@@ -125,7 +126,15 @@ def Playvid(url, name, download=None):
     vp.progress.update(50, "[CR]Loading embed page[CR]")
     if eurl != '?server=1':
         videopage = utils.getHtml(url + eurl, site.url)
-    videourl = re.compile('<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+    videourl = ''
+    v = re.compile('<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(videopage)
+    if v:
+        videourl = v.group(1)
+    else:
+        v = re.compile(r'''vg\s*id='<div\s*id="(?P<embed>[^"]+)"\s*domain="(?P<domain>[^"]+)''').search(videopage)
+        if v:
+            videourl = 'https://{0}/e/{1}$${2}'.format(v.group('domain'), vg_id(v.group('embed')), site.url)
+
     if 'filestar.club' in videourl:
         videourl = utils.getVideoLink(videourl, url)
 
@@ -188,6 +197,18 @@ def Playvid(url, name, download=None):
             vp.progress.close()
             utils.notify('Oh oh', 'No video found')
             return
-    else:
+    elif videourl:
         vp.progress.update(75, "[CR]Processed embed page[CR]")
         vp.play_from_link_to_resolve(videourl)
+
+
+def vg_id(sid):
+    iid = ''
+    for g in range(0, len(sid), 2):
+        iid += chr(int(sid[g: g + 2], 16) ^ 2)
+
+    fid = ''
+    for g in range(len(iid)):
+        fid += hex(ord(iid[g]) ^ 4)[2:]
+
+    return fid

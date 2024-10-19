@@ -1,3 +1,5 @@
 [B]Version 1.1.118[/B]
 - justporn - fix listing
 - noodlemagazine - fix thumbnails
+- aagmaal - domain change
+- javmoe  - playback fix
