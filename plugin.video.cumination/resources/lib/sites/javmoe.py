@@ -203,12 +203,7 @@ def Playvid(url, name, download=None):
 
 
 def vg_id(sid):
-    iid = ''
-    for g in range(0, len(sid), 2):
-        iid += chr(int(sid[g: g + 2], 16) ^ 2)
-
     fid = ''
-    for g in range(len(iid)):
-        fid += hex(ord(iid[g]) ^ 4)[2:]
-
+    for g in range(0, len(sid), 2):
+        fid += hex(int(sid[g: g + 2], 16) ^ 6)[2:]
     return fid
