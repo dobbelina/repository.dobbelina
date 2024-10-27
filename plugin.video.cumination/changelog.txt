@@ -1,5 +1,2 @@
-[B]Version 1.1.118[/B]
-- justporn - fix listing
-- noodlemagazine - fix thumbnails
-- aagmaal - domain change
-- javmoe  - playback fix
+[B]Version 1.1.119[/B]
+- AWM Network - fix listing, categories
