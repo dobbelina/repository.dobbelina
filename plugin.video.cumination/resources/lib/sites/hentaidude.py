@@ -85,7 +85,7 @@ def hentaidude_play(url, name, download=None):
 def hentaidude_eps(url):
     listhtml = utils.getHtml(url, site.url)
     if 'More Episodes From This Series:' in listhtml:
-        episodes = re.findall(r"""href='([^']+)'\s*class="dudep".*?<p>([^<]+)""", listhtml, re.DOTALL | re.IGNORECASE)
+        episodes = re.findall(r"""href='([^']+)'\s*class="dudep".*?episode-title">([^<]+)""", listhtml, re.DOTALL | re.IGNORECASE)
         if episodes:
             eps = {}
             for url, episode in episodes:
