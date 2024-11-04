@@ -1,3 +1,3 @@
-[B]Version 1.1.119[/B]
-- AWM Network - fix listing, categories
-- Hentaidude - fix Check other episodes
+[B]Version 1.1.120[/B]
+- Americass - fix listing
+
