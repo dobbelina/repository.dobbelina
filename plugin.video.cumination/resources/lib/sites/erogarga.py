@@ -126,6 +126,12 @@ def Play(url, name, download=None):
         src = {m[0]: m[1] for m in match}
         videolink = utils.selector('Select video', src)
         videolink = videolink.replace('&amp;', '&') + '|referer=https://www.pornflip.com/'
+    elif 'watcherotic.com' in playerurl:
+        embedhtml = utils.getHtml(playerurl, url)
+        match = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(embedhtml)
+        if match:
+            videolink = match[0]
+            vp.play_from_direct_link(videolink)
     else:
         playerhtml = utils.getHtml(playerurl, url)
         match = re.compile(r'''var hash = '([^']+)'.+?var baseURL = '([^']+)'.+?getPhiPlayer\(hash,'([^']+)',"(\d+)"\);''', re.DOTALL | re.IGNORECASE).findall(playerhtml)
