@@ -237,7 +237,7 @@ def Playvid(url, name, download=None):
         if data["codec"] == "h264":
             if 'srcSet' in data.keys():
                 srcset = data["srcSet"]
-                links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["url"] for x in srcset}
+                links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["src"] for x in srcset}
                 videourl = utils.selector('Choose your video', links, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
             else:
                 videourl = data['url']
