@@ -1,5 +1,2 @@
-[B]Version 1.1.120[/B]
-- Americass - fix listing
-- Perverzija - fix playback
-- Erogarga - fix playback
+[B]Version 1.1.121[/B]
 - Porndig - fix playback
