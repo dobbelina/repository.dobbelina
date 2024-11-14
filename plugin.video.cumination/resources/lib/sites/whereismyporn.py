@@ -35,7 +35,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('src="([^"]+)"[^>]+>.*?entry-title"><a href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('<img.*?src="([^"]+)".*?entry-title"><a href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         name = utils.cleantext(name)
 
