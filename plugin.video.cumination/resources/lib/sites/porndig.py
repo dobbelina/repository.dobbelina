@@ -240,7 +240,7 @@ def Playvid(url, name, download=None):
                 links = {x["label"].replace('4K', '2160p').replace('UHD', '2160p'): x["src"] for x in srcset}
                 videourl = utils.selector('Choose your video', links, setting_valid='qualityask', sort_by=lambda x: int(x[:-1]), reverse=True)
             else:
-                videourl = data['url']
+                videourl = data['src']
     if not videourl:
         vp.progress.close()
         return
