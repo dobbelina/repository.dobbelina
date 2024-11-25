@@ -108,7 +108,7 @@ def Play(url, name, download=None):
             ehost = urllib_parse.urljoin(eurl, '/')
             sources = json.loads(utils._bdecode(dex(key, match.group(1), '0', mtype=0)))
             sources = {x.get('label'): x.get('file') for x in sources}
-            link = utils.selector('Select quality', sources, sort_by=lambda x: int(x[:-1]), reverse=True)
+            link = utils.selector('Select quality', sources, sort_by=lambda x: int(x[:-1] if x[:-1].isdigit() else 0), reverse=True)
             vp.play_from_direct_link('{0}|Referer={1}&Origin={2}&User-Agent={3}'.format(link, ehost, ehost[:-1], utils.USER_AGENT))
             return
     vp.progress.close()

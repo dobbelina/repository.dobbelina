@@ -1,3 +1,4 @@
 [B]Version 1.1.121[/B]
 - Porndig - fix playback
 - Whereismyporn - thumbnail fix
+- javhdporn - fix playback when quality is 'auto'
