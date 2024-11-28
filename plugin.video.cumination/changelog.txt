@@ -2,3 +2,4 @@
 - Porndig - fix playback
 - Whereismyporn - thumbnail fix
 - javhdporn - fix playback when quality is 'auto'
+- aagmaalpro - domain change

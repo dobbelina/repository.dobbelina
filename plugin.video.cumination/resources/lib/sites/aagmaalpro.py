@@ -22,7 +22,7 @@ import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.help/', 'https://aagmaal.help/wp-content/uploads/2021/11/aagmaal.pro-logo.png', 'aagmaalpro')
+site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.gives/', 'https://aagmaal.gives/wp-content/uploads/2022/04/aagmaal-live-logo.png', 'aagmaalpro')
 
 
 @site.register(default_mode=True)
@@ -74,7 +74,7 @@ def Playvid(url, name, download=None):
 
     if url.startswith('http'):
         videopage = utils.getHtml(url, site.url)
-        links = re.compile(r'''href="(https?://((?!aagmaal)[^/]+)[^"]+)"[^>]+>.*?Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+        links = re.compile(r'''href="(https?://((?!aagmaal)[^/]+)[^"]+)"[^>]*>.*?Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
     else:
         links = pickle.loads(binascii.unhexlify(url))
 
