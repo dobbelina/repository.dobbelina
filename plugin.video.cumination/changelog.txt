@@ -3,3 +3,4 @@
 - Whereismyporn - thumbnail fix
 - javhdporn - fix playback when quality is 'auto'
 - aagmaalpro - domain change
+- speedporn - fix thumbnail
