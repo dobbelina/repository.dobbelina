@@ -80,7 +80,7 @@ def GotoPage(list_mode, url, np, lp):
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url, site.url)
-    cathtml = cathtml.split('>TAGS<')[-1].split('/section>')[0]
+    cathtml = cathtml.split('class="wp-block-tag-cloud"')[-1].split('/section>')[0]
     match = re.compile(r'<a href="([^"]+)".+?aria-label="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name in match:
         name = utils.cleantext(name)
