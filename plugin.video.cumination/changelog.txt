@@ -4,3 +4,4 @@
 - javhdporn - fix playback when quality is 'auto'
 - aagmaalpro - domain change
 - speedporn - fix thumbnail
+- xhamster - fix listing, channels, lenght filter

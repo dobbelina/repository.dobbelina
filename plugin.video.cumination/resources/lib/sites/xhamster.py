@@ -44,22 +44,36 @@ def List(url):
     utils.kodilog(url)
 
     context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
-    # context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
+    context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
     context_quality = (utils.addon_sys + "?mode=" + str('xhamster.ContextQuality'))
     contextmenu = [('[COLOR violet]Category[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('category')), 'RunPlugin(' + context_category + ')'),
-                   # ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
+                   ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + context_length + ')'),
                    ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + context_quality + ')')]
 
     try:
         response = utils.getHtml(url, site.url)
     except Exception as e:
-        if '404' in str(e):
-            site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=contextmenu)
-            utils.eod()
+        utils.kodilog(str(e))
+        site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=contextmenu)
+        utils.eod()
         return
+
+    pagetitle = ""
+    match = re.compile(r'<title>([^>]+)</title>', re.DOTALL | re.IGNORECASE).search(response)
+    if not match:
+        match = re.compile(r'>\s*([^>]+)\s*</h1>', re.DOTALL | re.IGNORECASE).search(response)
+    if match:
+        pagetitle = match.group(1)
+        utils.kodilog(pagetitle)
+
     listjson = response.split('window.initials=')[-1].split(';</script>')[0]
     jdata = json.loads(listjson)
-    if "trendingVideoListComponent" in jdata:
+
+    if "layoutPage" in jdata:
+        videos = jdata["layoutPage"]["videoListProps"]["videoThumbProps"]
+        if "categoryInfoProps" in jdata["layoutPage"]:
+            pagetitle = jdata["layoutPage"]["categoryInfoProps"].get("pageTitle", "")
+    elif "trendingVideoListComponent" in jdata:
         videos = jdata["trendingVideoListComponent"]["videoThumbProps"]
     elif "trendingVideoSectionComponent" in jdata:
         videos = jdata["trendingVideoSectionComponent"]["videoListProps"]["videoThumbProps"]
@@ -91,7 +105,12 @@ def List(url):
         site.add_download_link(name, videolink, 'Playvid', img, name, contextm=contextmenu, duration=length, quality=hd)
 
     npurl = None
-    if "pagesNewestComponent" in jdata:
+    if "paginationProps" in jdata.get("layoutPage", ""):
+        np = jdata["layoutPage"]["paginationProps"]["currentPageNumber"] + 1
+        lp = jdata["layoutPage"]["paginationProps"]["lastPageNumber"]
+        if lp >= np:
+            npurl = jdata["layoutPage"]["paginationProps"]["pageLinkTemplate"].replace(r'\/', '/').replace('{#}', '{}'.format(np))
+    elif "pagesNewestComponent" in jdata:
         if "paginationProps" in jdata["pagesNewestComponent"]:
             np = jdata["pagesNewestComponent"]["paginationProps"]["currentPageNumber"] + 1
             lp = jdata["pagesNewestComponent"]["paginationProps"]["lastPageNumber"] + 1
@@ -127,7 +146,7 @@ def List(url):
         cm_page = (utils.addon_sys + "?mode=xhamster.GotoPage&list_mode=xhamster.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np) + "&lp=" + str(lp))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
         npage = str(np) + '/' + str(lp) if lp else str(np)
-        site.add_dir('Next Page (' + npage + ')', npurl, 'List', site.img_next, contextm=cm)
+        site.add_dir('Next Page ({})   ... [COLOR blue]{}[/COLOR]'.format(npage, pagetitle), npurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
@@ -161,9 +180,10 @@ def Channels(url):
     elif cat == 'shemale':
         url = url.replace('/channels', '/shemale/channels')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="root-02a.+?ing">#([^<]+).+?href="([^"]+).+?image:\s*url\(([^\)]+).+?link">([^<]+).+?count-.+?>([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, url, image, name, videos in match:
-        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2})[/COLOR]'.format(rank.rjust(4), name, videos)
+    match = re.compile(r'"Rating">#([\d]+).+?src="([^"]+)".+?alt="([^"]+)".+?href="([^"]+).+?count-.+?>([^<]+)', re.DOTALL).findall(cathtml)
+    for rank, image, name, url, videos in match:
+        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2})[/COLOR]'.format(rank.rjust(4), name, videos)
+        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
         site.add_dir(title, url + '/newest', 'List', image)
     npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
     if npurl:
@@ -184,7 +204,8 @@ def Pornstars(url):
     cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
     for rank, image, url, name, videos in match:
-        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(5), name, videos)
+        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(5), name, videos)
+        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
         site.add_dir(title, url + '/newest', 'List', image)
     npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
     if npurl:
@@ -205,7 +226,8 @@ def Celebrities(url):
     cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
     for rank, image, url, name, videos in match:
-        title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(4), name, videos)
+        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(4), name, videos)
+        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
         site.add_dir(title, url + '/newest', 'List', image)
     npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
     if npurl:
@@ -218,12 +240,11 @@ def Celebrities(url):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        searchUrl = searchUrl + title + '?orientations=' + get_setting('category')
+        searchUrl = url + title + '?orientations=' + get_setting('category')
         List(searchUrl)
 
 
@@ -242,7 +263,7 @@ def ContextCategory():
 
 @site.register()
 def ContextLength():
-    categories = {'ALL': 1, '40+ min': 2, '10-40 min': 3, '0-10 min': 4}
+    categories = {'ALL': 1, '30+ min': 2}  # , '10-40 min': 3, '0-10 min': 4}
     cat = utils.selector('Select category', categories.keys(), sort_by=lambda x: categories[x])
     if cat:
         utils.addon.setSetting('xhamsterlen', cat)
@@ -320,28 +341,35 @@ def update_url(url):
                 url[0] += 'hd/' if url[0].endswith('/') else '/hd/'
                 url = 'newest'.join(url)
                 url += '&quality=1080p' if '?' in url else '?quality=1080p'
-    # length = get_setting('length')
+
+    length = get_setting('length')
+    utils.kodilog(length)
+
     # if 'max-duration=10' in url:
     #     old_length = '0-10 min'
     # elif 'max-duration=40' in url:
     #     old_length = '10-40 min'
-    # elif 'min-duration=40' in url:
-    #     old_length = '40+ min'
-    # else:
-    #     old_length = 'ALL'
 
-    # if length != old_length:
-    #     url = re.sub(r'[\?&]page=[^\?&]+', '', url)
-    #     url = re.sub(r'newest/\d+', 'newest', url)
-    #     url = re.sub(r'[\?&]min-duration=[^\?&]+', '', url)
-    #     url = re.sub(r'[\?&]max-duration=[^\?&]+', '', url)
-    #     if length == '0-10 min':
-    #         url += '&max-duration=10' if '?' in url else '?max-duration=10'
-    #     elif length == '10-40 min':
-    #         url += '&min-duration=10' if '?' in url else '?min-duration=10'
-    #         url += '&max-duration=40'
-    #     elif length == '40+ min':
-    #         url += '&min-duration=40' if '?' in url else '?min-duration=40'
+    if 'min-duration=30' in url:
+        old_length = '30+ min'
+    else:
+        old_length = 'ALL'
+
+    if length != old_length:
+        url = re.sub(r'[\?&]page=[^\?&]+', '', url)
+        url = re.sub(r'newest/\d+', 'newest', url)
+        url = re.sub(r'[\?&]min-duration=[^\?&]+', '', url)
+
+        #     url = re.sub(r'[\?&]max-duration=[^\?&]+', '', url)
+        #     if length == '0-10 min':
+        #         url += '&max-duration=10' if '?' in url else '?max-duration=10'
+        #     elif length == '10-40 min':
+        #         url += '&min-duration=10' if '?' in url else '?min-duration=10'
+        #         url += '&max-duration=40'
+
+        if length == '30+ min':
+            url += '&min-duration=30' if '?' in url else '?min-duration=30'
+
     return url
 
 
