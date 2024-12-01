@@ -1,3 +1,4 @@
 [B]Version 1.1.122[/B]
 - koreanpornmovie - new site
 - fulltaboo - new site
+- porntrex - fix nextpage (search & LookupInfo)

@@ -37,7 +37,8 @@ def PTMain():
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(ptlength), '', 'PTLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'PTCat', site.img_cat)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}search/'.format(site.url), 'PTSearch', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}search/'.format(site.url), 'PTSearch', site.img_search)
+
     if not ptlogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', '', Folder=False)
     elif ptlogged:
@@ -216,12 +217,10 @@ def PTCat(url):
 
 @site.register()
 def PTSearch(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'PTSearch')
     else:
-        searchUrl += keyword.replace(' ', '%20')
-        searchUrl += '/' + lengthChoices[ptlength]
+        searchUrl = url + keyword.replace(' ', '%20') + '/latest-updates/' + lengthChoices[ptlength] + '?mode=async&function=get_block&block_id=list_videos_videos&q=' + keyword.replace(' ', '%20') + '&category_ids=&sort_by=post_date+asc&from=01'
         PTList(searchUrl, 1)
 
 
@@ -426,9 +425,9 @@ def Lookupinfo(url):
     class PorntrexLookup(utils.LookupInfo):
         def url_constructor(self, url):
             if 'categories/' in url:
-                return site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+                return site.url + url + '{}?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&from=01'.format(lengthChoices[ptlength])
             if any(x in url for x in ['models/', 'tags/']):
-                return site.url + url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from4=1'
+                return site.url + url + '{}?mode=async&function=get_block&block_id=list_videos_common_videos_list_norm&sort_by=post_date&from=01'.format(lengthChoices[ptlength])
             if 'members/' in url:
                 return site.url + url + 'videos/'
 
