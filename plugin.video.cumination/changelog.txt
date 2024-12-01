@@ -1,9 +1,3 @@
-[B]Version 1.1.121[/B]
-- Porndig - fix playback
-- Whereismyporn - thumbnail fix
-- javhdporn - fix playback when quality is 'auto'
-- aagmaalpro - domain change
-- speedporn - fix thumbnail
-- xhamster - fix listing, channels, lenght filter
-- amateurcool - removed
-- erogarga - fix categories
+[B]Version 1.1.122[/B]
+- koreanpornmovie - new site
+- fulltaboo - new site

@@ -26,36 +26,51 @@ from resources.lib.adultsite import AdultSite
 from resources.lib.sites.spankbang import Playvid
 
 site = AdultSite('erogarga', '[COLOR hotpink]EroGarga[/COLOR]', 'https://www.erogarga.com/', 'erogarga.png', 'erogarga')
+site1 = AdultSite('fulltaboo', '[COLOR hotpink]FullTaboo[/COLOR]', 'https://fulltaboo.tv/', 'fulltaboo.png', 'fulltaboo')
+site2 = AdultSite('koreanpm', '[COLOR hotpink]Korean PornMovie[/COLOR]', 'https://koreanpornmovie.com/', 'https://koreanpornmovie.com/wp-content/uploads/2020/05/tt.png', 'koreanpm')
+
+
+def getBaselink(url):
+    if 'erogarga.com' in url:
+        siteurl = site.url
+    elif 'fulltaboo.tv' in url:
+        siteurl = site1.url
+    elif 'koreanpornmovie.com' in url:
+        siteurl = site2.url
+    return siteurl
 
 
 @site.register(default_mode=True)
-def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    List(site.url + '?filter=latest')
+@site1.register(default_mode=True)
+@site2.register(default_mode=True)
+def Main(url):
+    siteurl = getBaselink(url)
+    if 'erogarga' in siteurl:
+        site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=', 'Search', site.img_search)
+    List(siteurl + '?filter=latest')
 
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, site.url)
+    siteurl = getBaselink(url)
+    listhtml = utils.getHtml(url, siteurl)
     html = listhtml.split('>SHOULD WATCH<')[0]
-    videos = html.split('article data-video-uid')
-    videos.pop(0)
-    for video in videos:
-        if 'type-photos' in video:
-            continue
-        match = re.compile(r'href="([^"]+).+?data-src="([^"]+)".+?<span>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
-        if match:
-            videourl, img, name = match[0]
-            img += '|Referer={0}'.format(site.url)
-            name = utils.cleantext(name)
 
-            contexturl = (utils.addon_sys
-                          + "?mode={}.Lookupinfo".format(site.module_name)
-                          + "&url=" + urllib_parse.quote_plus(videourl))
-            contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+    delimiter = 'article data-video-uid'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = 'data-src="([^"]+)"'
+    re_duration = 'fa-clock-o"></i>([^<]+)<'
+    re_quality = 'class="hd-video">(HD)<'
+    skip = 'type-photos'
 
-            site.add_download_link(name, videourl, 'Play', img, name, contextm=contextmenu)
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=erogarga.Lookupinfo&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=erogarga.Related&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
@@ -79,7 +94,8 @@ def GotoPage(list_mode, url, np, lp):
 
 @site.register()
 def Cat(url):
-    cathtml = utils.getHtml(url, site.url)
+    siteurl = getBaselink(url)
+    cathtml = utils.getHtml(url, siteurl)
     cathtml = cathtml.split('class="wp-block-tag-cloud"')[-1].split('/section>')[0]
     match = re.compile(r'<a href="([^"]+)".+?aria-label="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for caturl, name in match:
@@ -99,8 +115,19 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
+    siteurl = getBaselink(url)
+
+    videohtml = utils.getHtml(url, siteurl)
+
+    if 'koreanporn' in url:
+        vp = utils.VideoPlayer(name, download=download)
+        match = re.compile(r'<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+        if match:
+            videourl = match[0] + '|Referer={}'.format(siteurl)
+            vp.play_from_direct_link(videourl)
+        return
+
     vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"')
-    videohtml = utils.getHtml(url, site.url)
     match = re.compile(r'''<iframe[^>]+src=['"]([^'"]+)['"]''', re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     playerurl = match[0]
@@ -153,7 +180,7 @@ def Play(url, name, download=None):
     if 'spankbang' in videolink:
         videolink = videolink.replace('/embed/', '/video/')
         Playvid(videolink, name, download=download)
-    elif 'xhamster' in videolink or 'eporner' in videolink:
+    elif vp.resolveurl.HostedMediaFile(videolink).valid_url():
         vp.play_from_link_to_resolve(videolink)
     else:
         vp.play_from_direct_link(videolink)
@@ -161,10 +188,17 @@ def Play(url, name, download=None):
 
 @site.register()
 def Lookupinfo(url):
+    siteurl = getBaselink(url)
     lookup_list = [
-        ("Tag", r'/(ero/[^"]+)"\s*?class="label"\s*?title="([^"]+)"', ''),
+        ("Tag", r'<a href="{}([^"]+)"\s*?class="label"\s*?title="([^"]+)"'.format(siteurl), ''),
         ("Actor", r'/(actor[^"]+)"\s*?title="([^"]+)"', ''),
     ]
 
-    lookupinfo = utils.LookupInfo(site.url, url, '{}.List'.format(site.module_name), lookup_list)
+    lookupinfo = utils.LookupInfo(siteurl, url, '{}.List'.format(site.module_name), lookup_list)
     lookupinfo.getinfo()
+
+
+@site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('erogarga.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
