@@ -18,74 +18,90 @@
 
 import re
 from resources.lib import utils
+from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
+import xbmc
+from six.moves import urllib_parse
+from kodi_six import xbmcgui, xbmcplugin
 
 site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.com/', 'https://kissjav.com/templates/bula/images/logo.png', 'kissjav')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'videos/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Playlists[/COLOR]', site.url + 'playlists/recent/', 'Playlists', site.img_cat)
-    site.add_dir('[COLOR hotpink]Japan[/COLOR]', 'Japan', 'Countries', site.img_cat)
-    site.add_dir('[COLOR hotpink]Korea[/COLOR]', 'Korea', 'Countries', site.img_cat)
-    site.add_dir('[COLOR hotpink]Asian[/COLOR]', 'Asian', 'Countries', site.img_cat)
-    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'videos/asian-porn-movies/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/video/?s=', 'Search', site.img_search)
-    List(site.url + 'videos/')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    List(site.url + 'latest-updates/')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    utils.kodilog(url)
     html = utils.getHtml(url, site.url)
 
-    match = re.compile(r'id="video-(\d+).+?data-src="([^"]+).+?div(.+?)clock"[^\d]+([\d:]+).+?title="[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    for video_id, img, quality, duration, name in match:
-        name = utils.cleantext(name)
-        quality = 'HD' if '>HD<' in quality else ''
-        videopage = '{0}{1}/'.format(site.url, video_id)
-        site.add_download_link(name, videopage, 'Playvid', site.url[:-1] + img, name, duration=duration, quality=quality)
+    delimiter = '<div class="item'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = 'src="([^"]+)"'
+    re_duration = 'duration">([^<]+)<'
+    re_quality = 'class="is-hd">(HD)<'
+    utils.videos_list(site, 'kissjav.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality, re_duration)
 
-    nextp = re.compile(r'<a href="([^"]+)"\s*class="pagination-next">', re.DOTALL | re.IGNORECASE).search(html)
-    if nextp:
-        np = nextp.group(1)
-        if np.startswith('/'):
-            np = site.url[:-1] + np
-        curr_pg = re.findall(r'class="pagination-link\s*is-current[^>]+>([^<]+)', html)[0]
-        last_pg = re.findall(r'class="pagination-link[^>]+>([^<]+)', html)[-1]
-        site.add_dir('[COLOR hotpink]Next Page[/COLOR] (Currently in Page {0} of {1})'.format(curr_pg, last_pg), np, 'List', site.img_next)
+    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">Next', html, re.DOTALL | re.IGNORECASE)
+    if match:
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}'.format(block_id, params)
+        lpnr, lastp = None, ''
+        match = re.search(r':(\d+)">Last', html, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lastp = '/{}'.format(lpnr)
+        nurl = nurl.replace('+from_albums', '')
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+
+        cm_page = (utils.addon_sys + "?mode=javbangers.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
     utils.eod()
+
+
+@site.register()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if url.endswith('/{}/'.format(np)):
+            url = url.replace('/{}/'.format(np), '/{}/'.format(pg))
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<li><a\s*href="([^"]+)">([^<]+)<span\s*class="is-pulled-right">([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for caturl, name, count in match:
-        name = utils.cleantext(name) + ' [COLOR hotpink]({0} videos)[/COLOR]'.format(count)
-        site.add_dir(name, site.url[:-1] + caturl, 'List', '')
-    utils.eod()
-
-
-@site.register()
-def Countries(url):
-    if url == 'Japan':
-        site.add_dir('[COLOR hotpink]JAV Censored[/COLOR]', site.url + 'videos/jav-censored/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]JAV Uncensored[/COLOR]', site.url + 'videos/jav-uncensored/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]JAV Amateur[/COLOR]', site.url + 'videos/jav-amateur/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]JAV Reducing Mosaic[/COLOR]', site.url + 'videos/reducing-mosaic/', 'List', site.img_cat)
-    elif url == 'Korea':
-        site.add_dir('[COLOR hotpink]Korean Porn[/COLOR]', site.url + 'videos/korean-porn/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Korean BJ[/COLOR]', site.url + 'videos/korean-bj/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Korean BJ Couple[/COLOR]', site.url + 'videos/korean-bj-couple/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Korean BJ Uncensored[/COLOR]', site.url + 'videos/korean-bj-uncensored/', 'List', site.img_cat)
-    elif url == 'Asian':
-        site.add_dir('[COLOR hotpink]China[/COLOR]', site.url + 'videos/china-porn/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Singapore[/COLOR]', site.url + 'videos/singapore-porn/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Malaysia[/COLOR]', site.url + 'videos/malaysia-porn/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Taiwan[/COLOR]', site.url + 'videos/taiwan-porn/', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Hong Kong[/COLOR]', site.url + 'videos/hong-kong-porn/', 'List', site.img_cat)
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'class="item" href="([^"]+)" title="([^"]+)".+?(?:src="([^"]+)"|>no image<)(.+?)</a>', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, name, img, data in match:
+        img = img.replace(' ', '%20')
+        name = utils.cleantext(name)
+        if '/categories/' in url:
+            name = name.capitalize()
+        if 'videos">' in data:
+            match = re.compile(r'videos">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(data)
+            name = name + ' [COLOR cyan][{}][/COLOR]'.format(match[0])
+        site.add_dir(name, caturl, 'List', img)
+    re_npurl = r'class="next"><a href="([^"]+)"'
+    re_npnr = r'class="next"><a href="[^"]+/(\d+)/"'
+    re_lpnr = r'class="last"><a href="[^"]+/(\d+)/"'
+    utils.next_page(site, 'heroero.Categories', cathtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='heroero.GotoPage')
+    if '/categories/' in url:
+        xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
@@ -115,7 +131,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = url + keyword.replace(' ', '+')
+        url = url + keyword.replace(' ', '+') + '/'
         List(url)
 
 
@@ -123,20 +139,15 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    video_page = utils.getHtml(url, site.url)
-
-    sources = re.compile(r'<source.+?src="([^"]+).+?title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(video_page)
-    if sources:
-        sources = {qual: surl for surl, qual in sources}
-        source = utils.prefquality(sources, sort_by=lambda x: int(x[:-1]), reverse=True)
-        if source:
-            source = utils.getVideoLink(source)
-            vp.play_from_direct_link(source)
-        else:
-            vp.progress.close()
-            return
-
+    html = utils.getHtml(url)
+    surl = re.search(r"video_url:\s*'([^']+)'", html)
+    if surl:
+        surl = surl.group(1)
+        if surl.startswith('function/'):
+            license = re.findall(r"license_code:\s*'([^']+)", html)[0]
+            surl = kvs_decode(surl, license)
     else:
         vp.progress.close()
-        utils.notify('Oh Oh', 'No Videos found')
         return
+    vp.progress.update(75, "[CR]Video found[CR]")
+    vp.play_from_direct_link(surl)
