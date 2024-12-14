@@ -1,2 +1,3 @@
 [B]Version 1.1.123[/B]
 - kissjav - fix listing, plaback
+- vipporns - fix nextpage
