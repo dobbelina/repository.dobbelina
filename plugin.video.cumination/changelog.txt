@@ -1,3 +1,4 @@
 [B]Version 1.1.123[/B]
 - kissjav - fix listing, plaback
 - vipporns - fix nextpage
+- whoreshub - added authentication (required for playing 1024p videos)

@@ -24,7 +24,11 @@ import xbmc
 import xbmcgui
 from random import randint
 
+
 site = AdultSite('whoreshub', '[COLOR hotpink]WhoresHub[/COLOR]', 'https://www.whoreshub.com/', 'whoreshub.png', 'whoreshub')
+
+whlogged = 'true' in utils.addon.getSetting('whlogged')
+getinput = utils._get_keyboard
 
 
 @site.register(default_mode=True)
@@ -33,6 +37,10 @@ def Main():
     site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/?mode=async&function=get_block&block_id=list_models_models_list&sort_by=title&_=', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Playlists[/COLOR]', site.url + 'playlists/?mode=async&function=get_block&block_id=list_playlists_common_playlists_list&sort_by=last_content_date&_=', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    if not whlogged:
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'WHLogin', '', Folder=False)
+    else:
+        site.add_dir('[COLOR hotpink]Logout[/COLOR]', '', 'WHLogin', '', Folder=False)
     List(site.url + 'latest-updates/')
     utils.eod()
 
@@ -191,18 +199,24 @@ def Categories(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videohtml = utils.getHtml(url)
+
+    hdr = dict(utils.base_hdrs)
+    hdr['Cookie'] = get_cookies()
+    videohtml = utils.getHtml(url, site.url, headers=hdr)
+
     match = re.compile(r"video(?:_|_alt_)url\d*: '([^']+)'.+?video(?:_|_alt_)url\d*_text: '([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     sources = {}
     if match:
         for video in match:
+            if 'login' in video[0].lower():
+                continue
             sources[video[1]] = video[0]
     vp.progress.update(75, "[CR]Video found[CR]")
 
     videourl = utils.prefquality(sources, sort_by=lambda x: int(x.replace(' 4k', '')[:-1]), reverse=True)
     if videourl:
-        videourl += '|Referer=' + url
+        videourl = videourl + '|Cookie=' + get_cookies()
         vp.play_from_direct_link(videourl)
 
 
@@ -220,3 +234,67 @@ def Lookupinfo(url):
 def Related(url):
     contexturl = (utils.addon_sys + "?mode=" + str('whoreshub.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
+def WHLogin(logged=True):
+    whlogged = utils.addon.getSetting('whlogged')
+    if not logged:
+        whlogged = False
+        utils.addon.setSetting('whlogged', 'false')
+
+    if not whlogged or 'false' in whlogged:
+        whuser = utils.addon.getSetting('whuser') or ''
+        whpass = utils.addon.getSetting('whpass') or ''
+        if whuser == '':
+            whuser = getinput(default=whuser, heading='Input your Whorehub username')
+            whpass = getinput(default=whpass, heading='Input your Whorehub password', hidden=True)
+
+        loginurl = '{0}login/'.format(site.url)
+        postRequest = {'action': 'login',
+                       'email_link': '{0}email/'.format(site.url),
+                       'format': 'json',
+                       'mode': 'async',
+                       'pass': whpass,
+                       'remember_me': '1',
+                       'username': whuser}
+        response = utils._postHtml(loginurl, form_data=postRequest)
+        if 'success' in response.lower():
+            utils.addon.setSetting('whlogged', 'true')
+            utils.addon.setSetting('whuser', whuser)
+            utils.addon.setSetting('whpass', whpass)
+            success = True
+        else:
+            utils.notify('Failure logging in', 'Failure, please check your username or password')
+            utils.addon.setSetting('whuser', '')
+            utils.addon.setSetting('whpass', '')
+            success = False
+    else:
+        clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
+        if clear:
+            if clear == 'Yes':
+                utils.addon.setSetting('whuser', '')
+                utils.addon.setSetting('whpass', '')
+            utils.addon.setSetting('whlogged', 'false')
+            utils._getHtml(site.url + 'logout/')
+            contexturl = (utils.addon_sys + "?mode=whoreshub.Main")
+            xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    if logged:
+        xbmc.executebuiltin('Container.Refresh')
+    else:
+        return success
+
+
+def get_cookies():
+    domain = site.url.split('www')[-1][:-1]
+    cookiestr = 'kt_tcookie=1'
+    for cookie in utils.cj:
+        if cookie.domain == domain and cookie.name == 'PHPSESSID':
+            cookiestr += '; PHPSESSID=' + cookie.value
+        if cookie.domain == domain and cookie.name == 'kt_ips':
+            cookiestr += '; kt_ips=' + cookie.value
+        if cookie.domain == domain and cookie.name == 'kt_member':
+            cookiestr += '; kt_member=' + cookie.value
+    if whlogged and 'kt_member' not in cookiestr:
+        WHLogin(False)
+    return cookiestr
