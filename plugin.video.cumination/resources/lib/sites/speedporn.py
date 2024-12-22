@@ -51,6 +51,7 @@ def List(url):
     for item in match:
         if len(item) > 3:
             videopage, img, duration, name = item
+            duration = duration.replace(' hrs.', 'h').replace(' mins.', 'm')
         else:
             videopage, img, name = item
             duration = ''
@@ -103,10 +104,15 @@ def List_all(url):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, img, name, videos in match:
-        name = utils.cleantext(name) + " [COLOR deeppink]" + videos.strip() + "[/COLOR]"
-        site.add_dir(name, catpage, 'List', img)
+    videos = cathtml.split('class="video-block video-block-cat"')
+    videos.pop(0)
+
+    for video in videos:
+        match = re.compile(r'href="([^"]+)".+?src="(http[^"]+jpg)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(video)
+        for catpage, img, name, count in match:
+            name = utils.cleantext(name) + " [COLOR deeppink]" + count.strip() + "[/COLOR]"
+            site.add_dir(name, catpage, 'List', img)
+
     next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     if next_page:
         next_page = next_page[0]
@@ -121,11 +127,15 @@ def Categories_all(url):
     while nextpg:
         try:
             cathtml = utils.getHtml(url, '')
-            match = re.compile(r'class="video-block video-block-cat".+?href="([^"]+)".+?-src="([^"]+)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(cathtml)
-            for catpage, img, name, videos in match:
-                name = utils.cleantext(name) + " [COLOR deeppink]" + videos.strip() + "[/COLOR]"
-                site.add_dir(name, catpage, 'List', img)
-            if len(match) == 49:
+            videos = cathtml.split('class="video-block video-block-cat"')
+            videos.pop(0)
+
+            for video in videos:
+                match = re.compile(r'href="([^"]+)".+?src="(http[^"]+jpg)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(video)
+                for catpage, img, name, count in match:
+                    name = utils.cleantext(name) + " [COLOR deeppink]" + count.strip() + "[/COLOR]"
+                    site.add_dir(name, catpage, 'List', img)
+            if len(videos) == 49:
                 next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
                 if next_page:
                     url = next_page[0]
