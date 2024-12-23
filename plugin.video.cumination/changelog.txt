@@ -1,5 +1,5 @@
-[B]Version 1.1.123[/B]
-- kissjav - fix listing, plaback
-- vipporns - fix nextpage
+[B]Version 1.1.124[/B]
 - whoreshub - added authentication (required for playing 1024p videos)
 - speedporn - fix Categories - Loads all the pages
+- watchporn - new site
+- foxnxx - new site
