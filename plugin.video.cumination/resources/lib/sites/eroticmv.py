@@ -99,5 +99,12 @@ def Categories(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r'og:video:url"\s*content="([^"]+)"')
-    vp.play_from_site_link(url)
+    vp = utils.VideoPlayer(name, download)
+    videohtml = utils.getHtml(url)
+    match = re.compile(r'og:video:url"\s*content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    if match:
+        videourl = match[0]
+        if 'embed' in videourl:
+            vp.play_from_site_link(videourl)
+        else:
+            vp.play_from_direct_link(videourl)
