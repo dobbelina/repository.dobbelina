@@ -17,83 +17,72 @@
 """
 
 import re
-import json
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.com/', "https://i.shoujoramune.com/wp-content/themes/awp/images/logo.png", "hentaidude")
+site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.xxx/', "https://i.shoujoramune.com/wp-content/themes/awp/images/logo.png", "hentaidude")
 
 
 @site.register(default_mode=True)
-def hentaidude_main():
-    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'tag/uncensored/page/1/?orderby=date', 'hentaidude_list', site.img_cat, 1)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'page/1/?s=', 'hentaidude_search', site.img_search)
-    hentaidude_list(site.url + 'page/1/?orderby=date')
+def Main():
+    site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'tag/uncensored/page/1/?m_orderby=latest', 'List', site.img_cat, 1)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'page/1/?s=', 'Search', site.img_search)
+    List(site.url + 'page/1/?m_orderby=latest')
 
 
 @site.register()
-def hentaidude_list(url, page=1):
+def List(url, page=1):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a title="([^"]+)".*?href="([^"]+)".*?data-src="([^"]+)(.*?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for name, video, img, other in match:
+    if 'Page not found' in listhtml or 'No matches found.' in listhtml:
+        utils.notify('Notify', 'No videos found')
+        return
+
+    if '?s=' in url:
+        match = re.compile(r'class="tab-thumb.+?href="([^"]+)"\s+title="([^"]+)".+?src="([^"]+)".+?chapter"><a href="[^"]+">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    else:
+        match = re.compile(r'class="page-item-detail.+?href="([^"]+)"\s+title="([^"]+)".+?<img src="([^"]+)".+?class="btn-link">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+
+    for video, name, img, ep in match:
         name = utils.cleantext(name)
-        if 'uncensored' in other.lower() or 'uncensored' in name.lower():
-            name += " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('hentaidude.hentaidude_eps')
-                      + "&url=" + urllib_parse.quote_plus(video))
-        contextmenu = ('[COLOR deeppink]Check other episodes[/COLOR]', 'RunPlugin(' + contexturl + ')')
-        site.add_download_link(name, video, 'hentaidude_play', img, name, contextm=contextmenu)
-    if 'Next &rsaquo;' in listhtml:
+        name += "" if '?s=' in url else " [COLOR hotpink][I]{}[/I][/COLOR]".format(ep.strip())
+        site.add_dir(name, video, 'EpList', img)
+
+    if 'class="wp-pagenavi"' in listhtml or ('?s=' in url and len(match) == 20):
         npage = page + 1
-        url = url.replace('/{0}/'.format(page), '/{0}/'.format(npage))
-        site.add_dir('Next Page', url, 'hentaidude_list', site.img_next, npage)
+        url = url.replace('page/{0}/'.format(page), 'page/{0}/'.format(npage))
+        site.add_dir('Next Page ({})'.format(npage), url, 'List', site.img_next, npage)
 
     utils.eod()
 
 
 @site.register()
-def hentaidude_search(url, keyword=None):
+def Search(url, keyword=None):
     if not keyword:
-        site.search_dir(url, 'hentaidude_search')
+        site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
-        url += title
-        hentaidude_list(url, 1)
+        url += keyword.replace(' ', '+') + '&post_type=wp-manga'
+        List(url, 1)
 
 
 @site.register()
-def hentaidude_play(url, name, download=None):
+def Playvid(url, name, download=None):
+    vp = utils.VideoPlayer(name, download=download)
     listhtml = utils.getHtml(url, site.url)
-    matches = re.compile(r"id:\s*'([^']+)',\s*nonce:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if matches:
-        posturl = site.url + '/wp-admin/admin-ajax.php'
-        postdata = {'action': 'msv-get-sources',
-                    'id': matches[0][0],
-                    'nonce': matches[0][1]}
-        postreturn = utils.postHtml(posturl, form_data=postdata)
-        sources = json.loads(postreturn)['sources']
-        for i in sources:
-            videourl = sources[i]
-
-        vp = utils.VideoPlayer(name, download=download)
+    match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'itemprop="thumbnailUrl" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if match:
+        id = match[0].split('/')[-2]
+        videourl = 'https://master-lengs.org/api/v3/hh/{}/master.m3u8'.format(id)
         vp.play_from_direct_link(videourl)
 
 
 @site.register()
-def hentaidude_eps(url):
+def EpList(url):
     listhtml = utils.getHtml(url, site.url)
-    if 'More Episodes From This Series:' in listhtml:
-        episodes = re.findall(r"""href='([^']+)'\s*class="dudep".*?episode-title">([^<]+)""", listhtml, re.DOTALL | re.IGNORECASE)
-        if episodes:
-            eps = {}
-            for url, episode in episodes:
-                episode = episode.strip()
-                eps[episode] = url
-            selected_episode = utils.selector('Choose episode', eps, show_on_one=True)
-            if not selected_episode:
-                return
-            hentaidude_play(selected_episode, list(eps.keys())[list(eps.values()).index(selected_episode)])
+    match = re.compile(r'data-chapter="\d+">\s+<a href="([^"]+)">\s+<img src="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if match:
+        for video, img, ep in match:
+            site.add_download_link(ep.strip(), video, 'Playvid', img)
+        utils.eod()
     else:
-        utils.notify('Notify', 'No other episodes found')
+        utils.notify('Notify', 'No episodes found')

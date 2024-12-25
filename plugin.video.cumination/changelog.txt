@@ -3,3 +3,4 @@
 - speedporn - fix Categories - Loads all the pages
 - watchporn - new site
 - foxnxx - new site
+- hentaidude - domain change
