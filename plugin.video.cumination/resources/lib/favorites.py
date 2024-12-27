@@ -1004,16 +1004,25 @@ def load_custom_list(url):
 
 @url_dispatcher.register()
 def add_listitem(favmode, name, url, img):
+    name = name.split(' [COLOR pink]')[0]
     name = name.split(' [COLOR red]*')[0]
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+
     custom_lists = get_custom_lists()
     custom_lists = {row[1]: str(row[0]) for row in custom_lists}
     custom_lists['Main menu'] = 'main'
     selected_id = utils.selector('Add this item to', custom_lists, sort_by=lambda x: x[1], show_on_one=True)
-    conn = sqlite3.connect(favoritesdb)
-    conn.text_factory = str
-    c = conn.cursor()
-    c.execute("INSERT INTO custom_listitems VALUES (?,?,?,?,?)", (name, url, favmode, img, selected_id))
-    conn.commit()
+    if selected_id:
+        selected_list = next(key for key, value in custom_lists.items() if value == selected_id)
+        c.execute("SELECT count(*) FROM custom_listitems WHERE list_id=? and url=?", (selected_id, url))
+        if c.fetchone()[0] > 0:
+            if utils.dialog.yesno('Item already in list', 'This item is already in the list [COLOR hotpink]{}[/COLOR][CR]Update the name and image?'.format(selected_list)):
+                c.execute("UPDATE custom_listitems set name=?, mode=?, image=? WHERE url=? and list_id=?", (name, favmode, img, url, selected_id))
+        else:
+            c.execute("INSERT INTO custom_listitems VALUES (?,?,?,?,?)", (name, url, favmode, img, selected_id))
+        conn.commit()
     conn.close()
     xbmc.executebuiltin('Container.Refresh')
 

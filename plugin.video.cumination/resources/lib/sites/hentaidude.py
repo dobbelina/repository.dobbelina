@@ -44,7 +44,7 @@ def List(url, page=1):
 
     for video, name, img, ep in match:
         name = utils.cleantext(name)
-        name += "" if '?s=' in url else " [COLOR hotpink][I]{}[/I][/COLOR]".format(ep.strip())
+        name += "" if '?s=' in url else " [COLOR pink][I]{}[/I][/COLOR]".format(ep.strip())
         site.add_dir(name, video, 'EpList', img)
 
     if 'class="wp-pagenavi"' in listhtml or ('?s=' in url and len(match) == 20):
