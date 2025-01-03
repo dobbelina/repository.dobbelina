@@ -22,6 +22,7 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
+import json
 
 site = AdultSite('netfapx', '[COLOR hotpink]Netfapx[/COLOR]', 'https://netfapx.com/', 'https://netfapx.com/wp-content/uploads/2017/11/netfapx-lg-1_319381e1f227e13ae1201bfa30857622.png', 'netfapx')
 
@@ -109,12 +110,20 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex='source src="([^"]+)"')
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
+
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'source src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r'ajax_object\s*=\s*({[^}]+})', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
-        videolink = match[0]
-        vp.play_from_direct_link(videolink + '|verifypeer=false')
-    else:
-        utils.notify('Oh Oh', 'No Videos found')
+        match_data = json.loads(match[0])
+        id = match_data.get('post_id')
+        ajax_url = match_data.get('ajax_url')
+
+        if id and ajax_url:
+            videourl = utils.getHtml(ajax_url, site.url, data='action=get_download_url&idpost={}'.format(id))
+            if videourl:
+                vp.play_from_direct_link(videourl)
+                return
+
+    utils.notify('Oh Oh', 'No Videos found')
