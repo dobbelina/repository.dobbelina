@@ -17,11 +17,13 @@
 '''
 
 import re
+import xbmc
+import xbmcgui
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('justfullporn', '[COLOR hotpink]Just Full Porn[/COLOR]', 'https://bestporn4free.com/', 'https://bestporn4free.com/wp-content/uploads/2023/03/LOGOJUST-1.png', 'justfullporn')
+site = AdultSite('justfullporn', '[COLOR hotpink]Just Full Porn[/COLOR]', 'https://justfullporn.net/', 'https://justfullporn.net/wp-content/uploads/2024/12/cropped-Made_with_FlexClip_AI-2024-12-26T013132-removebg-preview.png', 'justfullporn')
 
 
 @site.register(default_mode=True)
@@ -29,30 +31,42 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Actors[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    List(site.url + '?filter=latest')
+    List(site.url)
     utils.eod()
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|data-src)="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if not match:
-        return
-    for videopage, name, img in match:
-        name = utils.cleantext(name)
 
-        contexturl = (utils.addon_sys
-                      + "?mode=justfullporn.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
-        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
+    delimiter = 'data-post-id="'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'alt="([^"]+)"'
+    re_img = 'data-src="([^"]+)"'
 
-    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'List', site.img_next)
+    contexturl = (utils.addon_sys + "?mode=justfullporn.Lookupinfo&url=")
+    contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
+    utils.videos_list(site, 'justfullporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, contextm=contextmenu)
+
+    re_npurl = r'class="page-link current".+?href="([^"]+)"'
+    re_npnr = r'class="page-link current".+?href="[^"]+">([\d,]+)<'
+    re_lpnr = r'>([\d,]+)<\D+class="next page-link"'
+
+    utils.next_page(site, 'justfullporn.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='justfullporn.GotoPage')
     utils.eod()
+
+
+@site.register()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        url = url.replace('/page/{}/'.format(np), '/page/{}/'.format(pg))
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -66,22 +80,22 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
-        searchUrl = url + title + '&filter=latest'
+        searchUrl = url + keyword.replace(' ', '+')
         List(searchUrl)
 
 
 @site.register()
 def Categories(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|src)="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for catpage, name, img in sorted(match, key=lambda x: x[1].strip().lower()):
+    match = re.compile(r'video-block-cat.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|src)="([^"]+).+?class="video-datas">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for catpage, name, img, videos in match:  # in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip())
-        site.add_dir(name, catpage + '?filter=latest', 'List', img)
+        name += ' [COLOR blue]' + videos.strip() + '[/COLOR]'
+        site.add_dir(name, catpage, 'List', img)
 
-    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'class="next page-link" href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
-        page_number = np.group(1).split('/')[-2]
+        page_number = np.group(1).split('/')[-1]
         site.add_dir('Next Page (' + page_number + ')', np.group(1), 'Categories', site.img_next)
 
     utils.eod()
@@ -90,10 +104,10 @@ def Categories(url):
 @site.register()
 def Tags(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('com/(tag/[^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('class="tag-item"><a href="([^"]+)" title="[^"]+">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name in match:
         name = utils.cleantext(name.strip())
-        site.add_dir(name, site.url + tagpage + '?filter=latest', 'List', '')
+        site.add_dir(name, tagpage, 'List', '')
 
     utils.eod()
 

@@ -1565,13 +1565,13 @@ def next_page(site, list_mode, html, re_npurl, re_npnr=None, re_lpnr=None, video
         if re_npnr:
             match = re.compile(re_npnr, re.DOTALL | re.IGNORECASE).findall(html)
             if match:
-                npnr = match[0]
+                npnr = match[0].replace(',', '')
                 np = npnr
         lp = ''
         lpnr = 0
         if re_lpnr:
             match = re.compile(re_lpnr, re.DOTALL | re.IGNORECASE).findall(html)
-            lpnr = match[0] if match else 0
+            lpnr = match[0].replace(',', '') if match else '0'
             if videos_per_page:
                 lpnr = int(ceil(int(lpnr) / int(videos_per_page)))
             lp = '/' + str(lpnr) if match else ''
