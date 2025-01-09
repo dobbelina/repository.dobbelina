@@ -40,10 +40,10 @@ def List(url):
         utils.eod()
         return
     html = html.split('class="site-footer"')
-    match = re.compile(r'<article id="post.+?a href="([^"]+)"\s*title="([^"]+)".+?(?:poster|data-src|img src)="([^"]+)".+?class="fa fa-clock-o"></i>([\s\d:]+)<', re.DOTALL | re.IGNORECASE).findall(html[0])
-    for videopage, name, img, duration in match:
+    match = re.compile(r'<article id="post.+?a href="([^"]+)"\s*title="([^"]+)".+?(?:poster|data-src|img src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html[0])
+    for videopage, name, img in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
+        site.add_download_link(name, videopage, 'Playvid', img, name)
     nextp = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).findall(html[0])
     if nextp:
         np = nextp[0]
