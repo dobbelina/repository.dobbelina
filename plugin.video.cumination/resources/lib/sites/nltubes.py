@@ -58,6 +58,7 @@ def NLVIDEOLIST(url):
     if 'poldertube' in siteurl or '12milf' in siteurl:
         match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?tion"\D*?([\d:]+)', re.DOTALL | re.IGNORECASE).findall(link)
         for surl, name, img, duration in match:
+            img = 'https:' + img if img.startswith('//') else img
             surl = surl if surl.startswith('http') else siteurl + surl
             name = utils.cleantext(name)
             site.add_download_link(name, surl, 'NLPLAYVID', img, name, duration=duration)

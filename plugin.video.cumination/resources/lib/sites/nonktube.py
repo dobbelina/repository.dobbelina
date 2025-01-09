@@ -29,13 +29,14 @@ site = AdultSite('nonktube', "[COLOR hotpink]NonkTube[/COLOR]", 'https://www.non
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos/', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + '?sorting=latest')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    utils.kodilog('nonktube.List: ' + url)
     html = utils.getHtml(url, site.url)
     if 'the requested search cannot be found' in html:
         utils.notify(msg='Nothing found')
@@ -45,7 +46,7 @@ def List(url):
     delimiter = '<div class="video-block'
     re_videopage = '<a.+?href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-src="([^"]+)"'
+    re_img = 'src="([^"]+)"'
     re_duration = '<span class="duration">([^<]+)<'
     utils.videos_list(site, 'nonktube.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='nonktube.Related')
 
@@ -97,7 +98,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = "{0}{1}=".format(url, keyword.replace(' ', '%20'))
+        url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
         List(url)
 
 

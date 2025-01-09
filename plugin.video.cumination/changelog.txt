@@ -1,4 +1,6 @@
 [B]Version 1.1.125[/B]
 - sextb - fix listing
 - netfapx - fix playback
+- poldertube - fix thumbnails
+- nonktube - fix search, thumbnails
 
