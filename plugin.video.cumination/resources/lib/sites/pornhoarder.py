@@ -27,6 +27,7 @@ ph_headers = {
     'Origin': site.url[:-1],
     'User-Agent': utils.USER_AGENT,
     'X-Requested-With': 'XMLHttpRequest',
+    'Cookie': 'pornhoarder_settings=0---0---1---0'
 }
 
 
@@ -104,9 +105,12 @@ def Createdata(page=1, search=''):
         ('servers[]', '35'),
         ('servers[]', '25'),
         ('servers[]', '41'),
+        ('servers[]', '46'),
         ('servers[]', '17'),
+        ('servers[]', '44'),
         ('servers[]', '42'),
         ('servers[]', '43'),
+        ('servers[]', '29'),
         ('author', '0'),
         ('page', page),
     ]
