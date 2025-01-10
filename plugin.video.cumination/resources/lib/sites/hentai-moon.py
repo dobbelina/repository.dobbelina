@@ -1,6 +1,6 @@
 """
     Cumination
-    Copyright (C) 2023 Team Cumin   
+    Copyright (C) 2023 Team Cumin
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 """
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -46,7 +45,9 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'href="([^"]+)"\s+?title="([^"]+)".*?data-original="([^"]+)"[^>]+(.*?)</div>.*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    thumbnails = utils.Thumbnails(site.name)
     for videopage, name, img, hd, duration in match:
+        img = thumbnails.fix_img(img)
         name = utils.cleantext(name)
         hd = " [COLOR orange]HD[/COLOR]" if 'is_hd' in hd else ''
         contexturl = (utils.addon_sys

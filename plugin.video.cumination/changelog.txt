@@ -12,3 +12,7 @@
 - pornhat - fix listing
 - homo.xxx - new site
 - perfectgirls - new site
+- hobby porn - fix thumbnails (for Kodi 21)
+- celebsroulette - fix thumbnails (for Kodi 21)
+- hentai-moon - fix thumbnails (for Kodi 21)
+

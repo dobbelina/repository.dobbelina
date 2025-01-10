@@ -37,7 +37,9 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="item item-video item-lozad.+?href="([^"]+).+?title="([^"]+)".+?src="([^"]+).+?duration">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    thumbnails = utils.Thumbnails(site.name)
     for videourl, name, img, duration in match:
+        img = thumbnails.fix_img(img)
         name = utils.cleantext(name)
         site.add_download_link(name, videourl, 'Playvid', img, name, duration=duration)
 

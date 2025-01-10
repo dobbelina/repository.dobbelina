@@ -44,7 +44,9 @@ def List(url):
         listhtml = listhtml.split('New Naked Celebs Scenes')[0]
     match = re.compile(r'class="item.+?href="([^"]+)"\s+title="([^"]+)".+?data-original="([^"]+)".+?</strong>', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
+    thumbnails = utils.Thumbnails(site.name)
     for videopage, name, img in match:
+        img = thumbnails.fix_img(img)
         name = utils.cleantext(name)
 
         cm = []

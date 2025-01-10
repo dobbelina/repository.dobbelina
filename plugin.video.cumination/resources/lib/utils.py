@@ -35,7 +35,7 @@ from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs, xbmcaddon
 from resources.lib import cloudflare, random_ua, strings, jsunpack
 from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
                                   cookiePath, cum_image, cuminationicon, eod,
-                                  favoritesdb, keys, searchDir)
+                                  favoritesdb, keys, searchDir, profileDir)
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
 from resources.lib.jsonrpc import toggle_debug
@@ -1606,7 +1606,6 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
     videolist = re.split(delimiter, html)
     if videolist:
         videolist.pop(0)
-        kodilog(len(videolist))
         for video in videolist:
             if skip and skip in video:
                 continue
@@ -1760,3 +1759,45 @@ class logger:
 def ToggleDebug():
     result = toggle_debug()
     return result
+
+
+class Thumbnails:
+    # Download thumbnails to local cache and correct the extensions of WEBP images that were renamed to JPG, which cannot be displayed in KODI 21
+    def __init__(self, site):
+        if KODIVER < 21:
+            return
+        self.path = os.path.join(profileDir, 'thumbnails', site)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+        self.cache_time = 480
+        self.clean()
+
+    def clean(self):
+        current_time = time.time()
+        for filename in os.listdir(self.path):
+            file_path = os.path.join(self.path, filename)
+            file_modified = os.path.getmtime(file_path)
+            if current_time - file_modified > self.cache_time * 60:
+                os.remove(file_path)
+
+    def fix_img(self, img):
+        if KODIVER < 21:
+            return img
+        thumbnail = urllib_parse.quote(urllib_parse.urlparse(img).path, safe='')
+        img_path = os.path.join(self.path, thumbnail).replace('.jpg', '.webp')
+
+        if os.path.exists(img_path):
+            return img_path
+
+        try:
+            response = urlopen(Request(img, headers=base_hdrs))
+            try:
+                with open(img_path, 'wb') as f:
+                    f.write(response.read())
+            except IOError as e:
+                logger.error(f"Failed to write image to {img_path}: {e}")
+                return img
+            return img_path
+        except urllib_error.URLError as e:
+            kodilog(f"Failed to download image {img}: {e}")
+            return img
