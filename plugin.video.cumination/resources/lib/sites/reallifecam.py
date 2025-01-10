@@ -23,7 +23,7 @@ from resources.lib.jsunpack import unpack
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://reallifecam.to/', 'https://reallifecam.to/images/logo/logo.png', 'rlc')
-site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
+# site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
 site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.cc[/COLOR]', 'https://www.voyeur-house.cc/', 'https://www.voyeur-house.cc/images/logo/logo.png', 'vhlife')
 site3 = AdultSite('vhlife1', '[COLOR hotpink]Reallifecams.in[/COLOR]', 'https://www.reallifecams.in/', 'https://www.reallifecams.in/images/logo/logo.png', 'vhlife1')
 site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps.to[/COLOR]', 'https://camcaps.to/', 'https://camcaps.to/images/logo/logo.png', 'camcapsto')
@@ -32,8 +32,8 @@ site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps.to[/COLOR]', 'https://camca
 def getBaselink(url):
     if 'reallifecam.to' in url:
         siteurl = site.url
-    elif 'voyeur-house.to' in url:
-        siteurl = site1.url
+    # elif 'voyeur-house.to' in url:
+    #     siteurl = site1.url
     elif 'voyeur-house.cc' in url:
         siteurl = site2.url
     elif 'reallifecams.in' in url:
@@ -44,7 +44,7 @@ def getBaselink(url):
 
 
 @site.register(default_mode=True)
-@site1.register(default_mode=True)
+# @site1.register(default_mode=True)
 @site2.register(default_mode=True)
 @site3.register(default_mode=True)
 @site4.register(default_mode=True)

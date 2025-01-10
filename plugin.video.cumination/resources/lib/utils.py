@@ -1606,6 +1606,7 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
     videolist = re.split(delimiter, html)
     if videolist:
         videolist.pop(0)
+        kodilog(len(videolist))
         for video in videolist:
             if skip and skip in video:
                 continue

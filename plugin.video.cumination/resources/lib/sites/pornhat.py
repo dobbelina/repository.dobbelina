@@ -29,7 +29,8 @@ site2 = AdultSite('okporn', '[COLOR hotpink]OK Porn[/COLOR]', 'https://ok.porn/'
 site3 = AdultSite('okxxx', '[COLOR hotpink]OK XXX[/COLOR]', 'https://ok.xxx/', 'okxxx.png', 'okxxx')
 site4 = AdultSite('pornstarstube', '[COLOR hotpink]Pornstars Tube[/COLOR]', 'https://pornstars.tube/', 'pornstarstube.png', 'pornstarstube')
 site5 = AdultSite('maxporn', '[COLOR hotpink]Max Porn[/COLOR]', 'https://max.porn/', 'maxporn.png', 'maxporn')
-# site6 = AdultSite('homoxxx', '[COLOR hotpink]Homo XXX[/COLOR]', 'https://homo.xxx/', 'homoxxx.png', 'homoxxx')
+site6 = AdultSite('homoxxx', '[COLOR hotpink]Homo XXX[/COLOR]', 'https://homo.xxx/', 'homoxxx.png', 'homoxxx')
+site7 = AdultSite('perfectgirls', '[COLOR hotpink]Perfect Girls[/COLOR]', 'https://www.perfectgirls.xxx/', 'https://static.perfectgirls.xxx/static/images/logo.png', 'perfectgirls')
 
 
 def getBaselink(url):
@@ -45,8 +46,10 @@ def getBaselink(url):
         siteurl = site4.url
     elif 'max.porn' in url:
         siteurl = site5.url
-    # elif 'homo.xxx' in url:
-    #     siteurl = site6.url
+    elif 'homo.xxx' in url:
+        siteurl = site6.url
+    elif 'perfectgirls.xxx' in url:
+        siteurl = site7.url
     return siteurl
 
 
@@ -56,20 +59,21 @@ def getBaselink(url):
 @site3.register(default_mode=True)
 @site4.register(default_mode=True)
 @site5.register(default_mode=True)
-# @site6.register(default_mode=True)
+@site6.register(default_mode=True)
+@site7.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     if 'max.porn' not in url and 'pornstars.tube' not in url:
         site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels/', 'Cat', site.img_cat)
-        if 'hello.porn' in url:
-            site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'pornstars/videos/', 'Cat', site.img_cat)
+        if 'hello.porn' in url or 'homo.xxx' in url or 'perfectgirls.xxx' in url:
+            site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstars/videos/', 'Cat', site.img_cat)
         else:
             site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models/', 'Cat', site.img_cat)
     if 'pornstars.tube' in url:
         site.add_dir('[COLOR hotpink]Search Pornstars[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
     else:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
-    if 'hello' in siteurl:
+    if 'hello' in siteurl or 'homo' in siteurl:
         List(siteurl + 'new/')
     elif 'max.porn' in siteurl or 'pornstars.tube' in siteurl:
         Cat(siteurl)
@@ -81,17 +85,15 @@ def Main(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url)
-    match = re.compile(r'(?:class="thumb|class="item  ").+?href="([^"]+)"\s*title="([^"]+)".+?data-(?:original|src)="([^"]+)".*?duration_item">([^<]+)</', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, name, img, duration in match:
-        name = utils.cleantext(name)
-        img = 'https:' + img if img.startswith('//') else img
-        video = siteurl[:-1] + video if video.startswith('/') else video
-        duration = duration.strip()
 
-        cm_related = (utils.addon_sys + "?mode=" + str('pornhat.ContextRelated') + "&url=" + urllib_parse.quote_plus(video))
-        cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+    delimiter = r'(?:<div class="thumb thumb-video\s*">|<div class="thumb">|class="item  ")'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = '(?:data-original|data-src)="([^"]+)"'
+    re_duration = r'(?:duration_item">|fa-clock-o"></i> <span>)([^<]+)'
 
-        site.add_download_link(name, video, 'Play', img, name, contextm=cm, duration=duration)
+    utils.videos_list(site, 'pornhat.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='pornhat.Related')
+
     nextp = re.compile(r'href="([^"]+)"[^>]*>\s*Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
@@ -209,8 +211,6 @@ def Letters(url):
 
 
 @site.register()
-def ContextRelated(url):
-    contexturl = (utils.addon_sys
-                  + "?mode=" + str('pornhat.List')
-                  + "&url=" + urllib_parse.quote_plus(url))
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + "pornhat.List&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')

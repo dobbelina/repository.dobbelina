@@ -27,19 +27,24 @@ site = AdultSite('pornroom', '[COLOR hotpink]ThePornRoom[/COLOR]', 'https://thep
 @site.register(default_mode=True)
 def pornroom_main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'pornroom_cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     pornroom_list(site.url + '?filter=latest')
 
 
 @site.register()
 def pornroom_list(url):
     listhtml = utils.getHtml(url)
-    listhtml = re.compile(r'(<main.+?</main>)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|data-src)="([^"]+).+?clock-o">(?:</i>\s)?([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, name, img, duration in match:
+    if '0 videos found' in listhtml:
+        utils.notify('No videos found', 'No videos found on this page')
+        utils.eod()
+        return
+
+    match = re.compile(r'data-post-id=".+?(?:poster|data-src)="([^"]+).+?class="duration">([^<]+)<.+?href="([^"]+)"\s*title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for img, duration, video, name in match:
         name = utils.cleantext(name)
         site.add_download_link(name, video, 'pornroom_play', img, name, duration=duration)
 
-    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'class="page-link current".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         page_number = np.group(1).split('/')[-2]
         site.add_dir('Next Page (' + page_number + ')', np.group(1), 'pornroom_list', site.img_next)
@@ -48,12 +53,22 @@ def pornroom_list(url):
 
 
 @site.register()
+def Search(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search')
+    else:
+        searchUrl = url + keyword.replace(' ', '+')
+        pornroom_list(searchUrl)
+
+
+@site.register()
 def pornroom_cat(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''cat-item-\d+"><a href="([^"]+)"[^>]+>([^<]+)<''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for catpage, name in sorted(match, key=lambda x: x[1].strip().lower()):
+    match = re.compile(r'class="thumb" href="([^"]+)" title="([^"]+)".+?data-src="([^"]+)".+?class="video-datas">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for catpage, name, img, videos in sorted(match, key=lambda x: x[1].strip().lower()):
         name = utils.cleantext(name.strip())
-        site.add_dir(name, catpage + '?filter=latest', 'pornroom_list', '')
+        name += ' [COLOR hotpink](' + videos.strip() + ')[/COLOR]'
+        site.add_dir(name, catpage + '?filter=latest', 'pornroom_list', img)
     utils.eod()
 
 
