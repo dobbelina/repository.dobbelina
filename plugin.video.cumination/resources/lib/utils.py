@@ -1788,9 +1788,9 @@ class Thumbnails:
                 with open(img_path, 'wb') as f:
                     f.write(response.read())
             except IOError as e:
-                logger.error(f"Failed to write image to {img_path}: {e}")
+                kodilog("Failed to write image to {}: {}".format(img_path, e))
         except urllib_error.URLError as e:
-            kodilog(f"Failed to download image {img}: {e}")
+            kodilog("Failed to download image {}: {}".format(img, e))
 
     def fix_img(self, img):
         if KODIVER < 21:
