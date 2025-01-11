@@ -28,6 +28,7 @@ import tempfile
 import time
 from functools import wraps
 from math import ceil
+from threading import Thread
 
 import six
 import StorageServer
@@ -1780,15 +1781,7 @@ class Thumbnails:
             if current_time - file_modified > self.cache_time * 60:
                 os.remove(file_path)
 
-    def fix_img(self, img):
-        if KODIVER < 21:
-            return img
-        thumbnail = urllib_parse.quote(urllib_parse.urlparse(img).path, safe='')
-        img_path = os.path.join(self.path, thumbnail).replace('.jpg', '.webp')
-
-        if os.path.exists(img_path):
-            return img_path
-
+    def download_image(self, img, img_path):
         try:
             response = urlopen(Request(img, headers=base_hdrs))
             try:
@@ -1796,8 +1789,15 @@ class Thumbnails:
                     f.write(response.read())
             except IOError as e:
                 logger.error(f"Failed to write image to {img_path}: {e}")
-                return img
-            return img_path
         except urllib_error.URLError as e:
             kodilog(f"Failed to download image {img}: {e}")
+
+    def fix_img(self, img):
+        if KODIVER < 21:
             return img
+        thumbnail = urllib_parse.quote(urllib_parse.urlparse(img).path, safe='')
+        img_path = os.path.join(self.path, thumbnail).replace('.jpg', '.webp')
+        if os.path.exists(img_path):
+            return img_path
+        Thread(target=self.download_image, args=(img, img_path), daemon=True).start()
+        return img_path
