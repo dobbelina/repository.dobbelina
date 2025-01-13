@@ -1,18 +1,2 @@
-[B]Version 1.1.125[/B]
-- sextb - fix listing
-- netfapx - fix playback
-- poldertube - fix thumbnails
-- nonktube - fix search, thumbnails
-- eroticage - fix listing
-- justfullporn - fix listing
-- thepornroom - fix listing
-- tubxporn - fix listing
-- voyeur-house.to - removed
-- ok.xxx - fix listing
-- pornhat - fix listing
-- homo.xxx - new site
-- perfectgirls - new site
-- hobby porn - fix thumbnails (for Kodi 21)
-- celebsroulette - fix thumbnails (for Kodi 21)
-- hentai-moon - fix thumbnails (for Kodi 21)
-- pornhoarder - update post data
+[B]Version 1.1.126[/B]
+- missjav - fix domain, categories

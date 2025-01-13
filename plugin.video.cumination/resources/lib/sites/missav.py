@@ -20,7 +20,7 @@ import re
 from resources.lib import utils, jsunpack
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('missav', '[COLOR hotpink]Miss AV[/COLOR]', 'https://missav.com/', 'missav.png', 'missav')
+site = AdultSite('missav', '[COLOR hotpink]Miss AV[/COLOR]', 'https://missav.ws/', 'missav.png', 'missav')
 
 
 @site.register(default_mode=True)
@@ -68,7 +68,8 @@ def Models(url):
 @site.register()
 def Categories(url):
     html = utils.getHtml(site.url + 'en/')
-    section = re.compile(r'''(<span x-cloak x-show="showCollapse === '{0}'.+?</span>)'''.format(url), re.IGNORECASE | re.DOTALL).findall(html)[0]
+    section = re.compile(r'''(<span\s+x-cloak[="\s]+x-show="showCollapse === '{0}'.+?</span>)'''.format(url.lower()), re.IGNORECASE | re.DOTALL).findall(html)[0]
+
     match = re.compile(r'href="([^"]+)[^>]+>([^<]+)', re.IGNORECASE | re.DOTALL).findall(section)
     for caturl, name in match:
         name = utils.cleantext(name)
