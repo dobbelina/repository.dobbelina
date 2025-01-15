@@ -24,7 +24,7 @@ import xbmc
 from six.moves import urllib_parse
 from kodi_six import xbmcgui, xbmcplugin
 
-site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.com/', 'https://kissjav.com/templates/bula/images/logo.png', 'kissjav')
+site = AdultSite('kissjav', '[COLOR hotpink]Kiss JAV[/COLOR]', 'https://kissjav.com/', 'kissjav.png', 'kissjav')
 
 
 @site.register(default_mode=True)
@@ -37,7 +37,6 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     html = utils.getHtml(url, site.url)
 
     delimiter = '<div class="item'

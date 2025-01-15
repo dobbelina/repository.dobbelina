@@ -17,12 +17,11 @@
 '''
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('iflix', '[COLOR hotpink]Iflix[/COLOR]', 'http://www.incestflix.com/', 'http://sist3r.incestflix.com/img/wwwincestflixcom.png', 'iflix')
+site = AdultSite('iflix', '[COLOR hotpink]Iflix[/COLOR]', 'http://www.incestflix.com/', 'http://inc-8rother.incestflix.com/img/wwwincestflixcom.png', 'iflix')
 
 
 @site.register(default_mode=True)
@@ -48,9 +47,7 @@ def List(url):
         videopage = 'http:' + videopage if videopage.startswith('//') else videopage
         img = 'http:' + img if img.startswith('//') else img
         contextmenu = []
-        contexturl = (utils.addon_sys
-                          + "?mode=" + str('iflix.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contexturl = (utils.addon_sys + "?mode=iflix.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
@@ -85,7 +82,7 @@ def tags(url):
     what = url.split('/')[-1]
     url = '/'.join(url.split('/')[:-1])
     listhtml = utils.getHtml(url)
-    
+
     if what == 'sub':
         listhtml = re.compile("Themes</h1>(.*?)<h1>", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     elif what == 'relations':
@@ -96,8 +93,7 @@ def tags(url):
         listhtml = re.compile("Not Categorized</h1>(.*?)<h1>", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
     elif what == 'actresses':
         listhtml = re.compile("Performers</h1>(.*?)</div>", re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    
-    
+
     match = re.compile("href='([^']+)'><span id='studiolink[^>]+>(.*?)</span", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tagpage, name in match:
         name = utils.cleantext(name.strip()).replace('<b>', '[COLOR red][B]').replace('</b>', '[/B][/COLOR]')

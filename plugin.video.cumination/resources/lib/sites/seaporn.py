@@ -23,7 +23,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('seaporn', '[COLOR hotpink]SeaPorn[/COLOR] [COLOR red][Debrid only][/COLOR]', 'https://www.seaporn.org/', '', 'seaporn')
+site = AdultSite('seaporn', '[COLOR hotpink]SeaPorn[/COLOR] [COLOR red][Debrid only][/COLOR]', 'https://www.seaporn.org/', 'seaporn.png', 'seaporn')
 
 quality_levels = {
     ' SD': 1,

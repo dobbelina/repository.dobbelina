@@ -21,7 +21,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import json
 
-site = AdultSite('noodlemagazine', '[COLOR hotpink]Noodlemagazine[/COLOR]', 'https://noodlemagazine.com/', 'noodlemagazine', 'noodlemagazine')
+site = AdultSite('noodlemagazine', '[COLOR hotpink]Noodlemagazine[/COLOR]', 'https://noodlemagazine.com/', 'noodlemagazine.png', 'noodlemagazine')
 
 data = {
     "sort": {
