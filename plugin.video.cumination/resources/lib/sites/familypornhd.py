@@ -124,18 +124,24 @@ def Playvid(url, name, download=None):
     if match:
         iframeurl = match[0]
         hash = iframeurl.split('/')[-1]
-        url1 = 'https://video-mart.com/player/index.php?data={}&do=getVideo'.format(hash)
-        hdr = dict(utils.base_hdrs).copy()
-        hdr['Accept'] = '*/*'
-        hdr['X-Requested-With'] = 'XMLHttpRequest'
-        data = {'hash': hash, 'r': ''}
-        html = utils._getHtml(url1, iframeurl, headers=hdr, data=data)
-        jsondata = json.loads(html)
-
-        videourl = jsondata["videoSource"]
-        m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
-        utils.kodilog(m3u8html)
-        myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.mp4")
-        with open(myplaylist, 'w', encoding="utf-8") as f:
-            f.write(m3u8html)
-        vp.play_from_direct_link(myplaylist)
+        if 'video-mart.com' in iframeurl:
+            url1 = 'https://video-mart.com/player/index.php?data={}&do=getVideo'.format(hash)
+            hdr = dict(utils.base_hdrs).copy()
+            hdr['Accept'] = '*/*'
+            hdr['X-Requested-With'] = 'XMLHttpRequest'
+            data = {'hash': hash, 'r': ''}
+            html = utils._getHtml(url1, iframeurl, headers=hdr, data=data)
+            jsondata = json.loads(html)
+            videourl = jsondata["videoSource"]
+            m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
+            myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.mp4")
+            with open(myplaylist, 'w', encoding="utf-8") as f:
+                f.write(m3u8html)
+            vp.play_from_direct_link(myplaylist)
+        else:
+            host = iframeurl.rsplit('/', 1)[0]
+            url1 = host + '/data.php?filecode=' + hash
+            html = utils.getHtml(url1, iframeurl)
+            jsondata = json.loads(html)
+            videourl = jsondata["streaming_url"]
+            vp.play_from_direct_link(videourl)

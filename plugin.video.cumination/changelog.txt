@@ -1,6 +1,7 @@
 [B]Version 1.1.126[/B]
-- missjav - fix domain, categories
+- missav - fix domain, categories
 - koreeanpornmovie - fix playback
 - fulltaboo - fix playback
 - watcherotic - new site
 - asianporn - removed (redirects to kissjav)
+- familypornhd - fix playback
