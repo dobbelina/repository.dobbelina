@@ -31,7 +31,7 @@ site = AdultSite('familypornhd', '[COLOR hotpink]Familypornhd[/COLOR]', 'https:/
 def Main():
     site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/', 'Channels', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars', 'Pornstars', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars', 'Pornstars', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
@@ -80,7 +80,7 @@ def Related(url):
 @site.register()
 def Channels(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'g1-dark" href="([^"]+)".+?\(([^\)]+)\).+?g1-term-title">([^<]+)<.+?g1-term-count"><strong>(\d+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    match = re.compile(r'<li>.+?href="([^"]+)"\s+style="background-image:url\(([^\)]+)\)">.+?<h4>([^<]+).+?<strong>(\d+).+?</li>', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name, count in match:
         name = utils.cleantext(name) + '[COLOR hotpink] ({})[/COLOR]'.format(count.strip())
         site.add_dir(name, caturl, 'List', img)
