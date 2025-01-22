@@ -44,6 +44,7 @@ def List(url, page=1):
 
     for video, name, img, ep in match:
         name = utils.cleantext(name)
+        img = img.replace(' ', '%20')
         name += "" if '?s=' in url else " [COLOR pink][I]{}[/I][/COLOR]".format(ep.strip())
         site.add_dir(name, video, 'EpList', img)
 
