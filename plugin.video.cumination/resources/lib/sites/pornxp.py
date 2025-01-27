@@ -36,7 +36,6 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     listhtml = utils.getHtml(url, '')
     match = re.compile('item_cont">.*?href="/([^"]+)".*?(?:data-)*src="([^"]+jpg)".*?dur">([^<]+)<.*?item_title">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:

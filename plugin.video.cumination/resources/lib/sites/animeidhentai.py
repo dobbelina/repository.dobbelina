@@ -31,7 +31,7 @@ def animeidhentai_main():
     site.add_dir('[COLOR hotpink]Trending[/COLOR]', '{0}trending/'.format(site.url), 'animeidhentai_list', site.img_cat)
     site.add_dir('[COLOR hotpink]Years[/COLOR]', '{0}?s='.format(site.url), 'Years', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{0}?s='.format(site.url), 'animeidhentai_search', site.img_search)
-    animeidhentai_list('{0}year/2023/'.format(site.url))
+    animeidhentai_list('{0}?s='.format(site.url))
 
 
 @site.register()
@@ -50,9 +50,12 @@ def animeidhentai_list(url):
         year = " [COLOR blue](" + match.group(1) + ")[/COLOR]" if match else ''
         name += year
         site.add_download_link(utils.cleantext(name), video, 'animeidhentai_play', img, utils.cleantext(plot), quality=quality)
-    next_page = re.compile('rel="next" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    next_page = re.compile('class="next page-numbers" href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if next_page:
-        site.add_dir('Next Page', next_page.group(1), 'animeidhentai_list', site.img_next)
+        np = next_page.group(1)
+        npnr = re.search(r'page/(\d+)', np)
+        npnr = ' (' + npnr.group(1) + ')' if npnr else ''
+        site.add_dir('Next Page{}'.format(npnr), np, 'animeidhentai_list', site.img_next)
     utils.eod()
 
 
@@ -79,7 +82,7 @@ def animeidhentai_genres(url):
 @site.register()
 def Years(url):
     yearhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'name="years"\s+id="year-\d+"\s+value="\d+"\s+data-name="(\d+)">', re.DOTALL | re.IGNORECASE).findall(yearhtml)
+    match = re.compile(r'name="years"\s+id="year-\d+"\s+value="\d+"\s+data-name="(\d+)"\s*>', re.DOTALL | re.IGNORECASE).findall(yearhtml)
     if match:
         year = utils.selector('Select link', match, reverse=True)
         if year:

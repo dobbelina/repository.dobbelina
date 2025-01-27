@@ -1,3 +1,2 @@
-[B]Version 1.1.127[/B]
-- hentaidude - fix thumbnails
-- whoreshub - fix playback
+[B]Version 1.1.128[/B]
+- animeidhentai - main list, pagination, years
