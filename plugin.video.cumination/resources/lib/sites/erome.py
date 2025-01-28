@@ -34,7 +34,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'''<div[^<]+id="album-.+?data-src="([^"]+).+?right">(.+?)</div.+?title"\s*href="([^"]+)">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'''<div[^<]+id="album-.+?data-src="([^"]+).+?right">(.+?)</div.+?title"\s*href="([^"]+)"\s*>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, content, iurl, name in match:
         name = utils.cleantext(name)
         img += '|Referer={0}'.format(site.url)
