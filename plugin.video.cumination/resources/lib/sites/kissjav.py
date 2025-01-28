@@ -39,32 +39,24 @@ def Main():
 def List(url):
     html = utils.getHtml(url, site.url)
 
-    delimiter = '<div class="item'
+    delimiter = '<div class="thumb '
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'src="([^"]+)"'
-    re_duration = 'duration">([^<]+)<'
-    re_quality = 'class="is-hd">(HD)<'
+    re_img = 'data-original="([^"]+)"'
+    re_duration = 'time">([^<]+)<'
+    re_quality = 'qualtiy">(HD)<'
     utils.videos_list(site, 'kissjav.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality, re_duration)
 
-    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">Next', html, re.DOTALL | re.IGNORECASE)
+    match = re.search(r'''<a\s*class='next'\s*href="([^"]+)''', html, re.DOTALL | re.IGNORECASE)
     if match:
-        npage = int(match.group(1)) + 1
-        block_id = match.group(2)
-        params = match.group(3).replace(';', '&').replace(':', '=')
-        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}'.format(block_id, params)
-        lpnr, lastp = None, ''
-        match = re.search(r':(\d+)">Last', html, re.DOTALL | re.IGNORECASE)
-        if match:
-            lpnr = match.group(1)
-            lastp = '/{}'.format(lpnr)
-        nurl = nurl.replace('+from_albums', '')
-        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+        nurl = urllib_parse.urljoin(site.url, match.group(1))
+        currpg = re.findall(r'<a\s*class="active item-pagination[^>]+>(\d+)', html)[0]
+        lastpg = re.findall(r'<a\s*href=".*?"\s*data-container-id="list_videos[^"]+?_pagination"[^>]+>(\d+)', html)[-1]
 
-        cm_page = (utils.addon_sys + "?mode=javbangers.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
-        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        # cm_page = (utils.addon_sys + "?mode=kissjav.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
+        # cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in {} of {})'.format(currpg, lastpg), nurl, 'List', site.img_next)  # , contextm=cm)
     utils.eod()
 
 
@@ -85,22 +77,10 @@ def GotoPage(list_mode, url, np, lp):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'class="item" href="([^"]+)" title="([^"]+)".+?(?:src="([^"]+)"|>no image<)(.+?)</a>', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for caturl, name, img, data in match:
-        img = img.replace(' ', '%20')
-        name = utils.cleantext(name)
-        if '/categories/' in url:
-            name = name.capitalize()
-        if 'videos">' in data:
-            match = re.compile(r'videos">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(data)
-            name = name + ' [COLOR cyan][{}][/COLOR]'.format(match[0])
+    match = re.compile(r'<div\s*class="thumb\s*item">\s*<a\s*href="([^"]+).+?img\s*src="([^"]+).+?"title">([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, img, name in match:
         site.add_dir(name, caturl, 'List', img)
-    re_npurl = r'class="next"><a href="([^"]+)"'
-    re_npnr = r'class="next"><a href="[^"]+/(\d+)/"'
-    re_lpnr = r'class="last"><a href="[^"]+/(\d+)/"'
-    utils.next_page(site, 'heroero.Categories', cathtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='heroero.GotoPage')
-    if '/categories/' in url:
-        xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
+    xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
 
@@ -130,7 +110,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = url + keyword.replace(' ', '+') + '/'
+        url = url + keyword.replace(' ', '-') + '/'
         List(url)
 
 
