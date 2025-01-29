@@ -23,18 +23,21 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'sextb.png', 'sextb')
-enames = {'VV': 'VideoVard',
-          'TV': 'TurboVIPlay',
-          'TB': 'TurboVIPlay',
-          'JP': 'JAVPoll',
-          'ST': 'StreamTape',
-          'DD': 'DoodStream',
-          'VS': 'Voe',
-          'SW': 'StreamWish',
-          'NJ': 'NinjaStream',
-          'NT': 'Netu',
-          'FL': 'FileLions',
-          'VG': 'Vidguard'}
+enames = {
+    'VV': 'VideoVard',
+    'TV': 'TurboVIPlay',
+    'TB': 'TurboVIPlay',
+    'JP': 'JAVPoll',
+    'ST': 'StreamTape',
+    'DD': 'DoodStream',
+    'VS': 'Voe',
+    'SW': 'StreamWish',
+    'NJ': 'NinjaStream',
+    'NT': 'Netu',
+    'FL': 'FileLions',
+    'US': 'UPN',
+    'VG': 'Vidguard'
+}
 
 
 @site.register(default_mode=True)
@@ -54,7 +57,7 @@ def Main():
 
 @site.register()
 def List(url):
-    html = utils.getHtml(url, '')
+    html = utils.getHtml(url, site.url)
 
     if 'No Video were found that matched your search query' in html or len(html) < 10:
         utils.eod()
@@ -77,7 +80,7 @@ def List(url):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url)
+    cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="fas fa-folder".+?href="([^"]+)"\s*title="([^"]+)".+?>\((\d+)\)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, name, count in match:
         name = utils.cleantext(name) + ' [COLOR hotpink](' + str(count) + ')[/COLOR]'
@@ -90,7 +93,7 @@ def Categories(url):
 
 @site.register()
 def Studios(url):
-    cathtml = utils.getHtml(url)
+    cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'<div class="tray-item\s*tray.+?href="([^"]+).+?/i>\s*([^<]+).+?total">([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, name, count in match:
         name = utils.cleantext(name) + ' [COLOR hotpink]' + count + '[/COLOR]'
@@ -102,7 +105,7 @@ def Studios(url):
 
 @site.register()
 def Actress(url):
-    cathtml = utils.getHtml(url)
+    cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="tray-item-actress".+?href="([^"]+)".+?data-src="([^"]+)".+?actress-title">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name in match:
         name = utils.cleantext(name)
@@ -143,7 +146,7 @@ def Playvid(url, name, download=None):
     if source:
         filmid, episode = source.split('$$')
         formdata = {'filmId': filmid, 'episode': episode}
-        player = json.loads(utils.postHtml(ajaxurl, form_data=formdata)).get('player')
+        player = json.loads(utils.postHtml(ajaxurl, form_data=formdata, headers={'Referer': site.url})).get('player')
         videourl = re.findall(r'src="([^?"]+)', player)[0] + '$$' + site.url
 
     if not videourl:
