@@ -30,25 +30,25 @@ xflogged = 'true' in utils.addon.getSetting('xflogged')
 
 
 @site.register(default_mode=True)
-def xfreehd_main():
+def Main():
     search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
     search_order = utils.addon.getSetting("xfreeorder") or 'Relevance'
     search_order = search_order if search_order in search_orders.keys() else 'Relevance'
     context = (utils.addon_sys + "?mode=xfreehd.Sortorder")
     contextmenu = [('[COLOR orange]Search Order[/COLOR]', 'RunPlugin(' + context + ')')]
 
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'xfreehd_cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'xfreehd_search', site.img_search, contextm=contextmenu)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'Search', site.img_search, contextm=contextmenu)
     if not xflogged:
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', '', Folder=False)
     else:
         xfuser = utils.addon.getSetting('xfuser')
         site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', '', Folder=False)
-    xfreehd_list(site.url + 'videos?o=mr')
+    List(site.url + 'videos?o=mr')
 
 
 @site.register()
-def xfreehd_list(url):
+def List(url):
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     try:
@@ -71,10 +71,17 @@ def xfreehd_list(url):
         hd = 'HD' if '>HD<' in hd else ''
         img = img.split('data-src="')[1] if 'data-src' in img else site.url[:-1] + img
         videourl = video if video.startswith('http') else site.url[:-1] + video
-        site.add_download_link(name, videourl, 'xfreehd_play', img, name, duration=duration, quality=hd)
+
+        cm = []
+        cm_lookupinfo = (utils.addon_sys + "?mode=" + str('xfreehd.Lookupinfo') + "&url=" + urllib_parse.quote_plus(videourl))
+        cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+        cm_related = (utils.addon_sys + "?mode=" + str('xfreehd.Related') + "&url=" + urllib_parse.quote_plus(videourl))
+        cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+
+        site.add_download_link(name, videourl, 'Play', img, name, duration=duration, quality=hd, contextm=cm)
 
     match = re.compile(r'''<li><a\s*href="([^"]+)"\s*class="prevnext"''', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if match:
+    if match and not url.startswith(site.url + 'video/'):
         lp = re.compile(r'Showing.+?>\d+<.+?>\d+<.+?>(\d+)</span>\s*videos', re.DOTALL | re.IGNORECASE).findall(listhtml)
         if lp:
             pages = int(lp[0]) // 30 + 1
@@ -94,32 +101,38 @@ def xfreehd_list(url):
         )
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
-        site.add_dir('Next Page (' + page_number + last_page + ')', next_page, 'xfreehd_list', site.img_next, contextm=cm)
+        site.add_dir('Next Page (' + page_number + last_page + ')', next_page, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
 @site.register()
-def xfreehd_cat(url):
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('xfreehd.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
+def Cat(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'''class="col-xs-6\s*col-sm-4\scol.+?href="([^"]+).+?data-src="([^"]+)"\s*title="([^"]+).+?badge">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for catpage, img, name, videos in match:
         name = utils.cleantext(name.strip()) + " [COLOR hotpink]%s Videos[/COLOR]" % videos
         caturl = site.url[:-1] + catpage if catpage.startswith('/') else catpage
-        site.add_dir(name, caturl, 'xfreehd_list', site.url[:-1] + img)
+        site.add_dir(name, caturl, 'List', site.url[:-1] + img)
     utils.eod()
 
 
 @site.register()
-def xfreehd_search(url, keyword=None):
+def Search(url, keyword=None):
     if not keyword:
-        site.search_dir(url, 'xfreehd_search')
+        site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
         search_orders = {'Relevance': '', 'Most Recent': 'mr', 'Being Watched': 'bw', 'Most Viewed': 'mv', 'Most Commented': 'md', 'Top Rated': 'tr', 'Top Favorited': 'tf', 'Longest': 'lg'}
         search_order = utils.addon.getSetting("xfreeorder") or 'Relevance'
         search_order = search_order if search_order in search_orders.keys() else 'Relevance'
         url = url + title + '&search_type=videos&o={}'.format(search_orders[search_order]) if search_order != 'Relevance' else url + title + '&search_type=videos'
-        xfreehd_list(url)
+        List(url)
 
 
 @site.register()
@@ -132,7 +145,7 @@ def Sortorder():
 
 
 @site.register()
-def xfreehd_play(url, name, download=None):
+def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
@@ -162,6 +175,7 @@ def xfreehd_play(url, name, download=None):
         sources = {x[1]: x[0] for x in srcs}
         videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: x)
         if videourl:
+            videourl = videourl + '|verifypeer=false'
             vp.play_from_direct_link(videourl)
 
 
@@ -213,7 +227,7 @@ def GotoPage(url, np, lp):
             return
         if 'page=' in url:
             url = url.replace('page={}'.format(np), 'page={}'.format(pg))
-        contexturl = (utils.addon_sys + "?mode=xfreehd.xfreehd_list&url=" + urllib_parse.quote_plus(url))
+        contexturl = (utils.addon_sys + "?mode=xfreehd.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -225,3 +239,13 @@ def get_cookies():
     if xflogged and 'FX=' not in cookiestr:
         Login()
     return cookiestr
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Category", '<a class="standard-link" href="(/videos/[^"]+)">([^<]+)</a>', ''),
+        ("Tag", '<a class="tag" href="https://www.xfreehd.com/(tag/[^"]+)">([^<]+)</a>', '')
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'xfreehd.List', lookup_list)
+    lookupinfo.getinfo()

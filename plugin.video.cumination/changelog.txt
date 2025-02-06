@@ -1,5 +1,2 @@
-[B]Version 1.1.128[/B]
-- animeidhentai - main list, pagination, years
-- kissjav - main list, pagination, categories
-- erome - listing
-- sextv - add referer
+[B]Version 1.1.129[/B]
+- xfreehd - fix playback, added Lookup info & Related videos
