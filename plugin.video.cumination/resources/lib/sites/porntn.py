@@ -27,7 +27,7 @@ site = AdultSite('porntn', '[COLOR hotpink]PornTN[/COLOR]', 'https://porntn.com/
 
 @site.register(default_mode=True)
 def Main(url):
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'new/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + '?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=post_date&from=1', 1)
@@ -45,7 +45,7 @@ def List(url, page=1):
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = site.url + videopage
-        img = site.url + img if not img.startswith('//') else 'https:' + img
+        img = img if img.startswith('http') else site.url + img if not img.startswith('//') else 'https:' + img
 
         contextmenu = []
         contexturl = (utils.addon_sys

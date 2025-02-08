@@ -1,2 +1,3 @@
 [B]Version 1.1.129[/B]
 - xfreehd - fix playback, added Lookup info & Related videos
+- porntn - fix thumbnails & categories
