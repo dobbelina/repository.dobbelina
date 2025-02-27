@@ -44,7 +44,8 @@ def Main():
     trans = addon.getSetting("chattrans") == "true"
 
     site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', rapi + '?limit=100&offset=0&keywords=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', rapi + '?limit=100&offset=0&keywords=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', site.url + 'ax/search/?keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
@@ -199,6 +200,22 @@ def List(url, page=1):
 
 
 @site.register(clean_mode=True)
+def SList(url):
+    hdr = utils.base_hdrs.copy()
+    hdr.update({'X-Requested-With': 'XMLHttpRequest'})
+    listhtml = utils._getHtml(url, site.url, headers=hdr)
+    jlist = json.loads(listhtml)
+    for model in jlist.get('online', []):
+        img = 'https://thumb.live.mmcdn.com/riw/{}.jpg'.format(model)
+        contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(model))
+        contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(model))
+        contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(model), 'RunPlugin(' + contextfollow + ')'), ('[COLOR violet]Unfollow [/COLOR]{}'.format(model), 'RunPlugin(' + contextunfollow + ')')]
+        videopage = '{0}{1}/'.format(bu, model)
+        site.add_download_link(model, videopage, 'Playvid', img, contextm=contextmenu, noDownload=True)
+    utils.eod()
+
+
+@site.register(clean_mode=True)
 def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
@@ -268,7 +285,7 @@ def Search(url, keyword=None):
     else:
         title = urllib_parse.quote_plus(keyword)
         url += title
-        List(url)
+        SList(url)
 
 
 @site.register()
