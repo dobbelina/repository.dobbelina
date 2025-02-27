@@ -55,13 +55,13 @@ def List(url):
     for model in models:
         name = model.get('model_seo_name').replace('-', ' ').title()
         age = model.get('age')
-        subject = utils.cleantext(model.get('tagline') if utils.PY3 else model.get('tagline').encode('utf8'))
+        subject = utils.cleantext(model.get('tagline', '') if utils.PY3 else model.get('tagline', '').encode('utf8'))
         if model.get('location'):
             subject += "[CR][CR][COLOR deeppink]Location: [/COLOR]{0}[CR][CR]".format(
                 model.get('location') if utils.PY3 else model.get('location').encode('utf8'))
         if model.get('topic'):
             subject += utils.cleantext(model.get('topic') if utils.PY3 else model.get('topic').encode('utf8'))
-        status = model.get('room_status')
+        status = model.get('room_status') if model.get('room_status') != 'In Open' else ''
         name = name + " [COLOR deeppink][" + age + "][/COLOR] " + status
         mid = model.get('model_id')
         img = 'https://live-screencaps.vscdns.com/{0}-desktop.jpg'.format(mid)

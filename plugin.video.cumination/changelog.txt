@@ -1,2 +1,2 @@
-[B]Version 1.1.130[/B]
-- AWM Network - fix provider names
+[B]Version 1.1.131[/B]
+- naked.com - fix listing
