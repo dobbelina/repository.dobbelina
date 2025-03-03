@@ -199,7 +199,7 @@ def List(url, page=1):
     utils.eod()
 
 
-@site.register(clean_mode=True)
+@site.register()
 def SList(url):
     hdr = utils.base_hdrs.copy()
     hdr.update({'X-Requested-With': 'XMLHttpRequest'})
