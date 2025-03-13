@@ -1,4 +1,3 @@
-[B]Version 1.1.132[/B]
-- anybunny - fix playback
-- fix error when opening favorites
-- porntrex - fix playback
+[B]Version 1.1.133[/B]
+- charturbate - fix playback
+

@@ -252,6 +252,8 @@ def Playvid(url, name):
     else:
         m3u8stream = False
 
+    m3u8stream = m3u8stream.replace('playlist.m3u8', 'playlist_sfm4s.m3u8').replace('live-hls', 'live-c-fhls').replace('live-edge', 'live-c-fhls')
+
     if playmode == 0:
         if m3u8stream:
             videourl = "{0}|{1}".format(m3u8stream, urllib_parse.urlencode(HTTP_HEADERS_IPAD))
@@ -275,6 +277,7 @@ def Playvid(url, name):
             return
 
     vp = utils.VideoPlayer(name)
+    vp.IA_check = 'IA'
     vp.play_from_direct_link(videourl)
 
 

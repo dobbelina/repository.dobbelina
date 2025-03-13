@@ -386,7 +386,7 @@ def playvid(videourl, name, download=None, subtitle=None, IA_check='check'):
             listitem.setInfo('video', {'Title': name, 'Genre': 'Porn', 'plot': subject, 'plotoutline': subject})
 
         if IA_check != 'skip':
-            videourl, listitem = inputstream_check(videourl, listitem)
+            videourl, listitem = inputstream_check(videourl, listitem, IA_check)
 
         if subtitle:
             listitem.setSubtitles([subtitle])
@@ -398,12 +398,12 @@ def playvid(videourl, name, download=None, subtitle=None, IA_check='check'):
             xbmcplugin.setResolvedUrl(addon_handle, True, listitem)
 
 
-def inputstream_check(url, listitem):
+def inputstream_check(url, listitem, IA_check):
     supported_endings = [[".hls", 'application/vnd.apple.mpegstream_url'],
                          [".mpd", 'application/dash+xml'],
                          [".ism", 'application/vnd.ms-sstr+xml']]
 
-    m3u8_use_ia = True if addon.getSetting("m3u8_use_ia") == "true" else False
+    m3u8_use_ia = True if IA_check == 'IA' or addon.getSetting("m3u8_use_ia") == "true" else False
     if m3u8_use_ia:
         supported_endings.append([".m3u8", 'application/x-mpegURL'])
     adaptive_type = None
