@@ -124,13 +124,20 @@ def Playvid(url, name, download=None):
     if match:
         iframeurl = match[0]
         hash = iframeurl.split('/')[-1]
-        if 'video-mart.com' in iframeurl:
+        if 'bestwish.lol' in iframeurl:
+            url1 = 'https://bestb.stream/data.php?filecode={}'.format(hash)
+            html = utils.getHtml(url1, 'https://bestwish.lol/')
+            jsondata = json.loads(html)
+            videourl = jsondata["streaming_url"]
+            videourl += '|Referer=https://bestwish.lol/&Origin=https://bestwish.lol'
+            vp.play_from_direct_link(videourl)
+        elif 'video-mart.com' in iframeurl:
             url1 = 'https://video-mart.com/player/index.php?data={}&do=getVideo'.format(hash)
             hdr = dict(utils.base_hdrs).copy()
             hdr['Accept'] = '*/*'
             hdr['X-Requested-With'] = 'XMLHttpRequest'
             data = {'hash': hash, 'r': ''}
-            html = utils._getHtml(url1, iframeurl, headers=hdr, data=data)
+            html = utils.getHtml(url1, iframeurl, headers=hdr, data=data)
             jsondata = json.loads(html)
             videourl = jsondata["videoSource"]
             m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
