@@ -1031,6 +1031,18 @@ def newSearch(url=None, channel=None, keyword=None):
 
 
 @url_dispatcher.register()
+def copySearch(url=None, channel=None, keyword=None):
+    vq = _get_keyboard(default=keyword, heading=i18n('srch_for'))
+    if not vq:
+        return False, 0
+    if not keyword:
+        addKeyword(vq)
+    elif keyword != vq:
+        addKeyword(vq)
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
 def clearSearch():
     delallKeyword()
     xbmc.executebuiltin('Container.Refresh')

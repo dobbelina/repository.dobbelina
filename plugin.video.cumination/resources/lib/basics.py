@@ -323,8 +323,12 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         keywedit = (sys.argv[0]
                     + "?mode=" + str('utils.newSearch')
                     + "&keyword=" + urllib_parse.quote_plus(keyword))
+        keywcopy = (sys.argv[0]
+                    + "?mode=" + str('utils.copySearch')
+                    + "&keyword=" + urllib_parse.quote_plus(keyword))
         contextMenuItems.append(('[COLOR hotpink]Remove keyword[/COLOR]', 'RunPlugin(' + keyw + ')'))
         contextMenuItems.append(('[COLOR hotpink]Edit keyword[/COLOR]', 'RunPlugin(' + keywedit + ')'))
+        contextMenuItems.append(('[COLOR hotpink]Copy keyword[/COLOR]', 'RunPlugin(' + keywcopy + ')'))
     if list_avail:
         list_item_name = 'Add item to ...'
         list_url = (sys.argv[0]
