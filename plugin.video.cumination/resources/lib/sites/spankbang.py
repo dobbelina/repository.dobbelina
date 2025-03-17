@@ -22,7 +22,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('spankbang', '[COLOR hotpink]SpankBang[/COLOR]', 'https://spankbang.com/', 'spankbang.png', 'spankbang')
+site = AdultSite('spankbang', '[COLOR hotpink]SpankBang[/COLOR]', 'https://spankbang.party/', 'spankbang.png', 'spankbang')
 filterQ = utils.addon.getSetting("spankbang_quality") or 'All'
 filterL = utils.addon.getSetting("spankbang_length") or 'All'
 
