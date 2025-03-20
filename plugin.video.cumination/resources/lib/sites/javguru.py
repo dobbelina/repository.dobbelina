@@ -29,7 +29,7 @@ site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'wp-json/wp/v2/categories/', 'Catjson', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'jav-tags-list/', 'Toplist', site.img_cat)
-    site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'jav-series/', 'Toplist', site.img_cat)
+    site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'jav-series/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'jav-actress-list/', 'Actress', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'jav-studio-list/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'category/jav-uncensored/', 'List', site.img_cat)
@@ -57,7 +57,7 @@ def List(url):
         npage, np = match[0]
         lp = re.compile(r"""href=["'][^"']+page/(\d+)/[^"']*["']>Last""", re.DOTALL | re.IGNORECASE).findall(listhtml)
         lp = '/' + lp[0] if lp else ''
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0}{1})'.format(np, lp), npage, 'List', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0}{1})'.format(np, lp), site.url + npage, 'List', site.img_next)
     utils.eod()
 
 
@@ -159,11 +159,11 @@ def Lookupinfo(url):
     lookup_list = [
         ("Cat", r'/(category/[^"]+)"\s*?rel="category tag">([^<]+)<', ''),
         ("Tags", r'/(tag/[^"]+)"\s*?rel="tag">([^<]+)</a', ''),
-        ("Studio", r'/(maker/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
-        ("Label", r'/(studio/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
-        ("Series", r'/(series/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
-        ("Actor", r'/(actor/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
-        ("Actress", r'/(actress/[^"]+)"\s*?rel="tag">([^<]+)<', ''),
+        ("Studio", r'/(maker/[^"]+)"\s*?>([^<]+)</a></li><li><strong>L', ''),
+        ("Label", r'/(studio/[^"]+)"\s*?>([^<]+)<', ''),
+        ("Series", r'/(series/[^"]+)"\s*?>([^<]+)<', ''),
+        ("Actor", r'/(actor/[^"]+)"\s*?>([^<]+)<', ''),
+        ("Actress", r'/(actress/[^"]+)"\s*?>([^<]+)</a>(?:,|</li>[^<])', ''),
     ]
 
     lookupinfo = utils.LookupInfo(site.url, url, 'javguru.List', lookup_list)
