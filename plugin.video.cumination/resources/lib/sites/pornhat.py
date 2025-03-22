@@ -33,24 +33,24 @@ site6 = AdultSite('homoxxx', '[COLOR hotpink]Homo XXX[/COLOR]', 'https://homo.xx
 site7 = AdultSite('perfectgirls', '[COLOR hotpink]Perfect Girls[/COLOR]', 'https://www.perfectgirls.xxx/', 'https://static.perfectgirls.xxx/static/images/logo.png', 'perfectgirls')
 
 
-def getBaselink(url):
+def getSite(url):
     if 'pornhat.com' in url:
-        siteurl = site.url
+        ret = site
     elif 'hello.porn' in url:
-        siteurl = site1.url
+        ret = site1
     elif 'ok.porn' in url:
-        siteurl = site2.url
+        ret = site2
     elif 'ok.xxx' in url:
-        siteurl = site3.url
+        ret = site3
     elif 'pornstars.tube' in url:
-        siteurl = site4.url
+        ret = site4
     elif 'max.porn' in url:
-        siteurl = site5.url
+        ret = site5
     elif 'homo.xxx' in url:
-        siteurl = site6.url
+        ret = site6
     elif 'perfectgirls.xxx' in url:
-        siteurl = site7.url
-    return siteurl
+        ret = site7
+    return ret
 
 
 @site.register(default_mode=True)
@@ -62,7 +62,7 @@ def getBaselink(url):
 @site6.register(default_mode=True)
 @site7.register(default_mode=True)
 def Main(url):
-    siteurl = getBaselink(url)
+    siteurl = getSite(url).url
     if 'max.porn' not in url and 'pornstars.tube' not in url:
         site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels/', 'Cat', site.img_cat)
         if 'hello.porn' in url or 'homo.xxx' in url or 'perfectgirls.xxx' in url:
@@ -83,7 +83,7 @@ def Main(url):
 
 @site.register()
 def List(url):
-    siteurl = getBaselink(url)
+    siteurl = getSite(url).url
     listhtml = utils.getHtml(url)
 
     delimiter = r'(?:<div class="thumb thumb-video\s*">|<div class="thumb">|class="item  ")'
@@ -92,7 +92,7 @@ def List(url):
     re_img = '(?:data-original|data-src)="([^"]+)"'
     re_duration = r'(?:duration_item">|fa-clock-o"></i> <span>)([^<]+)'
 
-    utils.videos_list(site, 'pornhat.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='pornhat.Related')
+    utils.videos_list(getSite(url), 'pornhat.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm='pornhat.Related')
 
     nextp = re.compile(r'href="([^"]+)"[^>]*>\s*Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
@@ -105,7 +105,7 @@ def List(url):
 
 @site.register()
 def Cat(url):
-    siteurl = getBaselink(url)
+    siteurl = getSite(url).url
     listhtml = utils.getHtml(url)
     listhtml = listhtml.split('<div class="content"')[-1]
     listhtml = listhtml.split('<div class="main"')[-1]
@@ -164,7 +164,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
-    siteurl = getBaselink(url)
+    siteurl = getSite(url).url
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vpage = utils.getHtml(url, siteurl)
