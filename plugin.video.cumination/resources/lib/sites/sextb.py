@@ -141,7 +141,13 @@ def Playvid(url, name, download=None):
     videourl = ''
     ajaxurl = 'https://sextb.net/ajax/player'
     embeds = re.compile(r'class="btn-player.+?data-source="([^"]+).+?data-id="([^"]+).+?/i>\s*([^<]+)', re.DOTALL | re.IGNORECASE).findall(video_page)
-    sources = {enames[hoster] if hoster in enames.keys() else hoster: vid + '$$' + embed for vid, embed, hoster in embeds if hoster != 'VIP'}
+    sources = {}
+    for vid, embed, hoster in embeds:
+        if 'VIP' not in hoster:
+            option = ''
+            if '#' in hoster:
+                hoster, option = hoster.split(' ')
+            sources.update({(enames[hoster.strip()] + option) if hoster.strip() in enames.keys() else (hoster + option): vid + '$$' + embed})
     source = utils.selector('Select Hoster', sources)
     if source:
         filmid, episode = source.split('$$')

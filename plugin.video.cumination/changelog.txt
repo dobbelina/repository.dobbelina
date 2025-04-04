@@ -1,6 +1,2 @@
-[B]Version 1.1.134[/B]
-- spankbang - domain changed to spankbang.party
-- search menu - Copy keyword: creates a copy of a search term that can be edited
-- javguru - fix pagination, series, lookup info
-- perfectgirls - fix playback
-
+[B]Version 1.1.135[/B]
+- sextb: fix stream source names
