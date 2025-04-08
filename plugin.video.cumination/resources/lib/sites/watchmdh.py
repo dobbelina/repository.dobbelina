@@ -25,7 +25,7 @@ import xbmc
 import xbmcgui
 from random import randint
 
-site = AdultSite('watchmdh', '[COLOR hotpink]WatchMDH[/COLOR]', 'https://watchmdh.to/', 'https://watchmdh.to/contents/playerother/theme/logo.png', 'watchmdh')
+site = AdultSite('watchmdh', '[COLOR hotpink]WatchMDH[/COLOR]', 'https://watchdirty.is/', 'https://watchdirty.is/contents/playerother/theme/logo.png', 'watchmdh')
 
 
 @site.register(default_mode=True)
