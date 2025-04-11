@@ -427,8 +427,11 @@ def inputstream_check(url, listitem, IA_check):
         if '|' in url:
             url, strhdr = url.split('|')
             listitem.setProperty('inputstream.adaptive.stream_headers', strhdr)
-            if KODIVER > 19.8:
+            if KODIVER > 21.8:
+                listitem.setProperty('inputstream.adaptive.common_headers', strhdr)
+            elif KODIVER > 19.8:
                 listitem.setProperty('inputstream.adaptive.manifest_headers', strhdr)
+                listitem.setProperty('inputstream.adaptive.stream_params', strhdr)
 
         if KODIVER < 20.8:
             listitem.setProperty('inputstream.adaptive.manifest_type', adaptive_type)

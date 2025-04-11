@@ -3,3 +3,4 @@
 - watchmdh: Domain change
 - hentaidude: Add genres for navigating
 - erome: Add duration to videos listing
+- base: Add stream headers handling for Kodi Piers
