@@ -1,3 +1,4 @@
 [B]Version 1.1.135[/B]
 - sextb: fix stream source names
 - watchmdh: Domain change
+- hentaidude: Add genres for navigating
