@@ -80,10 +80,10 @@ def List2(url, section):
                 item = item.split('class="clearfix"')[0]
                 if 'class="video"' in item and section == 'vids':
                     itemcount += 1
-                    img, surl, hd = re.findall(r'''poster="([^"]+).+?source\s*src="([^"]+).+?label='([^']+)''', item, re.DOTALL)[0]
+                    img, surl, hd, duration = re.findall(r'''poster="([^"]+).+?source\s*src="([^"]+).+?label='([^']+).+?class="duration"\s*>([^<]+)''', item, re.DOTALL)[0]
                     img += '|Referer={0}'.format(site.url)
                     surl += '|Referer={0}'.format(site.url)
-                    site.add_download_link('Video {0}'.format(itemcount), surl, 'Playvid', img, quality=hd)
+                    site.add_download_link('Video {0}'.format(itemcount), surl, 'Playvid', img, duration=duration, quality=hd)
                 elif 'class="video"' not in item and section == 'pics':
                     img = re.search(r'class="img-front(?:\s*lasyload)?"\s*(?:data-)?src="([^"]+)', item, re.DOTALL)
                     if img:
