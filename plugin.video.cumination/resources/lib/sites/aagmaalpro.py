@@ -22,12 +22,12 @@ import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.gives/', 'https://aagmaal.gives/wp-content/uploads/2022/04/aagmaal-live-logo.png', 'aagmaalpro')
+site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.boo/', 'logo.png', 'aagmaalpro')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
@@ -36,17 +36,23 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+)[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, videopage, name in match:
-        if '</span>' in name:
-            name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
+    match = re.compile(r'<article.+?href="([^"]+).+?src="([^"]+).+?duration">(?:<i.+?/i>)?([\d:]*)<.+?header.+?span>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, duration, name in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
-    url = re.compile(r'''class="pagination.+?class="current.+?href=['"]?([^\s'"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if url:
-        pgtxt = 'Currently in {0}'.format(re.findall(r'class="pages">([^<]+)', listhtml)[0])
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), url.group(1), 'List', site.img_next)
+    np = re.compile(r'''class="pagination.+?class="current.+?href="([^"]+)">Next''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if np:
+        currpg = re.findall(r'class="pagination.+?class="current">([^<]+)', listhtml, re.DOTALL)[0]
+        lastpg = re.findall(r'''class="pagination.+?href=['"]([^'"]+)['"]>Last''', listhtml, re.DOTALL)[0].split('/')[-2]
+        pgtxt = 'Currently in Page {0} of {1}'.format(currpg, lastpg)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), np.group(1), 'List', site.img_next)
+    else:
+        np = re.compile(r'''class="pagination".+?class="current">.+?href="([^"]+)"\s*class="inactive''', re.DOTALL | re.IGNORECASE).search(listhtml)
+        if np:
+            pgtxt = 'Currently in {0}'.format(re.findall(r'class="pagination".+?class="current">([\d+])', listhtml)[0])
+            site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), np.group(1), 'List', site.img_next)
+
     utils.eod()
 
 
@@ -100,12 +106,16 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<li\s*class="cat-item.+?href="([^"]+)">([^<]+)').findall(cathtml)
-    for catpage, name in match:
+    match = []
+    while url:
+        cathtml = utils.getHtml(url, site.url)
+        match += re.compile(r'<article.+?href="([^"]+).+?src="([^"]+).+?title">([^<]+)', re.DOTALL).findall(cathtml)
+        np = re.compile(r'''class="pagination".+?class="current">.+?href="([^"]+)"\s*class="inactive''', re.DOTALL | re.IGNORECASE).search(cathtml)
+        url = np.group(1) if np else False
+
+    for catpage, img, name in sorted(match, key=lambda item: item[2].lower()):
         name = utils.cleantext(name)
-        catpage = site.url[:-1] + catpage if catpage.startswith('/') else catpage
-        site.add_dir(name, catpage, 'List2')
+        site.add_dir(name, catpage, 'List', img)
     utils.eod()
 
 
@@ -117,4 +127,4 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
-        List2(searchUrl)
+        List(searchUrl)

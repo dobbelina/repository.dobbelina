@@ -34,9 +34,11 @@ import six
 import StorageServer
 from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs, xbmcaddon
 from resources.lib import cloudflare, random_ua, strings, jsunpack
-from resources.lib.basics import (addDir, addon, addon_handle, addon_sys,
-                                  cookiePath, cum_image, cuminationicon, eod,
-                                  favoritesdb, keys, searchDir, profileDir)
+from resources.lib.basics import (
+    addDir, addon, addon_handle, addon_sys,
+    cookiePath, cum_image, cuminationicon, eod,
+    favoritesdb, keys, searchDir, profileDir
+)
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
 from resources.lib.jsonrpc import toggle_debug
