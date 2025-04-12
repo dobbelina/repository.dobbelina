@@ -11,3 +11,4 @@
 - erogarga: fix koreanpornmovie playback
 - asstoo: removed
 - bitporno: removed
+- celebsroulette: playlists - fix thumbnails

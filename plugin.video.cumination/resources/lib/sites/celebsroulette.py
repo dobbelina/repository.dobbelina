@@ -79,7 +79,9 @@ def List(url):
 def ListPL(url):
     listhtml = utils.getHtml(url)
     match = re.compile(r'class="item.+?item="([^"]+).+?original="([^"]+).+?title">\s*([^<\n]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    thumbnails = utils.Thumbnails(site.name)
     for video, img, name in match:
+        img = thumbnails.fix_img(img)
         name = utils.cleantext(name)
         site.add_download_link(name, video, 'Playvid', img, name)
 
