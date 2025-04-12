@@ -7,3 +7,4 @@
 - aagmaal: domain change
 - aagmaalpro: fix images, categories
 - javgg: fix playback
+- javhdporn: fix pagination

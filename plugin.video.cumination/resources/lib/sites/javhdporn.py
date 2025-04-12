@@ -22,7 +22,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('javhdporn', '[COLOR hotpink]JavHD Porn[/COLOR]', 'https://www4.javhdporn.net/', 'https://img.pornfhd.com/logo.png', 'javhdporn')
+site = AdultSite('javhdporn', '[COLOR hotpink]JavHD Porn[/COLOR]', 'https://www4.javhdporn.net/', 'https://pics.pornfhd.com/javhdporn/logo.png', 'javhdporn')
 
 
 @site.register(default_mode=True)
@@ -47,7 +47,7 @@ def List(url):
     if match:
         npage = match.group(1)
         currpg = re.compile(r'''class="pagination".+?current">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        lastpg = re.compile(r'''class="pagination".+?href=['"].+?([\d]+)/['"]>Last''', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        lastpg = re.compile(r'''class="pagination".+?href=['"].+?/([\d]+)/[^/'"]*['"]>Last''', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npage, 'List', site.img_next)
     utils.eod()
 
