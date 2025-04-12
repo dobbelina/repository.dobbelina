@@ -55,12 +55,14 @@ TRANSLATEPATH = xbmcvfs.translatePath if PY3 else xbmc.translatePath
 LOGINFO = xbmc.LOGINFO if PY3 else xbmc.LOGNOTICE
 KODIVER = float(xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')[:4])
 
-base_hdrs = {'User-Agent': USER_AGENT,
-             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-             'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-             'Accept-Encoding': 'gzip',
-             'Accept-Language': 'en-US,en;q=0.8',
-             'Connection': 'keep-alive'}
+base_hdrs = {
+    'User-Agent': USER_AGENT,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+    'Accept-Encoding': 'gzip',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'Connection': 'keep-alive'
+}
 
 progress = xbmcgui.DialogProgress()
 dialog = xbmcgui.Dialog()
@@ -619,21 +621,21 @@ def savecookies(flarejson):
     for cookie in flarejson['solution']['cookies']:
         c = http_cookiejar.Cookie(
             version=0,
-            name=cookie['name'],
-            value=cookie['value'],
+            name=cookie.get('name'),
+            value=cookie.get('value'),
             port=None,
             port_specified=False,
-            domain=cookie['domain'],
+            domain=cookie.get('domain'),
             domain_specified=False,
             domain_initial_dot=False,
-            path=cookie['path'],
+            path=cookie.get('path'),
             path_specified=True,
-            secure=cookie['secure'],
+            secure=cookie.get('secure'),
             expires=cookie.get('expiry'),
             discard=True,
             comment=None,
             comment_url=None,
-            rest={'HttpOnly': cookie['httpOnly']},
+            rest={'HttpOnly': cookie.get('httpOnly')},
             rfc2109=False
         )
 

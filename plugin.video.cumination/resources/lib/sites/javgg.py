@@ -17,8 +17,6 @@
 '''
 
 import re
-import json
-import requests
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -50,9 +48,11 @@ def List(url):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
-    np = re.compile(r'class="current">\d+</span><a\s*href="([^"]+)"\s*class="inactive">(\d+)<', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'''class="pagination".+?href=["']([^"']+)["']><i\s*id=['"]next''').search(listhtml)
     if np:
-        site.add_dir('Next Page...  (Page {0})'.format(np.group(2)), np.group(1), 'List', site.img_next)
+        p = re.compile(r'''class="pagination"><span>([^<]+)''').search(listhtml)
+        pgtxt = p.group(1) if p else ''
+        site.add_dir('Next Page...  ({0})'.format(pgtxt), np.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -60,27 +60,14 @@ def List(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex='"([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    sources = []
-    videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'''data-post=['"]([^"']+)['"]\s+?data-nume=['"]([^'"]+)''', re.DOTALL | re.IGNORECASE).findall(videohtml)
-
-    hdr = utils.base_hdrs.copy()
-    hdr['X-Requested-With'] = 'XMLHttpRequest'
-    hdr['Referer'] = url
-
-    for videoid, vidcount in match:
-        data = {'action': 'doo_player_ajax', 'post': '{}'.format(videoid), 'nume': '{}'.format(vidcount), 'type': 'movie'}
-        ajaxurl = 'https://javgg.net/wp-admin/admin-ajax.php'
-        ajaxhtml = utils.getHtml(ajaxurl, url, headers=hdr, data=data)
-        ajaxjson = json.loads(ajaxhtml)
-        aurl = ajaxjson['embed_url']
-
-        r = requests.head(aurl, headers=hdr)
-        vurl = r.headers.get('refresh').split('url=')[-1]
-        sources.append('"{0}"'.format(vurl))
-
-    vp.progress.update(50, "[CR]Loading video page[CR]")
-    vp.play_from_html(', '.join(sources))
+    videopage = utils.getHtml(url, site.url)
+    eurls = re.compile(r'''<iframe[^<]+?src='([^']+)''').findall(videopage)
+    sources = {}
+    for eurl in eurls:
+        if vp.resolveurl.HostedMediaFile(eurl):
+            sources.update({eurl.split('/')[2]: eurl})
+    videourl = utils.selector('Select Hoster', sources)
+    vp.play_from_link_to_resolve(videourl)
 
 
 @site.register()

@@ -4,5 +4,6 @@
 - hentaidude: Add genres for navigating
 - erome: Add duration to videos listing
 - base: Add stream headers handling for Kodi Piers
-- aagmaal - domain change
-- aagmaalpro - fix images, categories
+- aagmaal: domain change
+- aagmaalpro: fix images, categories
+- javgg: fix playback

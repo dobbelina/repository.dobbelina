@@ -26,14 +26,14 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('javmoe', '[COLOR hotpink]JAV Moe[/COLOR]', 'https://javmama.me/', 'javmoe.png', 'javmoe')
 
-enames = {'FS': 'FileStar',
-          'sb': 'StreamSB',
-          'fembed': 'FEmbed',
-          'r': 'RapidVideo',
-          'ST': 'Motonews',
-          'sw': 'StreamWish',
-          'tb': 'TurboVid',
-          'vg': 'VidGuard'}
+enames = {
+    'FS': 'FileStar',
+    'r': 'RapidVideo',
+    'ST': 'Motonews',
+    'sw': 'StreamWish',
+    'tb': 'TurboVid',
+    'vg': 'VidGuard'
+}
 
 
 @site.register(default_mode=True)
