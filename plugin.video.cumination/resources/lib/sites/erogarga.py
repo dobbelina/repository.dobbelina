@@ -155,9 +155,9 @@ def Play(url, name, download=None):
         vp = utils.VideoPlayer(name, download=download)
         match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
         if match:
-            html = utils.getHtml(match[0], url)
-            match = re.compile(r'<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
-            vp.play_from_direct_link(match[0] + '|referer=' + url)
+            videohtml = utils.getHtml(match[0], url)
+        match = re.compile(r'<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+        vp.play_from_direct_link(match[0] + '|referer=' + url)
         return
 
     vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"', direct_regex='file:"([^"]+)"')
