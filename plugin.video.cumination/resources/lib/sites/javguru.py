@@ -40,7 +40,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r"""class=['"]inside-article['"].+?href=['"]([^"']+)['"]>\s*<img src=['"]([^"']+)['"].+?<a title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r"""class=['"]inside-article['"].+?href=['"]([^"']+)['"]>\s*<img\s+src=['"]([^"']+)['"].+?title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
 
@@ -105,7 +105,7 @@ def Actress(url):
     match = re.compile(r'current".+?href="([^"]+)">(\d+)<', re.DOTALL | re.IGNORECASE).findall(actresshtml)
     if match:
         npage, np = match[0]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np), npage, 'Actress', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np), site.url + npage, 'Actress', site.img_next)
     utils.eod()
 
 
