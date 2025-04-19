@@ -60,7 +60,7 @@ if addon.getSetting('custom_sites') == 'true':
 def INDEX():
     url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('sites')), '', 'site_list',
                            basics.cum_image('cum-sites.png'), '', list_avail=False)
-    url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('fav_videos')), '', 'favorites.List',
+    url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('fav_videos')), '1', 'favorites.List',
                            basics.cum_image('cum-fav.png'), '', list_avail=False)
     download_path = addon.getSetting('download_path')
     if download_path != '' and xbmcvfs.exists(download_path):

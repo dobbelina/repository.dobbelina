@@ -81,13 +81,18 @@ def Refresh_images():
 
 
 @url_dispatcher.register()
-def List():
-    basics.addDir('[COLOR red]Refresh images[/COLOR]', '', 'favorites.Refresh_images', '', Folder=False)
+def List(url=1):
+    page = int(url)
+    items_per_page = 50
+    offset = (page - 1) * items_per_page
+
     favorder = utils.addon.getSetting("favorder") or 'date added'
-    basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
-    if utils.addon.getSetting("chaturbate") == "true":
-        for f in AdultSite.clean_functions:
-            f(False)
+    if page == 1:
+        basics.addDir('[COLOR red]Refresh images[/COLOR]', '', 'favorites.Refresh_images', '', Folder=False)
+        basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
+        if utils.addon.getSetting("chaturbate") == "true":
+            for f in AdultSite.clean_functions:
+                f(False)
 
     adultsites = []
     for adultsite in AdultSite.get_sites():
@@ -111,43 +116,34 @@ ELSE mode END domain FROM favorites ORDER BY rowid;"""
             c.execute(sql)
 
             folders = []
-
             for (domain, mode, count) in c.fetchall():
                 site = mode.split('.')[0]
                 img = ''
-
-                removed = True
-                for s in adultsites:
-                    if domain and domain in s.url:
-                        name = s.title
-                        img = s.image
-                        removed = False
-                        break
-
-                if removed:
-                    for s in adultsites:
-                        if s.name == site:
-                            name = s.title
-                            img = s.image
-                            removed = False
-                            break
-
-                if removed:
-                    name = site + ' [COLOR blue](removed)[/COLOR]'
-
+                name = get_site_name(site, domain, adultsites)
                 name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
                 folders.append('{}@{}@{}@{}'.format(name, mode, domain, img))
 
             folders.sort(key=lambda x: re.sub(r'\[COLOR[^\]]+\]\s*', '', x).lower())
-            for folder in folders:
+            for folder in folders[offset:offset + items_per_page]:
                 (name, mode, domain, img) = folder.split('@')
                 basics.addDir(name, mode + '@' + domain, 'favorites.FavListSite', img)
+
+            pages = (len(folders) - 1) // items_per_page + 1
+            if len(folders) > offset + items_per_page:
+                basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), str(page + 1), 'favorites.List', '')
+
         else:
             if basics.addon.getSetting('custom_sites') == 'true':
                 sql = """SELECT domain, name, url, mode, image, duration, quality
-                        FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1) ORDER BY {}""".format(orders[favorder])
+                        FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN
+                        (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1)
+                        ORDER BY {} LIMIT {} OFFSET {}""".format(orders[favorder], items_per_page, offset)
+                count_sql = """SELECT COUNT(*) FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN
+                           (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1)"""
             else:
-                sql = "SELECT domain, name, url, mode, image, duration, quality FROM __favorites f WHERE mode NOT LIKE 'custom_%' ORDER BY {}".format(orders[favorder])
+                sql = """SELECT domain, name, url, mode, image, duration, quality FROM __favorites f
+                        WHERE mode NOT LIKE 'custom_%' ORDER BY {} LIMIT {} OFFSET {}""".format(orders[favorder], items_per_page, offset)
+                count_sql = "SELECT COUNT(*) FROM __favorites f WHERE mode NOT LIKE 'custom_%'"
 
             c.execute(sql)
             for (domain, name, url, mode, img, duration, quality) in c.fetchall():
@@ -156,26 +152,17 @@ ELSE mode END domain FROM favorites ORDER BY rowid;"""
                 site = mode.split('.')[0]
 
                 if 'site' in favorder:
-                    removed = True
-
-                    for s in adultsites:
-                        if domain and domain in s.url:
-                            sitename = s.title
-                            removed = False
-                            break
-
-                    if removed:
-                        for s in adultsites:
-                            if s.name == site:
-                                sitename = s.title
-                                removed = False
-                                break
-
-                    if removed:
-                        sitename = site + ' [COLOR blue](removed)[/COLOR]'
+                    sitename = get_site_name(site, domain, adultsites)
                     name = '[COLOR hotpink][{}][/COLOR] {}'.format(sitename, name)
 
                 basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
+
+            c.execute(count_sql)
+            total_items = c.fetchone()[0]
+            pages = (total_items - 1) // items_per_page + 1
+            if total_items > offset + items_per_page:
+                basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), str(page + 1), 'favorites.List', '')
+
         conn.close()
         utils.eod(utils.addon_handle)
     except:
@@ -184,8 +171,23 @@ ELSE mode END domain FROM favorites ORDER BY rowid;"""
         return
 
 
+def get_site_name(site, domain, adultsites):
+    """Helper function to get site name"""
+    for s in adultsites:
+        if domain and domain in s.url:
+            return s.title
+    for s in adultsites:
+        if s.name == site:
+            return s.title
+    return site + ' [COLOR blue](removed)[/COLOR]'
+
+
 @url_dispatcher.register()
-def FavListSite(url):
+def FavListSite(url, page=1):
+    page = int(page) if page else 1
+    items_per_page = 50
+    offset = (page - 1) * items_per_page
+
     favorder = utils.addon.getSetting("favorder") or 'date added'
     if utils.addon.getSetting("chaturbate") == "true":
         for f in AdultSite.clean_functions:
@@ -195,11 +197,21 @@ def FavListSite(url):
     c = conn.cursor()
     try:
         (mode, domain) = url.split('@')
-        c.execute("SELECT name, url, mode, image, duration, quality FROM __favorites WHERE mode = '{}' and domain ='{}' ORDER BY {}".format(mode, domain, orders[favorder]))
+
+        c.execute("SELECT COUNT(*) FROM __favorites WHERE mode = ? and domain = ?", (mode, domain))
+        total_items = c.fetchone()[0]
+        pages = (total_items - 1) // items_per_page + 1
+
+        c.execute("SELECT name, url, mode, image, duration, quality FROM __favorites WHERE mode = ? and domain = ? ORDER BY {} LIMIT ? OFFSET ?".format(orders[favorder]), (mode, domain, items_per_page, offset))
+
         for (name, url, mode, img, duration, quality) in c.fetchall():
             duration = '' if duration is None else duration
             quality = '' if quality is None else quality
             basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
+
+        if total_items > offset + items_per_page:
+            basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), '{}@{}'.format(mode, domain), 'favorites.FavListSite', '', page=page + 1)
+
         conn.close()
         utils.eod(utils.addon_handle)
     except:
