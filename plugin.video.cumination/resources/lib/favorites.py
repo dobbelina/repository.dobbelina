@@ -85,7 +85,7 @@ def List(url=1):
     page = int(url)
     items_per_page = utils.addon.getSetting("item.limit")
     items_per_page = 1000000 if items_per_page == '0' else int(items_per_page)
-        offset = (page - 1) * items_per_page
+    offset = (page - 1) * items_per_page
 
     favorder = utils.addon.getSetting("favorder") or 'date added'
     if page == 1:
