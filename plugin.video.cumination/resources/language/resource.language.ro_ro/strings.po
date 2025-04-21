@@ -651,3 +651,7 @@ msgstr "Cookie de autentificare Chaturbate"
 msgctxt "#33026"
 msgid "sessionid"
 msgstr "sessionid"
+
+msgctxt "#33027"
+msgid "Page Item Limit (0=no pagination)"
+msgstr "Limită elemente pe pagină (0=fără paginare)"

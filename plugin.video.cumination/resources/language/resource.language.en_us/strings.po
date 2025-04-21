@@ -683,3 +683,7 @@ msgstr ""
 msgctxt "#33026"
 msgid "sessionid"
 msgstr ""
+
+msgctxt "#33027"
+msgid "Page Item Limit (0=no pagination)"
+msgstr ""

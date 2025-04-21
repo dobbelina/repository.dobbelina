@@ -1,4 +1,2 @@
-[B]Version 1.1.136[/B]
-- javguru: fix listing, actress - nextpage
-- xvideospanish: removed
-- favorites: added Next Page
+[B]Version 1.1.137[/B]
+- settings: set Page Item Limit for favorites

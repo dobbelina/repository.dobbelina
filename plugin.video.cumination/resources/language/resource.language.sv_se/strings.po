@@ -683,3 +683,7 @@ msgstr "Chaturbate-autentisering Cookie"
 msgctxt "#33026"
 msgid "sessionid"
 msgstr "sessionid"
+
+msgctxt "#33027"
+msgid "Page Item Limit (0=no pagination)"
+msgstr "Begränsa sidelement (0=ingen paginering)"

@@ -83,8 +83,9 @@ def Refresh_images():
 @url_dispatcher.register()
 def List(url=1):
     page = int(url)
-    items_per_page = 50
-    offset = (page - 1) * items_per_page
+    items_per_page = utils.addon.getSetting("item.limit")
+    items_per_page = 1000000 if items_per_page == '0' else int(items_per_page)
+        offset = (page - 1) * items_per_page
 
     favorder = utils.addon.getSetting("favorder") or 'date added'
     if page == 1:
@@ -185,7 +186,8 @@ def get_site_name(site, domain, adultsites):
 @url_dispatcher.register()
 def FavListSite(url, page=1):
     page = int(page) if page else 1
-    items_per_page = 50
+    items_per_page = utils.addon.getSetting("item.limit")
+    items_per_page = 1000000 if items_per_page == '0' else int(items_per_page)
     offset = (page - 1) * items_per_page
 
     favorder = utils.addon.getSetting("favorder") or 'date added'

@@ -38,6 +38,7 @@
     <category label="30059">
         <setting id="compressbackup" label="30200" type="bool" default="true" />
         <setting type="lsep" label="30060" />
+        <setting id="item.limit" label="33027" type="slider" default="0" range="0,5,200" option="int" />
         <setting id="custom_favorites" label="30214" type="bool" default="false" />
         <setting id="favorites_path" enable="eq(-1,true)" type="folder" source="" label="30215"  option="writeable" default=""/>
         <setting id="backup_favorites" type="action" label="30201" enable="true" option="close" action="RunPlugin(plugin://plugin.video.cumination/?mode=favorites.backup_fav)" />
