@@ -17,7 +17,6 @@
 '''
 
 import re
-from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -30,23 +29,23 @@ def Main():
     site.add_dir('[COLOR hotpink]Trending[/COLOR]', site.url + 'trending/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', site.url + 'featured/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'genre-list/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'new-post/page/1/')
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile('<article id=.+?img src="([^"]+)".+?alt="([^"]+)".+?href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, name, videopage in match:
-        name = utils.cleantext(name)
 
-        contextmenu = []
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('javgg.Lookupinfo')
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+    delimiter = '<article'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'alt="([^"]+)"'
+    re_img = 'img src="([^"]+)"'
 
-        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
+    contextmenu = []
+    contexturl = (utils.addon_sys + "?mode=javgg.Lookupinfo&url=")
+    contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+    utils.videos_list(site, 'javgg.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, contextm=contextmenu)
 
     np = re.compile(r'''class="pagination".+?href=["']([^"']+)["']><i\s*id=['"]next''').search(listhtml)
     if np:
@@ -54,6 +53,14 @@ def List(url):
         pgtxt = p.group(1) if p else ''
         site.add_dir('Next Page...  ({0})'.format(pgtxt), np.group(1), 'List', site.img_next)
     utils.eod()
+
+
+@site.register()
+def Search(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search')
+    else:
+        List(url + keyword.replace(' ', '+'))
 
 
 @site.register()
