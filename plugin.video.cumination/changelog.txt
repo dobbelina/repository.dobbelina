@@ -1,2 +1,4 @@
 [B]Version 1.1.139[/B]
 - javgg - search added
+- pornhub - fix search
+

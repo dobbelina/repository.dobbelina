@@ -59,17 +59,19 @@ def List(url):
         utils.eod()
         return
 
-    match = re.compile(r'(?:<h1>|<h1  class="searchPageTitle">)([^<]+)</h1>', re.DOTALL).findall(listhtml)
+    match = re.compile(r'(?:<h1>|<h1\s+class="searchPageTitle">)([^<]+)<', re.DOTALL).findall(listhtml)
     if match:
         title = utils.cleantext(match[0].strip())
         site.add_dir('[COLOR orange]' + title + ' [COLOR hotpink]*** Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
 
     main_block = re.compile(r'videos\s*search-video-thumbs.*?">(.*?)<div\s*class="reset">', re.DOTALL).findall(listhtml)[0]
-    match = re.compile(r'class="pcVideoListItem.+?data-mediumthumb\s*=\s*"([^"]+).+?tion">([^<]+)(.*?)</div.+?href="([^"]+).+?>\s*(.+?)\s*<', re.DOTALL).findall(main_block)
-    for img, duration, hd, videopage, name in match:
-        hd = 'HD' if 'HD' in hd else ''
-        name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, contextm=cm_filter, duration=duration, quality=hd)
+
+    delimiter = 'class="pcVideoListItem'
+    re_videopage = '<a href="([^"]+)"'
+    re_name = ' title="([^"]+)"'
+    re_img = 'data-mediumthumb="([^"]+)"'
+    re_duration = '(?:data-title="Video Duration">|class="duration">)([^<]+)<'
+    utils.videos_list(site, 'pornhub.Playvid', main_block, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm_filter)
 
     nextp = re.compile(r'<li\s*class="page_next">\s*<a\s*href="([^"]+)"', re.DOTALL).search(listhtml)
     if nextp:
