@@ -51,8 +51,8 @@ def List(url):
     skip = '=modelfeed'
     utils.videos_list(site, 'yespornplease.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm='yespornplease.Related', skip=skip)
 
-    re_npurl = r'href="([^"]+)"\s*class=\"prevnext\">Next'
-    re_npnr = r'href="page(\d+)\.html"\s*class=\"prevnext\">Next'
+    re_npurl = r'''href=['"]([^'"]+)['"]\s*class="prevnext">Next'''
+    re_npnr = r'''href=['"]page(\d+)\.html['"]\s*class="prevnext">Next'''
     utils.next_page(site, 'yespornplease.List', html, re_npurl, re_npnr, baseurl=url.split('page')[0], contextm='yespornplease.GotoPage')
     utils.eod()
 
