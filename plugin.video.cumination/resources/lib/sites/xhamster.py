@@ -165,7 +165,7 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="item-.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
+    match = re.compile(r'thumbItem-f658a" href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
     for url, thumb, name in match:
         site.add_dir(utils.cleantext(name), url, 'List', thumb)
     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)

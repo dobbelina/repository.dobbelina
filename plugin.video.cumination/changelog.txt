@@ -3,3 +3,4 @@
 - pornhub - fix search
 - yespornplease - fix pagination
 - xnxx - new site
+- xhamster - fix categories
