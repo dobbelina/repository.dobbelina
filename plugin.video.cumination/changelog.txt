@@ -1,6 +1,3 @@
-[B]Version 1.1.139[/B]
-- javgg - search added
-- pornhub - fix search
-- yespornplease - fix pagination
-- xnxx - new site
+[B]Version 1.1.140[/B]
+- xnxx - fixes
 - xhamster - fix categories
