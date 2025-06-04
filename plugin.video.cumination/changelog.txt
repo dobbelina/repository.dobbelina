@@ -1,3 +1,4 @@
-[B]Version 1.1.140[/B]
-- xnxx - fixes
-- xhamster - fix categories
+[B]Version 1.1.141[/B]
+- tnaflix - fix thumbnails, playback
+- peekvids - fix playback
+- playvids - fix playback

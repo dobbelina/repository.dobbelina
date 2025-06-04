@@ -151,10 +151,10 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videohtml = utils.getHtml(url, site.url)
-    sources = re.compile(r'data-hls-src(\d+)="([^"]+)').findall(videohtml)
+    videopage = utils.getHtml(url, site.url)
+    sources = re.compile(r'<source src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
     if sources:
-        sources = {key: value for key, value in sources}
+        # sources = {key: value for key, value in sources}
         vidurl = utils.prefquality(sources, reverse=True)
         vp.play_from_direct_link(vidurl.replace('&amp;', '&'))
     else:

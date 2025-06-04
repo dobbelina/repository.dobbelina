@@ -91,8 +91,8 @@ def Search(url, keyword=None):
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     videopage = utils.getHtml(url, site.url)
-    sources = re.compile(r'data-hls-src(\d+)="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
+    sources = re.compile(r'<source src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
     if sources:
-        sources = {key: value for key, value in sources}
+        # sources = {key: value for key, value in sources}
         videourl = utils.prefquality(sources, reverse=True)
         vp.play_from_direct_link(videourl.replace('&amp;', '&'))

@@ -44,10 +44,11 @@ def List(url):
         utils.eod()
         return
 
+    html = html.replace('quality">4p<', 'quality">4K<')
     delimiter = 'data-vid="'
     re_videopage = 'href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
-    re_img = 'src="([^"]+)"'
+    re_img = 'data-src="([^"]+)"'
     re_quality = 'quality">([^<]+)<'
     re_duration = 'video-duration">([^<]+)<'
     utils.videos_list(site, 'tnaflix.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm='tnaflix.Related')
@@ -119,16 +120,16 @@ def Playvid(url, name, download=None):
     match = re.compile(r'"embedUrl":"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         embedurl = match[0]
+        embedurl = embedurl.replace('/video/', '/ajax/video-player/')
         embedhtml = utils.getHtml(embedurl, url)
-        match = re.compile(r'config\s*=\s*"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(embedhtml)
+        embedhtml = embedhtml.replace('\\/', '/').replace('\\"', '"')
+        match = re.compile(r'source src="([^"]+)" type="video/mp4" size="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(embedhtml)
         if match:
-            videourl = 'https:' + match[0] if match[0].startswith('//') else site.url + match[0] if match[0].startswith('/') else match[0]
-            html = utils.getHtml(videourl, embedurl, ignoreCertificateErrors=True)
-            match = re.compile(r'<res>([^<]+)</res>\s*<videoLink><!\[CDATA\[([^]]+)\]', re.IGNORECASE | re.DOTALL).findall(html)
-            if match:
-                videoArray = {x[0].split('_')[0]: x[1] for x in match}
-                videourl = utils.prefquality(videoArray, sort_by=lambda x: int(x[:-1]), reverse=True)
+            sources = {x[1]: x[0] for x in match}
+            if '4' in sources:
+                sources['2160'] = sources.pop('4')
+            videourl = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
 
-                if videourl:
-                    videourl = 'https:' + videourl if videourl.startswith('//') else videourl
-                    vp.play_from_direct_link(videourl)
+            if videourl:
+                videourl = videourl + '|verifypeer=false'
+                vp.play_from_direct_link(videourl)
