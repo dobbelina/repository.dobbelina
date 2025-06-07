@@ -2,3 +2,5 @@
 - tnaflix - fix thumbnails, playback
 - peekvids - fix playback
 - playvids - fix playback
+- erogarga - fix playback
+- watcherotic - fix playback
