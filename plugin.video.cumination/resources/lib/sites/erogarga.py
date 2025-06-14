@@ -82,7 +82,8 @@ def List(url):
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=erogarga.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
-    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip)
+    thumbnails = True if 'watcherotic' in siteurl else False
+    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip, thumbnails=thumbnails)
 
     if 'watcherotic' in siteurl:
         match = re.search(r'''class="active[^>]+>([^<]+)<.+?class='next' href=\S+\sdata-action="ajax" data-container-id="[^"]+"\s+data-block-id="([^"]+)"\s+data-parameters="([^"]+)">''', listhtml, re.DOTALL | re.IGNORECASE)
