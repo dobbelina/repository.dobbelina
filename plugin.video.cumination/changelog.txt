@@ -1,2 +1,3 @@
 [B]Version 1.1.142[/B]
 - watcherotic - fix thumbnails
+- longvideos - new site
