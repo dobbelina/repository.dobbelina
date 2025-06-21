@@ -101,6 +101,18 @@ def XTList(url, page=1):
 @site.register()
 def XTVideo(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
+    videohtml = utils.getHtml(url, site.url)
+    match = re.search(r'player"><iframe.+?src="([^"]+)', videohtml, re.DOTALL | re.IGNORECASE)
+    if match:
+        embedurl = match.group(1)
+        if 'streamup' in embedurl or 'strmup' in embedurl:
+            embedhtml = utils.getHtml(embedurl, site.url)
+            match = re.search(r'streaming_url:"([^"]+)', embedhtml, re.DOTALL | re.IGNORECASE)
+            if match:
+                referer = embedurl.split('/')[2]
+                videolink = match.group(1) + '|referer=https://{0}/&origin=https://{0}'.format(referer)
+                vp.play_from_direct_link(videolink)
+                return
     vp.play_from_site_link(url, url)
 
 
