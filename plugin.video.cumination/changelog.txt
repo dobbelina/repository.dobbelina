@@ -1,6 +1,2 @@
-[B]Version 1.1.142[/B]
-- watcherotic - fix thumbnails
-- longvideos - new site
-- ividz - removed
-- kissjav - fix playback
-- xtheatre - fix playback
+[B]Version 1.1.143[/B]
+- foxnxx - fix playback

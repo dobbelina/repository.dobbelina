@@ -97,10 +97,8 @@ def Playvid(url, name, download=None):
     videohtml = utils.getHtml(url)
     match = re.compile(r'class="embed-responsive-item"\s*src="([^"]+)"').findall(videohtml)
     if match:
-        embedurl = match[0]
-        id = embedurl.split('.')[0].split('/')[-1]
-        videourl = "https://mydaddy.cc/video/" + id + "/&alt"
-        vp.play_from_link_to_resolve(videourl)
+        embedurl = 'https:' + match[0] if match[0].startswith('//') else match[0]
+        vp.play_from_link_to_resolve(embedurl)
 
 
 @site.register()
