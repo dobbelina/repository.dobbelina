@@ -1,2 +1,3 @@
-[B]Version 1.1.143[/B]
+[B]Version 1.1.144[/B]
 - foxnxx - fix playback
+- hqporner - fix playback

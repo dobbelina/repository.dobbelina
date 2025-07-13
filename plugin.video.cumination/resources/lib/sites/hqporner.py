@@ -89,13 +89,16 @@ def HQSEARCH(url, keyword=None):
 
 @site.register()
 def HQPLAY(url, name, download=None):
+    vp = utils.VideoPlayer(name, download)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+
     videopage = utils.getHtml(url, url)
     iframeurl = re.compile(r"nativeplayer\.php\?i=([^']+)", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
+
     if iframeurl.startswith('//'):
         iframeurl = 'https:' + iframeurl
+
     if 'bemywife' in iframeurl:
-        videourl = getBMW(iframeurl)
-    elif 'mydaddy' in iframeurl:
         videourl = getBMW(iframeurl)
     elif '5.79' in iframeurl:
         videourl = getIP(iframeurl)
@@ -104,10 +107,10 @@ def HQPLAY(url, name, download=None):
     elif 'hqwo' in iframeurl:
         videourl = getHQWO(iframeurl)
     else:
-        utils.notify('Oh oh', 'Couldn\'t find a supported videohost')
+        videourl = iframeurl
+        vp.play_from_link_to_resolve(videourl)
         return
-    if videourl:
-        utils.playvid(videourl, name, download)
+    vp.play_from_direct_link(videourl)
 
 
 def getBMW(url):

@@ -95,10 +95,23 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url)
-    match = re.compile(r'class="embed-responsive-item"\s*src="([^"]+)"').findall(videohtml)
+    match = re.compile(r'class="embed-responsive-item"\s*src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
     if match:
-        embedurl = 'https:' + match[0] if match[0].startswith('//') else match[0]
-        vp.play_from_link_to_resolve(embedurl)
+        embedurl = match[0]
+        embedurl = 'https:' + embedurl if embedurl.startswith('//') else embedurl
+        embedhtml = utils.getHtml(embedurl, url)
+
+        match = re.compile(r'<a id="overlay-link" href="([^"#]+)', re.DOTALL | re.IGNORECASE).findall(embedhtml)
+        if match:
+            hqurl = match[0]
+            hqurl = 'https:' + hqurl if hqurl.startswith('//') else hqurl
+            utils.kodilog("HQ URL: {0}".format(hqurl))
+            videohtml = utils.getHtml(hqurl, embedurl)
+            match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+            if match:
+                videourl = match[0]
+                videourl = 'https:' + videourl if videourl.startswith('//') else videourl
+                vp.play_from_link_to_resolve(videourl)
 
 
 @site.register()
