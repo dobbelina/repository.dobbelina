@@ -1,6 +1,6 @@
 """
     Cumination
-    Copyright (C) 20222 Team Cumination
+    Copyright (C) 2022 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ def List(url):
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    page = re.compile(r'<a\s*href="([^"]+/(\d+)/)">Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
+    page = re.compile(r'<a\s*href="([^"]+/page/(\d+)/[^"]*)"\s*>Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
     if page:
         site.add_dir('[COLOR hotpink]Next Page[/COLOR] ({0})'.format(page.group(2)), page.group(1), 'List', site.img_next)
 
