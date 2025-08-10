@@ -1,3 +1,3 @@
-[B]Version 1.1.145[/B]
-- terebon - new sitename
-- hentaihaven - fix pagination
+[B]Version 1.1.146[/B]
+- foxnxx - fix playback
+

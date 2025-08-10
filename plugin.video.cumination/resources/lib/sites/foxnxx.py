@@ -100,18 +100,36 @@ def Playvid(url, name, download=None):
         embedurl = match[0]
         embedurl = 'https:' + embedurl if embedurl.startswith('//') else embedurl
         embedhtml = utils.getHtml(embedurl, url)
-
         match = re.compile(r'<a id="overlay-link" href="([^"#]+)', re.DOTALL | re.IGNORECASE).findall(embedhtml)
         if match:
             hqurl = match[0]
             hqurl = 'https:' + hqurl if hqurl.startswith('//') else hqurl
-            utils.kodilog("HQ URL: {0}".format(hqurl))
             videohtml = utils.getHtml(hqurl, embedurl)
             match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
             if match:
                 videourl = match[0]
                 videourl = 'https:' + videourl if videourl.startswith('//') else videourl
                 vp.play_from_link_to_resolve(videourl)
+        else:
+            params = embedurl.split('/')
+            quality = params[-1]
+
+            qualities = []
+            if 1 & int(quality):
+                qualities.append('360')
+            if 2 & int(quality):
+                qualities.append('480')
+            if 4 & int(quality):
+                qualities.append('720')
+            if 8 & int(quality):
+                qualities.append('1080')
+
+            id = params[-2][::-1]
+            base = params[-4]
+            sources = {q: 'https://{0}/vid/{1}/{2}'.format(base, id, q) for q in qualities}
+            videolink = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
+            if videolink:
+                vp.play_from_direct_link(videolink + '|Referer={0}'.format(embedurl))
 
 
 @site.register()
