@@ -65,7 +65,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
-    videopage = utils.getHtml(url, site.url)
+    videopage = utils.getHtml(url, site.url, ignoreCertificateErrors=True)
 
     sources = {}
     srcs = re.compile(r'source\s*src="([^"]+)"\s*title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
