@@ -40,7 +40,7 @@ def List(url):
         utils.eod()
         return
     html = html.split('class="site-footer"')
-    match = re.compile(r'<article id="post.+?a href="([^"]+)"\s*title="([^"]+)".+?(?:poster|data-src|img src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html[0])
+    match = re.compile(r'<article data-video-id=.+?a href="([^"]+)"\s*title="([^"]+)".+?(?:poster|data-src|img src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html[0])
     for videopage, name, img in match:
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
