@@ -100,7 +100,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, direct_regex=r'(?:src:|source src=)\s*"([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
-    videohtml = utils.getHtml(url, site.url)
+    videohtml = utils.getHtml(url, site.url, ignoreCertificateErrors=True)
     match = re.compile(r'iframe scrolling="no" src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     embedlink = None
     if match:
@@ -111,5 +111,5 @@ def Playvid(url, name, download=None):
             embedlink = match[0]
 
     if embedlink:
-        embedhtml = utils.getHtml(embedlink, url)
+        embedhtml = utils.getHtml(embedlink, url, ignoreCertificateErrors=True)
         vp.play_from_html(embedhtml)
