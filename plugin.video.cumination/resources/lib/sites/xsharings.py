@@ -1,6 +1,6 @@
 '''
     Cumination
-    Copyright (C) 2023 Team Cumination
+    Copyright (C) 2025 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,11 +19,12 @@
 import re
 import xbmc
 import xbmcgui
+import json
 from resources.lib import utils
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('premiumporn', '[COLOR hotpink]PremiumPorn[/COLOR]', 'https://premiumporn.org/', 'premiumporn.png', 'premiumporn')
+site = AdultSite('xsharings', '[COLOR hotpink]XSharings[/COLOR]', 'https://xsharings.com/', 'https://xsharings.com/wp-content/uploads/2025/05/Sharinglg5.png', 'xsharings')
 
 addon = utils.addon
 
@@ -31,7 +32,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Actors[/COLOR]', site.url + 'actors/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'page/1?filter=latest')
 
@@ -39,40 +40,40 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
+    listhtml = listhtml.split("Videos being watched")[0]
     if 'It looks like nothing was found for this search' in listhtml:
         utils.notify('No results found', 'Try a different search term')
         return
 
     delimiter = 'data-post-id="'
     re_videopage = 'href="([^"]+)"'
-    re_name = '"title">([^<]+)<'
+    re_name = 'title="([^"]+)"'
     re_img = 'data-src="([^"]+)"'
-    re_duration = 'duration">([^<]+)<'
+    re_duration = 'clock-o"></i>([^<]+)<'
 
     cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=premiumporn.Lookupinfo&url=")
+    cm_lookupinfo = (utils.addon_sys + "?mode=xsharings.Lookupinfo&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
-    cm_related = (utils.addon_sys + "?mode=premiumporn.Related&url=")
+    cm_related = (utils.addon_sys + "?mode=xsharings.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'premiumporn.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
+    utils.videos_list(site, 'xsharings.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
-    re_npurl = r'class="next page-link" href="([^"]+)"'
-    re_npnr = r'class="next page-link".+?/page/(\d+)/'
-    re_lpnr = r'>(\d+)</a>\s*</li>\s*<li class="page-item ">\s*<a class="next'
-
-    utils.next_page(site, 'premiumporn.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='premiumporn.GotoPage')
+    re_npurl = r'aria-current="page">\d+</a></li><li><a href="([^"]+)"'
+    re_npnr = r'aria-current="page">\d+.+?>(\d+)</a>'
+    re_lpnr = r"/page/(\d+)/[^']*'>Last<"
+    utils.next_page(site, 'xsharings.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xsharings.GotoPage')
     utils.eod()
 
 
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="thumb" href="([^"]+)" title="([^"]+)">.+?data-src="([^"]+)".+?class="video-datas">\s*(\d+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for siteurl, name, img, videos in match:
-        name = utils.cleantext(name) + '[COLOR hotpink] (' + videos + ' videos)[/COLOR]'
+    match = re.compile(r'article id="post.+?href="([^"]+)" title="([^"]+)">.+?(?:img src|data-src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for siteurl, name, img in match:
+        name = utils.cleantext(name)
         site.add_dir(name, siteurl, 'List', img)
-    match = re.search(r'class="next page-link" href="([^"]+)"', cathtml, re.IGNORECASE | re.DOTALL)
+    match = re.search(r'aria-current="page">\d+</a></li><li><a href="([^"]+)"', cathtml, re.IGNORECASE | re.DOTALL)
     if match:
         site.add_dir('Next Page', match.group(1), 'Categories', site.img_next)
     utils.eod()
@@ -106,23 +107,34 @@ def Play(url, name, download=None):
     html = utils.getHtml(url)
     iframematch = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
     if iframematch:
-        iframe = iframematch[0]
-        vp.play_from_link_to_resolve(iframe)
+        sources = {i.split('/')[2]: i for i in iframematch}
+        iframe = utils.selector('Select video host:', sources)
+        if iframe:
+            if vp.resolveurl.HostedMediaFile(iframe).valid_url():
+                vp.play_from_link_to_resolve(iframe)
+            else:
+                iframehtml = utils.getHtml(iframe, url)
+                packed = utils.get_packed_data(iframehtml)
+                packed = '{' + packed.split('}')[0].split('{')[-1] + '}'
+                packed = json.loads(packed)
+                video_url = packed.get('hls2')
+                if video_url:
+                    vp.play_from_direct_link(video_url)
     else:
         utils.notify('Oh oh', 'No video found')
 
 
 @site.register()
 def Related(url):
-    contexturl = (utils.addon_sys + "?mode=" + str('premiumporn.List') + "&url=" + urllib_parse.quote_plus(url))
+    contexturl = (utils.addon_sys + "?mode=xsharings.List&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Actors", r'<a href="(https://premiumporn.org/actor/[^"]+)" title="([^"]+)">', ''),
-        ("Studios", r'<a href="(https://premiumporn.org/[^/]+/)" title="([^"]+)">', ''),
+        ("Actors", r'<a href="(https://xsharings.com/actor/[^"]+)" title="([^"]+)">', ''),
+        ("Categories", r'<a href="(https://xsharings.com/category/[^/]+/)" class="label" title="([^"]+)">', ''),
     ]
-    lookupinfo = utils.LookupInfo('', url, 'premiumporn.List', lookup_list)
+    lookupinfo = utils.LookupInfo('', url, 'xsharings.List', lookup_list)
     lookupinfo.getinfo()
