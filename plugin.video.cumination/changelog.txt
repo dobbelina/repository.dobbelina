@@ -1,6 +1,2 @@
-[B]Version 1.1.146[/B]
-- foxnxx - fix playback
-- pornxp - fix playback
-- eroticage - fix listing
-- trendyporn - fix playback
-
+[B]Version 1.1.147[/B]
+- premiumporn - new site
