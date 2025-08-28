@@ -102,7 +102,7 @@ def Playvid(url, name, download=None):
 @site.register()
 def EpList(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'data-chapter="\d+">\s+<a href="([^"]+)">\s+<img src="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'data-chapter="\d+">\s+<a href="([^"]+)".+?<img src="([^"]+)".+?<div>(Ep[^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         for video, img, ep in match:
             site.add_download_link(ep.strip(), video, 'Playvid', img)
