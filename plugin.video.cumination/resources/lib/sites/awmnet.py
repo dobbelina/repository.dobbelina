@@ -108,7 +108,8 @@ def List(url):
     for videourl, name, thumb, info, provider in match:
         name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), utils.cleantext(name))
         hd = 'HD' if ' HD' in info else ''
-        duration = re.findall(r'([\d:]+)', info)[0]
+        duration = re.findall(r'([\d:]+)', info)
+        duration = duration[0] if duration else ""
         site.add_download_link(name, siteurl[:-1] + videourl.replace('&amp;', '&'), 'Playvid', thumb, name, duration=duration, quality=hd)
     p = re.search(r'href="([^"]+)"[^>]+?label="Next\s*Page"', listhtml, re.DOTALL | re.IGNORECASE)
     if p:
