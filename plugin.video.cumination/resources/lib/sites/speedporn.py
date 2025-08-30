@@ -43,10 +43,11 @@ def List(url):
         listhtml = utils.getHtml(url)
     except:
         return None
+    # utils.kodilog(listhtml)
     if 'span class="duration">' in listhtml:
-        match = re.compile(r'class="thumb" href="([^"]+)".+?-src="([^"]+)".+?span class="duration">([^<]+).+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        match = re.compile(r'class="thumb" href="([^"]+)".+?src="([^"]+)".+?span class="duration">([^<]+).+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     else:
-        match = re.compile(r'class="thumb" href="([^"]+)".+?-src="([^"]+)".+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        match = re.compile(r'class="thumb" href="([^"]+)".+?src="([^"]+)".+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
     for item in match:
         if len(item) > 3:
