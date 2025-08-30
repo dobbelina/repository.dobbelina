@@ -25,9 +25,9 @@ site = AdultSite('hentaihavenc', '[COLOR hotpink]Hentaihaven[/COLOR]', 'https://
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'genres/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/', 'Series', site.img_cat, section='Home')
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'genres/', 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/', 'Series', site.img_cat, section='Home')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?q=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
 
@@ -35,14 +35,14 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)">\s*<figure.+?img.+?src="([^"]+).+?<h2[^>]+>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="a_item" href="([^"]+)".+?data-src="([^"]+).+?video_title">([^<]+).+?', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, img, name in match:
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, name)
+        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', site.url[:-1] + img, name)
 
-    page = re.compile(r'<a\s*href="([^"]+/page/(\d+)/[^"]*)"\s*>Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
+    page = re.compile(r"class='page-link' href='([^']+page=(\d+))'>Next<", re.DOTALL | re.IGNORECASE).search(listhtml)
     if page:
-        site.add_dir('[COLOR hotpink]Next Page[/COLOR] ({0})'.format(page.group(2)), page.group(1), 'List', site.img_next)
+        site.add_dir('[COLOR hotpink]Next Page[/COLOR] ({0})'.format(page.group(2)), site.url[:-1] + page.group(1), 'List', site.img_next)
 
     utils.eod()
 
@@ -52,7 +52,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
-    surl = re.compile(r'<iframe.+?src="([^"]*)', re.DOTALL | re.IGNORECASE).search(videopage)
+    surl = re.compile(r'<iframe allowfullscreen.+?src="([^"]*)', re.DOTALL | re.IGNORECASE).search(videopage)
     if surl:
         surl = surl.group(1)
         if 'nhplayer.com' in surl:
@@ -80,12 +80,12 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*class="bg-tr"\s*href="([^"]+).+?img.+?src="([^"]+).+?<h2.+?>([^<]+).+?text-sm">(?:<p>)?([^<]*).+?white">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="cat_item" href="([^"]+)".+?url\(([^\)]+)\).+?cat_ttl">([^<]+).+?cat_dsc">([^<]+).+?fa-video"></i>\s*(\d+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, image, name, desc, count in match:
         name = utils.cleantext(name)
         if count:
             name += " [COLOR orange][I]{0} videos[/I][/COLOR]".format(count)
-        site.add_dir(name, catpage, 'List', image, desc=desc)
+        site.add_dir(name, site.url[:-1] + catpage, 'List', site.url[:-1] + image, desc=desc)
     utils.eod()
 
 
