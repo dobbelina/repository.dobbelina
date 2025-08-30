@@ -2,4 +2,5 @@
 - hentaidude - fix listing
 - speedporn - fix listing
 - hentaihavenco - fix listing, playback
+- hanime - fix playback
 

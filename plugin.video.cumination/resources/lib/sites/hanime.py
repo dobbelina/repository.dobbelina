@@ -113,7 +113,7 @@ def hanime_list(url='', search='', page=0):
                            + "&name=" + urllib_parse.quote_plus(name))
             contextmenu.append(('[COLOR deeppink]Play M3U8[/COLOR]', 'RunPlugin(' + contextm3u8 + ')'))
         nodownload = not htvlogged
-        site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
+        site.add_download_link(name, videoid, 'hanime_play', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
 
     if 'nbPages' in hits:
         totalp = hits['nbPages']
@@ -183,7 +183,23 @@ def get_videos(url, member=False):
 
 @site.register()
 def hanime_play(url, name, download=None):
-    hanime_play_combined(url, name, download)
+    url = 'https://hanime.tv/videos/hentai/' + url
+
+    vp = utils.VideoPlayer(name, download)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+
+    videohtml = utils.getHtml(url)
+    jsondata = videohtml.split('<script>window.__NUXT__=')[1].split(';</script>')[0]
+    jsondata = json.loads(jsondata)
+    videos = jsondata["state"]["data"]["video"]["videos_manifest"]["servers"][0]["streams"]
+    sources = {}
+    for video in videos:
+        if video['url'] != "":
+            sources[video['height']] = video['url']
+
+    videourl = utils.prefquality(sources, sort_by=lambda x: int(x[:-1]), reverse=True)
+    if videourl:
+        vp.play_from_direct_link(videourl)
 
 
 def getVideoLink(videourl, type):
@@ -262,7 +278,7 @@ def hanime_eps(url):
         selected_episode = utils.selector('Choose episode', eps, show_on_one=True)
         if not selected_episode:
             return
-        hanime_play_combined(selected_episode, [x for x, y in eps.items() if y is selected_episode][0])
+        hanime_play(selected_episode, [x for x, y in eps.items() if y is selected_episode][0])
     except Exception:
         utils.notify('Notify', 'No other episodes found')
 
