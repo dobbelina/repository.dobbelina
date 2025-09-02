@@ -46,18 +46,15 @@ def List(url):
         url = url.split('?')[0]
     url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
-    listhtml = re.compile(r'<main(.*?)</main>', re.DOTALL).findall(listhtml)[0]
-    videos = re.compile(r'class="video-item.+?href="([^"]+)"\s*title="([^"]+).+?data-src="([^"]+)(.+?)</a>', re.DOTALL).findall(listhtml)
-    for videopage, name, img, info in videos:
-        info = info.replace('<strong>', '').replace('</strong>', '')
-        duration = ''
-        hd = ''
-        if 'class="video-badge l"' in info:
-            duration = info.split('class="video-badge l">')[-1].split('<')[0]
-        if 'class="video-badge h"' in info:
-            hd = info.split('class="video-badge h">')[-1].split('<')[0]
-        name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=hd)
+
+    delimiter = '<div class="video-item'
+    re_videopage = r'<a\s+href="([^"]+)"'
+    re_name = 'alt="([^"]+)"'
+    re_img = 'data-src="([^"]+jpg)"'
+    re_duration = r'class="video-badge l">([^<]+)<'
+    re_quality = 'class="video-badge h">([^<]+)<'
+
+    utils.videos_list(site, 'spankbang.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality)
     nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
     if nextp:
         nextp = nextp.group(1)
