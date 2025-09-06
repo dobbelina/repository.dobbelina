@@ -20,6 +20,7 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import requests
 
 site = AdultSite('hdporn92', '[COLOR hotpink]Hdporn92[/COLOR]', 'https://hdporn92.com/', 'hdporn92.png', 'hdporn92')
 
@@ -61,7 +62,16 @@ def List(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.play_from_site_link(url, url)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+    playhtml = utils.getHtml(url)
+    links = re.compile(r'<iframe.+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playhtml)
+    if links:
+        links = [link for link in links if vp.resolveurl.HostedMediaFile(link)]
+        videourl = utils.selector('Select link', links)
+        videourl = requests.head(videourl, allow_redirects=True, verify=False).url
+        vp.play_from_link_to_resolve(videourl)
+    else:
+        utils.notify('Oh Oh', 'No Videos found')
 
 
 @site.register()
