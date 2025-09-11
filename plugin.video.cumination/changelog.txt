@@ -1,5 +1,2 @@
-[B]Version 1.1.149[/B]
-- foxnxx - fix playback
-- spankbang - fix listing
-- 85po - new site
-- hdporn92 - fix playback
+[B]Version 1.1.150[/B]
+- aagmaalpro - add logo, fix video sources search

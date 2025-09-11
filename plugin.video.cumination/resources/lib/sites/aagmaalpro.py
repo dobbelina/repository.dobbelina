@@ -22,7 +22,7 @@ import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.boo/', 'logo.png', 'aagmaalpro')
+site = AdultSite('aagmaalpro', '[COLOR hotpink]Aag Maal Pro[/COLOR]', 'https://aagmaal.boo/', 'aagmaalpro.png', 'aagmaalpro')
 
 
 @site.register(default_mode=True)
@@ -77,15 +77,18 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videourl = ''
+    links = []
 
     if url.startswith('http'):
         videopage = utils.getHtml(url, site.url)
-        links = re.compile(r'''href="(https?://((?!aagmaal)[^/]+)[^"]+)"[^>]*>.*?Watch''', re.DOTALL | re.IGNORECASE).findall(videopage)
+        vidsec = re.search(r'class="video-description">(.+?)<div id="video-author">', videopage, re.DOTALL)
+        if vidsec:
+            links = re.compile(r'''title="[^\d]+(\d+)"\s*href="(https?://([^.]+)[^"]+)''', re.DOTALL | re.IGNORECASE).findall(vidsec.group(1))
     else:
         links = pickle.loads(binascii.unhexlify(url))
 
     if links:
-        links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
+        links = {host + ' ' + no: link for no, link, host in links if vp.resolveurl.HostedMediaFile(link)}
         videourl = utils.selector('Select link', links)
     else:
         r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
