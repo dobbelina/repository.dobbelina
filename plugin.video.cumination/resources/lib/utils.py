@@ -1699,11 +1699,13 @@ def get_packed_data(html):
 
 
 class LookupInfo:
-    def __init__(self, siteurl, url, default_mode, lookup_list):
+    def __init__(self, siteurl, url, default_mode, lookup_list, starthtml=None, stophtml=None):
         self.siteurl = siteurl
         self.url = url
         self.default_mode = default_mode
         self.lookup_list = lookup_list
+        self.starthtml = starthtml
+        self.stophtml = stophtml
 
     def url_constructor(self, url):
         # Default url_constructor - can be overridden in derived classes
@@ -1712,6 +1714,10 @@ class LookupInfo:
     def getinfo(self, headers=base_hdrs):
         try:
             listhtml = getHtml(self.url, headers=headers)
+            if self.starthtml:
+                listhtml = listhtml.split(self.starthtml)[-1]
+            if self.stophtml:
+                listhtml = listhtml.split(self.stophtml)[0]
         except Exception:
             return None
 
