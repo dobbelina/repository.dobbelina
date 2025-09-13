@@ -125,7 +125,7 @@ def Playvid(url, name, download=None):
         iframeurl = match[0]
         hash = iframeurl.split('/')[-1]
         if 'bestwish.lol' in iframeurl:
-            url1 = 'https://bestb.stream/data.php?filecode={}'.format(hash)
+            url1 = 'https://bestwish.lol/ajax/stream?filecode={}'.format(hash)
             html = utils.getHtml(url1, 'https://bestwish.lol/')
             jsondata = json.loads(html)
             videourl = jsondata["streaming_url"]

@@ -1,4 +1,6 @@
 [B]Version 1.1.150[/B]
 - aagmaalpro - add logo, fix video sources search
 - xxdbx - new site
+- familypornhd - fix playback
+- AWM network - fix playback of multiple video hosts
 

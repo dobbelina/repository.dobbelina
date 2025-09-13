@@ -21,6 +21,9 @@ import xbmcplugin
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.decrypters.kvsplayer import kvs_decode
+from resources.lib.decrypters import txxx
+
 
 site = AdultSite('awmnet', '[COLOR hotpink]AWM Network[/COLOR] - [COLOR deeppink]46 sites[/COLOR]', '', 'awmnet.jpg', 'awmnet')
 
@@ -168,9 +171,89 @@ def Playvid(url, name, download=None):
             found = True
     vp.progress.update(50, "[CR]Scraping video page[CR]")
     if not vp.resolveurl.HostedMediaFile(vlink):
-        utils.notify('Oh Oh', 'No Videos found')
-        vp.progress.close()
-        utils.kodilog(vlink)
-        return
+        if '&lander=' in vlink:
+            vlink = vlink.split('&lander=')[-1]
+            vlink = urllib_parse.unquote(vlink)
+
+        vpage = utils.getHtml(url, site.url)
+
+        patterns = [r'''<source\s+[^>]*src=['"]([^'"]+\.mp4[^'"]*)['"]\s+[^>]*title=['"]([^'"]+)''',
+                    r'\{"src":"([^"]+)","desc":"([^"]+)"']
+        sources = {}
+        for pattern in patterns:
+            match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
+            if match:
+                sources.update({title: src for src, title in match})
+        videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+        if videourl:
+            videourl = videourl.replace(r'\/', '/')
+            vp.play_from_direct_link(videourl)
+            return
+
+        patterns = [r'embed_url:\s*"([^"]+)"',
+                    r"video_url:\s*'([^']+.mp4)'",
+                    r'rel="video_src" href="([^"]+)"']
+        sources = []
+        for pattern in patterns:
+            match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
+            if match:
+                sources = sources + match
+        videourl = utils.selector('Select source', sources)
+        if videourl:
+            videourl = 'https:' + match[0] if match[0].startswith('//') else match[0]
+            vp.play_from_direct_link(videourl)
+            return
+
+        if 'function/0/http' not in vpage and '<div class="embed-wrap"' in vpage:
+            match = re.compile(r'<div class="embed-wrap".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(vpage)
+            if match:
+                vpage = utils.getHtml(match[0], url)
+
+        if "license_code: '" in vpage:
+            sources = {}
+            license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
+            patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
+                        r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
+                        r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
+                        r"video_url:\s*'([^']+)',[^/]+(postfix):\s*'\.mp4'",
+                        r"video_url:\s*'([^']+)',[^/]+(preview)"]
+            for pattern in patterns:
+                items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
+                for surl, qual in items:
+                    qual = '0p' if qual == 'preview' or qual == 'postfix' else qual
+                    qual = '720p' if qual == 'HD' else qual
+                    if 'function/0/http' in surl:
+                        surl = kvs_decode(surl, license)
+
+                    surl = utils.getVideoLink(surl)
+                    surl = surl.replace('//', '/%2F').replace('https:/%2F', 'https://')
+                    if '.mp4' in surl:
+                        sources.update({qual: surl})
+            videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+
+            if videourl:
+                vp.play_from_direct_link(videourl)
+                return
+
+        match = re.search(r'^(http[s]?://[^/]+/)videos*/(\d+)/', vlink, re.IGNORECASE)
+        if match:
+            host = match.group(1)
+            id = match.group(2)
+            apiurl = f"{host}api/videofile.php?video_id={id}&lifetime=8640000"
+            try:
+                jsondata = utils.getHtml(apiurl, url)
+                r = re.search('video_url":"([^"]+)', jsondata)
+                if r:
+                    videourl = host + txxx.Tdecode(r.group(1))
+                    vp.play_from_direct_link(videourl)
+                    return
+            except Exception as e:
+                utils.kodilog('Error getting video from API: ' + str(e))
+                utils.kodilog(vlink)
+        else:
+            utils.notify('Oh Oh', 'No Videos found')
+            vp.progress.close()
+            utils.kodilog(vlink)
+            return
 
     vp.play_from_link_to_resolve(vlink)
