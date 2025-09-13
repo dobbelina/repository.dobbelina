@@ -152,6 +152,7 @@ def List(url):
 
 @site.register()
 def Playvid(url, name, download=None):
+    utils.kodilog('Playvid: ' + url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vp.play_from_link_to_resolve(url)

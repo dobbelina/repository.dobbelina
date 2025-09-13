@@ -42,7 +42,7 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url)
 
-    delimiter = '<article id="post'
+    delimiter = '<article data-video-id="'
     re_videopage = 'href="([^"]+)"'
     re_name = ' title="([^"]+)"'
     re_img = '(?:img src|img data-src|poster)="([^"]+)"'
