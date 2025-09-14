@@ -23,7 +23,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('xfreehd', '[COLOR hotpink]XFreeHD[/COLOR]', 'https://www.xfreehd.com/', 'xfreehd.png', 'xfreehd')
+site = AdultSite('xfreehd', '[COLOR hotpink]XFreeHD[/COLOR]', 'https://beta.xfreehd.com/', 'xfreehd.png', 'xfreehd')
 
 getinput = utils._get_keyboard
 xflogged = 'true' in utils.addon.getSetting('xflogged')
