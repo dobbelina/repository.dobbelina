@@ -239,7 +239,7 @@ def Playvid(url, name, download=None):
         if match:
             host = match.group(1)
             id = match.group(2)
-            apiurl = f"{host}api/videofile.php?video_id={id}&lifetime=8640000"
+            apiurl = "{0}api/videofile.php?video_id={1}&lifetime=8640000".format(host, id)
             try:
                 jsondata = utils.getHtml(apiurl, url)
                 r = re.search('video_url":"([^"]+)', jsondata)
