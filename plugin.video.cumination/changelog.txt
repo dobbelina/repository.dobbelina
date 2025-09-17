@@ -1,2 +1,3 @@
 [B]Version 1.1.151[/B]
 - xfreehd - domain change, fix login
+- pornhub - fix categories

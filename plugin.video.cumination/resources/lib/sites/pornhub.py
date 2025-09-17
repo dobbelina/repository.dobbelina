@@ -29,7 +29,7 @@ cookiehdr = {'Cookie': 'accessAgeDisclaimerPH=1; accessAgeDisclaimerUK=1'}
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/search?search=', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url[:-1] + 'categories', 'Categories', site.img_cat)
     List(site.url + 'video?o=cm')
     utils.eod()
 
@@ -103,10 +103,10 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url, cookiehdr)
-    match = re.compile(r'<div class="category-wrapper.*?<a href="([^"]+)"\s*alt="([^"]+)".*?img\s+src="([^"]+).+?<var>([^<]+)<', re.DOTALL).findall(cathtml)
+    match = re.compile(r'<div class="category-wrapper.*?href="([^"]+)"\s*alt="([^"]+)".*?src="([^"]+).+?<var>([^<]+)<', re.DOTALL).findall(cathtml)
     for catpage, name, img, videos in match:
         catpage = site.url[:-1] + catpage
-        site.add_dir(name, catpage, 'List', img, '')
+        site.add_dir(name + ' [COLOR orange]({} videos)[/COLOR]'.format(videos), catpage, 'List', img, '')
     utils.eod()
 
 
