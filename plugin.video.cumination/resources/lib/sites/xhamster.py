@@ -39,9 +39,7 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog(url)
     url = update_url(url)
-    utils.kodilog(url)
 
     context_category = (utils.addon_sys + "?mode=" + str('xhamster.ContextCategory'))
     context_length = (utils.addon_sys + "?mode=" + str('xhamster.ContextLength'))
@@ -52,8 +50,7 @@ def List(url):
 
     try:
         response = utils.getHtml(url, site.url)
-    except Exception as e:
-        utils.kodilog(str(e))
+    except Exception:
         site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=contextmenu)
         utils.eod()
         return
@@ -64,7 +61,6 @@ def List(url):
         match = re.compile(r'>\s*([^>]+)\s*</h1>', re.DOTALL | re.IGNORECASE).search(response)
     if match:
         pagetitle = match.group(1)
-        utils.kodilog(pagetitle)
 
     listjson = response.split('window.initials=')[-1].split(';</script>')[0]
     jdata = json.loads(listjson)
@@ -87,12 +83,15 @@ def List(url):
         utils.notify('Cumination', 'No video found.')
         return
 
+    thumbnails = utils.Thumbnails(site.name)
     for video in videos:
         if video.get('isBlockedByGeo', False):
             continue
         name = video["title"] if utils.PY3 else video["title"].encode('utf8')
         videolink = video["pageURL"]
         img = video.get("thumbURL", '')
+        if img.endswith('.jpg') and 'webp' in img:
+            img = thumbnails.fix_img(img)
         if not img:
             continue
         length = str(datetime.timedelta(seconds=video["duration"]))
@@ -152,10 +151,10 @@ def List(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    utils.kodilog('Playvid: ' + url)
-    vp = utils.VideoPlayer(name, download)
+    vp = utils.VideoPlayer(name, download, direct_regex='<link rel="preload" href="([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    vp.play_from_link_to_resolve(url)
+    videopage = utils.getHtml(url, site.url)
+    vp.play_from_html(videopage)
 
 
 @site.register()
@@ -344,7 +343,6 @@ def update_url(url):
                 url += '&quality=1080p' if '?' in url else '?quality=1080p'
 
     length = get_setting('length')
-    utils.kodilog(length)
 
     # if 'max-duration=10' in url:
     #     old_length = '0-10 min'
