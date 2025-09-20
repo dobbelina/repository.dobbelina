@@ -113,7 +113,7 @@ def hanime_list(url='', search='', page=0):
                            + "&name=" + urllib_parse.quote_plus(name))
             contextmenu.append(('[COLOR deeppink]Play M3U8[/COLOR]', 'RunPlugin(' + contextm3u8 + ')'))
         nodownload = not htvlogged
-        site.add_download_link(name, videoid, 'hanime_play', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
+        site.add_download_link(name, videoid, 'hanime_play_combined', img, plot, noDownload=nodownload, contextm=contextmenu, fanart=fanart)
 
     if 'nbPages' in hits:
         totalp = hits['nbPages']
