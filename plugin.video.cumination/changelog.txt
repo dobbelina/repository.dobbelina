@@ -1,2 +1,4 @@
 [B]Version 1.1.152[/B]
 - hdporn92 - fix listing, playback
+- fulltaboo - fix listing, thumbnails
+- watcherotic - fix lookupinfo

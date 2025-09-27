@@ -20,7 +20,6 @@ import re
 import json
 import xbmc
 import xbmcgui
-import time
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -29,7 +28,6 @@ from resources.lib.sites.spankbang import Playvid
 site = AdultSite('erogarga', '[COLOR hotpink]EroGarga[/COLOR]', 'https://www.erogarga.com/', 'erogarga.png', 'erogarga')
 site1 = AdultSite('fulltaboo', '[COLOR hotpink]FullTaboo[/COLOR]', 'https://fulltaboo.tv/', 'fulltaboo.png', 'fulltaboo')
 site2 = AdultSite('koreanpm', '[COLOR hotpink]Korean PornMovie[/COLOR]', 'https://koreanpornmovie.com/', 'https://koreanpornmovie.com/wp-content/uploads/2025/01/sadasdasdasdas.png', 'koreanpm')
-site3 = AdultSite('watcherotic', '[COLOR hotpink]WatchErotic[/COLOR]', 'https://watcherotic.com/', 'https://watcherotic.com/contents/fetrcudmeesb/theme/logo.png', 'watcherotic')
 
 
 def getBaselink(url):
@@ -39,25 +37,18 @@ def getBaselink(url):
         siteurl = site1.url
     elif 'koreanpornmovie.com' in url:
         siteurl = site2.url
-    elif 'watcherotic.com' in url:
-        siteurl = site3.url
     return siteurl
 
 
 @site.register(default_mode=True)
 @site1.register(default_mode=True)
 @site2.register(default_mode=True)
-@site3.register(default_mode=True)
 def Main(url):
     siteurl = getBaselink(url)
     if 'erogarga' in siteurl:
         site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Cat', site.img_cat)
-    if 'watcherotic' in siteurl:
-        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
-        List(siteurl + 'latest-updates/')
-    else:
-        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=', 'Search', site.img_search)
-        List(siteurl + '?filter=latest')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + '?s=', 'Search', site.img_search)
+    List(siteurl + '?filter=latest')
 
 
 @site.register()
@@ -69,42 +60,25 @@ def List(url):
         utils.notify(msg='No data found')
         return
 
-    delimiter = 'article data-video-uid|<div class="thumb thumb_rel item'
+    delimiter = 'article data-video-'
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = '(?:data-src|data-original)="([^"]+)"'
-    re_duration = '(?:fa-clock-o"></i>|class="time">)([^<]+)<'
-    re_quality = 'class="(?:hd-video|qualtiy)">(HD)<'
-    skip = '(Magazine)' if 'watcherotic' in siteurl else 'type-photos'
+    re_img = 'src="([^"]+)" alt'
+    re_duration = 'fa-clock-o"></i>([^<]+)<'
+    re_quality = 'class="hd-video">(HD)<'
+    skip = 'type-photos'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=erogarga.Lookupinfo&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=erogarga.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
-    thumbnails = True if 'watcherotic' in siteurl else False
-    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip, thumbnails=thumbnails)
+    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip)
 
-    if 'watcherotic' in siteurl:
-        match = re.search(r'''class="active[^>]+>([^<]+)<.+?class='next' href=\S+\sdata-action="ajax" data-container-id="[^"]+"\s+data-block-id="([^"]+)"\s+data-parameters="([^"]+)">''', listhtml, re.DOTALL | re.IGNORECASE)
-        if match:
-            npage = int(match.group(1)) + 1
-            block_id = match.group(2)
-            params = match.group(3).replace(';', '&').replace(':', '=')
-            tm = int(time.time() * 1000)
-            nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(tm))
-            nurl = nurl.replace('+from_albums', '')
-            nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
-
-            cm_page = (utils.addon_sys + "?mode=erogarga.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&list_mode=erogarga.List")
-            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-
-            site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'List', site.img_next, contextm=cm)
-    else:
-        re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
-        re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
-        re_lpnr = r'/page/(\d+)[^>]*>Last' if '>Last' in html else r'rel="follow">(\d+)<\D+<\/main>'
-        utils.next_page(site, 'erogarga.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erogarga.GotoPage')
+    re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
+    re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
+    re_lpnr = r'/page/(\d+)[^>]*>Last' if '>Last' in html else r'rel="follow">(\d+)<\D+<\/main>'
+    utils.next_page(site, 'erogarga.List', html, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erogarga.GotoPage')
     utils.eod()
 
 
@@ -114,7 +88,6 @@ def GotoPage(list_mode, url, np, lp=0):
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
         url = url.replace('/page/{}'.format(np), '/page/{}'.format(pg))
-        url = url.replace('from={}'.format(np), 'from={}'.format(pg))
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
@@ -139,10 +112,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        if 'watcherotic' in url:
-            url = "{0}{1}/".format(url, keyword.replace(' ', '-'))
-        else:
-            url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
+        url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
         List(url)
 
 
