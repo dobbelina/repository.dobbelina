@@ -26,17 +26,17 @@ site = AdultSite('fullporner', '[COLOR hotpink]Fullporner[/COLOR]', 'https://ful
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'actors/page/1/', 'Actors', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + '1a/channels/page/1/', 'Actors', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'porno-actors/page/1/', 'Actors', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'porno-channels/page/1/', 'Actors', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    List(site.url + '1d/latest-videos/page/1/')
+    List(site.url + 'porn-channels/latest-videos/page/1/')
     utils.eod()
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|data-src)="([^"]+)"[^>]+>.*?</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|src)="([^"]+)"[^>]+>.*?</i>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
     for videopage, name, img, duration in match:
