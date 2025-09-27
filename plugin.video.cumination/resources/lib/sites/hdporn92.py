@@ -21,6 +21,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import requests
+import json
 
 site = AdultSite('hdporn92', '[COLOR hotpink]Hdporn92[/COLOR]', 'https://hdporn92.com/', 'hdporn92.png', 'hdporn92')
 
@@ -38,7 +39,12 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|data-src)="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if '>Nothing found</h1>' in listhtml:
+        utils.notify(msg='Nothing found')
+        utils.eod()
+        return
+
+    match = re.compile(r'<article.+?href="([^"]+)"\s*title="([^"]+).+?(?:poster|src)="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
     for videopage, name, img in match:
@@ -64,12 +70,22 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     playhtml = utils.getHtml(url)
-    links = re.compile(r'<iframe.+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(playhtml)
-    if links:
-        links = [link for link in links if vp.resolveurl.HostedMediaFile(link)]
-        videourl = utils.selector('Select link', links)
-        videourl = requests.head(videourl, allow_redirects=True, verify=False).url
-        vp.play_from_link_to_resolve(videourl)
+    match = re.compile(r'<iframe.+?src="([^"]+)"[^>]+allowfullscreen', re.DOTALL | re.IGNORECASE).findall(playhtml)
+    if match:
+        link = match[0]
+        if vp.resolveurl.HostedMediaFile(link):
+            link = requests.head(link, allow_redirects=True, verify=False).url
+            vp.play_from_link_to_resolve(link)
+            return
+        else:
+            embedhtml = utils.getHtml(link, url)
+            unpacked = utils.get_packed_data(embedhtml)
+            jsondata = unpacked.split('var links=')[1].split('}')[0] + '}'
+            jsondata = json.loads(jsondata)
+            videolink = jsondata.get('hls2', '')
+            if videolink:
+                vp.play_from_direct_link(videolink)
+            return
     else:
         utils.notify('Oh Oh', 'No Videos found')
 

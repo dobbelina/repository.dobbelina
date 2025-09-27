@@ -1,4 +1,2 @@
-[B]Version 1.1.151[/B]
-- xfreehd - domain change, fix login
-- pornhub - fix categories
-- xhamster - fix playback & thumbnails
+[B]Version 1.1.152[/B]
+- hdporn92 - fix listing, playback
