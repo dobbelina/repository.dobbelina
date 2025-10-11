@@ -80,7 +80,7 @@ def List(url):
     elif "pagesCategoryComponent" in jdata:
         videos = jdata["pagesCategoryComponent"]["trendingVideoListProps"]["videoThumbProps"]
     else:
-        utils.notify('Cumination', 'No video found.')
+        utils.notify('Oh Oh', 'No video found.')
         return
 
     thumbnails = utils.Thumbnails(site.name)
@@ -151,10 +151,44 @@ def List(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex='<link rel="preload" href="([^"]+)"')
+    vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videopage = utils.getHtml(url, site.url)
-    vp.play_from_html(videopage)
+    videopage = utils.getHtml(url, site.url, error=True)
+    if 'This video was deleted' in videopage:
+        utils.notify('Oh Oh', 'This video was deleted.')
+        return
+    match = re.compile(r'<link rel="preload" href="([^"]+)"', re.DOTALL).search(videopage)
+    if match:
+        videourl = match.group(1)
+        videourl = videourl.replace('.av1.', '.h264.')
+        vp.progress.update(75, "[CR]Playing video[CR]")
+        vp.play_from_direct_link(videourl)
+    else:
+        jsondata = videopage.split('>window.initials=')[-1].split(';</script>')[0]
+        jdata = json.loads(jsondata)
+        data = jdata.get('xplayerSettings', '')
+        if data:
+            sources = data.get('sources', [])
+            if 'hls' in sources:
+                h264src = sources['hls'].get('h264', '')
+                h265src = sources['hls'].get('h265', '')
+                av1src = sources['hls'].get('av1', '')
+                if h264src:
+                    hexurl = h264src['url']
+                elif h265src:
+                    hexurl = h265src['url']
+                elif av1src:
+                    hexurl = av1src['url']
+                else:
+                    utils.notify('Oh Oh', 'No playable video found.')
+                    return
+            from resources.lib.decrypters import xhamster_decrypt
+            try:
+                videourl = xhamster_decrypt.deobfuscate_url(hexurl)
+            except Exception as e:
+                utils.notify('Oh Oh', 'Failed to deobfuscate video URL - {}'.format(e))
+                return
+            vp.play_from_direct_link(videourl)
 
 
 @site.register()

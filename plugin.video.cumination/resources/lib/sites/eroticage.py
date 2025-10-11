@@ -82,9 +82,16 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex='<iframe data-src="([^"]+)"', direct_regex=None)
     videohtml = utils.getHtml(url)
-    if '<iframe data-src="' in videohtml:
-        vp.progress.update(25, "[CR]Loading video page[CR]")
-        vp.play_from_site_link(url)
+    match = re.compile(r'<iframe data-src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    if match:
+        videourl = match[0]
+        if 'xhamster' in videourl:
+            from resources.lib.sites.xhamster import Playvid as xhamsterPlayvid
+            xhamsterPlayvid(videourl, name, download)
+            return
+        if vp.resolveurl.HostedMediaFile(videourl):
+            vp.play_from_link_to_resolve(videourl)
+            return
     else:
         match = re.compile(r'itemprop="embedURL" content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
         if match:

@@ -1,2 +1,3 @@
-[B]Version 1.1.153[/B]
-- AWM Network - fix listing
+[B]Version 1.1.154[/B]
+- xhamster - play h264 streams instead of av1
+- eroticage - fix playback (xhmaster streams)
