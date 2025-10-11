@@ -121,10 +121,29 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex=r'''<iframe.+?src\s*=\s*["']([^'"]+)''')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url)
-    videopage = re.compile('iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
-    vidhtml = utils.postHtml(videopage, headers=ph_headers, form_data={'play': ''})
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_html(vidhtml)
+
+    defaulthost = re.compile('iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
+    host = re.compile('''title=['"]hosted on ([^'"]+)['"]>''', re.DOTALL | re.IGNORECASE).findall(videohtml)[0]
+
+    match = re.compile('''<a href=['"]([^'"]+)['"] title=['"]Watch this video on ([^'"]+)['"]>''', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    if match:
+        sources = {x[1]: site.url[:-1] + x[0] for x in match}
+    else:
+        sources = {}
+
+    sources[host] = defaulthost
+    videolink = utils.selector('Select video source', sources)
+    if videolink:
+        if 'player.php' not in videolink:
+            html = utils.getHtml(videolink)
+            videolink = re.compile('iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
+
+        vidhtml = utils.postHtml(videolink, headers=ph_headers, form_data={'play': ''})
+        match = re.compile(r'''<iframe.+?src\s*=\s*["']([^'"]+)''', re.DOTALL | re.IGNORECASE).findall(vidhtml)
+        if match:
+            videolink = match[0]
+            vp.progress.update(75, "[CR]Loading video page[CR]")
+            vp.play_from_link_to_resolve(videolink)
 
 
 @site.register()

@@ -1,3 +1,4 @@
 [B]Version 1.1.154[/B]
-- xhamster - play h264 streams instead of av1
+- xhamster - fix playback (play h264 streams instead of av1)
 - eroticage - fix playback (xhmaster streams)
+- pornhoarder - fix playback (select video host)
