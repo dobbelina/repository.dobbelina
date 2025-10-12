@@ -256,4 +256,9 @@ def Playvid(url, name, download=None):
             utils.kodilog(vlink)
             return
 
+    if 'xhamster' in vlink:
+        from resources.lib.sites.xhamster import Playvid as xhamsterPlayvid
+        xhamsterPlayvid(vlink, name, download)
+        return
+
     vp.play_from_link_to_resolve(vlink)
