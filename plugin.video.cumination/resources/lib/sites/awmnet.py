@@ -137,7 +137,7 @@ def Search(url, keyword=None):
 def Tags(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'<li\s*class="category".+?href="([^"]+)">([^<]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'<li\s*class="category".+?href="([^"]+)"><span class="category-title">([^<]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, videos in match:
         name = utils.cleantext(name) + " [COLOR deeppink](" + videos + " videos)[/COLOR]"
         site.add_dir(name, siteurl[:-1] + catpage + '?pricing=free', 'List', site.img_cat)
@@ -148,7 +148,7 @@ def Tags(url):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'class="card\s*group".+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?>([\d\.k]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="card\s*group".+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, image, videos in match:
         name = utils.cleantext(name) + " [COLOR deeppink](" + videos + " videos)[/COLOR]"
         site.add_dir(name, siteurl[:-1] + catpage + '?pricing=free', 'List', image)
