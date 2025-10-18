@@ -131,8 +131,9 @@ def Playvid(url, name, download=None):
             videourl = jsondata["streaming_url"]
             videourl += '|Referer=https://bestwish.lol/&Origin=https://bestwish.lol'
             vp.play_from_direct_link(videourl)
-        elif 'video-mart.com' in iframeurl:
-            url1 = 'https://video-mart.com/player/index.php?data={}&do=getVideo'.format(hash)
+        elif 'video-mart.com' in iframeurl or 'videostreamingworld.com' in iframeurl:
+            host = iframeurl.rsplit('/', 2)[0]
+            url1 = '{}/player/index.php?data={}&do=getVideo'.format(host, hash)
             hdr = dict(utils.base_hdrs).copy()
             hdr['Accept'] = '*/*'
             hdr['X-Requested-With'] = 'XMLHttpRequest'
@@ -141,6 +142,11 @@ def Playvid(url, name, download=None):
             jsondata = json.loads(html)
             videourl = jsondata["videoSource"]
             m3u8html = utils.getHtml(videourl, iframeurl, headers=hdr)
+            lines = m3u8html.splitlines()
+            for i, line in enumerate(lines):
+                if line.startswith('/'):
+                    lines[i] = host + line
+            m3u8html = '\n'.join(lines)
             myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.mp4")
             with open(myplaylist, 'w', encoding="utf-8") as f:
                 f.write(m3u8html)
