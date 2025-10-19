@@ -1,4 +1,2 @@
-[B]Version 1.1.155[/B]
-- awmnet - fix categories, tags, pornstars
-- familypornhd - fix playback
-- aagmaal pro - domain change
+[B]Version 1.1.156[/B]
+- awmnet - update site list (48 sites)
