@@ -146,6 +146,8 @@ def Playvid(url, name, download=None):
             for i, line in enumerate(lines):
                 if line.startswith('/'):
                     lines[i] = host + line
+                if 'URI="/' in line:
+                    lines[i] = line.replace('URI="/', 'URI="{}/'.format(host))
             m3u8html = '\n'.join(lines)
             myplaylist = utils.TRANSLATEPATH("special://temp/myPlaylist.mp4")
             with open(myplaylist, 'w', encoding="utf-8") as f:
