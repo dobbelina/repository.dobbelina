@@ -1,3 +1,35 @@
+<<<<<<< Updated upstream
 [B]Version 1.1.156[/B]
 - awmnet - update site list (48 sites)
 - familypornhd - fix sound
+=======
+﻿[B]Version 1.1.160[/B]
+- settings: add StripChat option to always force highest quality
+
+
+[B]Version 1.1.159[/B]
+- stripchat - auto-select highest quality variant (prefer source, else highest resolution)
+
+
+[B]Version 1.1.158[/B]
+- stripchat - prefer external widget stream URL for more compatible CDN host
+
+
+[B]Version 1.1.157[/B]
+- stripchat - URL-encode IA headers (UA/Origin/Referer) for HLS
+
+
+[B]Version 1.1.156[/B]
+- stripchat - force InputStream Adaptive and add HLS headers to prevent early stop
+
+
+[B]Version 1.1.155[/B]
+- stripchat - add headers to HLS playback to prevent early stop
+
+
+[B]Version 1.1.154[/B]
+- xhamster - fix playback (play h264 streams instead of av1)
+- eroticage - fix playback (xhmaster streams)
+- pornhoarder - fix playback (select video host)
+- awmnet - fix playback (xhmaster streams)
+>>>>>>> Stashed changes

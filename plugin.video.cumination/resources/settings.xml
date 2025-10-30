@@ -34,6 +34,8 @@
         <setting id="chattrans" type="bool" label="30114" default="true" />
         <setting type="lsep" label="30055" />
         <setting id="chatplay" type="enum" label="30100" lvalues="30101|30103" default="0" />
+        <setting type="lsep" label="StripChat" />
+        <setting id="stripchat_best" type="bool" label="StripChat: Always highest quality" default="true" />
     </category>
     <category label="30059">
         <setting id="compressbackup" label="30200" type="bool" default="true" />

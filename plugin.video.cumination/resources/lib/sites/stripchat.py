@@ -18,6 +18,7 @@ import sqlite3
 import json
 import re
 from resources.lib import utils
+from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
@@ -118,22 +119,65 @@ def clean_database(showdialog=True):
 
 @site.register()
 def Playvid(url, name):
-    vp = utils.VideoPlayer(name)
+    vp = utils.VideoPlayer(name, IA_check='IA')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
-    if not utils.checkUrl(url):
+    # Prefer external widget URL (often different CDN host and more stable)
+    try:
         data = json.loads(utils._getHtml(altUrl + name))["models"][0]
-        if data["username"] == name:
+        if data.get("username"):
             url = data['stream']['url']
-        else:
-            utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
-            vp.progress.close()
-            return
+    except Exception:
+        pass
 
+    # Convert any fixed-quality URL to master playlist to enumerate variants
     url = re.sub(r'_\d+p\.', '.', url)
-    vp.progress.update(75, "[CR]Found Stream[CR]")
-    vp = utils.VideoPlayer(name)
-    vp.play_from_direct_link(url)
+    vp.progress.update(60, "[CR]Selecting best quality[CR]")
+
+    # Prepare headers (for IA and for probing master)
+    ua = urllib_parse.quote(utils.USER_AGENT, safe='')
+    origin_enc = urllib_parse.quote('https://stripchat.com', safe='')
+    referer_enc = urllib_parse.quote('https://stripchat.com/', safe='')
+    ia_headers = 'User-Agent={0}&Origin={1}&Referer={2}'.format(ua, origin_enc, referer_enc)
+
+    # Choose quality based on setting
+    force_best = utils.addon.getSetting('stripchat_best') == 'true'
+    if force_best:
+        # Try to fetch master and pick highest quality variant (prefer NAME="source")
+        try:
+            master_headers = {'User-Agent': utils.USER_AGENT,
+                              'Origin': 'https://stripchat.com',
+                              'Referer': 'https://stripchat.com/'}
+            master_txt = utils._getHtml(url, site.url, headers=master_headers)
+            best_url = None
+            best_pixels = -1
+            lines = master_txt.splitlines()
+            for i, line in enumerate(lines):
+                if line.startswith('#EXT-X-STREAM-INF:'):
+                    info = line
+                    if i + 1 < len(lines):
+                        vurl = lines[i + 1].strip()
+                        # Prefer explicit "source" name
+                        if 'NAME="source"' in info or 'NAME=source' in info:
+                            best_url = urllib_parse.urljoin(url, vurl)
+                            best_pixels = 10**9
+                            break
+                        # Else evaluate by RESOLUTION WxH
+                        m = re.search(r'RESOLUTION=(\d+)x(\d+)', info)
+                        if m:
+                            w, h = int(m.group(1)), int(m.group(2))
+                            pixels = w * h
+                            if pixels > best_pixels:
+                                best_pixels = pixels
+                                best_url = urllib_parse.urljoin(url, vurl)
+            if best_url:
+                url = best_url
+        except Exception:
+            pass
+
+    vp.progress.update(85, "[CR]Found Stream[CR]")
+    vp = utils.VideoPlayer(name, IA_check='IA')
+    vp.play_from_direct_link(url + '|' + ia_headers)
 
 
 @site.register()
