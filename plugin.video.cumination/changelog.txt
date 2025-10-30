@@ -1,9 +1,4 @@
-<<<<<<< Updated upstream
-[B]Version 1.1.156[/B]
-- awmnet - update site list (48 sites)
-- familypornhd - fix sound
-=======
-﻿[B]Version 1.1.160[/B]
+[B]Version 1.1.160[/B]
 - settings: add StripChat option to always force highest quality
 
 
@@ -21,6 +16,8 @@
 
 [B]Version 1.1.156[/B]
 - stripchat - force InputStream Adaptive and add HLS headers to prevent early stop
+- awmnet - update site list (48 sites)
+- familypornhd - fix sound
 
 
 [B]Version 1.1.155[/B]
@@ -32,4 +29,4 @@
 - eroticage - fix playback (xhmaster streams)
 - pornhoarder - fix playback (select video host)
 - awmnet - fix playback (xhmaster streams)
->>>>>>> Stashed changes
+

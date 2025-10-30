@@ -1,2 +1,9 @@
 *.pyo
 *.bak
+*.zip
+*.m3u8
+tmp_*
+tmp*.json
+VLC Parser/
+Kodi Flaresolverr Autostarter/
+__pycache__/
