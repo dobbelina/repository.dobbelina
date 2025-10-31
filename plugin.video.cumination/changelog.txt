@@ -29,4 +29,17 @@
 - eroticage - fix playback (xhmaster streams)
 - pornhoarder - fix playback (select video host)
 - awmnet - fix playback (xhmaster streams)
+[B]Version 1.1.161[/B]
+- add ThotHub site: browse, search, and ResolveURL playback
+- StripChat: keep highest-quality option and stability fixes remain
 
+
+[B]Version 1.1.162[/B]
+- packaging: rebuild zip to correct top-level folder structure
+
+
+[B]Version 1.1.163[/B]
+- thothub - fix listing (recent videos), thumbs, and playback
+
+[B]Version 1.1.164[/B]
+- thothub - add robust listing fallback (videos/, page/1/, latest/) when homepage yields no items
