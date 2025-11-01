@@ -106,27 +106,29 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
-    match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).search(videopage)
-    if match:
-        vp.progress.update(50, "[CR]Loading video[CR]")
-        iframehtml = utils.getHtml(match.group(1), url, ignoreCertificateErrors=True)
+    # match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).search(videopage)
+    # if match:
+    #     vp.progress.update(50, "[CR]Loading video[CR]")
+    #     iframehtml = utils.getHtml(match.group(1), url, ignoreCertificateErrors=True)
 
-        sources = {}
-        license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(iframehtml)[0]
-        patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                    r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                    r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                    r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-        for pattern in patterns:
-            items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(iframehtml)
-            for surl, qual in items:
-                qual = '00' if qual == 'preview' else qual
-                surl = kvs_decode(surl, license)
-                sources.update({qual: surl})
-        videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-        if videourl:
-            vp.progress.update(75, "[CR]Video found[CR]")
-            vp.play_from_direct_link(videourl)
+    iframehtml = videopage
+
+    sources = {}
+    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(iframehtml)[0]
+    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
+                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
+                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
+                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
+    for pattern in patterns:
+        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(iframehtml)
+        for surl, qual in items:
+            qual = '00' if qual == 'preview' else qual
+            surl = kvs_decode(surl, license)
+            sources.update({qual: surl})
+    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+    if videourl:
+        vp.progress.update(75, "[CR]Video found[CR]")
+        vp.play_from_direct_link(videourl)
 
 
 @site.register()
