@@ -104,7 +104,7 @@ def Playvid(url, name):
         response = json.loads(utils._getHtml(url))
         data = response.get('stream')
         if len(data.get('edge_servers', [])) > 0:
-            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['stream_name'] + "_v1/index.m3u8?token=" + data['token']
+            videourl = "https://" + random.choice(data['edge_servers']) + "/" + data['stream_name'] + "_v1/index.ll.m3u8?token=" + data['token']
             videourl += '|User-Agent=iPad&verifypeer=false'
             vp = utils.VideoPlayer(name)
             vp.play_from_direct_link(videourl)
