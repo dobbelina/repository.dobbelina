@@ -94,7 +94,9 @@ def hanime_list(url='', search='', page=0):
             name = name + " [COLOR hotpink][I]Uncensored[/I][/COLOR]"
         videoid = video['slug']
         img = video['cover_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
+        img = img + '|Referer=https://hanime.tv/'
         fanart = video['poster_url'].replace('highwinds-cdn.com', 'droidbuzz.top')
+        fanart = fanart + '|Referer=https://hanime.tv/'
         plot = video['description'].replace('<p>', '').replace('</p>', '')
         if utils.PY2:
             plot = plot.encode('ascii', 'ignore')
