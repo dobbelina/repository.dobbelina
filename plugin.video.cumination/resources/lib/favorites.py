@@ -67,14 +67,14 @@ def Refresh_images():
     for (name, url, mode, img, duration, quality) in c.fetchall():
         try:
             with conn:
-                list = conn.execute("SELECT id, cachedurl FROM texture WHERE url = '{}';".format(img))
+                list = conn.execute("SELECT id, cachedurl FROM texture WHERE url = ?;", (img,))
                 for row in list:
-                    conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
+                    conn.execute("DELETE FROM sizes WHERE idtexture = ?;", (row[0],))
                     try:
                         os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                     except:
                         pass
-                conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".highwebmedia.com")
+                conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".highwebmedia.com" + '%',))
         except:
             pass
     xbmc.executebuiltin('Container.Refresh')
@@ -88,6 +88,9 @@ def List(url=1):
     offset = (page - 1) * items_per_page
 
     favorder = utils.addon.getSetting("favorder") or 'date added'
+    # Validate favorder to prevent SQL injection
+    if favorder not in orders:
+        favorder = 'date added'
     if page == 1:
         basics.addDir('[COLOR red]Refresh images[/COLOR]', '', 'favorites.Refresh_images', '', Folder=False)
         basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
@@ -191,6 +194,9 @@ def FavListSite(url, page=1):
     offset = (page - 1) * items_per_page
 
     favorder = utils.addon.getSetting("favorder") or 'date added'
+    # Validate favorder to prevent SQL injection
+    if favorder not in orders:
+        favorder = 'date added'
     if utils.addon.getSetting("chaturbate") == "true":
         for f in AdultSite.clean_functions:
             f(False)
@@ -850,6 +856,12 @@ def disable_all_custom_sites():
 
 
 def select_custom_sites_attributes(author_and_name, *args):
+    # Validate column names to prevent SQL injection
+    valid_columns = {'author', 'name', 'title', 'version', 'enabled', 'module_file', 'image', 'about'}
+    for col in args:
+        if col not in valid_columns:
+            raise ValueError(f"Invalid column name: {col}")
+
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()

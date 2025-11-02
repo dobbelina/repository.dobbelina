@@ -40,12 +40,25 @@ def HQLIST(url):
         link = utils.getHtml(url, '')
     except:
         return None
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="image\s*featured\s*non.+?src="([^"]+)"\s*alt="([^"]+).+?data">(\d[^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
-    for url, img, name, duration in match:
-        name = utils.cleantext(name).title()
-        videourl = urllib_parse.quote(site.url + url, safe=':/')
-        if img.startswith('//'):
+    soup = utils.parse_html(link)
+    cards = soup.select('section.box.feature')
+    for card in cards:
+        anchor = card.select_one('a.image.featured[href]')
+        if not anchor:
+            continue
+        videopage = utils.safe_get_attr(anchor, 'href')
+        if not videopage:
+            continue
+        videourl = site.url + videopage.lstrip('/')
+
+        img_tag = anchor.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'src')
+        if img and img.startswith('//'):
             img = 'https:' + img
+
+        title_link = card.select_one('.meta-data-title a') or anchor
+        name = utils.cleantext(utils.safe_get_text(title_link)).title()
+        duration = utils.safe_get_text(card.select_one('.icon.fa-clock-o'))
 
         contextmenu = []
         contexturl = (utils.addon_sys
@@ -54,25 +67,32 @@ def HQLIST(url):
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration, contextm=contextmenu)
-    try:
-        nextp = re.compile('<a href="([^"]+)"[^>]+>Next', re.DOTALL | re.IGNORECASE).findall(link)
-        nextp = "https://www.hqporner.com" + nextp[0]
-        site.add_dir('Next Page', nextp, 'HQLIST', site.img_next)
-    except:
-        pass
+
+    pagination = soup.select_one('ul.actions.pagination')
+    if pagination:
+        next_link = pagination.select_one('a.button.mobile-pagi[href]')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                next_url = site.url + next_href.lstrip('/')
+                site.add_dir('Next Page', next_url, 'HQLIST', site.img_next)
     utils.eod()
 
 
 @site.register()
 def HQCAT(url):
     link = utils.getHtml(url, '')
-    tags = re.compile(r'<a\s*href="([^"]+)"[^<]+<img\s*src="([^"]+)"\s*alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(link)
-    tags = sorted(tags, key=lambda x: x[2])
-    for caturl, img, catname in tags:
-        caturl = site.url + caturl
-        if img.startswith('//'):
-            img = 'https:' + img
-        site.add_dir(catname.title(), caturl, 'HQLIST', img)
+    soup = utils.parse_html(link)
+    entries = []
+    for heading in soup.select('h3 a[href]'):
+        caturl = utils.safe_get_attr(heading, 'href')
+        if not caturl or not caturl.startswith('/category'):
+            continue
+        name = utils.safe_get_text(heading)
+        entries.append((name, site.url + caturl.lstrip('/')))
+
+    for name, caturl in sorted(entries, key=lambda x: x[0].lower()):
+        site.add_dir(name.title(), caturl, 'HQLIST', site.img_cat)
     utils.eod()
 
 

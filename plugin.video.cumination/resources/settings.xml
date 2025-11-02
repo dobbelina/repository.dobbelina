@@ -77,5 +77,8 @@
         <setting id="fs_host" enable="eq(-1,true)" type="text" label="33023" default="http://localhost:8191/v1"/>
         <setting type="lsep" label="33025" />
         <setting id="sessionid" type="text" label="33026" default=""/>
+        <setting type="lsep" label="ThotHub Authentication" />
+        <setting id="thothub_username" type="text" label="ThotHub Username" default=""/>
+        <setting id="thothub_password" type="text" label="ThotHub Password" option="hidden" default=""/>
     </category>
 </settings>

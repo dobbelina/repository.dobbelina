@@ -43,11 +43,18 @@ class NoRedirection(urllib_request.HTTPErrorProcessor):
 
 
 def solve_equation(equation):
-    try:
-        offset = 1 if equation[0] == '+' else 0
-        return int(eval(equation.replace('!+[]', '1').replace('!![]', '1').replace('[]', '0').replace('(', 'str(')[offset:]))
-    except:
-        pass
+    # SECURITY FIX: Disabled unsafe eval() code execution
+    # The previous implementation used eval() to execute JavaScript challenge code,
+    # which is a security vulnerability even with sanitization attempts.
+    #
+    # This old Cloudflare bypass method is obsolete. Modern Cloudflare challenges
+    # cannot be solved with this approach anyway.
+    #
+    # Please use FlareSolverr (configured in addon settings) for Cloudflare protection.
+    raise NotImplementedError(
+        "Old Cloudflare bypass disabled for security reasons. "
+        "Please configure FlareSolverr in addon settings."
+    )
 
 
 def solve(url, cj, user_agent=None, wait=True):
@@ -106,7 +113,17 @@ def solve(url, cj, user_agent=None, wait=True):
                 # log_utils.log('Unknown operator: |%s|' % (equation), log_utils.LOGWARNING, COMPONENT)
                 continue
 
-            result = int(str(eval(str(result) + operator + str(solve_equation(expression)))))
+            # SECURITY FIX: Replaced eval() with safe arithmetic operations
+            expr_value = solve_equation(expression)
+            if operator == '+':
+                result = result + expr_value
+            elif operator == '-':
+                result = result - expr_value
+            elif operator == '*':
+                result = result * expr_value
+            elif operator == '/':
+                result = result // expr_value  # Integer division
+            result = int(result)
             # log_utils.log('intermediate: %s = %s' % (equation, result), log_utils.LOGDEBUG, COMPONENT)
 
         scheme = urllib_parse.urlparse(url).scheme

@@ -35,17 +35,62 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a href="([^"]+)" class="popbop(.+?)>(\d[\d:\s]+)<.+?(?:data-src|img src)="([^"]+)"\s*alt="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, hd, duration, img, name in match:
-        name = utils.cleantext(name)
-        hd = 'HD' if 'HD Video' in hd else ''
-        name = utils.cleantext(name.strip())
-        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration.strip(), quality=hd)
-    np = re.compile(r'<link rel="next" href="([^"]+)">').search(listhtml)
-    if np:
-        np = np.group(1)
-        npage = re.findall(r'/(\d+)[/\?]', np)[-1]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(npage), np, 'List', site.img_next)
+    soup = utils.parse_html(listhtml)
+
+    # Find all video items
+    video_items = soup.select('a.popbop, .video-item')
+
+    for item in video_items:
+        try:
+            # Get the video link
+            videopage = utils.safe_get_attr(item, 'href')
+            if not videopage:
+                continue
+
+            # Make absolute URL if needed
+            if not videopage.startswith('http'):
+                videopage = site.url[:-1] + videopage if videopage.startswith('/') else site.url + videopage
+
+            # Get image and title
+            img_tag = item.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+            name = utils.safe_get_attr(img_tag, 'alt', default='Video')
+            name = utils.cleantext(name.strip())
+
+            # Get duration
+            duration_tag = item.select_one('[class*="duration"], .time')
+            if not duration_tag:
+                # Try to find duration in item's text
+                for text in item.stripped_strings:
+                    if ':' in text and any(c.isdigit() for c in text):
+                        duration = text.strip()
+                        break
+                else:
+                    duration = ''
+            else:
+                duration = utils.safe_get_text(duration_tag).strip()
+
+            # Check for HD
+            hd = ''
+            if 'HD Video' in str(item):
+                hd = 'HD'
+
+            site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
+
+        except Exception as e:
+            utils.kodilog("Error parsing video item: " + str(e))
+            continue
+
+    # Handle pagination
+    next_link = soup.select_one('link[rel="next"]')
+    if next_link:
+        np = utils.safe_get_attr(next_link, 'href')
+        if np:
+            # Extract page number
+            page_nums = re.findall(r'/(\d+)[/\?]', np)
+            npage = page_nums[-1] if page_nums else ''
+            site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(npage), np, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -67,10 +112,35 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'<a\s*href="([^"]+)"\s*class="popbop .+?alt="([^"]+)".*?data-src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, image in match:
-        name = utils.cleantext(name.replace('Video category ', ''))
-        site.add_dir(name, site.url[:-1] + catpage, 'List', image)
+    soup = utils.parse_html(cathtml)
+
+    # Find all category items
+    category_items = soup.select('a.popbop')
+
+    for item in category_items:
+        try:
+            # Get the category link
+            catpage = utils.safe_get_attr(item, 'href')
+            if not catpage:
+                continue
+
+            # Make absolute URL if needed
+            catpage = site.url[:-1] + catpage if catpage.startswith('/') else catpage
+
+            # Get image and name
+            img_tag = item.select_one('img')
+            name = utils.safe_get_attr(img_tag, 'alt', default='Category')
+            image = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+
+            # Clean up category name
+            name = utils.cleantext(name.replace('Video category ', ''))
+
+            site.add_dir(name, catpage, 'List', image)
+
+        except Exception as e:
+            utils.kodilog("Error parsing category item: " + str(e))
+            continue
+
     utils.eod()
 
 

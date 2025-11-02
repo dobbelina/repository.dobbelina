@@ -84,94 +84,104 @@ def PTList(url, page=1):
             listhtml = utils.getHtml(url, site.url, headers=hdr)
         else:
             return None
-    try:
-        videos = listhtml.split('class="video-preview-screen')
-        videos.pop(0)
-    except:
-        videos = []
-    if len(videos) == 0:
+    soup = utils.parse_html(listhtml)
+    container = soup.select_one('#list_videos_latest_videos_list_norm') or soup
+    videos = container.select('.video-preview-screen')
+    if not videos:
         utils.notify("Oh oh", "No videos found")
         return
-    for video in videos:
-        match = re.compile(r'data-src="([^"]+)".+?/>(.+?)class="quality">([^<]+).+?clock-o"></i>\s*([\d:]+).+?href="([^"]+).+?>([^<]+)</a>.+?li>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
-        if match:
-            img, private, hd, duration, videopage, name, age = match[0]
-            name = utils.cleantext(name)
-            if 'private' in private.lower():
-                if not ptlogged:
-                    continue
-                private = "[COLOR blue][PV][/COLOR] "
-            else:
-                private = ""
-            if any(x in hd for x in ['720', '1080']):
-                hd = "[COLOR orange]HD[/COLOR] "
-            elif any(x in hd for x in ['1440', '2160']):
-                hd = "[COLOR yellow]4K[/COLOR] "
-            else:
-                hd = ""
-            name = "{0}{1}".format(private, name)  # , hd, duration)
+    for item in videos:
+        link = item.select_one('a.thumb[href]')
+        if not link:
+            continue
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
+
+        img_tag = link.select_one('img.cover')
+        img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+        if img:
             if img.startswith('//'):
                 img = 'https:' + img
             elif img.startswith('/'):
                 img = site.url[:-1] + img
-            img = re.sub(r"http:", "https:", img)
+            img = re.sub(r'^http:', 'https:', img)
             imgint = randint(1, 10)
-            newimg = str(imgint) + '.jpg'
+            newimg = '{}.jpg'.format(imgint)
             img = img.replace('1.jpg', newimg)
             img = img.replace(' ', '%20')
             img = img + '|Referer=' + url
-            contextmenu = []
-            contexturl = (utils.addon_sys
-                          + "?mode=" + str('porntrex.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-            contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-            if ptlogged:
-                if '/models' in url:
-                    contexturl = (utils.addon_sys
-                                  + "?mode=" + str('porntrex.PTSubscribe_pornstar')
-                                  + "&url=" + urllib_parse.quote_plus(url))
-                    contextmenu.append(('[COLOR deeppink]Subscribe to pornstar[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-                if 'my_favourite_videos' in url:
-                    contextdel = (utils.addon_sys
-                                  + "?mode=" + str('porntrex.ContextMenu')
-                                  + "&url=" + urllib_parse.quote_plus(videopage)
-                                  + "&fav=del")
-                    contextmenu.append(('[COLOR deeppink]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
-                else:
-                    contextadd = (utils.addon_sys
-                                  + "?mode=" + str('porntrex.ContextMenu')
-                                  + "&url=" + urllib_parse.quote_plus(videopage)
-                                  + "&fav=add")
-                    contextmenu.append(('[COLOR deeppink]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
-            plot = '{}\n{}'.format(name, age)
-            site.add_download_link(name, videopage, 'PTPlayvid', img, plot, contextm=contextmenu, duration=duration, quality=hd)
-        else:
-            utils.notify("Oh oh", "No videos found")
-    if re.search('<li class="next">', videos[-1], re.DOTALL | re.IGNORECASE):
-        search = True
-        if not page:
-            page = 1
-        npage = page + 1
 
-        if '?' in url:
-            for x in ('from=', 'from4=', 'from5=', 'from_my_subscriptions_videos=', 'from_my_fav_videos=', 'from_videos=', 'from_uploaded_videos='):
-                url = url.replace(x + str(page), x + str(npage))
-                url = url.replace(x + '0' + str(page), x + str(npage))
-        elif url.endswith('/{}/'.format(str(page))):
-            url = url.replace('/{}/'.format(str(page)), '/{}/'.format(str(npage)))
-        else:
-            url += '{}/'.format(str(npage))
+        title_tag = item.select_one('p.inf a')
+        name = utils.cleantext(utils.safe_get_text(title_tag))
 
-        lastp = re.compile(r'class="pagination".+data-max="(\d+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        if lastp:
-            lastp = '/{}'.format(lastp[0])
-            if npage > int(lastp[1:]):
-                search = False
-        else:
-            lastp = ''
+        hd_text = utils.safe_get_text(item.select_one('.hd-text-icon .quality'))
+        hd_icon = utils.safe_get_text(item.select_one('.hd-text-icon .hd-icon'))
+        quality_label = ''
+        combined_quality = ' '.join(filter(None, [hd_text, hd_icon])).lower()
+        if any(keyword in combined_quality for keyword in ('2160', '1440', '4k')):
+            quality_label = '[COLOR yellow]4K[/COLOR] '
+        elif any(keyword in combined_quality for keyword in ('1080', '720', 'hd')):
+            quality_label = '[COLOR orange]HD[/COLOR] '
 
-        if search:
-            site.add_dir('Next Page (' + str(npage) + lastp + ')', url, 'PTList', site.img_next, npage)
+        duration_tag = item.select_one('.durations')
+        duration = ''
+        if duration_tag:
+            parts = [part.strip() for part in duration_tag.stripped_strings if part.strip()]
+            if parts:
+                duration = parts[-1]
+
+        age_tag = item.select_one('ul.list-unstyled li')
+        age = utils.safe_get_text(age_tag)
+
+        display_name = name
+        plot = '{}\n{}'.format(name, age)
+
+        contextmenu = []
+        contexturl = (utils.addon_sys
+                      + "?mode=" + str('porntrex.Lookupinfo')
+                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+        if ptlogged:
+            if '/models' in url:
+                contexturl = (utils.addon_sys
+                              + "?mode=" + str('porntrex.PTSubscribe_pornstar')
+                              + "&url=" + urllib_parse.quote_plus(url))
+                contextmenu.append(('[COLOR deeppink]Subscribe to pornstar[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+            if 'my_favourite_videos' in url:
+                contextdel = (utils.addon_sys
+                              + "?mode=" + str('porntrex.ContextMenu')
+                              + "&url=" + urllib_parse.quote_plus(videopage)
+                              + "&fav=del")
+                contextmenu.append(('[COLOR deeppink]Delete from PT favorites[/COLOR]', 'RunPlugin(' + contextdel + ')'))
+            else:
+                contextadd = (utils.addon_sys
+                              + "?mode=" + str('porntrex.ContextMenu')
+                              + "&url=" + urllib_parse.quote_plus(videopage)
+                              + "&fav=add")
+                contextmenu.append(('[COLOR deeppink]Add to PT favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'))
+
+        site.add_download_link(display_name, videopage, 'PTPlayvid', img, plot, contextm=contextmenu, duration=duration, quality=quality_label)
+
+    pagination = soup.select_one('#list_videos_latest_videos_list_norm_pagination')
+    if pagination:
+        anchors = pagination.select('a[href]')
+        next_href = None
+        last_numeric = None
+        for anchor in anchors:
+            text = utils.safe_get_text(anchor).strip()
+            href = utils.safe_get_attr(anchor, 'href')
+            if text.isdigit():
+                value = int(text)
+                last_numeric = value if last_numeric is None else max(last_numeric, value)
+                if value > page and href:
+                    next_href = href
+                    break
+        if next_href:
+            next_page = page + 1
+            next_url = next_href if next_href.startswith('http') else site.url[:-1] + next_href if next_href.startswith('/') else urllib_parse.urljoin(url, next_href)
+            suffix = '/{}'.format(last_numeric) if last_numeric else ''
+            site.add_dir('Next Page ({}{})'.format(next_page, suffix), next_url, 'PTList', site.img_next, next_page)
     utils.eod()
     return True
 

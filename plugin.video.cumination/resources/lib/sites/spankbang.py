@@ -47,24 +47,52 @@ def List(url):
     url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
 
-    delimiter = '<div class="video-item'
-    re_videopage = r'<a\s+href="([^"]+)"'
-    re_name = 'alt="([^"]+)"'
-    re_img = 'data-src="([^"]+jpg)"'
-    re_duration = r'class="video-badge l">([^<]+)<'
-    re_quality = 'class="video-badge h">([^<]+)<'
+    soup = utils.parse_html(listhtml)
+    video_items = soup.select('[data-testid="video-item"]')
+    for item in video_items:
+        link = item.select_one('a[href*="/video/"]')
+        if not link:
+            continue
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
 
-    utils.videos_list(site, 'spankbang.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality)
-    nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if nextp:
-        nextp = nextp.group(1)
-        np = re.findall(r'/(\d+)/', nextp)[-1]
-        lp = re.compile(r'>(\d+)<[^"]+class="next"><', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        if lp:
-            lp = '/' + lp[0]
-        else:
-            lp = ''
-        site.add_dir('Next Page.. ({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
+        img_tag = link.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+        if not img:
+            continue
+
+        title_anchor = item.select_one('p a[title]') or link
+        name = utils.cleantext(utils.safe_get_text(title_anchor))
+        if not name:
+            continue
+
+        duration_tag = item.select_one('[data-testid="video-item-length"]')
+        duration = utils.safe_get_text(duration_tag)
+
+        quality_tag = item.select_one('[data-testid="video-item-resolution"], .video-badge.h, .video-badge.uhd')
+        quality = utils.safe_get_text(quality_tag)
+
+        videourl = site.url[:-1] + videopage if not videopage.startswith('http') else videopage
+        site.add_download_link(name, videourl, 'Playvid', img, name, duration=duration, quality=quality)
+
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('li.next a[href]')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                pages = [utils.safe_get_text(a) for a in pagination.select('li a') if utils.safe_get_text(a).isdigit()]
+                lp = '/' + pages[-1] if pages else ''
+                segment = next_href.split('/?')[0].rstrip('/').split('/')[-1]
+                np = segment if segment.isdigit() else ''
+                label = 'Next Page..'
+                if np or lp:
+                    display_np = np if np else '?'
+                    label += ' ({}{})'.format(display_np, lp)
+                if not next_href.startswith('http'):
+                    next_href = site.url[:-1] + next_href
+                site.add_dir(label, next_href, 'List', site.img_next)
     # elif nextps:
     #     nextp = nextps.group(1)
     #     pgtxt = re.findall(r'class="status">(.*?)</span', listhtml)[0].replace('<span>/', 'of').capitalize()

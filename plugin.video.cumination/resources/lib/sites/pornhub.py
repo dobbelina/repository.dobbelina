@@ -59,33 +59,73 @@ def List(url):
         utils.eod()
         return
 
-    match = re.compile(r'(?:<h1>|<h1\s+class="searchPageTitle">)([^<]+)<', re.DOTALL).findall(listhtml)
-    if match:
-        title = utils.cleantext(match[0].strip())
+    # Parse HTML with BeautifulSoup
+    soup = utils.parse_html(listhtml)
+
+    # Extract page title (if present)
+    title_tag = soup.select_one('h1.searchPageTitle, h1')
+    if title_tag:
+        title = utils.cleantext(utils.safe_get_text(title_tag))
         site.add_dir('[COLOR orange]' + title + ' [COLOR hotpink]*** Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
 
-    main_block = re.compile(r'videos\s*search-video-thumbs.*?">(.*?)<div\s*class="reset">', re.DOTALL).findall(listhtml)[0]
+    # Extract video items
+    # PornHub uses class="pcVideoListItem" for video cards
+    video_items = soup.select('[class*="pcVideoListItem"]')
 
-    delimiter = 'class="pcVideoListItem'
-    re_videopage = '<a href="([^"]+)"'
-    re_name = ' title="([^"]+)"'
-    re_img = 'data-mediumthumb="([^"]+)"'
-    re_duration = '(?:data-title="Video Duration">|class="duration">)([^<]+)<'
-    utils.videos_list(site, 'pornhub.Playvid', main_block, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm_filter)
+    for item in video_items:
+        try:
+            # Get the link element
+            link = item.select_one('a')
+            if not link:
+                continue
 
-    nextp = re.compile(r'<li\s*class="page_next">\s*<a\s*href="([^"]+)"', re.DOTALL).search(listhtml)
-    if nextp:
-        np = re.compile(r'page=(\d+)').search(nextp.group(1))
-        if np:
-            np = np.group(1)
-        else:
-            np = ''
-        match = re.compile(r'Showing \d+-\d+\s*of\s*\d+', re.DOTALL).search(listhtml)
-        if match:
-            lp = '[COLOR hotpink] ... ' + match.group(0) + '[/COLOR]'
-        else:
-            lp = ''
-        site.add_dir('Next Page ({}){}'.format(np, lp), site.url[:-1] + nextp.group(1).replace('&amp;', '&'), 'List', site.img_next)
+            # Extract video URL and title
+            video_url = utils.safe_get_attr(link, 'href')
+            if not video_url:
+                continue
+
+            # Make absolute URL if needed
+            if video_url.startswith('/'):
+                video_url = site.url[:-1] + video_url
+
+            title = utils.safe_get_attr(link, 'title')
+
+            # Extract thumbnail image
+            img_tag = item.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-mediumthumb', ['data-thumb-url', 'data-src', 'src'])
+
+            # Extract duration
+            duration_tag = item.select_one('.duration, [data-title="Video Duration"]')
+            duration = utils.safe_get_text(duration_tag)
+
+            # Add video to list
+            site.add_download_link(title, video_url, 'Playvid', img, '', duration=duration, contextm=cm_filter)
+
+        except Exception as e:
+            # Log error but continue processing other videos
+            utils.kodilog("Error parsing video item: " + str(e))
+            continue
+
+    # Extract pagination (Next Page link)
+    next_page = soup.select_one('li.page_next a, .page_next a')
+    if next_page:
+        next_url = utils.safe_get_attr(next_page, 'href')
+        if next_url:
+            # Extract page number for display
+            page_match = re.search(r'page=(\d+)', next_url)
+            page_num = page_match.group(1) if page_match else ''
+
+            # Extract "Showing X-Y of Z" text for display
+            showing_text = soup.select_one('.showingCounter')
+            showing_info = ' [COLOR hotpink]... ' + utils.safe_get_text(showing_text) + '[/COLOR]' if showing_text else ''
+
+            # Build next page URL
+            if next_url.startswith('/'):
+                next_url = site.url[:-1] + next_url
+            next_url = next_url.replace('&amp;', '&')
+
+            site.add_dir('Next Page ({}){}'.format(page_num, showing_info), next_url, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -103,10 +143,55 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url, cookiehdr)
-    match = re.compile(r'<div class="category-wrapper.*?href="([^"]+)"\s*alt="([^"]+)".*?src="([^"]+).+?<var>([^<]+)<', re.DOTALL).findall(cathtml)
-    for catpage, name, img, videos in match:
-        catpage = site.url[:-1] + catpage
-        site.add_dir(name + ' [COLOR orange]({} videos)[/COLOR]'.format(videos), catpage, 'List', img, '')
+
+    # Parse HTML with BeautifulSoup
+    soup = utils.parse_html(cathtml)
+
+    # Find all category wrappers
+    categories = soup.select('.category-wrapper, div[class*="category"]')
+
+    for category in categories:
+        try:
+            # Extract category link
+            link = category.select_one('a')
+            if not link:
+                continue
+
+            catpage = utils.safe_get_attr(link, 'href')
+            if not catpage:
+                continue
+
+            # Make absolute URL if needed
+            if catpage.startswith('/'):
+                catpage = site.url[:-1] + catpage
+
+            # Extract category name from alt attribute or link text
+            name = utils.safe_get_attr(link, 'alt')
+            if not name:
+                name = utils.safe_get_attr(link, 'title')
+            if not name:
+                name_tag = category.select_one('.title, .categoryName')
+                name = utils.safe_get_text(name_tag) if name_tag else 'Category'
+
+            # Extract thumbnail image
+            img_tag = category.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'src', ['data-src'])
+
+            # Extract video count
+            count_tag = category.select_one('var, .videoCount')
+            video_count = utils.safe_get_text(count_tag)
+
+            # Add category to list
+            if video_count:
+                name = name + ' [COLOR orange]({} videos)[/COLOR]'.format(video_count)
+
+            site.add_dir(name, catpage, 'List', img, '')
+
+        except Exception as e:
+            # Log error but continue processing other categories
+            utils.kodilog("Error parsing category: " + str(e))
+            continue
+
     utils.eod()
 
 

@@ -64,41 +64,85 @@ def List(url):
                  ('[COLOR violet]Length[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('length')), 'RunPlugin(' + cm_length + ')'),
                  ('[COLOR violet]Quality[/COLOR] [COLOR orange]{}[/COLOR]'.format(get_setting('quality')), 'RunPlugin(' + cm_quality + ')')]
 
-    match = re.compile(r'div id="video.+?href="([^"]+)".+?data-src="([^"]+)"(.+?)title="([^"]+)">.+?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, res, name, duration in match:
-        match = re.search(r'mark">(.+?)<', res)
-        res = match.group(1) if match else ''
+    soup = utils.parse_html(listhtml)
+    video_items = soup.select('div.thumb-block')
+    for item in video_items:
+        link = item.select_one('a')
+        if not link:
+            continue
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
+
+        name = utils.safe_get_attr(link, 'title') or utils.safe_get_text(link)
         name = utils.cleantext(name)
-        img = img.replace('THUMBNUM', '5')
+
+        img_tag = item.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'data-src', ['data-mediumthumb', 'data-thumb-url', 'data-srcset', 'src'])
+        if not img:
+            continue
+        if 'THUMBNUM' in img:
+            img = img.replace('THUMBNUM', '5')
+
+        duration_tag = item.select_one('.duration')
+        duration = utils.safe_get_text(duration_tag)
+
+        quality_tag = item.select_one('.video-hd-mark, .quality')
+        res = utils.safe_get_text(quality_tag)
+
+        meta = item.select_one('.thumb-under .metadata')
+        description = ''
+        if meta:
+            meta_text = utils.safe_get_text(meta)
+            meta_text = ' '.join(meta_text.split())
+            meta_parts = [part.strip() for part in meta_text.split(' - ') if part.strip()]
+            if duration:
+                duration_lower = duration.lower()
+                if meta_parts:
+                    first = meta_parts[0]
+                    if first.lower().startswith(duration_lower):
+                        trimmed = first[len(duration):].strip()
+                        if trimmed:
+                            meta_parts[0] = trimmed
+                        else:
+                            meta_parts = meta_parts[1:]
+            description = ' • '.join(meta_parts)
 
         cm_related = (utils.addon_sys + "?mode=" + str('xvideos.ContextRelated') + "&url=" + urllib_parse.quote_plus(videopage))
         cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
         if 'k=' in url or '/tags/' in url or '/c/' in url:
             cm += cm_filter
 
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, contextm=cm, duration=duration, quality=res)
-    npage = re.compile(r'href="([^"]+)" class="no-page next-page', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if npage:
-        npage = npage[0].replace('&amp;', '&')
-        np = re.findall(r'\d+', npage)[-1]
-        if url.split(site.url)[-1] in ('', 'gay/', 'shemale/'):
-            npage = npage.replace('/2', '/1')
-        else:
-            np = str(int(np) + 1)
-        if npage == '#1':
-            npage = url + '/1'
-        elif npage.startswith('#'):
-            new = npage.split('#')[-1]
-            old = str(int(new) - 1)
-            npage = url.replace('/{}'.format(old), '/{}'.format(new))
-        if not npage.startswith('http'):
-            npage = site.url[:-1] + npage
-        lp = re.compile(r'>(\d+)<', re.DOTALL | re.IGNORECASE).findall(listhtml.split('next-page')[0])
-        if lp:
-            lp = '/' + lp[-1]
-        else:
-            ''
-        site.add_dir('Next Page ({}{})'.format(np, lp), npage, 'List', site.img_next)
+        if not videopage.startswith('http'):
+            videopage = site.url[:-1] + videopage
+        site.add_download_link(name, videopage, 'Playvid', img, description or name, contextm=cm, duration=duration, quality=res)
+
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('a.no-page.next-page')
+        if next_link:
+            npage = utils.safe_get_attr(next_link, 'href')
+            if npage:
+                npage = npage.replace('&amp;', '&')
+                np = ''
+                digits = ''.join(ch for ch in npage if ch.isdigit())
+                if digits:
+                    np = str(int(digits) + 1)
+                if url.split(site.url)[-1] in ('', 'gay/', 'shemale/'):
+                    npage = npage.replace('/2', '/1')
+                if npage == '#1':
+                    npage = url + '/1'
+                if npage.startswith('#'):
+                    new = npage.split('#')[-1]
+                    old = str(int(new) - 1)
+                    npage = url.replace('/{}'.format(old), '/{}'.format(new))
+                if not npage.startswith('http'):
+                    npage = site.url[:-1] + npage
+                last_page = pagination.select_one('.last-page')
+                lp = ''
+                if last_page:
+                    lp = '/' + utils.safe_get_text(last_page)
+                site.add_dir('Next Page ({}{})'.format(np, lp), npage, 'List', site.img_next)
     if 'No video match with this search.' in listhtml:
         site.add_dir('No videos found. [COLOR hotpink]Clear all filters.[/COLOR]', '', 'ResetFilters', Folder=False, contextm=cm_filter)
     utils.eod()

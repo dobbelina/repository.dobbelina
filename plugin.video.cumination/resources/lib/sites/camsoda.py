@@ -83,14 +83,14 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
         with conn:
-            lst = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".camsoda.com")
+            lst = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", ('%' + ".camsoda.com" + '%',))
             for row in lst:
-                conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
+                conn.execute("DELETE FROM sizes WHERE idtexture = ?;", (row[0],))
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".camsoda.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".camsoda.com" + '%',))
             if showdialog:
                 utils.notify('Finished', 'Camsoda images cleared')
     except:

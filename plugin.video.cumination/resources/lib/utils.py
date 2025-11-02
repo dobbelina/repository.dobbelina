@@ -81,6 +81,95 @@ def kodilog(logvar, level=LOGINFO):
     xbmc.log("@@@@Cumination: " + str(logvar), level)
 
 
+# ============================================================================
+# BeautifulSoup HTML Parsing Helpers
+# ============================================================================
+
+def parse_html(html):
+    """
+    Parse HTML string into BeautifulSoup object.
+
+    Uses lxml parser for speed and robustness. Falls back to html.parser if lxml unavailable.
+
+    Args:
+        html (str): HTML content as string
+
+    Returns:
+        BeautifulSoup: Parsed HTML document
+
+    Example:
+        soup = parse_html(listhtml)
+        videos = soup.select('div.video-item')
+    """
+    try:
+        from bs4 import BeautifulSoup
+        try:
+            return BeautifulSoup(html, 'lxml')
+        except:
+            # Fallback to built-in parser if lxml not available
+            return BeautifulSoup(html, 'html.parser')
+    except ImportError:
+        kodilog("BeautifulSoup not available, install script.module.beautifulsoup4", xbmc.LOGERROR)
+        raise ImportError("BeautifulSoup4 is required. Install script.module.beautifulsoup4 addon.")
+
+
+def safe_get_attr(element, attr, fallback_attrs=None, default=''):
+    """
+    Safely get attribute from BeautifulSoup element with fallback options.
+
+    Args:
+        element: BeautifulSoup element
+        attr (str): Primary attribute name to get
+        fallback_attrs (list): List of fallback attribute names to try
+        default (str): Default value if all attributes missing
+
+    Returns:
+        str: Attribute value or default
+
+    Example:
+        # Try data-src first, fall back to src, default to empty string
+        img = safe_get_attr(img_tag, 'data-src', ['src'])
+    """
+    if not element:
+        return default
+
+    # Try primary attribute
+    value = element.get(attr)
+    if value:
+        return value
+
+    # Try fallback attributes
+    if fallback_attrs:
+        for fallback in fallback_attrs:
+            value = element.get(fallback)
+            if value:
+                return value
+
+    return default
+
+
+def safe_get_text(element, default='', strip=True):
+    """
+    Safely get text content from BeautifulSoup element.
+
+    Args:
+        element: BeautifulSoup element
+        default (str): Default value if element is None
+        strip (bool): Whether to strip whitespace
+
+    Returns:
+        str: Text content or default
+
+    Example:
+        duration = safe_get_text(soup.select_one('.duration'))
+    """
+    if not element:
+        return default
+
+    text = element.get_text()
+    return text.strip() if strip else text
+
+
 @url_dispatcher.register()
 def clear_cache():
     """
@@ -526,10 +615,25 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
                                     raise
                 elif any(x == e.code for x in [403, 429, 503]) and any(x in result for x in ['__cf_chl_f_tk', '__cf_chl_jschl_tk__=', '/cdn-cgi/challenge-platform/']):
                     if addon.getSetting('fs_enable') == 'true':
-                        notify('Flaresolverr', 'Cloudflare detected, retrying with Flaresolverr.')
-                        return flaresolve(url, referer)
+                        notify('FlareSolverr', 'Cloudflare detected, solving challenge...')
+                        kodilog("Cloudflare protection detected on {}, using FlareSolverr".format(url))
+                        try:
+                            return flaresolve(url, referer)
+                        except RuntimeError as fs_error:
+                            # FlareSolverr failed with a clear error message
+                            notify('FlareSolverr Failed', str(fs_error), time=8000)
+                            raise
+                        except Exception as fs_error:
+                            # Unexpected error from FlareSolverr
+                            kodilog("FlareSolverr error: {}".format(str(fs_error)))
+                            notify('FlareSolverr Error', 'Failed to bypass Cloudflare. Check Kodi log.', time=6000)
+                            raise
                     else:
-                        notify(i18n('oh_oh'), 'This site has a Cloudflare Challenge.')
+                        notify(
+                            i18n('oh_oh'),
+                            'Cloudflare protection detected. Enable FlareSolverr in addon settings.',
+                            time=6000
+                        )
                         raise
             elif 400 < e.code < 500:
                 if not e.code == 403:
@@ -605,15 +709,73 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
 
 
 def flaresolve(url, referer):
+    """
+    Use FlareSolverr to bypass Cloudflare protection.
+
+    Args:
+        url: The URL to fetch
+        referer: The referer URL (currently unused)
+
+    Returns:
+        HTML content of the page
+
+    Raises:
+        RuntimeError: If FlareSolverr is not configured or fails to solve
+    """
     from resources.lib.flaresolverr import FlareSolverrManager
-    flaresolverr = FlareSolverrManager(addon.getSetting('fs_host'))
-    listjson = flaresolverr.request(url).json()
-    solution = listjson['solution']
-    if solution['status'] != 200:
+
+    fs_host = addon.getSetting('fs_host')
+    if not fs_host or fs_host == "http://localhost:8191/v1":
+        # Check if default localhost FlareSolverr is actually available
+        try:
+            import requests
+            requests.get("http://localhost:8191", timeout=2)
+        except:
+            raise RuntimeError(
+                "FlareSolverr is not configured or not running. "
+                "Please install and configure FlareSolverr in addon settings. "
+                "See: https://github.com/FlareSolverr/FlareSolverr"
+            )
+
+    try:
+        flaresolverr = FlareSolverrManager(fs_host)
+        response = flaresolverr.request(url)
+        listjson = response.json()
+
+        # Check if the request was successful
+        if listjson.get('status') == 'error':
+            error_msg = listjson.get('message', 'Unknown FlareSolverr error')
+            raise RuntimeError("FlareSolverr failed: {}".format(error_msg))
+
+        solution = listjson.get('solution', {})
+        status = solution.get('status')
+
+        if status != 200:
+            raise RuntimeError(
+                "FlareSolverr solved challenge but got HTTP {} from website".format(status)
+            )
+
+        listhtml = solution.get('response', '')
+        if not listhtml:
+            raise RuntimeError("FlareSolverr returned empty response")
+
+        # Save cookies from FlareSolverr for future requests
+        savecookies(listjson)
+
+        kodilog("FlareSolverr successfully bypassed Cloudflare for: {}".format(url))
+        return listhtml
+
+    except RuntimeError:
+        # Re-raise RuntimeError with original message
         raise
-    listhtml = listjson['solution']['response']
-    savecookies(listjson)
-    return listhtml
+    except Exception as e:
+        # Wrap any other exception in RuntimeError with helpful message
+        raise RuntimeError(
+            "FlareSolverr error for {}: {}. "
+            "Check if FlareSolverr is running at {}".format(
+                url, str(e), fs_host
+            )
+        )
 
 
 def savecookies(flarejson):
@@ -646,28 +808,21 @@ def savecookies(flarejson):
 
 
 def get_sucuri_cookie(html):
-    s = re.compile(r"S\s*=\s*'([^']+)").findall(html)[0]
-    s = base64.b64decode(s.encode('ascii'))
-    s = s.decode('latin-1').replace(' ', '')
-    s = re.sub(r'String\.fromCharCode\(([^)]+)\)', r'chr(\1)', s)
-    s = re.sub(r'\.slice\((\d+),(\d+)\)', r'[\1:\2]', s)
-    s = re.sub(r'\.charAt\(([^)]+)\)', r'[\1]', s)
-    s = re.sub(r'\.substr\((\d+),(\d+)\)', r'[\1:\1+\2]', s)
-    s = re.sub(r';location.reload\(\);', '', s)
-    s = re.sub(r'\n', '', s)
-    s = re.sub(r'document\.cookie', 'cookie', s)
-    sucuri_cookie = ''
-    if ';cookie=' in s:
-        s, c = s.split(';cookie=')
-        exec(s)
-        cookie = eval(c)
-    else:
-        exec(s)
-    if sucuri_cookie == '':
-        sucuri_cookie = cookie
-    sucuri_cookie = re.compile('([^=]+)=(.*)').findall(sucuri_cookie)[0]
-    sucuri_cookie = '%s=%s' % (sucuri_cookie[0], sucuri_cookie[1])
-    return sucuri_cookie
+    # SECURITY FIX: Disabled unsafe exec()/eval() code execution
+    # The previous implementation converted JavaScript to Python and executed it with exec/eval,
+    # which is a critical security vulnerability as it executes untrusted code from websites.
+    #
+    # TODO: Implement safe Sucuri bypass using one of these approaches:
+    # 1. Use FlareSolverr (already integrated in this codebase)
+    # 2. Use a sandboxed JavaScript runtime (js2py, PyMiniRacer)
+    # 3. Parse the cookie generation logic without code execution
+    #
+    # For now, raise an error to indicate Sucuri protection cannot be bypassed automatically.
+    raise NotImplementedError(
+        "Sucuri WAF protection detected. "
+        "Automatic bypass has been disabled for security reasons. "
+        "Please configure FlareSolverr in addon settings to access Sucuri-protected sites."
+    )
 
 
 def postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoCookie=None):
@@ -1086,7 +1241,7 @@ def updateKeyword(keyword, new_keyword):
     conn = sqlite3.connect(favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
-    c.execute("UPDATE keywords SET keyword='{}' WHERE keyword='{}'".format(urllib_parse.quote_plus(new_keyword), urllib_parse.quote_plus(keyword)))
+    c.execute("UPDATE keywords SET keyword=? WHERE keyword=?", (urllib_parse.quote_plus(new_keyword), urllib_parse.quote_plus(keyword)))
     conn.commit()
     conn.close()
 

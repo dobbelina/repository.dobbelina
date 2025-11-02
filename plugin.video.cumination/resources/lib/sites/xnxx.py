@@ -39,21 +39,72 @@ def List(url):
     hdr = utils.base_hdrs
     hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0'
     listhtml = utils.getHtml(url, site.url, headers=hdr)
-    match = re.compile(r'<div\s*id="video.+?href="([^"]+).+?data-src="([^"]+).+?title.+?>([^<]+).+?(\d+(?:min|sec)).+?(\d+p)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name, duration, quality in match:
-        name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=quality, noDownload=True)
+    soup = utils.parse_html(listhtml)
 
-    np = re.compile(r'class="pagination.+?class="active".+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        currpg = re.compile(r'class="pagination.+?class="active".+?>(\d+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        lpg = re.compile(r'class="pagination.+?class="last-page">(\d+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-        if lpg:
-            lastpg = lpg.group(1)
-        else:
-            lastpg = re.compile(r'class="pagination\s*".+?>(\d+)</a></li><li><a\shref="[^"]+"\s*class="no-page', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        pgtxt = '(Currently in Page {0} of {1})'.format(currpg, lastpg)
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), site.url[:-1] + np.group(1), 'List', site.img_next)
+    video_items = soup.select('.mozaique .thumb-block')
+    for item in video_items:
+        classes = item.get('class', [])
+        if any(cls.startswith('thumb-cat') for cls in classes):
+            continue
+
+        link = item.select_one('.thumb a, .thumb-under a')
+        if not link:
+            continue
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
+
+        title_link = item.select_one('.thumb-under a') or link
+        name = utils.cleantext(utils.safe_get_text(title_link))
+
+        img_tag = link.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'data-src', ['data-sfwthumb', 'src'])
+        if not img:
+            continue
+
+        duration = ''
+        metadata = item.select_one('.thumb-under .metadata')
+        if metadata:
+            for piece in metadata.stripped_strings:
+                txt = piece.strip()
+                if txt.endswith(('min', 'sec', 'hour', 'hours')):
+                    duration = txt
+                    break
+
+        quality = ''
+        quality_tag = item.select_one('.thumb-under .video-hd, .thumb-under .video-uhd, .thumb-under .video-4k, .thumb-under .video-quality, .thumb-under .video-uhd-mark')
+        if quality_tag:
+            quality = utils.safe_get_text(quality_tag)
+        if not quality and metadata:
+            for piece in metadata.stripped_strings:
+                txt = piece.strip()
+                if txt.upper() in ('HD', '4K') or (txt.lower().endswith('p') and any(ch.isdigit() for ch in txt)):
+                    quality = txt
+                    break
+
+        if not videopage.startswith('http'):
+            videopage = site.url[:-1] + videopage
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=quality, noDownload=True)
+
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('a.no-page.next, a.no-page.next-page')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                next_href = next_href.replace('&amp;', '&')
+                page_segment = next_href.rstrip('/').split('/')[-1]
+                np = ''
+                if page_segment.isdigit():
+                    np = str(int(page_segment) + 1)
+                pages = [utils.safe_get_text(a) for a in pagination.select('a') if utils.safe_get_text(a).isdigit()]
+                lp = '/' + pages[-1] if pages else ''
+                if not next_href.startswith('http'):
+                    next_href = site.url[:-1] + next_href
+                label = 'Next Page'
+                if np:
+                    label += ' ({}{})'.format(np, lp)
+                site.add_dir(label, next_href, 'List', site.img_next)
     utils.eod()
 
 
