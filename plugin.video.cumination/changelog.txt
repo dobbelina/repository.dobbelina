@@ -1,4 +1,4 @@
 [B]Version 1.1.157[/B]
-- xhmster - fix playback
+- xhamster - fix playback
 - terebon - fix playback
 - hanime - fix thumbnails
