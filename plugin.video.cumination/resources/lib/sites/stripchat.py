@@ -21,7 +21,7 @@ from resources.lib import utils
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
+site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'https://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
 
 
 @site.register(default_mode=True)
@@ -121,63 +121,135 @@ def clean_database(showdialog=True):
 def Playvid(url, name):
     vp = utils.VideoPlayer(name, IA_check='IA')
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
-    # Prefer external widget URL (often different CDN host and more stable)
-    try:
-        data = json.loads(utils._getHtml(altUrl + name))["models"][0]
-        if data.get("username"):
-            url = data['stream']['url']
-    except Exception:
-        pass
 
-    # Convert any fixed-quality URL to master playlist to enumerate variants
-    url = re.sub(r'_\d+p\.', '.', url)
-    vp.progress.update(60, "[CR]Selecting best quality[CR]")
+    def _load_model_details(model_name):
+        headers = {
+            'User-Agent': utils.USER_AGENT,
+            'Accept': 'application/json, text/plain, */*',
+            'Origin': 'https://stripchat.com',
+            'Referer': 'https://stripchat.com/{0}'.format(model_name)
+        }
+        endpoints = [
+            'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList={0}',
+            'https://stripchat.com/api/front/models?limit=1&modelsList={0}&offset=0'
+        ]
+        for endpoint in endpoints:
+            try:
+                response = utils._getHtml(endpoint.format(model_name), site.url, headers=headers)
+                payload = json.loads(response)
+                models = payload.get('models') if isinstance(payload, dict) else None
+                if models:
+                    return models[0]
+            except Exception:
+                continue
+        return None
 
-    # Prepare headers (for IA and for probing master)
+    def _pick_stream(model_data, fallback_url):
+        candidates = []
+        stream_info = model_data.get('stream') if model_data else None
+        if isinstance(stream_info, dict):
+            # Explicit urls map (new API structure)
+            urls_map = stream_info.get('urls') or stream_info.get('files') or {}
+            hls_map = urls_map.get('hls') if isinstance(urls_map, dict) else {}
+            if isinstance(hls_map, dict):
+                for quality, data in hls_map.items():
+                    quality_label = str(quality).lower()
+                    if isinstance(data, dict):
+                        for key in ('absolute', 'https', 'url', 'src'):
+                            stream_url = data.get(key)
+                            if isinstance(stream_url, str) and stream_url.startswith('http'):
+                                candidates.append((quality_label, stream_url))
+                                break
+                    elif isinstance(data, str) and data.startswith('http'):
+                        candidates.append((quality_label, data))
+            # Some responses keep direct URL on stream['url']
+            stream_url = stream_info.get('url')
+            if isinstance(stream_url, str) and stream_url.startswith('http'):
+                candidates.append(('direct', stream_url))
+        # Legacy field on model root
+        if model_data and isinstance(model_data.get('hlsPlaylist'), str):
+            candidates.append(('playlist', model_data['hlsPlaylist']))
+        if isinstance(fallback_url, str) and fallback_url.startswith('http'):
+            candidates.append(('fallback', fallback_url))
+        if not candidates:
+            return None
+
+        def quality_score(label):
+            if not label:
+                return -1
+            label = label.lower()
+            if 'source' in label:
+                return 10000
+            match = re.search(r'(\d{3,4})p', label)
+            if match:
+                try:
+                    return int(match.group(1))
+                except ValueError:
+                    return -1
+            return 0
+
+        force_best = utils.addon.getSetting('stripchat_best') == 'true'
+        # sort candidates: highest score first, keep stable order otherwise
+        candidates_sorted = sorted(candidates, key=lambda item: quality_score(item[0]), reverse=True)
+        selected_url = candidates_sorted[0][1]
+
+        if force_best:
+            top_label = candidates_sorted[0][0]
+            # If highest ranked is not "source", probe master playlist for any better variant
+            if 'source' not in top_label:
+                try:
+                    master_headers = {
+                        'User-Agent': utils.USER_AGENT,
+                        'Origin': 'https://stripchat.com',
+                        'Referer': 'https://stripchat.com/{0}'.format(name)
+                    }
+                    master_txt = utils._getHtml(selected_url, site.url, headers=master_headers)
+                    best_pixels = -1
+                    best_url = None
+                    lines = master_txt.splitlines()
+                    for i, line in enumerate(lines):
+                        if line.startswith('#EXT-X-STREAM-INF:') and i + 1 < len(lines):
+                            info = line
+                            next_url = lines[i + 1].strip()
+                            if not next_url:
+                                continue
+                            stream_variant = urllib_parse.urljoin(selected_url, next_url)
+                            if 'NAME="source"' in info or 'NAME=source' in info:
+                                best_url = stream_variant
+                                best_pixels = 10**9
+                                break
+                            match = re.search(r'RESOLUTION=(\d+)x(\d+)', info)
+                            if match:
+                                pixels = int(match.group(1)) * int(match.group(2))
+                                if pixels > best_pixels:
+                                    best_pixels = pixels
+                                    best_url = stream_variant
+                    if best_url:
+                        selected_url = best_url
+                except Exception:
+                    pass
+
+        return selected_url
+
+    model_data = _load_model_details(name)
+    stream_url = _pick_stream(model_data, url)
+    if not stream_url:
+        vp.progress.close()
+        utils.notify('Stripchat', 'Unable to locate stream URL')
+        return
+
+    stream_url = re.sub(r'_\d+p\.', '.', stream_url)
+    vp.progress.update(85, "[CR]Found Stream[CR]")
+
     ua = urllib_parse.quote(utils.USER_AGENT, safe='')
     origin_enc = urllib_parse.quote('https://stripchat.com', safe='')
-    referer_enc = urllib_parse.quote('https://stripchat.com/', safe='')
-    ia_headers = 'User-Agent={0}&Origin={1}&Referer={2}'.format(ua, origin_enc, referer_enc)
+    referer_enc = urllib_parse.quote('https://stripchat.com/{0}'.format(name), safe='')
+    accept_enc = urllib_parse.quote('application/x-mpegURL', safe='')
+    accept_lang = urllib_parse.quote('en-US,en;q=0.9', safe='')
+    ia_headers = 'User-Agent={0}&Origin={1}&Referer={2}&Accept={3}&Accept-Language={4}'.format(
+        ua, origin_enc, referer_enc, accept_enc, accept_lang)
 
-    # Choose quality based on setting
-    force_best = utils.addon.getSetting('stripchat_best') == 'true'
-    if force_best:
-        # Try to fetch master and pick highest quality variant (prefer NAME="source")
-        try:
-            master_headers = {'User-Agent': utils.USER_AGENT,
-                              'Origin': 'https://stripchat.com',
-                              'Referer': 'https://stripchat.com/'}
-            master_txt = utils._getHtml(url, site.url, headers=master_headers)
-            best_url = None
-            best_pixels = -1
-            lines = master_txt.splitlines()
-            for i, line in enumerate(lines):
-                if line.startswith('#EXT-X-STREAM-INF:'):
-                    info = line
-                    if i + 1 < len(lines):
-                        vurl = lines[i + 1].strip()
-                        # Prefer explicit "source" name
-                        if 'NAME="source"' in info or 'NAME=source' in info:
-                            best_url = urllib_parse.urljoin(url, vurl)
-                            best_pixels = 10**9
-                            break
-                        # Else evaluate by RESOLUTION WxH
-                        m = re.search(r'RESOLUTION=(\d+)x(\d+)', info)
-                        if m:
-                            w, h = int(m.group(1)), int(m.group(2))
-                            pixels = w * h
-                            if pixels > best_pixels:
-                                best_pixels = pixels
-                                best_url = urllib_parse.urljoin(url, vurl)
-            if best_url:
-                url = best_url
-        except Exception:
-            pass
-
-    vp.progress.update(85, "[CR]Found Stream[CR]")
-    vp = utils.VideoPlayer(name, IA_check='IA')
-    vp.play_from_direct_link(url + '|' + ia_headers)
+    vp.play_from_direct_link(stream_url + '|' + ia_headers)
 
 
 @site.register()
