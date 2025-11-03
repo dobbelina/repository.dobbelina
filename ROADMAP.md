@@ -4,7 +4,7 @@
 
 **Started**: 2025-11-01
 **Current Version**: v1.1.165
-**Progress**: 15/137 sites (10.9%) migrated
+**Progress**: 16/137 sites (11.7%) migrated
 
 ---
 
@@ -59,7 +59,7 @@ These are the highest-traffic mainstream sites that break most often.
 
 ---
 
-### 🎯 Phase 2: Medium Priority Sites (5/20 completed - 25%)
+### 🎯 Phase 2: Medium Priority Sites (6/20 completed - 30%)
 
 Secondary mainstream sites with good traffic.
 
@@ -70,7 +70,7 @@ Secondary mainstream sites with good traffic.
 | pornhat | ✅ **COMPLETED** | Mainstream | BeautifulSoup + 7 related sites |
 | pornone | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | anybunny | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
-| sxyprn | ⏳ Pending | Mainstream | High quality |
+| sxyprn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | pornkai | ⏳ Pending | Mainstream | |
 | whoreshub | ⏳ Pending | Mainstream | |
 | yespornplease | ⏳ Pending | Mainstream | |
@@ -351,9 +351,9 @@ Part of BeautifulSoup migration roadmap (site X/137)
 ### Overall Progress
 
 - **Total Sites**: 137
-- **Completed**: 15 (10.9%)
+- **Completed**: 16 (11.7%)
 - **In Progress**: 0
-- **Remaining**: 122 (89.1%)
+- **Remaining**: 121 (88.3%)
 
 ### Phase Progress
 
@@ -361,7 +361,7 @@ Part of BeautifulSoup migration roadmap (site X/137)
 |-------|-------|-----------|------------|
 | Phase 0: Infrastructure | 3 items | 3 | 100% ✅ |
 | Phase 1: High Priority | 10 | 10 | 100% ✅ |
-| Phase 2: Medium Priority | 20 | 5 | 25% 🚀 |
+| Phase 2: Medium Priority | 20 | 6 | 30% 🚀 |
 | Phase 3: Live Cams | 8 | 0 | 0% |
 | Phase 4: JAV Sites | 20 | 0 | 0% |
 | Phase 5: Hentai/Anime | 10 | 0 | 0% |
@@ -377,6 +377,7 @@ Part of BeautifulSoup migration roadmap (site X/137)
 | 2025-11-02 | 9 (xvideos, xnxx, spankbang, xhamster, txxx, beeg, eporner, hqporner, porntrex) | 10/137 | Phase 1 completed – high-priority providers on BeautifulSoup/API parsers |
 | 2025-11-03 | 4 (drtuber, tnaflix, pornhat+7 related, pornone) | 14/137 | Phase 2 started – 20% complete |
 | 2025-11-04 | 1 (anybunny) | 15/137 | Continued Phase 2 – migrated Anybunny to BeautifulSoup |
+| 2025-11-05 | 1 (sxyprn) | 16/137 | Phase 2 – migrated Sxyprn to BeautifulSoup |
 
 **Estimated Timeline** (at 1 site/week):
 - Phase 1 completion: ~9 weeks

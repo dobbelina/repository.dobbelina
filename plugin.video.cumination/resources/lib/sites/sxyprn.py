@@ -45,19 +45,34 @@ def List(url):
         utils.notify('SEARCH', 'Nothing Found.')
         return
 
-    items = listhtml.split("div class='post_el_small'")
-    items.pop(0)
-    for item in items:
-        iurl, name = re.findall(r"href='([^']+)'\s*title='([^']+)", item)[0]
+    soup = utils.parse_html(listhtml)
+    video_items = soup.select('div.post_el_small')
+
+    for item in video_items:
+        link = item.select_one('a[href]')
+        if not link:
+            continue
+
+        href = utils.safe_get_attr(link, 'href')
+        title = utils.safe_get_attr(link, 'title')
+        if not href or not title:
+            continue
+
+        videopage = urllib_parse.urljoin(site.url, href)
+        name = title
+
         if 'http' in name:
             urls = re.findall(r'(http[^\s]+)', name)
-            name = re.sub(r'(http[^\s]+)', '', name)
-            iurl = '|'.join(urls) + '@'
-        elif iurl.startswith('/'):
-            iurl = site.url[:-1] + iurl
+            if urls:
+                name = re.sub(r'(http[^\s]+)', '', name)
+                iurl = '|'.join(urls) + '@'
+            else:
+                iurl = videopage
+        else:
+            iurl = videopage
 
         info = utils.cleantext(name)
-        if name.startswith('#'):
+        if info.startswith('#'):
             name = info[1:].split('#')[0]
         else:
             name = info.split('#')[0]
@@ -65,35 +80,28 @@ def List(url):
             name = name.split('Cast:')[0]
         if 'cast:' in name:
             name = name.split('cast:')[0]
-        name = name.strip()
-        name = name.replace('\n', ' ')
+        name = name.strip().replace('\n', ' ')
         if name.startswith('{') and name.endswith('}'):
             name = name.strip('{}')
 
-        thumb = quality = duration = ''
-        t = re.search(r"data-src='([^']+)", item)
-        if t:
-            thumb = t.group(1)
-            if thumb.startswith('//'):
-                thumb = 'http:' + thumb
-        else:
-            t = re.search(r"src='([^']+)", item)
-            if t:
-                thumb = t.group(1)
-                if thumb.startswith('//'):
-                    thumb = 'http:' + thumb
+        img_tag = item.select_one('img')
+        thumb = utils.safe_get_attr(img_tag, 'data-src', ['data-original', 'data-lazy', 'src'])
+        if thumb and thumb.startswith('//'):
+            thumb = 'https:' + thumb
 
-        t = re.search(r"duration_small.+?';?>([\d:]+)", item)
-        if t:
-            duration = t.group(1) if ':' in t.group(1) else ''
+        duration_tag = item.select_one('.duration_small, [class*="duration"]')
+        duration = utils.safe_get_text(duration_tag)
+        if duration and ':' not in duration:
+            duration = ''
 
-        t = re.search(r"bitrate.+?';?>([^<]+)", item)
-        if t:
-            quality = t.group(1)
+        quality_tag = item.select_one('.bitrate')
+        quality = utils.safe_get_text(quality_tag)
 
-        v = re.search("href='([^']+)' aria-label", item, re.IGNORECASE | re.DOTALL)
-        if v:
-            videopage = site.url + v.group(1)
+        aria_link = item.select_one('a[aria-label]')
+        if aria_link:
+            aria_href = utils.safe_get_attr(aria_link, 'href')
+            if aria_href:
+                videopage = urllib_parse.urljoin(site.url, aria_href)
 
         contexturl = (utils.addon_sys
                       + "?mode={}.Lookupinfo".format(site.module_name)
@@ -102,24 +110,30 @@ def List(url):
 
         site.add_download_link(name, iurl, 'Playvid', thumb, info, duration=duration, quality=quality, contextm=contextmenu)
 
-    if "class='ctrl_el'" in listhtml:
-        if '/popular/' in url or '/orgasm/' in url:
-            currpage = re.findall(r"class='ctrl_el\s*ctrl_sel'>([^<]+)", listhtml)[0]
-            lastpage = re.findall(r"class='ctrl_el'>([^<]+)", listhtml)[-1]
-            if int(currpage) < int(lastpage):
-                npage = re.findall(r"class='ctrl_el\s*ctrl_sel'>.+?href='([^']+)", listhtml)[0]
-                if npage.startswith('/'):
-                    npage = site.url[:-1] + npage
-                site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpage, lastpage), npage, 'List', site.img_next)
-        else:
-            npage = re.search(r"href='([^']+)'\s*class='tdn'><div\s*class='next_page", listhtml)
-            if npage:
-                npage = npage.group(1)
-                if npage.startswith('/'):
-                    npage = site.url[:-1] + npage
-                currpage = re.findall(r"class='ctrl_el\s*ctrl_sel'>([^<]+)", listhtml)[0]
-                lastpage = re.findall(r"class='ctrl_el'>([^<]+)", listhtml)[-1]
-                site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpage, lastpage), npage, 'List', site.img_next)
+    curr_el = soup.select_one('.ctrl_el.ctrl_sel')
+    ctrl_items = soup.select('.ctrl_el')
+    currpage = utils.safe_get_text(curr_el).strip() if curr_el else ''
+    lastpage = utils.safe_get_text(ctrl_items[-1]).strip() if ctrl_items else ''
+
+    next_href = ''
+    if curr_el:
+        next_link = curr_el.find_next('a', class_='ctrl_el')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+
+    if not next_href:
+        next_wrapper = soup.select_one('div.next_page')
+        if next_wrapper:
+            parent = next_wrapper.find_parent('a')
+            if parent:
+                next_href = utils.safe_get_attr(parent, 'href')
+
+    if next_href:
+        next_url = urllib_parse.urljoin(site.url, next_href)
+        label = 'Next Page...'
+        if currpage and lastpage:
+            label = 'Next Page... (Currently in Page {0} of {1})'.format(currpage, lastpage)
+        site.add_dir(label, next_url, 'List', site.img_next)
 
     utils.eod()
 
@@ -135,11 +149,37 @@ def ssut51(j):
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url, site.url)
-    cats = re.compile(r"href='([^']+)'><div\s*class='htag_el'.+?data-src='([^']+).+?#([^<]+).+?count'>([^<]+)").findall(cathtml)
-    for caturl, img, name, count in cats:
-        name += ' [COLOR deeppink]({0})[/COLOR]'.format(count)
-        caturl = site.url[:-1] + caturl
-        img = 'http:' + img
+    soup = utils.parse_html(cathtml)
+
+    for anchor in soup.select('a[href]'):
+        wrapper = anchor.select_one('div.htag_el')
+        if not wrapper:
+            continue
+
+        caturl = utils.safe_get_attr(anchor, 'href')
+        if not caturl:
+            continue
+        caturl = urllib_parse.urljoin(site.url, caturl)
+
+        img_tag = wrapper.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'data-src', ['data-original', 'data-lazy', 'src'])
+        if img and img.startswith('//'):
+            img = 'https:' + img
+
+        tag_name = ''
+        for text in wrapper.stripped_strings:
+            if text.startswith('#'):
+                tag_name = text.lstrip('#')
+                break
+        count = utils.safe_get_text(wrapper.select_one('.count'))
+
+        if not tag_name:
+            tag_name = utils.safe_get_text(wrapper)
+
+        name = utils.cleantext(tag_name)
+        if count:
+            name += ' [COLOR deeppink]({0})[/COLOR]'.format(count)
+
         site.add_dir(name, caturl, 'List', img)
     utils.eod()
 
@@ -147,9 +187,19 @@ def Cat(url):
 @site.register()
 def Stars(url):
     cathtml = utils.getHtml(url, site.url)
-    cats = re.compile(r"href='([^']+)'\s*target='_blank'><div\s*class='top_sub_el\s*top_sub_el_ps'><span\s*class='top_sub_el_key_ps'>([^<]+)").findall(cathtml)
-    for caturl, name in cats:
-        caturl = site.url[:-1] + caturl
+    soup = utils.parse_html(cathtml)
+
+    for anchor in soup.select('a[target="_blank"][href]'):
+        block = anchor.select_one('.top_sub_el.top_sub_el_ps')
+        if not block:
+            continue
+
+        caturl = urllib_parse.urljoin(site.url, utils.safe_get_attr(anchor, 'href'))
+        name = utils.safe_get_text(block.select_one('.top_sub_el_key_ps'))
+        if not name:
+            name = utils.safe_get_text(block)
+
+        name = utils.cleantext(name)
         site.add_dir(name, caturl, 'List', '')
     utils.eod()
 
