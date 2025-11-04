@@ -17,6 +17,7 @@
 
 ### Medium-Priority Sites Migrated
 - **sxyprn** – Listings, categories, and pornstar directories refactored to BeautifulSoup with resilient pagination.
+- **pornkai** – API-driven listings parsed via BeautifulSoup with guarded pagination fallbacks and refreshed categories.
 
 ### Already Compliant (API/JSON)
 - **pornhub** (migrated in v1.1.165)
@@ -30,17 +31,19 @@
 - Unified pagination handling across Phase 1 providers to degrade gracefully on layout tweaks.
 - Retained contextual menus/favorites support while removing brittle regex chains.
 - Sustained image hotlink protection by preserving referer headers where required.
+- Migrated PornKai listings & categories to BeautifulSoup with guarded pagination and context menu parity.
 
 ---
 
 ## 🔍 Testing Status
 - `python3 -m compileall plugin.video.cumination/resources/lib`
 - Manual Kodi validation pending for each migrated provider (listing, pagination, playback, favorites).
+- Added pytest coverage for PornKai BeautifulSoup parser fixtures (listings, pagination, categories).
 
 ---
 
 ## 📈 Roadmap Impact
-- BeautifulSoup migration progress: **16/137 sites (Phase 2 underway)**.
+- BeautifulSoup migration progress: **17/137 sites (Phase 2 underway)**.
 - Next focus: Continue Phase 2 mainstream providers (20-site batch).
 
 ---

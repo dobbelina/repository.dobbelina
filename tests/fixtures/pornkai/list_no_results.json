@@ -1,0 +1,3 @@
+{
+  "template": "<div class=\"thumbnail\"><a class=\"thumbnail_link\" href=\"/videos/abc\"><img src='https://cdn.example.com/thumb3.jpg' /><span class=\"trigger_pop th_wrap\">Solo Clip</span></a></div>"
+}
