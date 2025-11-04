@@ -4,7 +4,7 @@
 
 **Started**: 2025-11-01
 **Current Version**: v1.1.165
-**Progress**: 16/137 sites (11.7%) migrated
+**Progress**: 17/137 sites (12.4%) migrated
 
 ---
 
@@ -60,34 +60,7 @@ These are the highest-traffic mainstream sites that break most often.
 
 ---
 
-### 🧰 New BeautifulSoup listing helper
-
-`resources.lib.utils.soup_videos_list` consolidates the common "loop through CSS selectors" pattern introduced during migrations.  Define a selectors dictionary that describes the item nodes, URL attribute, optional image/duration/quality selectors, and pagination metadata.  The helper will:
-
-- Iterate matching BeautifulSoup elements in document order (deduplicating across multiple selectors).
-- Resolve relative URLs and thumbnails with `urllib_parse.urljoin` using the site base URL.
-- Extract optional duration/quality strings via `safe_get_attr`/`safe_get_text` so missing fields simply fall back to empty strings.
-- Automatically add the "Next Page" directory entry when pagination selectors resolve, while also returning pagination metadata for advanced flows.
-
-When migrating a site, build the selectors dictionary inline and call:
-
-```
-selectors = {
-    'items': 'a.video-card',
-    'url': {'attr': 'href'},
-    'title': {'selector': ['img', None], 'attr': 'alt', 'text': True, 'clean': True},
-    'thumbnail': {'selector': 'img', 'attr': 'data-src', 'fallback_attrs': ['src']},
-    'duration': {'selector': '.time', 'text': True},
-    'pagination': {'selector': {'query': 'a.next', 'scope': 'soup'}, 'attr': 'href'}
-}
-utils.soup_videos_list(site, soup, selectors, play_mode='Playvid')
-```
-
-This keeps new modules focused on selectors instead of manual loops, speeding up migrations and keeping pagination behavior consistent.
-
----
-
-### 🎯 Phase 2: Medium Priority Sites (6/20 completed - 30%)
+### 🎯 Phase 2: Medium Priority Sites (7/20 completed - 35%)
 
 Secondary mainstream sites with good traffic.
 
@@ -99,7 +72,7 @@ Secondary mainstream sites with good traffic.
 | pornone | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | anybunny | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | sxyprn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
-| pornkai | ⏳ Pending | Mainstream | |
+| pornkai | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration with resilient pagination |
 | whoreshub | ⏳ Pending | Mainstream | |
 | yespornplease | ⏳ Pending | Mainstream | |
 | porngo | ⏳ Pending | Mainstream | |
@@ -379,9 +352,9 @@ Part of BeautifulSoup migration roadmap (site X/137)
 ### Overall Progress
 
 - **Total Sites**: 137
-- **Completed**: 16 (11.7%)
+- **Completed**: 17 (12.4%)
 - **In Progress**: 0
-- **Remaining**: 121 (88.3%)
+- **Remaining**: 120 (87.6%)
 
 ### Phase Progress
 
@@ -389,7 +362,7 @@ Part of BeautifulSoup migration roadmap (site X/137)
 |-------|-------|-----------|------------|
 | Phase 0: Infrastructure | 3 items | 3 | 100% ✅ |
 | Phase 1: High Priority | 10 | 10 | 100% ✅ |
-| Phase 2: Medium Priority | 20 | 6 | 30% 🚀 |
+| Phase 2: Medium Priority | 20 | 7 | 35% 🚀 |
 | Phase 3: Live Cams | 8 | 0 | 0% |
 | Phase 4: JAV Sites | 20 | 0 | 0% |
 | Phase 5: Hentai/Anime | 10 | 0 | 0% |
@@ -406,6 +379,7 @@ Part of BeautifulSoup migration roadmap (site X/137)
 | 2025-11-03 | 4 (drtuber, tnaflix, pornhat+7 related, pornone) | 14/137 | Phase 2 started – 20% complete |
 | 2025-11-04 | 1 (anybunny) | 15/137 | Continued Phase 2 – migrated Anybunny to BeautifulSoup |
 | 2025-11-05 | 1 (sxyprn) | 16/137 | Phase 2 – migrated Sxyprn to BeautifulSoup |
+| 2025-11-06 | 1 (pornkai) | 17/137 | Phase 2 – migrated PornKai with BeautifulSoup parser & tests |
 
 **Estimated Timeline** (at 1 site/week):
 - Phase 1 completion: ~9 weeks

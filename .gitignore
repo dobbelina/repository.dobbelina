@@ -8,3 +8,5 @@ VLC Parser/
 Kodi Flaresolverr Autostarter/
 __pycache__/
 AGENTS.md
+
+.pytest_cache/

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(jar -tf:*)",
+      "Bash(jar -xf:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
