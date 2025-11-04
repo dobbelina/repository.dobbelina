@@ -36,3 +36,10 @@ broken sites/catchers, or make a pull request.**
 
 
 
+
+## Working from a Fork
+
+If you're maintaining your own fork of this repository and want to ensure pull
+requests stay in your namespace, see
+[`docs/fork_pr_workflow.md`](docs/fork_pr_workflow.md) for a short checklist on
+verifying remotes, pushing branches, and targeting your fork when opening PRs.

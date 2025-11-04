@@ -825,11 +825,34 @@ def get_sucuri_cookie(html):
     )
 
 
-def postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoCookie=None):
-    return cache.cacheFunction(_postHtml, url, form_data, headers, json_data, compression, NoCookie)
+def postHtml(url, form_data=None, headers=None, json_data=None, compression=True, NoCookie=None):
+    """Cached wrapper around :func:`_postHtml` with safe default arguments.
+
+    Using ``None`` as the default prevents callers from accidentally sharing
+    mutable dictionaries between invocations which could lead to leaked
+    headers, form payloads, or JSON bodies.  The previous implementation used
+    ``{}`` which is instantiated only once at function definition time.
+    """
+
+    return cache.cacheFunction(
+        _postHtml,
+        url,
+        {} if form_data is None else form_data,
+        {} if headers is None else headers,
+        {} if json_data is None else json_data,
+        compression,
+        NoCookie,
+    )
 
 
-def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoCookie=None):
+def _postHtml(url, form_data=None, headers=None, json_data=None, compression=True, NoCookie=None):
+    if form_data is None:
+        form_data = {}
+    if headers is None:
+        headers = {}
+    if json_data is None:
+        json_data = {}
+
     if form_data:
         form_data = urllib_parse.urlencode(form_data)
         form_data = form_data if PY2 else six.b(form_data)
@@ -942,7 +965,9 @@ def _postHtml(url, form_data={}, headers={}, json_data={}, compression=True, NoC
     return data
 
 
-def checkUrl(url, headers={}):
+def checkUrl(url, headers=None):
+    if headers is None:
+        headers = {}
     if 'User-Agent' not in headers.keys():
         headers.update({'User-Agent': USER_AGENT})
     req = Request(url, headers=headers)

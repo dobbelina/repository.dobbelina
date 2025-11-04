@@ -20,7 +20,6 @@ import re
 from six.moves import urllib_parse
 import xbmcplugin
 import xbmc
-from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
@@ -65,19 +64,54 @@ def List(url, page=1):
             listhtml = utils.getHtml(url, site.url, headers=hdr)
         else:
             return None
+    soup = utils.parse_html(listhtml)
 
-    match = re.compile(r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for private, videopage, name, img, hd, name2 in match:
-        hd = 'HD' if '>HD<' in hd else ''
-        name = utils.cleantext(name)
-        if 'private' in private.lower():
-            if not cblogged:
-                continue
-            private = "[COLOR blue] [PV][/COLOR] "
-        else:
-            private = ""
-        name = private + name
-        img = 'https:' + img if img.startswith('//') else img
+    seen = set()
+    video_items = soup.select('.video-item')
+    for item in video_items:
+        classes = [cls.lower() for cls in item.get('class', [])]
+        is_private = any('private' in cls for cls in classes)
+        if is_private and not cblogged:
+            continue
+
+        link = item.select_one('a[href]')
+        if not link:
+            continue
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
+        videopage = urllib_parse.urljoin(site.url, videopage)
+        if videopage in seen:
+            continue
+        seen.add(videopage)
+
+        name = utils.safe_get_attr(link, 'title')
+        if not name:
+            title_tag = item.select_one('.title, .video-title')
+            name = utils.safe_get_text(title_tag)
+        if not name:
+            name = utils.safe_get_text(link)
+        name = utils.cleantext(name) if name else 'Video'
+
+        hd = ''
+        if item.select_one('.hd, .quality-hd, .label-hd, .is-hd, .video-hd'):
+            hd = 'HD'
+        elif ' HD' in item.get_text(' ', strip=True).upper():
+            hd = 'HD'
+
+        prefix = ""
+        if is_private:
+            prefix = "[COLOR blue] [PV][/COLOR] "
+        name = prefix + name
+
+        img_tag = item.select_one('img[data-original], img[data-src], img[data-lazy], img[src]')
+        img = utils.safe_get_attr(img_tag, 'data-original', ['data-src', 'data-lazy', 'src'])
+        if img and img.startswith('//'):
+            img = 'https:' + img
+
+        duration_tag = item.select_one('.clock, .duration, .time, .video-duration')
+        duration = utils.safe_get_text(duration_tag)
+
         contextmenu = None
         if cblogged:
             contextadd = (utils.addon_sys
@@ -91,43 +125,29 @@ def List(url, page=1):
             contextmenu = [('[COLOR violet]Add to CWB favorites[/COLOR]', 'RunPlugin(' + contextadd + ')'),
                            ('[COLOR violet]Delete from CWB favorites[/COLOR]', 'RunPlugin(' + contextdel + ')')]
 
-        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=name2, quality=hd)
+        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration, quality=hd)
 
-    if re.search(r'<li\s*class="next"><a', listhtml, re.DOTALL | re.IGNORECASE):
-        lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lastp = '/{}'.format(lastp[0]) if lastp else ''
-        if not page:
-            page = 1
-        npage = page + 1
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('li.next a, a.next, a[rel="next"]')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                nurl = urllib_parse.urljoin(url, next_href)
+                last_link = pagination.select_one('li.last a, a.last')
+                lastp = ''
+                if last_link:
+                    last_href = utils.safe_get_attr(last_link, 'href')
+                    if last_href:
+                        lm = re.search(r'(\d+)(?:/)?$', last_href.rstrip('/'))
+                        if lm:
+                            lastp = '/{}'.format(lm.group(1))
 
-        if '/categories/' in url:
-            if '/{}/'.format(page) in url:
-                nurl = url.replace(str(page), str(npage))
-            else:
-                nurl = url + '{}/'.format(npage)
-        elif '/search/' in url:
-            if 'from_videos={0:02d}'.format(page) in url:
-                nurl = url.replace('from_videos={0:02d}'.format(page), 'from_videos={0:02d}'.format(npage))
-            else:
-                searchphrase = url.split('/')[-2]
-                nurl = url + '?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos={1:02d}'.format(searchphrase, npage)
-        elif '/favourites/' in url:
-            if 'from_my_fav_videos={0:02d}'.format(page) in url:
-                nurl = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
-            else:
-                utils.kodilog(' favorites pagination error')
-                nurl = url
-        elif '/playlists/' in url:
-            if '?mode' not in url:
-                url += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=added2fav_date&from=1'
-            if 'from={}'.format(page) in url:
-                nurl = url.replace('from={}'.format(page), 'from={}'.format(npage))
-            else:
-                utils.kodilog(' playlist pagination error')
-                nurl = url
-        else:
-            nurl = site.url[:-1] + re.compile(r'next"><a\s*href="(/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
+                if not page:
+                    page = 1
+                npage = page + 1
+
+                site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
     utils.eod()
 
 
@@ -163,9 +183,40 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile(r'"item"\s*href="([^"]+)"\s*title="([^"]+)">\n\s*<div.+?src="([^"]+).+?videos">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, name2 in match:
-        name = utils.cleantext(name) + ' [COLOR cyan][{}][/COLOR]'.format(name2)
+    soup = utils.parse_html(cathtml)
+
+    seen = set()
+    for item in soup.select('a.item[href], div.item a[href]'):
+        catpage = utils.safe_get_attr(item, 'href')
+        if not catpage:
+            continue
+        catpage = urllib_parse.urljoin(site.url, catpage)
+        if catpage in seen:
+            continue
+        seen.add(catpage)
+
+        name = utils.safe_get_attr(item, 'title')
+        if not name:
+            title_tag = item.select_one('.title, .video-title')
+            name = utils.safe_get_text(title_tag)
+        if not name:
+            name = utils.safe_get_text(item)
+        name = utils.cleantext(name) if name else 'Category'
+
+        parent = item
+        if item.parent and hasattr(item.parent, 'select_one'):
+            parent = item.parent
+
+        img_tag = parent.select_one('img[data-original], img[data-src], img[data-lazy], img[src]')
+        img = utils.safe_get_attr(img_tag, 'data-original', ['data-src', 'data-lazy', 'src']) if img_tag else None
+        if img and img.startswith('//'):
+            img = 'https:' + img
+
+        count_tag = parent.select_one('.videos, .totalplaylist, .count, .video-count, .videos-count')
+        count = utils.safe_get_text(count_tag)
+        if count:
+            name += ' [COLOR cyan][{}][/COLOR]'.format(count)
+
         site.add_dir(name, catpage, 'List', img, 1)
     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
@@ -174,23 +225,61 @@ def Categories(url):
 @site.register()
 def Playlists(url, page=1):
     cathtml = utils.getHtml(url, site.url)
-    img = str(randint(1, 4))
-    match = re.compile(r'class="item\s*".+?href="([^"]+)"\s*title="([^"]+)".+?class="thumb video' + img + '.+?data-original="([^"]+)".+?class="totalplaylist">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, name2 in match:
-        name = utils.cleantext(name) + ' [COLOR cyan][{}][/COLOR]'.format(name2)
-        site.add_dir(name, catpage, 'List', img, 1)
-    if re.search(r'<li\s*class="next"><a', cathtml, re.DOTALL | re.IGNORECASE):
-        lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(cathtml)
-        lastp = '/{}'.format(lastp[0]) if lastp else ''
-        if not page:
-            page = 1
-        npage = page + 1
-        if 'from={0:02d}'.format(page) in url:
-            nurl = url.replace('from={0:02d}'.format(page), 'from={0:02d}'.format(npage))
-        else:
-            utils.kodilog(' Playlists pagination error')
-            nurl = url
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'Playlists', site.img_next, npage)
+    soup = utils.parse_html(cathtml)
+
+    seen = set()
+    for item in soup.select('div.item, li.item, article.item'):
+        link = item.select_one('a[href]')
+        if not link:
+            continue
+        catpage = utils.safe_get_attr(link, 'href')
+        if not catpage:
+            continue
+        catpage = urllib_parse.urljoin(site.url, catpage)
+        if catpage in seen:
+            continue
+        seen.add(catpage)
+
+        name = utils.safe_get_attr(link, 'title')
+        if not name:
+            title_tag = item.select_one('.title, .video-title')
+            name = utils.safe_get_text(title_tag)
+        if not name:
+            name = utils.safe_get_text(link)
+        name = utils.cleantext(name) if name else 'Playlist'
+
+        img_tag = item.select_one('img[data-original], img[data-src], img[data-lazy], img[src]')
+        thumb = utils.safe_get_attr(img_tag, 'data-original', ['data-src', 'data-lazy', 'src']) if img_tag else None
+        if thumb and thumb.startswith('//'):
+            thumb = 'https:' + thumb
+
+        count_tag = item.select_one('.totalplaylist, .videos, .count, .video-count')
+        count = utils.safe_get_text(count_tag)
+        if count:
+            name += ' [COLOR cyan][{}][/COLOR]'.format(count)
+
+        site.add_dir(name, catpage, 'List', thumb, 1)
+
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('li.next a, a.next, a[rel="next"]')
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                nurl = urllib_parse.urljoin(url, next_href)
+                last_link = pagination.select_one('li.last a, a.last')
+                lastp = ''
+                if last_link:
+                    last_href = utils.safe_get_attr(last_link, 'href')
+                    if last_href:
+                        lm = re.search(r'(\d+)(?:/)?$', last_href.rstrip('/'))
+                        if lm:
+                            lastp = '/{}'.format(lm.group(1))
+
+                if not page:
+                    page = 1
+                npage = page + 1
+                site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'Playlists', site.img_next, npage)
     utils.eod()
 
 

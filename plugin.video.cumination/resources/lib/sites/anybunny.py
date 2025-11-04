@@ -17,6 +17,8 @@
 '''
 
 import re
+from six.moves import urllib_parse
+
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -36,14 +38,39 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r"class='nuyrfe'\s*href='([^']+).+?src='([^']+).+?alt='([^']+)", re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name in match:
+    soup = utils.parse_html(listhtml)
+
+    video_items = soup.select('a.nuyrfe, a[href*="/videos/"]')
+    for item in video_items:
+        videopage = utils.safe_get_attr(item, 'href')
+        if not videopage:
+            continue
+
+        videopage = urllib_parse.urljoin(site.url, videopage)
+
+        img_tag = item.select_one('img')
+        img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-lazy', 'data-original'])
+
+        name = utils.safe_get_attr(img_tag, 'alt')
+        if not name:
+            name = utils.safe_get_text(item)
         name = utils.cleantext(name)
+
+        if not name:
+            continue
+
         site.add_download_link(name, videopage, 'Playvid', img, '')
 
-    nextp = re.compile('href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if nextp:
-        site.add_dir('Next Page', nextp.group(1), 'List', site.img_next)
+    next_link = (
+        soup.find('a', attrs={'rel': 'next'})
+        or soup.find('a', class_=lambda c: c and 'next' in c.lower())
+        or soup.find('a', string=lambda s: s and 'next' in s.lower())
+    )
+
+    next_url = utils.safe_get_attr(next_link, 'href') if next_link else ''
+    if next_url:
+        next_url = urllib_parse.urljoin(site.url, next_url)
+        site.add_dir('Next Page', next_url, 'List', site.img_next)
 
     utils.eod()
 
@@ -57,22 +84,91 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile("<a href='/top/([^']+)'>.*?src='([^']+)' alt='([^']+)'", re.DOTALL | re.IGNORECASE).findall(cathtml)
-    match = sorted(match, key=lambda x: x[2])
-    for catid, img, name in match:
-        catpage = site.url + 'new/' + catid
-        site.add_dir(name, catpage, 'List', img)
+    soup = utils.parse_html(cathtml)
+
+    categories = []
+    for anchor in soup.select("a[href*='/top/']"):
+        img_tag = anchor.select_one('img')
+        if not img_tag:
+            continue
+
+        href = utils.safe_get_attr(anchor, 'href')
+        if '/top/' not in href:
+            continue
+
+        try:
+            catid = href.split('/top/', 1)[1]
+        except IndexError:
+            continue
+
+        name = utils.safe_get_attr(img_tag, 'alt')
+        if not name:
+            name = utils.safe_get_text(anchor)
+        name = utils.cleantext(name)
+        if not name:
+            continue
+
+        img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-lazy', 'data-original'])
+        catpage = urllib_parse.urljoin(site.url, 'new/' + catid.lstrip('/'))
+        categories.append((name.lower(), name, catpage, img))
+
+    seen = set()
+    for _, display_name, catpage, img in sorted(categories):
+        if catpage in seen:
+            continue
+        seen.add(catpage)
+        site.add_dir(display_name, catpage, 'List', img)
     utils.eod()
 
 
 @site.register()
 def Categories2(url):
     cathtml = utils.getHtml(url, '')
-    match = re.compile(r"href='/top/([^']+)'>([^<]+)</a> <a>([^)]+\))", re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catid, name, videos in match:
-        name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
-        catpage = site.url + 'new/' + catid
-        site.add_dir(name, catpage, 'List', '')
+    soup = utils.parse_html(cathtml)
+
+    entries = []
+    for anchor in soup.select("a[href*='/top/']"):
+        href = utils.safe_get_attr(anchor, 'href')
+        if '/top/' not in href:
+            continue
+
+        try:
+            catid = href.split('/top/', 1)[1]
+        except IndexError:
+            continue
+
+        name = utils.cleantext(utils.safe_get_text(anchor))
+        if not name:
+            continue
+
+        videos = ''
+        for sibling in anchor.next_siblings:
+            if isinstance(sibling, str):
+                text = sibling.strip()
+            else:
+                text = utils.safe_get_text(sibling)
+
+            if not text:
+                continue
+
+            match = re.search(r'\(([^)]+)\)', text)
+            if match:
+                videos = match.group(1)
+                break
+
+        label = name
+        if videos:
+            label = f"{name} [COLOR deeppink]({videos})[/COLOR]"
+
+        catpage = urllib_parse.urljoin(site.url, 'new/' + catid.lstrip('/'))
+        entries.append((name.lower(), label, catpage))
+
+    seen = set()
+    for _, label, catpage in sorted(entries):
+        if catpage in seen:
+            continue
+        seen.add(catpage)
+        site.add_dir(label, catpage, 'List', '')
     utils.eod()
 
 

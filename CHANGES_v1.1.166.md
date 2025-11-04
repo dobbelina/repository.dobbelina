@@ -15,6 +15,9 @@
 - **hqporner** – Listings & category pages moved to BeautifulSoup selectors.
 - **porntrex** – Complex grid converted to BeautifulSoup with refactored pagination.
 
+### Medium-Priority Sites Migrated
+- **sxyprn** – Listings, categories, and pornstar directories refactored to BeautifulSoup with resilient pagination.
+
 ### Already Compliant (API/JSON)
 - **pornhub** (migrated in v1.1.165)
 - **xhamster**, **txxx**, **beeg** (JSON/API driven – no regex remaining)
@@ -37,8 +40,8 @@
 ---
 
 ## 📈 Roadmap Impact
-- BeautifulSoup migration progress: **10/137 sites (Phase 1 complete)**.
-- Next focus: Phase 2 mainstream providers (20-site batch).
+- BeautifulSoup migration progress: **16/137 sites (Phase 2 underway)**.
+- Next focus: Continue Phase 2 mainstream providers (20-site batch).
 
 ---
 

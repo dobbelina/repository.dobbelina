@@ -18,6 +18,7 @@
 
 
 import re
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.jsunpack import unpack
 from resources.lib.adultsite import AdultSite
@@ -63,20 +64,62 @@ def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, '')
 
-    match = re.compile(r'col-sm-6.+?<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    soup = utils.parse_html(listhtml)
 
-    for videopage, img, name, quality, duration in match:
+    seen = set()
+    cards = soup.select('.col-sm-6, .video-item, .item')
+    for card in cards:
+        link = card.select_one('a[href]')
+        if not link:
+            continue
+
+        videopage = utils.safe_get_attr(link, 'href')
+        if not videopage:
+            continue
+        videopage = urllib_parse.urljoin(siteurl, videopage)
+        if videopage in seen:
+            continue
+        seen.add(videopage)
+
+        name = utils.safe_get_attr(link, 'title')
+        if not name:
+            title_tag = card.select_one('.title-truncate, .title, h3, h4')
+            name = utils.safe_get_text(title_tag)
+        if not name:
+            name = utils.safe_get_text(link)
         name = utils.cleantext(name)
-        if videopage.startswith('/'):
-            videopage = siteurl[:-1] + videopage
-        hd = 'HD' if '>HD<' in quality else ''
+        if not name:
+            name = 'Video'
+
+        img_tag = card.select_one('img[data-src], img[data-original], img[src]')
+        img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-original']) if img_tag else None
+        if img and img.startswith('//'):
+            img = 'https:' + img
+        elif img and img.startswith('/'):
+            img = urllib_parse.urljoin(siteurl, img)
+
+        duration_tag = card.select_one('.duration, .time, .video-duration, .clock, .label-duration')
+        duration = utils.safe_get_text(duration_tag)
+
+        hd = ''
+        quality_tag = card.select_one('.badge, .label, .quality, .hd, .label-hd')
+        if quality_tag and 'HD' in quality_tag.get_text().upper():
+            hd = 'HD'
+
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
-    try:
-        next_page = re.compile('href="([^"]+)" class="prevnext"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        page_nr = re.findall(r'\d+', next_page)[-1]
-        site.add_dir('Next Page ({})'.format(page_nr), next_page, 'List', site.img_next)
-    except:
-        pass
+
+    next_link = soup.select_one('a.prevnext[href], .pagination li.next a, a[rel="next"]')
+    if next_link:
+        next_page = utils.safe_get_attr(next_link, 'href')
+        if next_page:
+            next_page = urllib_parse.urljoin(siteurl, next_page)
+            page_nr = ''
+            match = re.findall(r'\d+', next_page)
+            if match:
+                page_nr = match[-1]
+            label = 'Next Page ({})'.format(page_nr) if page_nr else 'Next Page'
+            site.add_dir(label, next_page, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -95,14 +138,41 @@ def Search(url, keyword=None):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, '')
-    if 'reallifecam.to' in url or 'voyeur-house.to' in url:
-        match = re.compile('div class="col-sm.+?a href="([^"]+)"(>).+?title-truncate">([^<]+)<.+?class="badge">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    else:
-        match = re.compile(r'col-sm.+?a href="([^"]+)">.+?img src="([^"]+)"\s*title="([^"]+)".+?"float-right">\s*(\d+)\s*<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, img, name, videos in match:
-        catpage = siteurl[:-1] + catpage if catpage.startswith('/') else catpage
-        img = siteurl[:-1] + img if img.startswith('/') else site.img_cat
-        name = utils.cleantext(name.strip()).title() + " [COLOR deeppink]" + videos + "[/COLOR]"
+    soup = utils.parse_html(cathtml)
+
+    seen = set()
+    containers = soup.select('.col-sm, .col-sm-6, .category, .category-item, .list-group-item')
+    for container in containers:
+        link = container.select_one('a[href]')
+        if not link:
+            continue
+
+        catpage = utils.safe_get_attr(link, 'href')
+        if not catpage:
+            continue
+        catpage = urllib_parse.urljoin(siteurl, catpage)
+        if catpage in seen:
+            continue
+        seen.add(catpage)
+
+        img_tag = container.select_one('img[data-src], img[data-original], img[src]')
+        img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-original']) if img_tag else site.img_cat
+        if img and img.startswith('//'):
+            img = 'https:' + img
+        elif img and img.startswith('/'):
+            img = urllib_parse.urljoin(siteurl, img)
+
+        name_tag = container.select_one('.title-truncate, .title, h4, h3, .name')
+        name = utils.safe_get_text(name_tag) if name_tag else utils.safe_get_text(link)
+        name = utils.cleantext(name.strip()).title()
+        if not name:
+            name = 'Category'
+
+        count_tag = container.select_one('.badge, .float-right, .videos, .video-count, .count')
+        videos = utils.safe_get_text(count_tag)
+        if videos:
+            name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
+
         site.add_dir(name, catpage, 'List', img)
     utils.eod()
 
@@ -113,9 +183,10 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url)
 
-    match = re.compile(r'class="video-embedded">\s*<iframe[^>]+src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    if match:
-        refurl = match[0]
+    soup = utils.parse_html(videopage)
+    iframe = soup.select_one('.video-embedded iframe, iframe[src]')
+    refurl = utils.safe_get_attr(iframe, 'src') if iframe else None
+    if refurl:
         if '/vtplayer.net/' in refurl:
             refurl = refurl.replace('embed-', '')
         if vp.resolveurl.HostedMediaFile(refurl):
