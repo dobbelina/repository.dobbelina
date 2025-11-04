@@ -1,0 +1,4 @@
+{
+  "template": "<div class=\"thumbnail\"><a class=\"thumbnail_link\" href=\"/videos/12345\"><img src='https://cdn.example.com/thumb1.jpg' /><span class=\"trigger_pop th_wrap\">Video One</span></a><span class=\"meta\"><i class=\"fa fa-clock\"></i>12:34</span></div><div class=\"thumbnail\"><a class=\"thumbnail_link\" href=\"/videos/67890\" title=\"Video Two Title\"><img data-src='https://cdn.example.com/thumb2.jpg' /><span class=\"trigger_pop th_wrap\">Video Two</span></a><span class=\"meta\"><i class=\"fa fa-clock\"></i>09:10</span></div>",
+  "results_remaining": 130
+}
