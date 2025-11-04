@@ -40,37 +40,34 @@ def List(url):
     listhtml = utils.getHtml(url, '')
     soup = utils.parse_html(listhtml)
 
-    video_items = soup.select('a.nuyrfe, a[href*="/videos/"]')
-    for item in video_items:
-        videopage = utils.safe_get_attr(item, 'href')
-        if not videopage:
-            continue
+    selectors = {
+        'items': ['a.nuyrfe', 'a[href*="/videos/"]'],
+        'url': {'attr': 'href'},
+        'title': {
+            'selector': 'img',
+            'attr': 'alt',
+            'text': True,
+            'clean': True,
+            'fallback_selectors': [None]
+        },
+        'thumbnail': {
+            'selector': 'img',
+            'attr': 'src',
+            'fallback_attrs': ['data-src', 'data-lazy', 'data-original']
+        },
+        'pagination': {
+            'selectors': [
+                {'query': 'a[rel="next"]', 'scope': 'soup'},
+                {'query': 'a.next', 'scope': 'soup'}
+            ],
+            'text_matches': ['next'],
+            'attr': 'href',
+            'label': 'Next Page',
+            'mode': 'List'
+        }
+    }
 
-        videopage = urllib_parse.urljoin(site.url, videopage)
-
-        img_tag = item.select_one('img')
-        img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-lazy', 'data-original'])
-
-        name = utils.safe_get_attr(img_tag, 'alt')
-        if not name:
-            name = utils.safe_get_text(item)
-        name = utils.cleantext(name)
-
-        if not name:
-            continue
-
-        site.add_download_link(name, videopage, 'Playvid', img, '')
-
-    next_link = (
-        soup.find('a', attrs={'rel': 'next'})
-        or soup.find('a', class_=lambda c: c and 'next' in c.lower())
-        or soup.find('a', string=lambda s: s and 'next' in s.lower())
-    )
-
-    next_url = utils.safe_get_attr(next_link, 'href') if next_link else ''
-    if next_url:
-        next_url = urllib_parse.urljoin(site.url, next_url)
-        site.add_dir('Next Page', next_url, 'List', site.img_next)
+    utils.soup_videos_list(site, soup, selectors, play_mode='Playvid', description='')
 
     utils.eod()
 

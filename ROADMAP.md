@@ -36,6 +36,7 @@
   - [x] `parse_html(html)` - Parse HTML into BeautifulSoup object
   - [x] `safe_get_attr(element, attr, fallback_attrs, default)` - Safe attribute extraction
   - [x] `safe_get_text(element, default, strip)` - Safe text extraction
+  - [x] `soup_videos_list(site, soup, selectors, ...)` - Shared BeautifulSoup video listing helper
 - [x] Test infrastructure with pilot site
 
 ### 🚀 Phase 1: High Priority Sites (10/10 completed)
@@ -56,6 +57,33 @@ These are the highest-traffic mainstream sites that break most often.
 | 10 | **porntrex** | ✅ **COMPLETED** | BeautifulSoup migration for listings/pagination |
 
 **Status**: Phase 1 completed 🎉
+
+---
+
+### 🧰 New BeautifulSoup listing helper
+
+`resources.lib.utils.soup_videos_list` consolidates the common "loop through CSS selectors" pattern introduced during migrations.  Define a selectors dictionary that describes the item nodes, URL attribute, optional image/duration/quality selectors, and pagination metadata.  The helper will:
+
+- Iterate matching BeautifulSoup elements in document order (deduplicating across multiple selectors).
+- Resolve relative URLs and thumbnails with `urllib_parse.urljoin` using the site base URL.
+- Extract optional duration/quality strings via `safe_get_attr`/`safe_get_text` so missing fields simply fall back to empty strings.
+- Automatically add the "Next Page" directory entry when pagination selectors resolve, while also returning pagination metadata for advanced flows.
+
+When migrating a site, build the selectors dictionary inline and call:
+
+```
+selectors = {
+    'items': 'a.video-card',
+    'url': {'attr': 'href'},
+    'title': {'selector': ['img', None], 'attr': 'alt', 'text': True, 'clean': True},
+    'thumbnail': {'selector': 'img', 'attr': 'data-src', 'fallback_attrs': ['src']},
+    'duration': {'selector': '.time', 'text': True},
+    'pagination': {'selector': {'query': 'a.next', 'scope': 'soup'}, 'attr': 'href'}
+}
+utils.soup_videos_list(site, soup, selectors, play_mode='Playvid')
+```
+
+This keeps new modules focused on selectors instead of manual loops, speeding up migrations and keeping pagination behavior consistent.
 
 ---
 

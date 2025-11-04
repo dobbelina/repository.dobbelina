@@ -170,6 +170,312 @@ def safe_get_text(element, default='', strip=True):
     return text.strip() if strip else text
 
 
+def soup_videos_list(site, soup, selectors, play_mode='Playvid', contextm=None,
+                     base_url=None, fanart=None, description=None):
+    """Build a list of videos from BeautifulSoup selections.
+
+    The helper processes BeautifulSoup fragments using declarative selector
+    configuration.  Each selector entry can specify CSS queries, attribute
+    fallbacks and post-processing flags so migrated sites avoid bespoke
+    scraping loops.
+
+    Args:
+        site (AdultSite): Active site dispatcher instance.
+        soup (BeautifulSoup): Parsed document or fragment to operate on.
+        selectors (dict): Configuration describing how to extract data.
+        play_mode (str): Mode registered on ``site`` that plays a video.
+        contextm (Any): Optional context menu definition passed to
+            ``site.add_download_link``.
+        base_url (str): Base URL used for ``urljoin`` resolution.  Defaults
+            to ``selectors['base_url']`` or ``site.url``.
+        fanart (str): Optional fanart passed to ``site.add_download_link``.
+        description (str or dict): Static or selector driven description.
+
+    Selector dictionary keys:
+
+    ``items``
+        CSS selector (string), list of selectors or callable returning
+        iterable of item elements. Required.
+
+    ``url``
+        Dict describing how to extract the video page URL. Supports ``attr``
+        and ``fallback_attrs`` keys.  URLs are automatically resolved with
+        :func:`urllib_parse.urljoin`.
+
+    ``title`` / ``name``
+        Dict describing how to extract the display title. ``clean`` defaults
+        to ``True`` so the helper automatically runs :func:`cleantext`.
+
+    ``thumbnail`` / ``image``
+        Dict describing the thumbnail. Pass ``join=False`` to skip
+        :func:`urllib_parse.urljoin` resolution.
+
+    ``duration`` / ``quality`` / ``description``
+        Optional dict entries following the same pattern.
+
+    ``pagination`` / ``next``
+        Dict describing how to locate pagination links. Supports the same
+        selector options plus ``text_matches`` (list of lower-cased search
+        terms), ``label``, ``mode``, ``icon``, ``add_dir`` and ``base_url``.
+
+    Returns:
+        dict: Metadata including ``items`` added and pagination details.
+    """
+
+    def _ensure_iterable(value):
+        if value is None:
+            return []
+        if isinstance(value, (list, tuple)):
+            return list(value)
+        return [value]
+
+    def _select_element(root, config, *, default_scope='item'):
+        if config is None:
+            return root
+        if isinstance(config, dict):
+            scope = config.get('scope', default_scope)
+            selectors_list = None
+            if 'selectors' in config:
+                selectors_list = config['selectors']
+            elif 'selector' in config:
+                selectors_list = config['selector']
+            elif 'query' in config:
+                selectors_list = config['query']
+            selectors_list = _ensure_iterable(selectors_list)
+            if not selectors_list:
+                selectors_list = [None]
+            base = soup if scope == 'soup' else root
+            for selector in selectors_list:
+                element = None
+                if callable(selector):
+                    element = selector(root, soup)
+                elif isinstance(selector, dict):
+                    element = _select_element(root, selector, default_scope=scope)
+                elif selector is None or selector == ':self':
+                    element = base
+                else:
+                    if base is not None and hasattr(base, 'select_one'):
+                        element = base.select_one(selector)
+                if element:
+                    return element
+            if selectors_list:
+                return None
+            return base
+        if callable(config):
+            return config(root, soup)
+        if isinstance(config, (list, tuple)):
+            for selector in config:
+                element = _select_element(root, selector, default_scope=default_scope)
+                if element:
+                    return element
+            return root
+        if config is None or config == ':self':
+            return root
+        base = soup if default_scope == 'soup' else root
+        if base is not None and hasattr(base, 'select_one'):
+            return base.select_one(config)
+        return base
+
+    def _extract_value(item, config, *, default=''):
+        if config is None:
+            return default
+        if callable(config) and not isinstance(config, dict):
+            return config(item, soup)
+        local_config = config.copy() if isinstance(config, dict) else config
+        if isinstance(local_config, dict):
+            element = _select_element(item, local_config)
+            attr_name = local_config.get('attr')
+            fallback_attrs = list(local_config.get('fallback_attrs', []) or [])
+            if not attr_name and fallback_attrs:
+                attr_name = fallback_attrs.pop(0)
+            value = default
+            if attr_name and element:
+                value = safe_get_attr(element, attr_name, fallback_attrs or None, default=default)
+            if (not value or value == default) and local_config.get('text'):
+                strip = local_config.get('strip', True)
+                value = safe_get_text(element, default=default, strip=strip)
+            if not value:
+                value = local_config.get('default', default)
+            if (not value or value == default) and local_config.get('fallback_selectors'):
+                fallback_selectors = _ensure_iterable(local_config.get('fallback_selectors'))
+                for fallback in fallback_selectors:
+                    fallback_config = local_config.copy()
+                    fallback_config.pop('fallback_selectors', None)
+                    fallback_config['selector'] = fallback
+                    value = _extract_value(item, fallback_config, default=default)
+                    if value and value != default:
+                        break
+            if local_config.get('clean'):
+                value = cleantext(value)
+            transform = local_config.get('transform')
+            if callable(transform):
+                value = transform(value, item)
+            return value
+        return default
+
+    if soup is None:
+        return {'items': 0, 'skipped': 0, 'pagination': {}}
+
+    result = {
+        'items': 0,
+        'skipped': 0,
+        'pagination': {},
+        'next_url': None,
+        'next_label': None,
+        'next_mode': None,
+        'pagination_added': False
+    }
+
+    base_url = base_url or selectors.get('base_url') or getattr(site, 'url', '')
+    items_conf = selectors.get('items')
+    if items_conf is None:
+        return result
+
+    if callable(items_conf):
+        raw_items = list(items_conf(soup))
+    else:
+        raw_items = []
+        seen_ids = set()
+        for selector in _ensure_iterable(items_conf):
+            if selector is None:
+                continue
+            for candidate in soup.select(selector):
+                marker = id(candidate)
+                if marker in seen_ids:
+                    continue
+                raw_items.append(candidate)
+                seen_ids.add(marker)
+
+    filter_fn = selectors.get('filter')
+
+    url_conf = selectors.get('url') or selectors.get('link')
+    title_conf = selectors.get('title') or selectors.get('name')
+    image_conf = selectors.get('thumbnail') or selectors.get('image')
+    duration_conf = selectors.get('duration')
+    quality_conf = selectors.get('quality')
+    description_conf = selectors.get('description')
+    static_description = ''
+    if isinstance(description, dict) or callable(description):
+        description_conf = description
+    elif isinstance(description, str):
+        static_description = description
+
+    for item in raw_items:
+        if filter_fn and not filter_fn(item):
+            result['skipped'] += 1
+            continue
+
+        video_url = _extract_value(item, url_conf, default='') if url_conf else ''
+        if not video_url:
+            result['skipped'] += 1
+            continue
+        url_base = base_url
+        if isinstance(url_conf, dict) and url_conf.get('base_url'):
+            url_base = url_conf['base_url']
+        video_url = urllib_parse.urljoin(url_base or '', video_url)
+
+        local_title_conf = title_conf.copy() if isinstance(title_conf, dict) else title_conf
+        if isinstance(local_title_conf, dict):
+            local_title_conf.setdefault('clean', True)
+        if local_title_conf:
+            name = _extract_value(item, local_title_conf, default='')
+        else:
+            name = cleantext(safe_get_text(item, default=''))
+
+        if not name:
+            result['skipped'] += 1
+            continue
+
+        thumb = _extract_value(item, image_conf, default='') if image_conf else ''
+        if thumb:
+            join_thumb = True
+            thumb_base = base_url
+            if isinstance(image_conf, dict):
+                join_thumb = image_conf.get('join', True)
+                thumb_base = image_conf.get('base_url', thumb_base)
+            if join_thumb:
+                thumb = urllib_parse.urljoin(thumb_base or '', thumb)
+
+        duration = _extract_value(item, duration_conf, default='') if duration_conf else ''
+        quality = _extract_value(item, quality_conf, default='') if quality_conf else ''
+
+        if isinstance(description_conf, dict):
+            desc_value = _extract_value(item, description_conf, default=static_description)
+        elif callable(description_conf):
+            desc_value = description_conf(item, soup)
+        else:
+            desc_value = description_conf if isinstance(description_conf, str) else static_description
+
+        site.add_download_link(
+            name,
+            video_url,
+            play_mode,
+            thumb,
+            desc=desc_value or '',
+            contextm=contextm,
+            fanart=fanart,
+            duration=duration,
+            quality=quality
+        )
+        result['items'] += 1
+
+    pagination_conf = selectors.get('pagination') or selectors.get('next')
+    if pagination_conf:
+        pagination_local = pagination_conf.copy()
+        if 'scope' not in pagination_local:
+            pagination_local['scope'] = 'soup'
+        next_element = _select_element(soup, pagination_local, default_scope='soup')
+        if next_element is soup:
+            next_element = None
+
+        text_matches = [m.lower() for m in pagination_conf.get('text_matches', []) if isinstance(m, str)]
+
+        attr_name = pagination_conf.get('attr', 'href')
+        fallback_attrs = list(pagination_conf.get('fallback_attrs', []) or [])
+        if not attr_name and fallback_attrs:
+            attr_name = fallback_attrs.pop(0)
+        attr_fallbacks = fallback_attrs or None
+
+        next_url = ''
+        if next_element and attr_name:
+            next_url = safe_get_attr(next_element, attr_name, attr_fallbacks, default='')
+
+        if not next_url and text_matches:
+            tag_name = pagination_conf.get('tag', 'a')
+            for candidate in soup.find_all(tag_name):
+                text = safe_get_text(candidate, default='').lower()
+                if any(match in text for match in text_matches):
+                    next_element = candidate
+                    next_url = safe_get_attr(candidate, attr_name, attr_fallbacks, default='') if attr_name else ''
+                    if next_url:
+                        break
+
+        if next_url:
+            next_base = pagination_conf.get('base_url', base_url)
+            next_url = urllib_parse.urljoin(next_base or '', next_url)
+            label = pagination_conf.get('label', 'Next Page')
+            mode = pagination_conf.get('mode', 'List')
+            icon = pagination_conf.get('icon', getattr(site, 'img_next', None))
+            add_dir = pagination_conf.get('add_dir', True)
+            if add_dir:
+                site.add_dir(label, next_url, mode, icon)
+            result.update({
+                'next_url': next_url,
+                'next_label': label,
+                'next_mode': mode,
+                'pagination_added': bool(add_dir)
+            })
+            result['pagination'] = {
+                'url': next_url,
+                'label': label,
+                'mode': mode,
+                'icon': icon,
+                'added': bool(add_dir)
+            }
+
+    return result
+
+
 @url_dispatcher.register()
 def clear_cache():
     """
@@ -1803,6 +2109,13 @@ def fix_url(url, siteurl=None, baseurl=None):
 
 
 def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None, skip=None, thumbnails=None):
+    """Legacy regex driven listing helper.
+
+    .. deprecated:: 1.1.167
+       New migrations should prefer :func:`soup_videos_list`, which offers
+       resilient BeautifulSoup parsing while keeping pagination metadata in a
+       consistent format.
+    """
     if thumbnails:
         thumbnails = Thumbnails(site.name)
 
