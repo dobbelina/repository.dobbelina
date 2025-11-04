@@ -17,8 +17,10 @@ import os
 import sqlite3
 import json
 import re
+import socket
+
 from resources.lib import utils
-from six.moves import urllib_parse
+from six.moves import urllib_error, urllib_parse
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
@@ -54,12 +56,21 @@ def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
+    # utils._getHtml will automatically use FlareSolverr if Cloudflare is detected
     try:
+        utils.kodilog("Stripchat: Fetching model list from API")
         response = utils._getHtml(url)
-    except:
+        if not response:
+            utils.kodilog("Stripchat: Empty response from API")
+            utils.notify('Error', 'Could not load Stripchat models')
+            return None
+        data = json.loads(response)
+        model_list = data["models"]
+        utils.kodilog("Stripchat: Successfully loaded {} models".format(len(model_list)))
+    except Exception as e:
+        utils.kodilog("Stripchat: Error loading model list: {}".format(str(e)))
+        utils.notify('Error', 'Could not load Stripchat models')
         return None
-    data = json.loads(response)
-    model_list = data["models"]
 
     for model in model_list:
         name = utils.cleanhtml(model['username'])
@@ -103,14 +114,14 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", ('%' + ".stripst.com" + '%',))
+            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", ('%' + ".strpst.com" + '%',))
             for row in list:
                 conn.execute("DELETE FROM sizes WHERE idtexture = ?;", (row[0],))
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".stripst.com" + '%',))
+            conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".strpst.com" + '%',))
             if showdialog:
                 utils.notify('Finished', 'Stripchat images cleared')
     except:
@@ -122,58 +133,221 @@ def Playvid(url, name):
     vp = utils.VideoPlayer(name, IA_check='IA')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
-    # Prefer external widget URL (often different CDN host and more stable)
-    try:
-        data = json.loads(utils._getHtml(altUrl + name))["models"][0]
-        if data.get("username"):
-            url = data['stream']['url']
-    except Exception:
-        pass
+    original_url = url  # Backup from listing
+    model_ref = 'https://stripchat.com/{0}'.format(name)
+    probe_headers = {'User-Agent': utils.USER_AGENT,
+                     'Origin': 'https://stripchat.com',
+                     'Referer': model_ref}
 
-    # Convert any fixed-quality URL to master playlist to enumerate variants
-    url = re.sub(r'_\d+p\.', '.', url)
+    def _decode_stripchat_url(raw_value):
+        if not raw_value:
+            return None
+        if isinstance(raw_value, bytes):
+            value = raw_value.decode('utf-8', errors='ignore')
+        else:
+            value = str(raw_value)
+        try:
+            value = value.encode('utf-8').decode('unicode_escape')
+        except Exception:
+            pass
+        value = value.replace('\\/', '/')
+        value = value.replace('&amp;', '&')
+        value = value.replace('\\u0026', '&')
+        value = value.replace('\\u003F', '?')
+        value = value.replace('\\u003D', '=')
+        return value.strip()
+
+    candidate_urls = []
+
+    def _add_candidate(kind, raw_value):
+        normalized = _decode_stripchat_url(raw_value)
+        if not normalized or not normalized.startswith('http'):
+            return None
+        if any(normalized == existing for _, existing in candidate_urls):
+            return normalized
+        candidate_urls.append((kind, normalized))
+        return normalized
+
+    def _probe_candidate(test_url):
+        try:
+            utils._getHtml(test_url, site.url, headers=probe_headers, error='raise')
+            return True, None, None
+        except urllib_error.HTTPError as http_err:
+            return False, 'http_error', 'HTTP {}'.format(http_err.code)
+        except urllib_error.URLError as url_err:
+            reason = getattr(url_err, 'reason', None)
+            if isinstance(reason, socket.gaierror):
+                return False, 'dns_failure', str(reason)
+            return False, 'url_error', str(url_err)
+        except Exception as gen_err:
+            return False, 'general_error', str(gen_err)
+
+    def _select_candidate():
+        last_result = None
+        for kind, candidate_url in candidate_urls:
+            success, err_type, err_msg = _probe_candidate(candidate_url)
+            if success:
+                return {'kind': kind, 'url': candidate_url, 'status': 'ok'}
+            if err_type == 'dns_failure':
+                utils.kodilog(
+                    "Stripchat: DNS lookup failed for {} candidate ({}). Will still attempt playback.".format(
+                        kind, err_msg))
+                return {'kind': kind, 'url': candidate_url, 'status': 'dns_warning'}
+            utils.kodilog("Stripchat: {} candidate rejected during probe ({})".format(kind.capitalize(), err_msg))
+            last_result = {'kind': kind, 'url': candidate_url, 'status': err_type or 'failed', 'error': err_msg}
+        return last_result or {'kind': 'listing', 'url': original_url, 'status': 'fallback'}
+
+    def _extract_stream_url_from_page():
+        try:
+            page_html = utils._getHtml(model_ref, site.url, headers={'User-Agent': utils.USER_AGENT}, error='return')
+        except Exception as page_err:
+            utils.kodilog("Stripchat: Error loading model page for fallback: {}".format(str(page_err)))
+            return None
+        if not page_html:
+            return None
+        patterns = [
+            r'"hlsUrl"\s*:\s*"([^"]+?\.m3u8[^"]*)"',
+            r'"streamUrl"\s*:\s*"([^"]+?\.m3u8[^"]*)"',
+            r'https:\\/\\/edge-[^"\\]+?\.m3u8[^"\\]*',
+            r'https://edge-[^"\\]+?\.m3u8[^"\\]*',
+        ]
+        matches = []
+        seen = set()
+        for pattern in patterns:
+            for match in re.findall(pattern, page_html, re.IGNORECASE):
+                candidate = _decode_stripchat_url(match)
+                if not candidate or not candidate.startswith('http'):
+                    continue
+                if candidate in seen:
+                    continue
+                seen.add(candidate)
+                matches.append(candidate)
+        if not matches:
+            return None
+        matches.sort(key=lambda u: (0 if 'master' in u or '_source' in u else 1, -len(u)))
+        selected = matches[0]
+        utils.kodilog("Stripchat: Extracted stream URL from page fallback: {}".format(selected[:80]))
+        return selected
+
+    api_primary = None
+    try:
+        utils.kodilog("Stripchat: Fetching stream URL from external widget API")
+        response = utils._getHtml(altUrl + name, error='raise')
+        data = json.loads(response)["models"][0]
+        stream_data = data.get('stream') or {}
+        api_primary = _add_candidate('api', stream_data.get('url') or stream_data.get('hlsUrl') or stream_data.get('hls_url'))
+        if api_primary:
+            utils.kodilog("Stripchat: Got stream URL from external API: {}".format(api_primary[:80]))
+        else:
+            utils.kodilog("Stripchat: External API returned no stream URL, using listing URL")
+        variant_map = stream_data.get('streams') or {}
+        if isinstance(variant_map, dict):
+            for key in ('source', '1080p', '720p', '480p', '360p'):
+                variant_url = variant_map.get(key) or variant_map.get(key.upper())
+                normalized_variant = _add_candidate('api', variant_url)
+                if normalized_variant and normalized_variant != api_primary:
+                    utils.kodilog("Stripchat: Added API variant {}: {}".format(key, normalized_variant[:80]))
+    except Exception as e:
+        utils.kodilog("Stripchat: Error fetching from external API (will use listing URL): {}".format(str(e)))
+
+    selection = _select_candidate()
+
+    if selection['kind'] == 'listing':
+        page_fallback = _extract_stream_url_from_page()
+        if page_fallback and not any(url == page_fallback for _, url in candidate_urls):
+            _add_candidate('page', page_fallback)
+            selection = _select_candidate()
+
+    url = selection['url']
+    selected_base_url = url
+    if selection['kind'] != 'api':
+        utils.kodilog("Stripchat: Using {} URL for playback".format(selection['kind']))
+
     vp.progress.update(60, "[CR]Selecting best quality[CR]")
 
     # Prepare headers (for IA and for probing master)
     ua = urllib_parse.quote(utils.USER_AGENT, safe='')
     origin_enc = urllib_parse.quote('https://stripchat.com', safe='')
-    referer_enc = urllib_parse.quote('https://stripchat.com/', safe='')
+    referer_enc = urllib_parse.quote(model_ref, safe='')
     ia_headers = 'User-Agent={0}&Origin={1}&Referer={2}'.format(ua, origin_enc, referer_enc)
 
     # Choose quality based on setting
     force_best = utils.addon.getSetting('stripchat_best') == 'true'
     if force_best:
-        # Try to fetch master and pick highest quality variant (prefer NAME="source")
         try:
             master_headers = {'User-Agent': utils.USER_AGENT,
                               'Origin': 'https://stripchat.com',
-                              'Referer': 'https://stripchat.com/'}
-            master_txt = utils._getHtml(url, site.url, headers=master_headers)
-            best_url = None
-            best_pixels = -1
-            lines = master_txt.splitlines()
-            for i, line in enumerate(lines):
-                if line.startswith('#EXT-X-STREAM-INF:'):
-                    info = line
-                    if i + 1 < len(lines):
-                        vurl = lines[i + 1].strip()
-                        # Prefer explicit "source" name
-                        if 'NAME="source"' in info or 'NAME=source' in info:
-                            best_url = urllib_parse.urljoin(url, vurl)
-                            best_pixels = 10**9
-                            break
-                        # Else evaluate by RESOLUTION WxH
-                        m = re.search(r'RESOLUTION=(\d+)x(\d+)', info)
-                        if m:
-                            w, h = int(m.group(1)), int(m.group(2))
-                            pixels = w * h
+                              'Referer': model_ref}
+            master_url = url
+            master_txt = None
+            mvar = re.search(r'_(\d+)p\.m3u8$', url)
+            if mvar:
+                candidate = re.sub(r'_(\d+)p\.m3u8$', '.m3u8', url)
+                try:
+                    master_txt = utils._getHtml(candidate, site.url, headers=master_headers, error='raise')
+                    master_url = candidate
+                    utils.kodilog("Stripchat: Using probed master manifest: {}".format(master_url))
+                except Exception:
+                    master_txt = None
+            if master_txt is None:
+                try:
+                    master_txt = utils._getHtml(master_url, site.url, headers=master_headers, error='raise')
+                except Exception:
+                    master_txt = None
+
+            if master_txt:
+                best_pixels = -1
+                best_avc_pixels = -1
+                lines = master_txt.splitlines()
+                best_avc_url = None
+                best_any_url = None
+                for i, line in enumerate(lines):
+                    if line.startswith('#EXT-X-STREAM-INF:'):
+                        info = line
+                        if i + 1 < len(lines):
+                            vurl = lines[i + 1].strip()
+                            abs_vurl = urllib_parse.urljoin(master_url, vurl)
+                            if 'NAME="source"' in info or 'NAME=source' in info:
+                                url = abs_vurl
+                                utils.kodilog("Stripchat: Selected variant by NAME=source")
+                                break
+                            m = re.search(r'RESOLUTION=(\d+)x(\d+)', info)
+                            pixels = -1
+                            if m:
+                                w, h = int(m.group(1)), int(m.group(2))
+                                pixels = w * h
+                            is_avc = 'CODECS="avc1' in info or 'codecs="avc1' in info
+                            if is_avc and pixels > best_avc_pixels:
+                                best_avc_pixels = pixels
+                                best_avc_url = abs_vurl
                             if pixels > best_pixels:
                                 best_pixels = pixels
-                                best_url = urllib_parse.urljoin(url, vurl)
-            if best_url:
-                url = best_url
+                                best_any_url = abs_vurl
+                else:
+                    if best_avc_url:
+                        url = best_avc_url
+                        utils.kodilog("Stripchat: Selected AVC variant")
+                    elif best_any_url:
+                        url = best_any_url
+                        utils.kodilog("Stripchat: Selected highest-res variant")
         except Exception:
             pass
+
+    try:
+        utils._getHtml(url, site.url, headers=probe_headers, error='raise')
+    except urllib_error.HTTPError as http_err:
+        utils.kodilog("Stripchat: Probe HTTP error {} for {} (reverting to base URL)".format(http_err.code, url))
+        url = selected_base_url
+    except urllib_error.URLError as url_err:
+        reason = getattr(url_err, 'reason', None)
+        if isinstance(reason, socket.gaierror):
+            utils.kodilog("Stripchat: DNS lookup failed during final probe ({}). Will attempt playback anyway.".format(reason))
+        else:
+            utils.kodilog("Stripchat: Probe failed for {} ({}). Reverting to base URL".format(url, url_err))
+            url = selected_base_url
+    except Exception as gen_err:
+        utils.kodilog("Stripchat: Probe exception for {} ({}). Reverting to base URL".format(url, gen_err))
+        url = selected_base_url
 
     vp.progress.update(85, "[CR]Found Stream[CR]")
     vp = utils.VideoPlayer(name, IA_check='IA')
