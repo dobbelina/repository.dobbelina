@@ -17,6 +17,7 @@ import os
 import sqlite3
 import json
 import re
+
 from resources.lib import utils
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
@@ -54,12 +55,21 @@ def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
+    # utils._getHtml will automatically use FlareSolverr if Cloudflare is detected
     try:
+        utils.kodilog("Stripchat: Fetching model list from API")
         response = utils._getHtml(url)
-    except:
+        if not response:
+            utils.kodilog("Stripchat: Empty response from API")
+            utils.notify('Error', 'Could not load Stripchat models')
+            return None
+        data = json.loads(response)
+        model_list = data["models"]
+        utils.kodilog("Stripchat: Successfully loaded {} models".format(len(model_list)))
+    except Exception as e:
+        utils.kodilog("Stripchat: Error loading model list: {}".format(str(e)))
+        utils.notify('Error', 'Could not load Stripchat models')
         return None
-    data = json.loads(response)
-    model_list = data["models"]
 
     for model in model_list:
         name = utils.cleanhtml(model['username'])
@@ -103,14 +113,14 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", ('%' + ".stripst.com" + '%',))
+            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", ('%' + ".strpst.com" + '%',))
             for row in list:
                 conn.execute("DELETE FROM sizes WHERE idtexture = ?;", (row[0],))
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".stripst.com" + '%',))
+            conn.execute("DELETE FROM texture WHERE url LIKE ?;", ('%' + ".strpst.com" + '%',))
             if showdialog:
                 utils.notify('Finished', 'Stripchat images cleared')
     except:

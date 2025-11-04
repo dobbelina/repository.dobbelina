@@ -331,3 +331,24 @@ If this build doesn't work:
 ---
 
 **Good luck testing! 🚀**
+
+---
+
+## Automated checks
+
+Run the automated regression suite locally before opening a pull request:
+
+1. Install the test dependencies:
+   ```bash
+   python -m pip install -r requirements-test.txt
+   ```
+2. Ensure the Python sources still compile:
+   ```bash
+   python -m compileall plugin.video.cumination/resources/lib
+   ```
+3. Execute the pytest suite (includes HTML parsing and site regressions):
+   ```bash
+   pytest
+   ```
+
+The tests rely on lightweight Kodi stubs and canned HTML fixtures so they can run entirely outside of Kodi.

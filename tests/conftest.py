@@ -1,93 +1,132 @@
+import os
 import sys
 import types
-import urllib.parse
-import urllib.error
-import urllib.request
-import html.parser
-import http.cookiejar
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+PLUGIN_PATH = ROOT / "plugin.video.cumination"
 
-def pytest_configure(config):
-    """Configure stub Kodi modules for unit tests."""
+# Ensure the plugin package is importable when running tests
+if str(PLUGIN_PATH) not in sys.path:
+    sys.path.insert(0, str(PLUGIN_PATH))
 
-    # Avoid re-initializing when running multiple test sessions
-    if 'xbmc' in sys.modules:
+# Kodi-style scripts rely on positional argv entries provided by Kodi.
+if len(sys.argv) < 3:
+    sys.argv = ['plugin.video.cumination', '1', '']
+
+
+def _ensure_kodi_stubs():
+    """Install lightweight stubs for Kodi specific modules used by the addon."""
+    if 'kodi_six' in sys.modules:
         return
 
-    repo_root = Path(__file__).resolve().parents[1]
-    addon_root = repo_root / 'plugin.video.cumination'
-    profile_root = repo_root / '.kodi_profile'
-    profile_root.mkdir(exist_ok=True)
+    # xbmc core module -----------------------------------------------------
+    xbmc = types.ModuleType('kodi_six.xbmc')
+    xbmc.LOGDEBUG = 0
+    xbmc.LOGINFO = 1
+    xbmc.LOGNOTICE = 2
+    xbmc.LOGWARNING = 3
+    xbmc.LOGERROR = 4
 
-    fake_xbmc = types.ModuleType('xbmc')
-    fake_xbmc.LOGERROR = 0
-    fake_xbmc.LOGWARNING = 1
-    fake_xbmc.LOGINFO = 2
-    fake_xbmc.LOGNOTICE = 2
-    fake_xbmc.LOGDEBUG = 3
-    fake_xbmc.LOGFATAL = 4
-    fake_xbmc.LOGSEVERE = 5
-    fake_xbmc.executebuiltin = lambda *args, **kwargs: None
-    fake_xbmc.getSkinDir = lambda: 'estuary'
-    fake_xbmc.log = lambda *args, **kwargs: None
+    def _noop(*args, **kwargs):
+        return None
+
+    xbmc.log = _noop
+    xbmc.executebuiltin = _noop
+    xbmc.getSkinDir = lambda: 'skin.estuary'
 
     class _VideoStreamDetail:
         def __init__(self, **kwargs):
-            self.kwargs = kwargs
+            self.details = kwargs
 
-    fake_xbmc.VideoStreamDetail = _VideoStreamDetail
+    xbmc.VideoStreamDetail = _VideoStreamDetail
 
-    fake_xbmcplugin = types.ModuleType('xbmcplugin')
-    fake_xbmcplugin.addDirectoryItem = lambda *args, **kwargs: True
-    fake_xbmcplugin.endOfDirectory = lambda *args, **kwargs: True
-    fake_xbmcplugin.addSortMethod = lambda *args, **kwargs: None
+    # xbmcaddon module -----------------------------------------------------
+    xbmcaddon = types.ModuleType('kodi_six.xbmcaddon')
 
-    fake_xbmcaddon = types.ModuleType('xbmcaddon')
-
-    class _FakeAddon:
+    class _Addon:
         def __init__(self, addon_id=None):
             self.addon_id = addon_id or 'plugin.video.cumination'
-
-        def getAddonInfo(self, key):
-            if key == 'path':
-                return str(addon_root)
-            if key == 'profile':
-                return str(profile_root)
-            if key == 'version':
-                return '20.0.0'
-            return ''
-
-        def getLocalizedString(self, _):
-            return ''
-
-        def getSetting(self, key):
-            defaults = {
+            self._settings = {
                 'cache_time': '0',
                 'custom_favorites': 'false',
                 'favorites_path': '',
-                'duration_in_name': 'false',
-                'quality_in_name': 'false',
-                'posterfanart': 'false',
                 'customview': 'false',
                 'setview': '',
-                'favorder': 'date added',
-                'filter_listing': '',
+                'duration_in_name': 'false',
+                'quality_in_name': 'false',
             }
-            return defaults.get(key, '')
+
+        def getAddonInfo(self, key):
+            if key == 'path':
+                return str(PLUGIN_PATH)
+            if key == 'profile':
+                return str(ROOT / '.profile')
+            if key == 'version':
+                return '19.9'
+            return ''
+
+        def getSetting(self, key):
+            return self._settings.get(key, '')
+
+        def getLocalizedString(self, string_id):
+            return string_id
 
         def setSetting(self, key, value):
+            self._settings[key] = value
+
+    xbmcaddon.Addon = _Addon
+
+    # xbmcplugin module ----------------------------------------------------
+    xbmcplugin = types.ModuleType('kodi_six.xbmcplugin')
+    xbmcplugin.addDirectoryItem = lambda *args, **kwargs: True
+    xbmcplugin.endOfDirectory = _noop
+    xbmcplugin.setContent = _noop
+    xbmcplugin.addSortMethod = _noop
+
+    # xbmcgui module -------------------------------------------------------
+    xbmcgui = types.ModuleType('kodi_six.xbmcgui')
+
+    class _VideoInfoTag:
+        def setMediaType(self, *args, **kwargs):
             pass
 
-    fake_xbmcaddon.Addon = _FakeAddon
+        def setTitle(self, *args, **kwargs):
+            pass
 
-    fake_xbmcvfs = types.ModuleType('xbmcvfs')
-    fake_xbmcvfs.translatePath = lambda path: str(Path(path))
-    fake_xbmcvfs.exists = lambda path: Path(path).exists()
+        def setGenres(self, *args, **kwargs):
+            pass
 
-    fake_xbmcgui = types.ModuleType('xbmcgui')
+        def setDuration(self, *args, **kwargs):
+            pass
 
-    class _FakeDialogProgress:
+        def setPlot(self, *args, **kwargs):
+            pass
+
+        def setPlotOutline(self, *args, **kwargs):
+            pass
+
+        def addVideoStream(self, *args, **kwargs):
+            pass
+
+    class _ListItem:
+        def __init__(self, label=''):
+            self.label = label
+
+        def setInfo(self, *args, **kwargs):
+            pass
+
+        def setArt(self, *args, **kwargs):
+            pass
+
+        def getVideoInfoTag(self):
+            return _VideoInfoTag()
+
+    class _Dialog:
+        def notification(self, *args, **kwargs):
+            pass
+
+    class _DialogProgress:
         def create(self, *args, **kwargs):
             pass
 
@@ -97,95 +136,62 @@ def pytest_configure(config):
         def close(self):
             pass
 
-    class _FakeDialog:
-        def notification(self, *args, **kwargs):
-            pass
+    xbmcgui.ListItem = _ListItem
+    xbmcgui.Dialog = _Dialog
+    xbmcgui.DialogProgress = _DialogProgress
 
-    class _FakeListItem:
-        def __init__(self, *args, **kwargs):
-            self.props = {}
+    # xbmcvfs module -------------------------------------------------------
+    xbmcvfs = types.ModuleType('kodi_six.xbmcvfs')
 
-        def setInfo(self, *args, **kwargs):
-            pass
+    def _translate_path(path):
+        path_obj = Path(path)
+        if not path_obj.is_absolute():
+            path_obj = ROOT / path
+        return str(path_obj)
 
-        def addStreamInfo(self, *args, **kwargs):
-            pass
+    xbmcvfs.translatePath = _translate_path
+    xbmcvfs.exists = lambda path: Path(path).exists()
+    xbmcvfs.mkdirs = lambda path: Path(path).mkdir(parents=True, exist_ok=True)
 
-        def setArt(self, *args, **kwargs):
-            pass
+    # Assemble kodi_six package --------------------------------------------
+    kodi_six = types.ModuleType('kodi_six')
+    kodi_six.xbmc = xbmc
+    kodi_six.xbmcaddon = xbmcaddon
+    kodi_six.xbmcplugin = xbmcplugin
+    kodi_six.xbmcgui = xbmcgui
+    kodi_six.xbmcvfs = xbmcvfs
 
-        def setProperty(self, *args, **kwargs):
-            pass
+    sys.modules['kodi_six'] = kodi_six
+    sys.modules['kodi_six.xbmc'] = xbmc
+    sys.modules['kodi_six.xbmcaddon'] = xbmcaddon
+    sys.modules['kodi_six.xbmcplugin'] = xbmcplugin
+    sys.modules['kodi_six.xbmcgui'] = xbmcgui
+    sys.modules['kodi_six.xbmcvfs'] = xbmcvfs
 
-        def getVideoInfoTag(self):
-            class _Tag:
-                def setMediaType(self, *args, **kwargs):
-                    pass
+    # Provide top-level aliases that some modules may import directly.
+    sys.modules.setdefault('xbmc', xbmc)
+    sys.modules.setdefault('xbmcaddon', xbmcaddon)
+    sys.modules.setdefault('xbmcplugin', xbmcplugin)
+    sys.modules.setdefault('xbmcgui', xbmcgui)
+    sys.modules.setdefault('xbmcvfs', xbmcvfs)
 
-                def setTitle(self, *args, **kwargs):
-                    pass
-
-                def setGenres(self, *args, **kwargs):
-                    pass
-
-                def setDuration(self, *args, **kwargs):
-                    pass
-
-                def setPlot(self, *args, **kwargs):
-                    pass
-
-                def setPlotOutline(self, *args, **kwargs):
-                    pass
-
-                def addVideoStream(self, *args, **kwargs):
-                    pass
-
-            return _Tag()
-
-    fake_xbmcgui.DialogProgress = _FakeDialogProgress
-    fake_xbmcgui.Dialog = _FakeDialog
-    fake_xbmcgui.ListItem = _FakeListItem
-
-    fake_storage = types.ModuleType('StorageServer')
+    # StorageServer stub ---------------------------------------------------
+    storage_module = types.ModuleType('StorageServer')
 
     class _StorageServer:
         def __init__(self, *args, **kwargs):
-            self.table_name = ''
+            self.table_name = args[0] if args else 'default'
 
         def cacheDelete(self, *args, **kwargs):
             pass
 
-    fake_storage.StorageServer = _StorageServer
+    storage_module.StorageServer = _StorageServer
+    sys.modules['StorageServer'] = storage_module
 
-    fake_kodi_six = types.ModuleType('kodi_six')
-    fake_kodi_six.xbmc = fake_xbmc
-    fake_kodi_six.xbmcaddon = fake_xbmcaddon
-    fake_kodi_six.xbmcgui = fake_xbmcgui
-    fake_kodi_six.xbmcplugin = fake_xbmcplugin
-    fake_kodi_six.xbmcvfs = fake_xbmcvfs
 
-    fake_six = types.ModuleType('six')
-    fake_six.PY3 = True
-    fake_six.PY2 = False
-    fake_six.string_types = (str,)
-    fake_six.text_type = str
-    fake_six.binary_type = bytes
-    fake_six_moves = types.ModuleType('six.moves')
-    fake_six_moves.urllib_parse = urllib.parse
-    fake_six_moves.urllib_error = urllib.error
-    fake_six_moves.urllib_request = urllib.request
-    fake_six_moves.html_parser = html.parser
-    fake_six_moves.http_cookiejar = http.cookiejar
-    fake_six.moves = fake_six_moves
+_ensure_kodi_stubs()
 
-    sys.modules['xbmc'] = fake_xbmc
-    sys.modules['xbmcplugin'] = fake_xbmcplugin
-    sys.modules['xbmcaddon'] = fake_xbmcaddon
-    sys.modules['xbmcgui'] = fake_xbmcgui
-    sys.modules['xbmcvfs'] = fake_xbmcvfs
-    sys.modules['StorageServer'] = fake_storage
-    sys.modules['kodi_six'] = fake_kodi_six
-    sys.modules['six'] = fake_six
-    sys.modules['six.moves'] = fake_six_moves
 
-    sys.argv = ['plugin://plugin.video.cumination', '1', '', '']
+def read_fixture(filename):
+    """Return the contents of a fixture file from tests/fixtures."""
+    return (ROOT / 'tests' / 'fixtures' / filename).read_text(encoding='utf-8')
