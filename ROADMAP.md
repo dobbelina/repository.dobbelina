@@ -36,6 +36,7 @@
   - [x] `parse_html(html)` - Parse HTML into BeautifulSoup object
   - [x] `safe_get_attr(element, attr, fallback_attrs, default)` - Safe attribute extraction
   - [x] `safe_get_text(element, default, strip)` - Safe text extraction
+  - [x] `soup_videos_list(site, soup, selectors, ...)` - Shared BeautifulSoup video listing helper
 - [x] Test infrastructure with pilot site
 
 ### 🚀 Phase 1: High Priority Sites (10/10 completed)
