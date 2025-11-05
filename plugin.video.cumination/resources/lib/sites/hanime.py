@@ -17,6 +17,7 @@
 """
 
 import json
+import re
 import hashlib
 import time
 import xbmc
@@ -191,13 +192,14 @@ def hanime_play(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     videohtml = utils.getHtml(url)
-    jsondata = videohtml.split('<script>window.__NUXT__=')[1].split(';</script>')[0]
-    jsondata = json.loads(jsondata)
-    videos = jsondata["state"]["data"]["video"]["videos_manifest"]["servers"][0]["streams"]
+
+    match = re.compile(r'height:"(\d+)",.+?url:([^,]+),').findall(videohtml)
     sources = {}
-    for video in videos:
-        if video['url'] != "":
-            sources[video['height']] = video['url']
+    for height, videourl in match:
+        videourl = videourl.replace('"', '')
+        videourl = videourl.encode().decode('unicode-escape')
+        if videourl.startswith("http"):
+            sources[height] = videourl
 
     videourl = utils.prefquality(sources, sort_by=lambda x: int(x[:-1]), reverse=True)
     if videourl:

@@ -1,4 +1,2 @@
-[B]Version 1.1.157[/B]
-- camsoda - fix playback
-- terebon - fix playback
-- hanime - fix thumbnails
+[B]Version 1.1.158[/B]
+- hanime - fix playback
