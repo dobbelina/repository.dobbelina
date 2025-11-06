@@ -47,11 +47,59 @@ def List(url):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
-    data = utils._getHtml(url, site.url)
-    data = re.compile(r"models':\s*(.*?),\s*'", re.DOTALL | re.IGNORECASE).findall(data)[0]
-    data = re.sub(r'\s\s+', '', data)
-    data = data[:-2] + ']'
-    models = json.loads(data)
+    def _extract_models_payload(html):
+        """Return JSON array string for the models listing."""
+
+        soup = utils.parse_html(html)
+        for script_tag in soup.find_all('script'):
+            script_text = script_tag.string or script_tag.get_text()
+            if not script_text or 'models' not in script_text:
+                continue
+
+            for marker in ("models':", '"models":'):
+                idx = script_text.find(marker)
+                if idx == -1:
+                    continue
+
+                start = script_text.find('[', idx)
+                if start == -1:
+                    continue
+
+                depth = 0
+                for pos in range(start, len(script_text)):
+                    char = script_text[pos]
+                    if char == '[':
+                        depth += 1
+                    elif char == ']':
+                        depth -= 1
+                        if depth == 0:
+                            payload = script_text[start:pos + 1].strip()
+                            while payload.endswith(','):
+                                payload = payload[:-1].rstrip()
+                            return payload
+        return None
+
+    listhtml = utils._getHtml(url, site.url)
+    payload = _extract_models_payload(listhtml)
+
+    if not payload:
+        utils.kodilog('Naked: models payload not found, falling back to legacy parser')
+        match = re.search(r"models[\"']:\s*(\[[^\]]*\])", listhtml, re.DOTALL | re.IGNORECASE)
+        payload = match.group(1).strip() if match else None
+
+    if not payload:
+        utils.notify('Error', 'Unable to load naked.com models')
+        utils.eod()
+        return
+
+    try:
+        models = json.loads(payload)
+    except ValueError:
+        utils.kodilog('Naked: Failed to decode models JSON')
+        utils.notify('Error', 'Unable to parse naked.com models')
+        utils.eod()
+        return
+
     for model in models:
         name = model.get('model_seo_name').replace('-', ' ').title()
         age = model.get('age')

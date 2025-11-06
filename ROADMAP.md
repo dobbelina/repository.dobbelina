@@ -4,7 +4,7 @@
 
 **Started**: 2025-11-01
 **Current Version**: v1.1.181
-**Progress**: 17/137 sites (12.4%) migrated
+**Progress**: 18/137 sites (13.1%) migrated
 
 ---
 
@@ -93,7 +93,7 @@ Secondary mainstream sites with good traffic.
 
 ---
 
-### 📺 Phase 3: Live Cam Sites (0/8 completed)
+### 📺 Phase 3: Live Cam Sites (1/8 completed)
 
 **Note**: These sites had SQL injection fixes in v1.1.165. May need additional attention.
 
@@ -105,7 +105,7 @@ Secondary mainstream sites with good traffic.
 | camsoda | ⏳ Pending | Live Cams | SQL fixed in v1.1.165 |
 | cam4 | ⏳ Pending | Live Cams | SQL fixed in v1.1.165 |
 | streamate | ⏳ Pending | Live Cams | SQL fixed in v1.1.165 |
-| naked | ⏳ Pending | Live Cams | SQL fixed in v1.1.165 |
+| naked | ✅ **COMPLETED** | Live Cams | BeautifulSoup migration for inline JSON payload |
 | amateurtv | ⏳ Pending | Live Cams | SQL fixed in v1.1.165 |
 
 **Target**: Complete by end of Phase 3
