@@ -3,7 +3,7 @@
 **Project Goal**: Migrate all 137 sites from regex-based HTML parsing to BeautifulSoup4 for improved reliability and maintainability.
 
 **Started**: 2025-11-01
-**Current Version**: v1.1.165
+**Current Version**: v1.1.181
 **Progress**: 17/137 sites (12.4%) migrated
 
 ---
@@ -39,7 +39,7 @@
   - [x] `soup_videos_list(site, soup, selectors, ...)` - Shared BeautifulSoup video listing helper
 - [x] Test infrastructure with pilot site
 
-### 🚀 Phase 1: High Priority Sites (10/10 completed)
+### 🚀 Phase 1: High Priority Sites (7/10 completed - 70%)
 
 These are the highest-traffic mainstream sites that break most often.
 
@@ -49,14 +49,16 @@ These are the highest-traffic mainstream sites that break most often.
 | 2 | **xvideos** | ✅ **COMPLETED** | BeautifulSoup listing & pagination |
 | 3 | **xnxx** | ✅ **COMPLETED** | BeautifulSoup listing overhaul |
 | 4 | **spankbang** | ✅ **COMPLETED** | BeautifulSoup migration with modern markup |
-| 5 | **xhamster** | ✅ **COMPLETED** | JSON-driven parser already compliant |
-| 6 | **txxx** | ✅ **COMPLETED** | API/JSON parser, no regex required |
-| 7 | **beeg** | ✅ **COMPLETED** | API-based parser, no action needed |
+| 5 | **xhamster** | ⏳ Pending | Still contains regex-based category & pagination parsing |
+| 6 | **txxx** | ℹ️ API-based | JSON API already used for listings; no BeautifulSoup migration required |
+| 7 | **beeg** | ℹ️ API-based | JSON API already used for listings; no BeautifulSoup migration required |
 | 8 | **eporner** | ✅ **COMPLETED** | BeautifulSoup migration for listings/categories |
 | 9 | **hqporner** | ✅ **COMPLETED** | BeautifulSoup migration for listings/categories |
 | 10 | **porntrex** | ✅ **COMPLETED** | BeautifulSoup migration for listings/pagination |
 
-**Status**: Phase 1 completed 🎉
+**Status**: 7/10 BeautifulSoup migrations complete; remaining work focused on xhamster.
+
+> ℹ️ **Note**: `txxx` and `beeg` already rely on JSON APIs without regex parsing. They are monitored for regressions but are not counted toward the BeautifulSoup conversion totals.
 
 ---
 
@@ -188,7 +190,7 @@ Region-specific or non-English sites.
 
 ---
 
-### 📹 Phase 7: Niche & Specialty Sites (0/30 completed)
+### 📹 Phase 7: Niche & Specialty Sites (3/30 completed - 10%)
 
 Specialized content sites.
 
@@ -199,13 +201,13 @@ Specialized content sites.
 | vintagetube | ⏳ Pending | Vintage | |
 | tabootube | ⏳ Pending | Taboo | |
 | celebsroulette | ⏳ Pending | Celebrity | |
-| reallifecam | ⏳ Pending | Voyeur | |
+| reallifecam | ✅ **COMPLETED** | Voyeur | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
 | noodlemagazine | ⏳ Pending | Amateur | |
 | erome | ⏳ Pending | Amateur | |
 | thothub | ⏳ Pending | OnlyFans leaks | |
-| camwhoresbay | ⏳ Pending | Cam recordings | |
+| camwhoresbay | ✅ **COMPLETED** | Cam recordings | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
 | myfreecams | ⏳ Pending | Cam archives | |
-| cambro | ⏳ Pending | Cam recordings | |
+| cambro | ✅ **COMPLETED** | Cam recordings | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
 | eroticmv | ⏳ Pending | Premium | |
 | hobbyporn | ⏳ Pending | Amateur | |
 | homemoviestube | ⏳ Pending | Amateur | |
@@ -229,7 +231,7 @@ Specialized content sites.
 
 ---
 
-### 🔧 Phase 8: Remaining Sites (0/34 completed)
+### 🔧 Phase 8: Remaining Sites (0/44 completed)
 
 All other sites not in previous phases.
 
@@ -261,14 +263,6 @@ All other sites not in previous phases.
 | xsharings | ⏳ Pending | |
 | xtheatre | ⏳ Pending | |
 | youcrazyx | ⏳ Pending | |
-| porndish | ⏳ Pending | |
-| pornez | ⏳ Pending | |
-| pornhat | ⏳ Pending | Duplicate check |
-| pornone | ⏳ Pending | Duplicate check |
-| sextb | ⏳ Pending | Duplicate check |
-| vipporns | ⏳ Pending | Duplicate check |
-| watcherotic | ⏳ Pending | Duplicate check |
-| xfreehd | ⏳ Pending | Duplicate check |
 
 **Target**: Complete by end of Phase 8
 
@@ -361,35 +355,34 @@ Part of BeautifulSoup migration roadmap (site X/137)
 | Phase | Sites | Completed | Percentage |
 |-------|-------|-----------|------------|
 | Phase 0: Infrastructure | 3 items | 3 | 100% ✅ |
-| Phase 1: High Priority | 10 | 10 | 100% ✅ |
+| Phase 1: High Priority | 10 | 7 | 70% 🚧 |
 | Phase 2: Medium Priority | 20 | 7 | 35% 🚀 |
 | Phase 3: Live Cams | 8 | 0 | 0% |
 | Phase 4: JAV Sites | 20 | 0 | 0% |
 | Phase 5: Hentai/Anime | 10 | 0 | 0% |
 | Phase 6: International | 15 | 0 | 0% |
-| Phase 7: Niche/Specialty | 30 | 0 | 0% |
-| Phase 8: Remaining | 34 | 0 | 0% |
+| Phase 7: Niche/Specialty | 30 | 3 | 10% 🚀 |
+| Phase 8: Remaining | 44 | 0 | 0% |
 
 ### Velocity Tracking
 
 | Date | Sites Completed | Cumulative | Notes |
 |------|----------------|------------|-------|
-| 2025-11-01 | 1 (pornhub) | 1/137 | Initial migration with infrastructure |
-| 2025-11-02 | 9 (xvideos, xnxx, spankbang, xhamster, txxx, beeg, eporner, hqporner, porntrex) | 10/137 | Phase 1 completed – high-priority providers on BeautifulSoup/API parsers |
-| 2025-11-03 | 4 (drtuber, tnaflix, pornhat+7 related, pornone) | 14/137 | Phase 2 started – 20% complete |
-| 2025-11-04 | 1 (anybunny) | 15/137 | Continued Phase 2 – migrated Anybunny to BeautifulSoup |
-| 2025-11-05 | 1 (sxyprn) | 16/137 | Phase 2 – migrated Sxyprn to BeautifulSoup |
-| 2025-11-06 | 1 (pornkai) | 17/137 | Phase 2 – migrated PornKai with BeautifulSoup parser & tests |
+| 2025-11-01 | 11 (drtuber, eporner, hqporner, pornhat, pornhub, pornone, porntrex, spankbang, tnaflix, xnxx, xvideos) | 11/137 | Commit `a21064e`: bulk BeautifulSoup rollout for mainstream providers |
+| 2025-11-03 | 1 (anybunny) | 12/137 | Commit `159e0a4`: migrated Anybunny to BeautifulSoup |
+| 2025-11-03 | 1 (sxyprn) | 13/137 | Commit `5947ce6`: migrated Sxyprn to BeautifulSoup |
+| 2025-11-03 | 3 (cambro, camwhoresbay, reallifecam) | 16/137 | Commit `80964d1`: migrated cam niche providers to BeautifulSoup |
+| 2025-11-04 | 1 (pornkai) | 17/137 | Commit `652652b`: migrated PornKai to BeautifulSoup with tests |
 
-**Estimated Timeline** (at 1 site/week):
-- Phase 1 completion: ~9 weeks
-- Phase 2 completion: ~29 weeks
-- Full migration: ~136 weeks (2.6 years)
+**Estimated Timeline** (at 1 site/week, focusing on remaining backlog):
+- Phase 1 (3 remaining sites): ~3 weeks
+- Phase 2 (13 remaining sites): ~13 weeks
+- Full migration (120 remaining sites): ~120 weeks (≈2.3 years)
 
 **Optimistic Timeline** (at 3 sites/week):
-- Phase 1 completion: ~3 weeks
-- Phase 2 completion: ~10 weeks
-- Full migration: ~45 weeks (11 months)
+- Phase 1 (3 remaining sites): ~1 week
+- Phase 2 (13 remaining sites): ~5 weeks
+- Full migration (120 remaining sites): ~40 weeks (≈9 months)
 
 ---
 
