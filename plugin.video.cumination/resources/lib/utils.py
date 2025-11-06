@@ -1084,6 +1084,62 @@ def flaresolve(url, referer):
         )
 
 
+_CLOUDFLARE_CHALLENGE_MARKERS = (
+    'cf-browser-verification',
+    '__cf_chl',
+    'just a moment...',
+    'checking your browser before accessing',
+    'attention required! | cloudflare',
+    'why do i have to complete a captcha',
+    'cloudflare-ray',
+)
+
+
+def is_cloudflare_challenge_page(content):
+    """Return True if the response content looks like a Cloudflare challenge page."""
+
+    if not content:
+        return False
+    if isinstance(content, bytes):
+        try:
+            content = content.decode('utf-8', errors='ignore')
+        except Exception:
+            return False
+    lowered = content.lower()
+    return any(marker in lowered for marker in _CLOUDFLARE_CHALLENGE_MARKERS)
+
+
+def get_html_with_cloudflare_retry(
+    url,
+    referer='',
+    headers=None,
+    NoCookie=None,
+    data=None,
+    error='return',
+    ignoreCertificateErrors=False,
+    retry_on_empty=False,
+):
+    """Fetch HTML and retry with FlareSolverr if Cloudflare blocks the request."""
+
+    html = _getHtml(
+        url,
+        referer,
+        headers=headers,
+        NoCookie=NoCookie,
+        data=data,
+        error=error,
+        ignoreCertificateErrors=ignoreCertificateErrors,
+    )
+
+    should_retry = is_cloudflare_challenge_page(html) or (retry_on_empty and not html)
+    if addon.getSetting('fs_enable') != 'true' or not should_retry:
+        return html, False
+
+    kodilog('Cloudflare challenge detected on {}, retrying with FlareSolverr'.format(url))
+    html = flaresolve(url, referer)
+    return html, True
+
+
 def savecookies(flarejson):
     cj_cf = cj
     for cookie in flarejson['solution']['cookies']:

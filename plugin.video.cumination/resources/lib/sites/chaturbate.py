@@ -237,15 +237,39 @@ def clean_database(showdialog=True):
 @site.register()
 def Playvid(url, name):
     playmode = int(addon.getSetting('chatplay'))
-    listhtml = utils._getHtml(url, headers=HTTP_HEADERS_IPAD)
+    try:
+        listhtml, used_fs = utils.get_html_with_cloudflare_retry(
+            url,
+            referer=site.url,
+            headers=HTTP_HEADERS_IPAD,
+            retry_on_empty=True,
+        )
+    except Exception as error:
+        utils.kodilog('Chaturbate: Failed to load room page: {}'.format(str(error)))
+        utils.notify('Chaturbate', 'Unable to load webcam page')
+        return
 
-    r = re.search(r'initialRoomDossier\s*=\s*"([^"]+)', listhtml)
-    if r:
-        data = six.b(r.group(1)).decode('unicode-escape')
-        data = data if six.PY3 else data.encode('utf8')
-        data = json.loads(data)
-    else:
-        data = False
+    def _parse_room_data(page_html):
+        if not page_html:
+            return None
+        match = re.search(r'initialRoomDossier\s*=\s*"([^"]+)', page_html)
+        if not match:
+            return None
+        data_blob = six.b(match.group(1)).decode('unicode-escape')
+        data_blob = data_blob if six.PY3 else data_blob.encode('utf8')
+        try:
+            return json.loads(data_blob)
+        except Exception:
+            return None
+
+    data = _parse_room_data(listhtml)
+
+    if not data and addon.getSetting('fs_enable') == 'true' and not used_fs:
+        try:
+            fallback_html = utils.flaresolve(url, site.url)
+            data = _parse_room_data(fallback_html)
+        except Exception as error:
+            utils.kodilog('Chaturbate: FlareSolverr fallback failed: {}'.format(str(error)))
 
     if data:
         m3u8stream = data['hls_source']
