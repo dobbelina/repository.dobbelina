@@ -259,17 +259,10 @@ def Playvid(url, name):
         data_blob = data_blob if six.PY3 else data_blob.encode('utf8')
         try:
             return json.loads(data_blob)
-        except Exception:
+        except ValueError:
             return None
 
     data = _parse_room_data(listhtml)
-
-    if not data and addon.getSetting('fs_enable') == 'true' and not used_fs:
-        try:
-            fallback_html = utils.flaresolve(url, site.url)
-            data = _parse_room_data(fallback_html)
-        except Exception as error:
-            utils.kodilog('Chaturbate: FlareSolverr fallback failed: {}'.format(str(error)))
 
     if data:
         m3u8stream = data['hls_source']

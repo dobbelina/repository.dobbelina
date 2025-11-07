@@ -1103,7 +1103,7 @@ def is_cloudflare_challenge_page(content):
     if isinstance(content, bytes):
         try:
             content = content.decode('utf-8', errors='ignore')
-        except Exception:
+        except UnicodeDecodeError:
             return False
     lowered = content.lower()
     return any(marker in lowered for marker in _CLOUDFLARE_CHALLENGE_MARKERS)
@@ -1119,7 +1119,12 @@ def get_html_with_cloudflare_retry(
     ignoreCertificateErrors=False,
     retry_on_empty=False,
 ):
-    """Fetch HTML and retry with FlareSolverr if Cloudflare blocks the request."""
+    """Fetch HTML and retry with FlareSolverr if Cloudflare blocks the request.
+
+    Note: Custom headers (aside from ``Referer``) are not forwarded to
+    FlareSolverr during the retry, and empty-response retries are only
+    attempted when FlareSolverr support is enabled in the add-on settings.
+    """
 
     html = _getHtml(
         url,
@@ -1131,13 +1136,22 @@ def get_html_with_cloudflare_retry(
         ignoreCertificateErrors=ignoreCertificateErrors,
     )
 
-    should_retry = is_cloudflare_challenge_page(html) or (retry_on_empty and not html)
-    if addon.getSetting('fs_enable') != 'true' or not should_retry:
-        return html, False
+    fs_enabled = addon.getSetting('fs_enable') == 'true'
+    used_fs = False
 
-    kodilog('Cloudflare challenge detected on {}, retrying with FlareSolverr'.format(url))
-    html = flaresolve(url, referer)
-    return html, True
+    if is_cloudflare_challenge_page(html):
+        if not fs_enabled:
+            return html, False
+        kodilog('Cloudflare challenge detected on {}, retrying with FlareSolverr'.format(url))
+        html = flaresolve(url, referer)
+        used_fs = True
+
+    if retry_on_empty and not html and fs_enabled and not used_fs:
+        kodilog('Empty response received from {}, retrying with FlareSolverr'.format(url))
+        html = flaresolve(url, referer)
+        used_fs = True
+
+    return html, used_fs
 
 
 def savecookies(flarejson):
