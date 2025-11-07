@@ -58,7 +58,11 @@ def List(url, page=1):
     # utils._getHtml will automatically use FlareSolverr if Cloudflare is detected
     try:
         utils.kodilog("Stripchat: Fetching model list from API")
-        response = utils._getHtml(url)
+        response, _ = utils.get_html_with_cloudflare_retry(
+            url,
+            referer=site.url,
+            retry_on_empty=True,
+        )
         if not response:
             utils.kodilog("Stripchat: Empty response from API")
             utils.notify('Error', 'Could not load Stripchat models')
@@ -145,7 +149,12 @@ def Playvid(url, name):
         ]
         for endpoint in endpoints:
             try:
-                response = utils._getHtml(endpoint.format(model_name), site.url, headers=headers)
+                response, _ = utils.get_html_with_cloudflare_retry(
+                    endpoint.format(model_name),
+                    site.url,
+                    headers=headers,
+                    retry_on_empty=True,
+                )
                 payload = json.loads(response)
                 models = payload.get('models') if isinstance(payload, dict) else None
                 if models:
@@ -213,7 +222,12 @@ def Playvid(url, name):
                         'Origin': 'https://stripchat.com',
                         'Referer': 'https://stripchat.com/{0}'.format(name)
                     }
-                    master_txt = utils._getHtml(selected_url, site.url, headers=master_headers)
+                    master_txt, _ = utils.get_html_with_cloudflare_retry(
+                        selected_url,
+                        site.url,
+                        headers=master_headers,
+                        retry_on_empty=True,
+                    )
                     best_pixels = -1
                     best_url = None
                     lines = master_txt.splitlines()
