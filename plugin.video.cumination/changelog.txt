@@ -1,2 +1,4 @@
 [B]Version 1.1.158[/B]
 - hanime - fix playback
+- vintagetube - removed
+
