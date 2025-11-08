@@ -4,7 +4,7 @@
 
 **Started**: 2025-11-01
 **Current Version**: v1.1.181
-**Progress**: 18/137 sites (13.1%) migrated
+**Progress**: 21/137 sites (15.3%) migrated
 
 ---
 
@@ -39,7 +39,7 @@
   - [x] `soup_videos_list(site, soup, selectors, ...)` - Shared BeautifulSoup video listing helper
 - [x] Test infrastructure with pilot site
 
-### 🚀 Phase 1: High Priority Sites (7/10 completed - 70%)
+### 🚀 Phase 1: High Priority Sites (8/10 completed - 80%)
 
 These are the highest-traffic mainstream sites that break most often.
 
@@ -49,20 +49,20 @@ These are the highest-traffic mainstream sites that break most often.
 | 2 | **xvideos** | ✅ **COMPLETED** | BeautifulSoup listing & pagination |
 | 3 | **xnxx** | ✅ **COMPLETED** | BeautifulSoup listing overhaul |
 | 4 | **spankbang** | ✅ **COMPLETED** | BeautifulSoup migration with modern markup |
-| 5 | **xhamster** | ⏳ Pending | Still contains regex-based category & pagination parsing |
+| 5 | **xhamster** | ✅ **COMPLETED** | BeautifulSoup migration for categories, channels, pornstars & celebrities |
 | 6 | **txxx** | ℹ️ API-based | JSON API already used for listings; no BeautifulSoup migration required |
 | 7 | **beeg** | ℹ️ API-based | JSON API already used for listings; no BeautifulSoup migration required |
 | 8 | **eporner** | ✅ **COMPLETED** | BeautifulSoup migration for listings/categories |
 | 9 | **hqporner** | ✅ **COMPLETED** | BeautifulSoup migration for listings/categories |
 | 10 | **porntrex** | ✅ **COMPLETED** | BeautifulSoup migration for listings/pagination |
 
-**Status**: 7/10 BeautifulSoup migrations complete; remaining work focused on xhamster.
+**Status**: 8/10 BeautifulSoup migrations complete; remaining work limited to monitoring API-based providers.
 
 > ℹ️ **Note**: `txxx` and `beeg` already rely on JSON APIs without regex parsing. They are monitored for regressions but are not counted toward the BeautifulSoup conversion totals.
 
 ---
 
-### 🎯 Phase 2: Medium Priority Sites (7/20 completed - 35%)
+### 🎯 Phase 2: Medium Priority Sites (10/20 completed - 50%)
 
 Secondary mainstream sites with good traffic.
 
@@ -75,10 +75,10 @@ Secondary mainstream sites with good traffic.
 | anybunny | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | sxyprn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration |
 | pornkai | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration with resilient pagination |
-| whoreshub | ⏳ Pending | Mainstream | |
-| yespornplease | ⏳ Pending | Mainstream | |
-| porngo | ⏳ Pending | Mainstream | |
-| watchporn | ⏳ Pending | Mainstream | |
+| whoreshub | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for List, Categories, Playlist, ListPL |
+| yespornplease | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for List, Categories with error handling |
+| porngo | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings, categories, pagination, and playback |
+| watchporn | ⏳ Pending | Mainstream | **Next focus:** begin BeautifulSoup migration after PornGO |
 | justporn | ⏳ Pending | Mainstream | |
 | netflixporno | ⏳ Pending | Mainstream | |
 | peekvids | ⏳ Pending | Mainstream | |
@@ -204,7 +204,7 @@ Specialized content sites.
 | reallifecam | ✅ **COMPLETED** | Voyeur | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
 | noodlemagazine | ⏳ Pending | Amateur | |
 | erome | ⏳ Pending | Amateur | |
-| thothub | ⏳ Pending | OnlyFans leaks | |
+| thothub | ⏳ Pending | OnlyFans leaks | Login flow refit today; ready for credential testing/polish next session |
 | camwhoresbay | ✅ **COMPLETED** | Cam recordings | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
 | myfreecams | ⏳ Pending | Cam archives | |
 | cambro | ✅ **COMPLETED** | Cam recordings | BeautifulSoup migration committed in 80964d1 (2025-11-03) |
@@ -346,17 +346,17 @@ Part of BeautifulSoup migration roadmap (site X/137)
 ### Overall Progress
 
 - **Total Sites**: 137
-- **Completed**: 17 (12.4%)
+- **Completed**: 20 (14.6%)
 - **In Progress**: 0
-- **Remaining**: 120 (87.6%)
+- **Remaining**: 117 (85.4%)
 
 ### Phase Progress
 
 | Phase | Sites | Completed | Percentage |
 |-------|-------|-----------|------------|
 | Phase 0: Infrastructure | 3 items | 3 | 100% ✅ |
-| Phase 1: High Priority | 10 | 7 | 70% 🚧 |
-| Phase 2: Medium Priority | 20 | 7 | 35% 🚀 |
+| Phase 1: High Priority | 10 | 8 | 80% 🚧 |
+| Phase 2: Medium Priority | 20 | 9 | 45% 🚀 |
 | Phase 3: Live Cams | 8 | 0 | 0% |
 | Phase 4: JAV Sites | 20 | 0 | 0% |
 | Phase 5: Hentai/Anime | 10 | 0 | 0% |
@@ -373,16 +373,20 @@ Part of BeautifulSoup migration roadmap (site X/137)
 | 2025-11-03 | 1 (sxyprn) | 13/137 | Commit `5947ce6`: migrated Sxyprn to BeautifulSoup |
 | 2025-11-03 | 3 (cambro, camwhoresbay, reallifecam) | 16/137 | Commit `80964d1`: migrated cam niche providers to BeautifulSoup |
 | 2025-11-04 | 1 (pornkai) | 17/137 | Commit `652652b`: migrated PornKai to BeautifulSoup with tests |
+| 2025-11-05 | 1 (xhamster) | 18/137 | Local dev: migrated xHamster categories/channels/pornstars/celebrities to BeautifulSoup |
+| 2025-11-07 | 1 (whoreshub) | 19/137 | Migrated WhoresHub to BeautifulSoup for List, Categories, Playlist, ListPL |
+| 2025-11-07 | 1 (yespornplease) | 20/137 | Migrated YesPornPlease to BeautifulSoup for List, Categories with error handling |
+| 2025-11-08 | Maintenance (whoreshub pagination, xvideos titles) | 20/137 | Kodi regression fixes; queued **porngo** migration next |
 
 **Estimated Timeline** (at 1 site/week, focusing on remaining backlog):
 - Phase 1 (3 remaining sites): ~3 weeks
-- Phase 2 (13 remaining sites): ~13 weeks
-- Full migration (120 remaining sites): ~120 weeks (≈2.3 years)
+- Phase 2 (11 remaining sites): ~11 weeks
+- Full migration (117 remaining sites): ~117 weeks (≈2.2 years)
 
 **Optimistic Timeline** (at 3 sites/week):
 - Phase 1 (3 remaining sites): ~1 week
-- Phase 2 (13 remaining sites): ~5 weeks
-- Full migration (120 remaining sites): ~40 weeks (≈9 months)
+- Phase 2 (11 remaining sites): ~4 weeks
+- Full migration (117 remaining sites): ~39 weeks (≈9 months)
 
 ---
 
@@ -429,5 +433,5 @@ grep -c "✅ \*\*COMPLETED\*\*" ROADMAP.md
 
 ---
 
-**Last Updated**: 2025-11-04
+**Last Updated**: 2025-11-07 (yespornplease migration)
 **Next Review**: After each Phase 2 site completion

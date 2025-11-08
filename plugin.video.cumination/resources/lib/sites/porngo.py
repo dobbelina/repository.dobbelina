@@ -17,6 +17,7 @@
 '''
 
 import re
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -33,25 +34,87 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'''thumb\s*item.+?href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+).+?tion">([^<]+).+?ge">([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, img, name, duration, qual in match:
-        if qual == '720p':
+    if not listhtml:
+        utils.eod()
+        return
+
+    soup = utils.parse_html(listhtml)
+    video_items = soup.select('div.thumb.item')
+    for item in video_items:
+        top_link = item.select_one('a.thumb__top')
+        videopage = utils.safe_get_attr(top_link, 'href')
+        if not videopage:
+            continue
+        videopage = urllib_parse.urljoin(site.url, videopage)
+
+        img_tag = item.select_one('.thumb__img img') or item.select_one('img')
+        title_tag = item.select_one('.thumb__title span') or item.select_one('.thumb__title')
+        name = utils.safe_get_text(title_tag) or utils.safe_get_attr(img_tag, 'alt') or utils.safe_get_attr(top_link, 'title')
+        name = utils.cleantext(name or '')
+        if not name:
+            continue
+
+        img = utils.safe_get_attr(img_tag, 'data-src', ['data-original', 'data-lazy', 'src', 'srcset'])
+        if not img:
+            continue
+        if ',' in img:
+            img = img.split(',', 1)[0]
+        if ' ' in img:
+            img = img.split()[0]
+        img = urllib_parse.urljoin(site.url, img.strip())
+
+        duration = utils.safe_get_text(item.select_one('.thumb__duration'))
+        qual_text = (utils.safe_get_text(item.select_one('.thumb__bage, .thumb__badge')) or '').lower()
+        if qual_text == '720p':
             hd_text = 'HD '
-        elif qual == '1080p':
+        elif qual_text == '1080p':
             hd_text = 'FHD '
-        elif qual == '2160p':
+        elif qual_text == '2160p':
             hd_text = '4K '
         else:
             hd_text = ''
-        name = utils.cleantext(name)
-        site.add_download_link(name, video, 'Play', img, name, duration=duration, quality=hd_text)
 
-    next_page = re.compile(r'''class="pagination.+?href="([^"]+)">Next''').search(listhtml)
-    if next_page:
-        next_page = site.url[:-1] + next_page.group(1)
-        lp = re.compile(r'''/(\d+)/\D+>Last''').search(listhtml)
-        lp = '/' + lp.group(1) if lp else ''
-        site.add_dir('Next Page... ({0}{1})'.format(next_page.split('/')[-2], lp), next_page, 'List', site.img_next)
+        site.add_download_link(name, videopage, 'Play', img, name, duration=duration, quality=hd_text)
+
+    pagination = None
+    thumbs_list = soup.select_one('div.thumbs-list')
+    if thumbs_list:
+        pagination = thumbs_list.find_next_sibling('div', class_='pagination')
+    if not pagination:
+        pagination = soup.select_one('.pagination')
+
+    if pagination:
+        next_link = None
+        for anchor in pagination.select('a.pagination__link'):
+            if utils.safe_get_text(anchor).lower() == 'next':
+                next_link = anchor
+                break
+
+        if next_link:
+            next_href = utils.safe_get_attr(next_link, 'href')
+            if next_href:
+                next_page = urllib_parse.urljoin(url, next_href)
+                next_hint = ''
+                match = re.search(r'/(\d+)/?$', next_href)
+                if match:
+                    next_hint = match.group(1)
+
+                last_hint = ''
+                for anchor in pagination.select('a.pagination__link'):
+                    if 'last' in utils.safe_get_text(anchor).lower():
+                        lp_href = utils.safe_get_attr(anchor, 'href')
+                        lp_match = re.search(r'/(\d+)/?$', lp_href or '')
+                        if lp_match:
+                            last_hint = lp_match.group(1)
+                        break
+
+                if next_hint:
+                    label_hint = '{}/{}'.format(next_hint, last_hint) if last_hint else next_hint
+                    label = 'Next Page... ({})'.format(label_hint)
+                else:
+                    label = 'Next Page...'
+
+                site.add_dir(label, next_page, 'List', site.img_next)
 
     utils.eod()
 
@@ -59,9 +122,18 @@ def List(url):
 @site.register()
 def Cat(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'"letter-block__item".+?<a\s*href="([^"]+)"\s*class="letter-block__link">.*?<span>([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for catpage, name in match:
-        site.add_dir(name, catpage, 'List', '')
+    if not listhtml:
+        utils.eod()
+        return
+
+    soup = utils.parse_html(listhtml)
+    for anchor in soup.select('div.letter-block__item a.letter-block__link'):
+        catpage = utils.safe_get_attr(anchor, 'href')
+        name = utils.safe_get_text(anchor.select_one('span')) or utils.safe_get_text(anchor)
+        if not catpage or not name:
+            continue
+        catpage = urllib_parse.urljoin(site.url, catpage)
+        site.add_dir(utils.cleantext(name), catpage, 'List', '')
     utils.eod()
 
 
@@ -79,10 +151,21 @@ def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
-    sources = re.compile(r'<a\s*class="video-links__link"\s*href="([^"]+)"\s*no-load-content>([^\s]+)').findall(html)
-    if sources:
-        sources = {key: value for value, key in sources}
-        videourl = utils.prefquality(sources, reverse=True)
+    if not html:
+        vp.progress.close()
+        return
+
+    soup = utils.parse_html(html)
+    sources = {}
+    for link in soup.select('a.video-links__link[no-load-content]'):
+        href = utils.safe_get_attr(link, 'href')
+        label = utils.safe_get_text(link)
+        quality = label.split()[0] if label else ''
+        if not href or not quality:
+            continue
+        sources[quality] = urllib_parse.urljoin(url, href)
+
+    videourl = utils.prefquality(sources, reverse=True) if sources else None
     if not videourl:
         vp.progress.close()
         return

@@ -118,7 +118,7 @@ def _is_logged_in():
     return False
 
 
-def _login():
+def _login(force=False):
     """Attempt to login to ThotHub using stored credentials."""
     username = addon.getSetting('thothub_username')
     password = addon.getSetting('thothub_password')
@@ -127,6 +127,10 @@ def _login():
         utils.kodilog("ThotHub: No credentials configured", xbmc.LOGDEBUG)
         utils.notify('ThotHub Login', 'Please configure username/password in addon settings')
         return False
+
+    if not force and _is_logged_in():
+        utils.kodilog("ThotHub: Already logged in, skipping re-auth", xbmc.LOGDEBUG)
+        return True
 
     utils.kodilog("ThotHub: Attempting login for user: {}".format(username), xbmc.LOGDEBUG)
 
@@ -149,8 +153,12 @@ def _login():
     # Prepare login POST data
     login_data = {
         'username': username,
-        'password': password,
-        'remember': '1'
+        'password': password,  # legacy fallback
+        'pass': password,
+        'remember': '1',
+        'remember_me': '1',
+        'action': 'login',
+        'email_link': site.url + 'email/'
     }
 
     if csrf_token:
@@ -161,22 +169,32 @@ def _login():
     headers = utils.base_hdrs.copy()
     headers.update({
         'Referer': login_page_url,
-        'Origin': ORIGIN_HEADER
+        'Origin': ORIGIN_HEADER,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
     })
 
     try:
         response = utils._postHtml(login_url, headers=headers, form_data=login_data)
-
-        # Check if login was successful
-        if 'login' in response.lower() and ('error' in response.lower() or 'invalid' in response.lower()):
-            utils.kodilog("ThotHub: Login failed - check credentials", xbmc.LOGDEBUG)
+        lowered = (response or '').lower()
+        if 'invalid_login' in lowered or 'incorrect' in lowered:
+            utils.kodilog("ThotHub: Login failed - credentials rejected", xbmc.LOGDEBUG)
             utils.notify('ThotHub Login', 'Login failed - check username/password')
             return False
 
-        # If we got redirected or the response doesn't contain login errors, assume success
-        utils.kodilog("ThotHub: Login appears successful", xbmc.LOGDEBUG)
-        utils.notify('ThotHub', 'Login successful')
-        return True
+        if _is_logged_in():
+            utils.kodilog("ThotHub: Login successful (cookies present)", xbmc.LOGDEBUG)
+            utils.notify('ThotHub', 'Login successful')
+            return True
+
+        if 'login' in lowered and 'error' in lowered:
+            utils.kodilog("ThotHub: Login response contained error text", xbmc.LOGDEBUG)
+            utils.notify('ThotHub Login', 'Login failed - site returned an error')
+            return False
+
+        utils.kodilog("ThotHub: Login response inconclusive, assuming failure", xbmc.LOGDEBUG)
+        utils.notify('ThotHub Login', 'Login failed - no auth cookies returned')
+        return False
 
     except Exception as e:
         utils.kodilog("ThotHub: Login request failed: {}".format(str(e)))

@@ -14,14 +14,16 @@
 - **eporner** – Listings, categories, and pornstar directories migrated off regex.
 - **hqporner** – Listings & category pages moved to BeautifulSoup selectors.
 - **porntrex** – Complex grid converted to BeautifulSoup with refactored pagination.
+- **xhamster** – Categories, channels, pornstars & celebrities now parsed with BeautifulSoup plus resilient pagination helpers.
 
 ### Medium-Priority Sites Migrated
 - **sxyprn** – Listings, categories, and pornstar directories refactored to BeautifulSoup with resilient pagination.
 - **pornkai** – API-driven listings parsed via BeautifulSoup with guarded pagination fallbacks and refreshed categories.
+- **whoreshub** – Complete migration of List, Categories, Playlist, and ListPL functions to BeautifulSoup with improved error handling.
 
 ### Already Compliant (API/JSON)
 - **pornhub** (migrated in v1.1.165)
-- **xhamster**, **txxx**, **beeg** (JSON/API driven – no regex remaining)
+- **txxx**, **beeg** (JSON/API driven – no regex remaining)
 
 **Outcome:** Phase 1 roadmap goal achieved; top-traffic providers now rely on BeautifulSoup or structured APIs.
 
@@ -43,8 +45,8 @@
 ---
 
 ## 📈 Roadmap Impact
-- BeautifulSoup migration progress: **17/137 sites (Phase 2 underway)**.
-- Next focus: Continue Phase 2 mainstream providers (20-site batch).
+- BeautifulSoup migration progress: **19/137 sites (13.9%) - Phase 2 40% complete**.
+- Next focus: Continue Phase 2 mainstream providers (12 remaining sites).
 
 ---
 

@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(jar -tf:*)",
-      "Bash(jar -xf:*)"
+      "Bash(jar -xf:*)",
+      "Bash(python3 -m py_compile:*)",
+      "Bash(python build_repo_addons.py:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:www.yespornplease.sexy)",
+      "WebFetch(domain:www.whoreshub.com)",
+      "Bash(curl:*)",
+      "Bash(python /tmp/test_whoreshub_regex.py:*)",
+      "Bash(/tmp/whoreshub.html)",
+      "Bash(/tmp/whoreshub_main.html)"
     ],
     "deny": [],
     "ask": []

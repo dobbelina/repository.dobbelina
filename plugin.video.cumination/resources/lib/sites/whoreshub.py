@@ -23,6 +23,7 @@ from six.moves import urllib_parse
 import xbmc
 import xbmcgui
 from random import randint
+from bs4 import BeautifulSoup
 
 
 site = AdultSite('whoreshub', '[COLOR hotpink]WhoresHub[/COLOR]', 'https://www.whoreshub.com/', 'whoreshub.png', 'whoreshub')
@@ -51,44 +52,116 @@ def List(url):
         url = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&_=' + str(1000000000000 + randint(0, 999999999999))
 
     listhtml = utils.getHtml(url)
+    soup = utils.parse_html(listhtml)
 
-    if '/playlists/' in url:
-        delimiter = r'<div class="thumb">\s+<div class="box">'
-        re_videopage = '<a href="([^"]+)"'
-        re_name = 'alt="([^"]+)"'
-        re_img = 'data-src="([^"]+)"'
-        re_duration = None
-        re_quality = None
-    else:
-        delimiter = 'class="box"><a class="'
-        re_videopage = 'item" href="([^"]+)"'
-        re_name = 'title="([^"]+)"'
-        re_img = 'data-src="([^"]+)"'
-        re_duration = '"duration">([^<]+)<'
-        re_quality = '"is-hd">([^<]+)<'
-
+    # Context menu for video items
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('whoreshub.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=" + str('whoreshub.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'whoreshub.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    # BeautifulSoup parsing for video items
+    if '/playlists/' in url:
+        # Playlists view - different HTML structure
+        items = soup.select('div.thumb div.box')
+        for item in items:
+            try:
+                link = item.select_one('a')
+                if not link:
+                    continue
 
-    match = re.search(r'class="current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
-    if match:
-        npage = int(match.group(1)) + 1
-        block_id = match.group(2)
-        params = match.group(3).replace(';', '&').replace(':', '=')
-        rnd = 1000000000000 + randint(0, 999999999999)
-        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(rnd))
-        nurl = nurl.replace('+from_albums', '')
-        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+                videourl = utils.safe_get_attr(link, 'href')
+                if not videourl:
+                    continue
 
-        cm_page = (utils.addon_sys + "?mode=whoreshub.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=whoreshub.List")
-        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+                # Skip category/model/playlist links (only process actual videos)
+                if '/categories/' in videourl or '/models/' in videourl or '/playlists/' in videourl:
+                    continue
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'List', site.img_next, contextm=cm)
+                img_tag = item.select_one('img')
+                img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+                name = utils.safe_get_attr(img_tag, 'alt')
+
+                # Fix protocol-relative URLs
+                img = 'https:' + img if img.startswith('//') else img
+
+                # No duration or quality in playlist view
+                name = utils.cleantext(name)
+                site.add_download_link(name, videourl, 'Playvid', img, name, contextm=cm)
+            except Exception as e:
+                utils.kodilog("Error parsing playlist video item: " + str(e))
+                continue
+    else:
+        # Standard video listing view
+        items = soup.select('div.box a.item')
+        for item in items:
+            try:
+                classes = item.get('class') or []
+                if 'btn' in classes:
+                    continue
+
+                videourl = utils.safe_get_attr(item, 'href')
+                if not videourl:
+                    continue
+
+                # Skip category/model/playlist links (only process actual videos)
+                if '/categories/' in videourl or '/models/' in videourl or '/playlists/' in videourl or '/search/' in videourl:
+                    continue
+
+                name = utils.safe_get_attr(item, 'title')
+
+                img_tag = item.select_one('img')
+                img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+
+                # Fix protocol-relative URLs
+                img = 'https:' + img if img.startswith('//') else img
+
+                # Duration
+                duration_tag = item.select_one('div.duration')
+                duration = utils.safe_get_text(duration_tag, '')
+
+                # Quality (HD badge)
+                quality_tag = item.select_one('div.is-hd')
+                quality = utils.safe_get_text(quality_tag, '')
+
+                # Build display name with quality/duration info
+                display_name = utils.cleantext(name)
+                if quality:
+                    display_name = '[COLOR cyan]' + quality + '[/COLOR] ' + display_name
+                if duration:
+                    display_name = display_name + ' [COLOR yellow]' + duration + '[/COLOR]'
+
+                site.add_download_link(display_name, videourl, 'Playvid', img, name, contextm=cm)
+            except Exception as e:
+                utils.kodilog("Error parsing video item: " + str(e))
+                continue
+
+    # BeautifulSoup pagination parsing
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        current_page = pagination.select_one('li.current span')
+        next_link = pagination.select_one('li.next a')
+
+        if current_page and next_link:
+            try:
+                npage = int(utils.safe_get_text(current_page, '0')) + 1
+                block_id = utils.safe_get_attr(next_link, 'data-block-id')
+                params = utils.safe_get_attr(next_link, 'data-parameters', default='')
+
+                if block_id:
+                    params = params.replace(';', '&').replace(':', '=')
+                    rnd = 1000000000000 + randint(0, 999999999999)
+                    nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(rnd))
+                    nurl = nurl.replace('+from_albums', '')
+                    nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+
+                    cm_page = (utils.addon_sys + "?mode=whoreshub.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=whoreshub.List")
+                    cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+                    site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'List', site.img_next, contextm=cm)
+            except Exception as e:
+                utils.kodilog("Error parsing pagination: " + str(e))
 
     utils.eod()
 
@@ -106,22 +179,62 @@ def GotoPage(url, np, listmode):
 @site.register()
 def ListPL(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'class="item.+?item="([^"]+).+?original="([^"]+).+?title">\s*([^<\n]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for video, img, name in match:
-        name = utils.cleantext(name)
-        site.add_download_link(name, video, 'Playvid', img, name)
+    soup = utils.parse_html(listhtml)
 
-    nextp = re.compile(r':(\d+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if nextp:
-        np = nextp[0]
-        pg = int(np) - 1
-        if 'from={0:02d}'.format(pg) in url:
-            next_page = url.replace('from={0:02d}'.format(pg), 'from={0:02d}'.format(int(np)))
-        else:
-            next_page = url + '{0}/'.format(np)
-        lp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lp = '/' + lp[0] if lp else ''
-        site.add_dir('Next Page (' + np + lp + ')', next_page, 'ListPL', site.img_next)
+    # BeautifulSoup parsing for playlist videos
+    items = soup.select('div.item')
+    for item in items:
+        try:
+            # Video URL from data-item attribute
+            video = utils.safe_get_attr(item, 'data-item')
+            if not video:
+                continue
+
+            # Image from data-original attribute
+            img_tag = item.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-original', ['src', 'data-src'])
+
+            # Title from div.title
+            title_tag = item.select_one('div.title')
+            name = utils.safe_get_text(title_tag, '')
+
+            if name:
+                name = utils.cleantext(name)
+                site.add_download_link(name, video, 'Playvid', img, name)
+        except Exception as e:
+            utils.kodilog("Error parsing playlist video: " + str(e))
+            continue
+
+    # BeautifulSoup pagination parsing
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('li a[data-parameters*="Next"]')
+        if next_link:
+            try:
+                # Extract page number from the Next link text
+                next_text = utils.safe_get_text(next_link, '')
+                nextp_match = re.search(r':(\d+)', next_text)
+                if nextp_match:
+                    np = nextp_match.group(1)
+                    pg = int(np) - 1
+
+                    if 'from={0:02d}'.format(pg) in url:
+                        next_page = url.replace('from={0:02d}'.format(pg), 'from={0:02d}'.format(int(np)))
+                    else:
+                        next_page = url + '{0}/'.format(np)
+
+                    # Check for last page number
+                    last_link = pagination.select_one('li a[data-parameters*="Last"]')
+                    if last_link:
+                        last_text = utils.safe_get_text(last_link, '')
+                        last_match = re.search(r':(\d+)', last_text)
+                        lp = '/' + last_match.group(1) if last_match else ''
+                    else:
+                        lp = ''
+
+                    site.add_dir('Next Page (' + np + lp + ')', next_page, 'ListPL', site.img_next)
+            except Exception as e:
+                utils.kodilog("Error parsing playlist pagination: " + str(e))
 
     utils.eod()
 
@@ -129,23 +242,71 @@ def ListPL(url):
 @site.register()
 def Playlist(url):
     listhtml = utils.getHtml(url)
-    match = re.compile(r'class="item.+?href="([^"]+).+?data-original="([^"]+).+?title">\s*([^<\n]+).+?videos">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for lpage, img, name, count in match:
-        name = utils.cleantext(name) + "[COLOR deeppink] {0}[/COLOR]".format(count)
-        lpage += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=&from=01'
-        site.add_dir(name, lpage, 'ListPL', img)
+    soup = utils.parse_html(listhtml)
 
-    nextp = re.compile(r':(\d+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if nextp:
-        np = nextp[0]
-        pg = int(np) - 1
-        if 'from={0:02d}'.format(pg) in url:
-            next_page = url.replace('from={0:02d}'.format(pg), 'from={0:02d}'.format(int(np)))
-        else:
-            next_page = url + '{0}/'.format(np)
-        lp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lp = '/' + lp[0] if lp else ''
-        site.add_dir('Next Page (' + np + lp + ')', next_page, 'Playlist', site.img_next)
+    # BeautifulSoup parsing for playlists
+    items = soup.select('div.item')
+    for item in items:
+        try:
+            # Playlist link
+            link = item.select_one('a')
+            if not link:
+                continue
+
+            lpage = utils.safe_get_attr(link, 'href')
+            if not lpage:
+                continue
+
+            # Image
+            img_tag = item.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-original', ['src', 'data-src'])
+
+            # Title
+            title_tag = item.select_one('div.title')
+            name = utils.safe_get_text(title_tag, '')
+
+            # Video count
+            count_tag = item.select_one('div.videos')
+            count = utils.safe_get_text(count_tag, '0')
+
+            if name:
+                name = utils.cleantext(name) + "[COLOR deeppink] {0}[/COLOR]".format(count)
+                lpage += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=&from=01'
+                site.add_dir(name, lpage, 'ListPL', img)
+        except Exception as e:
+            utils.kodilog("Error parsing playlist item: " + str(e))
+            continue
+
+    # BeautifulSoup pagination parsing
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        next_link = pagination.select_one('li a[data-parameters*="Next"]')
+        if next_link:
+            try:
+                # Extract page number from the Next link text
+                next_text = utils.safe_get_text(next_link, '')
+                nextp_match = re.search(r':(\d+)', next_text)
+                if nextp_match:
+                    np = nextp_match.group(1)
+                    pg = int(np) - 1
+
+                    if 'from={0:02d}'.format(pg) in url:
+                        next_page = url.replace('from={0:02d}'.format(pg), 'from={0:02d}'.format(int(np)))
+                    else:
+                        next_page = url + '{0}/'.format(np)
+
+                    # Check for last page number
+                    last_link = pagination.select_one('li a[data-parameters*="Last"]')
+                    if last_link:
+                        last_text = utils.safe_get_text(last_link, '')
+                        last_match = re.search(r':(\d+)', last_text)
+                        lp = '/' + last_match.group(1) if last_match else ''
+                    else:
+                        lp = ''
+
+                    site.add_dir('Next Page (' + np + lp + ')', next_page, 'Playlist', site.img_next)
+            except Exception as e:
+                utils.kodilog("Error parsing playlist pagination: " + str(e))
 
     utils.eod()
 
@@ -164,33 +325,101 @@ def Search(url, keyword=None):
 def Categories(url):
     url = url + str(1000000000000 + randint(0, 999999999999))
     cathtml = utils.getHtml(url)
+    soup = utils.parse_html(cathtml)
 
+    # BeautifulSoup parsing for categories/models/playlists
     if '/playlists/' in url:
-        match = re.compile(r'class="box">\s+<a href="([^"]+)".+?title="([^"]+)".+?data-src="([^"]+)".+?class="text">(\d+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+        # Playlists view - different HTML structure
+        items = soup.select('div.box')
+        for item in items:
+            try:
+                link = item.select_one('a')
+                if not link:
+                    continue
+
+                catpage = utils.safe_get_attr(link, 'href')
+                if not catpage:
+                    continue
+
+                name = utils.safe_get_attr(link, 'title')
+
+                img_tag = item.select_one('img')
+                img = utils.safe_get_attr(img_tag, 'data-src', ['src'])
+
+                # Video count - in span.val span.text
+                count_tag = item.select_one('span.val span.text')
+                videos = utils.safe_get_text(count_tag, '0')
+
+                # Clean name (models/playlists don't show count in name)
+                name = utils.cleantext(name)
+
+                # Fix protocol-relative URLs
+                img = 'https:' + img if img.startswith('//') else img
+
+                site.add_dir(name, catpage, 'List', img)
+            except Exception as e:
+                utils.kodilog("Error parsing playlist category item: " + str(e))
+                continue
     else:
-        match = re.compile(r'class="item"\shref="([^"]+)"\stitle="([^"]+)".+?src="([^"]+jpg)".+?class="text">(\d+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, videos in match:
-        if '/models/' in url or '/playlists/' in url:
-            name = utils.cleantext(name)
-        else:
-            name = utils.cleantext(name) + " [COLOR deeppink]" + videos + "[/COLOR]"
-        img = 'https:' + img if img.startswith('//') else img
-        site.add_dir(name, catpage, 'List', img)
+        # Categories or Models view
+        items = soup.select('a.item')
+        for item in items:
+            try:
+                catpage = utils.safe_get_attr(item, 'href')
+                if not catpage:
+                    continue
 
-    match = re.search(r'class="current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', cathtml, re.DOTALL | re.IGNORECASE)
-    if match:
-        npage = int(match.group(1)) + 1
-        block_id = match.group(2)
-        params = match.group(3).replace(';', '&').replace(':', '=')
-        rnd = 1000000000000 + randint(0, 999999999999)
-        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(rnd))
-        nurl = nurl.replace('+from_albums', '')
-        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+                name = utils.safe_get_attr(item, 'title')
 
-        cm_page = (utils.addon_sys + "?mode=whoreshub.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=whoreshub.Categories")
-        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+                img_tag = item.select_one('img')
+                img = utils.safe_get_attr(img_tag, 'src', ['data-src'])
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'Categories', site.img_next, contextm=cm)
+                # Video count - in span.val span.text
+                count_tag = item.select_one('span.val span.text')
+                videos = utils.safe_get_text(count_tag, '0')
+
+                # Build display name
+                name = utils.cleantext(name)
+                if '/models/' in url or '/playlists/' in url:
+                    # Models and playlists don't show count
+                    pass
+                else:
+                    # Categories show count
+                    name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
+
+                # Fix protocol-relative URLs
+                img = 'https:' + img if img.startswith('//') else img
+
+                site.add_dir(name, catpage, 'List', img)
+            except Exception as e:
+                utils.kodilog("Error parsing category item: " + str(e))
+                continue
+
+    # BeautifulSoup pagination parsing
+    pagination = soup.select_one('.pagination')
+    if pagination:
+        current_page = pagination.select_one('li.current span')
+        next_link = pagination.select_one('li.next a')
+
+        if current_page and next_link:
+            try:
+                npage = int(utils.safe_get_text(current_page, '0')) + 1
+                block_id = utils.safe_get_attr(next_link, 'data-block-id')
+                params = utils.safe_get_attr(next_link, 'data-parameters', default='')
+
+                if block_id:
+                    params = params.replace(';', '&').replace(':', '=')
+                    rnd = 1000000000000 + randint(0, 999999999999)
+                    nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(rnd))
+                    nurl = nurl.replace('+from_albums', '')
+                    nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+
+                    cm_page = (utils.addon_sys + "?mode=whoreshub.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=whoreshub.Categories")
+                    cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+                    site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'Categories', site.img_next, contextm=cm)
+            except Exception as e:
+                utils.kodilog("Error parsing category pagination: " + str(e))
 
     utils.eod()
 
@@ -212,11 +441,29 @@ def Playvid(url, name, download=None):
             if 'login' in video[0].lower():
                 continue
             sources[video[1]] = video[0]
+
+    utils.kodilog("whoreshub sources found: " + str(sources))
     vp.progress.update(75, "[CR]Video found[CR]")
-    videourl = utils.prefquality(sources, sort_by=lambda x: int(x.split(' ')[0][:-1]), reverse=True)
-    if videourl:
-        videourl = videourl + '|Cookie=' + get_cookies()
-        vp.play_from_direct_link(videourl)
+
+    if sources:
+        # Custom sort function that handles various quality text formats
+        def quality_sort(quality_text):
+            try:
+                # Extract numeric value from quality text (e.g., "1080p" -> 1080, "720 p" -> 720)
+                import re
+                match = re.search(r'(\d+)', quality_text)
+                if match:
+                    return int(match.group(1))
+                return 0
+            except:
+                return 0
+
+        videourl = utils.prefquality(sources, sort_by=quality_sort, reverse=True)
+        if videourl:
+            videourl = videourl + '|Cookie=' + get_cookies()
+            vp.play_from_direct_link(videourl)
+    else:
+        utils.kodilog("No video sources found for whoreshub")
 
 
 @site.register()

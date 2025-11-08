@@ -199,9 +199,24 @@ def Categories(url):
     elif cat == 'shemale':
         url = url.replace('/categories', '/shemale/categories')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'thumbItem-f658a" href="([^"]+).+?src="([^"]+)"\s*alt="([^"]+)').findall(cathtml)
-    for url, thumb, name in match:
-        site.add_dir(utils.cleantext(name), url, 'List', thumb)
+    soup = utils.parse_html(cathtml)
+    seen = set()
+    for anchor in soup.find_all('a', href=True):
+        if not _has_class_prefix(anchor, 'thumbItem-'):
+            continue
+        img_tag = anchor.find('img')
+        thumb = utils.safe_get_attr(img_tag, 'data-thumb-url', ['data-src', 'src'])
+        if not thumb:
+            continue
+        name_el = anchor.find('h3') or anchor
+        name = utils.cleantext(utils.safe_get_text(name_el, default='').strip())
+        if not name:
+            continue
+        href = urllib_parse.urljoin(site.url, anchor['href'])
+        if href in seen:
+            continue
+        seen.add(href)
+        site.add_dir(name, href, 'List', thumb)
     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
     utils.eod()
 
@@ -214,17 +229,26 @@ def Channels(url):
     elif cat == 'shemale':
         url = url.replace('/channels', '/shemale/channels')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'"Rating">#([\d]+).+?src="([^"]+)".+?alt="([^"]+)".+?href="([^"]+).+?count-.+?>([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, image, name, url, videos in match:
-        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2})[/COLOR]'.format(rank.rjust(4), name, videos)
-        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
-        site.add_dir(title, url + '/newest', 'List', image)
-    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
-    if npurl:
-        npurl = npurl.group(1)
-        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
-        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Channels', site.img_next)
+    data = _load_initials_json(cathtml)
+    layout = data.get('layoutPage', {})
+    channels = layout.get('channels') or layout.get('channelsListProps', {}).get('channels') or data.get('channels', [])
+    for channel in channels:
+        if channel.get('isBlockedByGeo'):
+            continue
+        name = utils.cleantext(channel.get('channelName', '') or channel.get('name', ''))
+        page_url = channel.get('channelURL')
+        if not name or not page_url:
+            continue
+        thumb = channel.get('thumbURL') or channel.get('siteLogoURL') or ''
+        videos = channel.get('videoCount')
+        videos_label = '{:,} videos'.format(videos) if isinstance(videos, int) else videos or ''
+        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos_label.strip())
+        list_url = page_url.rstrip('/')
+        if not list_url.endswith('/newest'):
+            list_url += '/newest'
+        site.add_dir(title, list_url, 'List', thumb)
+    pagination = layout.get('paginationProps') or layout.get('channelsListProps', {}).get('paginationProps')
+    _add_next_page_from_props(pagination, 'Channels')
     utils.eod()
 
 
@@ -236,17 +260,12 @@ def Pornstars(url):
     elif cat == 'shemale':
         url = url.replace('/pornstars', '/shemale/pornstars')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, image, url, name, videos in match:
-        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(5), name, videos)
-        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
-        site.add_dir(title, url + '/newest', 'List', image)
-    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
-    if npurl:
-        npurl = npurl.group(1)
-        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
-        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Pornstars', site.img_next)
+    data = _load_initials_json(cathtml)
+    layout = data.get('layoutPage', {})
+    pornstars = layout.get('pornstarListProps', {}).get('pornstars', [])
+    _add_people_directory(pornstars)
+    pagination = layout.get('pornstarListProps', {}).get('paginationProps')
+    _add_next_page_from_props(pagination, 'Pornstars')
     utils.eod()
 
 
@@ -258,17 +277,12 @@ def Celebrities(url):
     elif cat == 'shemale':
         url = url.replace('/celebrities', '/shemale/celebrities')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, image, url, name, videos in match:
-        # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(4), name, videos)
-        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
-        site.add_dir(title, url + '/newest', 'List', image)
-    npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)
-    if npurl:
-        npurl = npurl.group(1)
-        currpg = re.compile(r'page-button-link--active".+?>([^<]+)').findall(cathtml)[0]
-        lastpg = re.compile(r'class="page-button-link\s*".+?>([^<]+)').findall(cathtml)[-1]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (Currently in Page {0} of {1})'.format(currpg, lastpg), npurl, 'Celebrities', site.img_next)
+    data = _load_initials_json(cathtml)
+    layout = data.get('layoutPage', {})
+    celebrities = layout.get('pornstarListProps', {}).get('pornstars', [])
+    _add_people_directory(celebrities)
+    pagination = layout.get('pornstarListProps', {}).get('paginationProps')
+    _add_next_page_from_props(pagination, 'Celebrities')
     utils.eod()
 
 
@@ -428,3 +442,85 @@ def GotoPage(list_mode, url, np, lp):
         url = url.replace('/{}?'.format(np), '/{}?'.format(pg))
         contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+def _has_class_prefix(element, prefix):
+    classes = element.get('class') if element else None
+    if not classes:
+        return False
+    return any(cls.startswith(prefix) for cls in classes)
+
+
+def _load_initials_json(html, soup=None):
+    if not html:
+        return {}
+    script_text = ''
+    if not soup:
+        try:
+            soup = utils.parse_html(html)
+        except Exception:
+            soup = None
+    if soup:
+        script = soup.find('script', id=lambda value: value and 'initials' in value)
+        if script:
+            script_text = script.string or script.get_text() or ''
+    if not script_text:
+        match = re.search(r'window\.initials=({.*?})<\/script>', html, re.DOTALL)
+        if match:
+            script_text = match.group(1)
+    if not script_text:
+        parts = html.split('window.initials=')
+        if len(parts) > 1:
+            script_text = parts[-1].split(';</script>')[0]
+    if not script_text:
+        return {}
+    script_text = script_text.strip()
+    if script_text.startswith('window.initials='):
+        script_text = script_text.split('window.initials=', 1)[1]
+    script_text = script_text.rstrip(';')
+    try:
+        return json.loads(script_text)
+    except Exception:
+        return {}
+
+
+def _add_people_directory(items):
+    if not items:
+        return
+    for person in items:
+        if person.get('isBlockedByGeo'):
+            continue
+        name = utils.cleantext(person.get('name', ''))
+        page_url = person.get('pageURL')
+        if not name or not page_url:
+            continue
+        thumb = person.get('imageThumbUrl') or person.get('logoThumbUrl') or person.get('imageUserAvatarUrl') or ''
+        videos = person.get('videoCount')
+        videos_label = '{:,} videos'.format(videos) if isinstance(videos, int) else (videos or '').strip()
+        if not videos_label:
+            videos_label = 'videos'
+        title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos_label)
+        list_url = page_url.rstrip('/')
+        if not list_url.endswith('/newest'):
+            list_url += '/newest'
+        site.add_dir(title, list_url, 'List', thumb)
+
+
+def _add_next_page_from_props(pagination, mode):
+    if not pagination:
+        return
+    current = pagination.get('currentPageNumber')
+    template = pagination.get('pageLinkTemplate')
+    if current is None or not template:
+        return
+    last_page = pagination.get('lastPageNumber')
+    next_page = current + 1
+    if last_page and next_page > last_page:
+        return
+    npurl = template.replace(r'\/', '/').replace('{#}', str(next_page))
+    title = '[COLOR hotpink]Next Page...[/COLOR]'
+    if last_page:
+        title += ' (Currently in Page {0} of {1})'.format(current, last_page)
+    else:
+        title += ' (Currently in Page {0})'.format(current)
+    site.add_dir(title, npurl, mode, site.img_next)

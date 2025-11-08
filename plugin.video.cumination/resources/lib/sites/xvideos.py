@@ -67,7 +67,9 @@ def List(url):
     soup = utils.parse_html(listhtml)
     video_items = soup.select('div.thumb-block')
     for item in video_items:
-        link = item.select_one('a')
+        title_link = item.select_one('.thumb-under p.title a')
+        thumb_link = item.select_one('a')
+        link = title_link or thumb_link
         if not link:
             continue
         videopage = utils.safe_get_attr(link, 'href')

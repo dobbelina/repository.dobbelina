@@ -42,18 +42,89 @@ def List(url):
         utils.eod()
         return
 
-    delimiter = '<div class="well well-sm"'
-    re_videopage = 'class="video-link" href="([^"]+)"'
-    re_name = 'title="([^"]+)"'
-    re_img = 'data-original="([^"]+)"'
-    re_duration = '<div class="duration">([^<]+)<'
-    re_quality = '>HD<'
-    skip = '=modelfeed'
-    utils.videos_list(site, 'yespornplease.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm='yespornplease.Related', skip=skip)
+    # Parse HTML with BeautifulSoup
+    soup = utils.parse_html(html)
 
-    re_npurl = r'''href=['"]([^'"]+)['"]\s*class="prevnext">Next'''
-    re_npnr = r'''href=['"]page(\d+)\.html['"]\s*class="prevnext">Next'''
-    utils.next_page(site, 'yespornplease.List', html, re_npurl, re_npnr, baseurl=url.split('page')[0], contextm='yespornplease.GotoPage')
+    # Find all video items
+    video_items = soup.select('div.well.well-sm')
+
+    for item in video_items:
+        try:
+            # Extract video link
+            link = item.select_one('a.video-link')
+            if not link:
+                continue
+
+            video_url = utils.safe_get_attr(link, 'href')
+            if not video_url or '=modelfeed' in video_url:
+                # Skip model feed items
+                continue
+
+            # Make absolute URL if needed
+            if video_url.startswith('/'):
+                video_url = site.url[:-1] + video_url
+
+            # Extract title
+            title = utils.safe_get_attr(link, 'title')
+            if not title:
+                continue
+
+            # Extract thumbnail image
+            img_tag = item.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-original', ['data-src', 'src'])
+
+            # Extract duration
+            duration_tag = item.select_one('div.duration')
+            duration = utils.safe_get_text(duration_tag, '00:00')
+
+            # Check for HD quality
+            quality = 'HD' if item.select_one('div.hd, span.hd, .quality') else ''
+
+            # Add video to list
+            site.add_download_link(title, video_url, 'Playvid', img, '', duration=duration, quality=quality, contextm='yespornplease.Related')
+
+        except Exception as e:
+            # Log error but continue processing other videos
+            utils.kodilog("Error parsing video item: " + str(e))
+            continue
+
+    # Extract pagination (Next Page link)
+    next_links = soup.select('a.prevnext')
+    next_page = None
+    for link in next_links:
+        if 'Next' in utils.safe_get_text(link):
+            next_page = link
+            break
+
+    if next_page:
+        next_url = utils.safe_get_attr(next_page, 'href')
+        if next_url:
+            # Make absolute URL if needed
+            if next_url.startswith('/'):
+                next_url = site.url[:-1] + next_url
+
+            # Extract page number for GotoPage context
+            page_match = re.search(r'page(\d+)\.html', next_url)
+            page_num = page_match.group(1) if page_match else ''
+
+            # Extract last page number from pagination if available
+            page_links = soup.select('a[href*="page"]')
+            last_page = 0
+            for pg_link in page_links:
+                pg_href = utils.safe_get_attr(pg_link, 'href')
+                pg_match = re.search(r'page(\d+)\.html', pg_href)
+                if pg_match:
+                    pg_num = int(pg_match.group(1))
+                    if pg_num > last_page:
+                        last_page = pg_num
+
+            # Add Next Page directory with GotoPage context menu
+            base_url = url.split('page')[0]
+            site.add_dir('Next Page' + (' ({})'.format(page_num) if page_num else ''), next_url, 'List', site.img_next,
+                        contextm={'title': 'Goto Page', 'mode': 'yespornplease.GotoPage',
+                                 'list_mode': 'yespornplease.List', 'url': base_url + 'page{}.html'.format(page_num if page_num else '1'),
+                                 'np': page_num if page_num else '1', 'lp': str(last_page)})
+
     utils.eod()
 
 
@@ -88,10 +159,41 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'<a href="([^"]+)" title="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    for caturl, name in match:
-        name = utils.cleantext(name)
-        site.add_dir(name, caturl, 'List', '')
+
+    # Parse HTML with BeautifulSoup
+    soup = utils.parse_html(cathtml)
+
+    # Find all category links with title attributes
+    category_links = soup.select('a[href][title]')
+
+    for link in category_links:
+        try:
+            caturl = utils.safe_get_attr(link, 'href')
+            if not caturl:
+                continue
+
+            # Make absolute URL if needed
+            if caturl.startswith('/'):
+                caturl = site.url[:-1] + caturl
+
+            # Extract category name
+            name = utils.safe_get_attr(link, 'title')
+            if not name:
+                continue
+
+            name = utils.cleantext(name)
+
+            # Extract thumbnail if available
+            img_tag = link.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'src', ['data-src', 'data-original']) if img_tag else ''
+
+            site.add_dir(name, caturl, 'List', img)
+
+        except Exception as e:
+            # Log error but continue processing other categories
+            utils.kodilog("Error parsing category item: " + str(e))
+            continue
+
     utils.eod()
 
 
