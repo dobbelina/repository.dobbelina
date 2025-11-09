@@ -81,11 +81,12 @@ def List(url):
             quality_tag = item.select_one('.is-hd, .is-4k, .is-1080p, .is-720p, .is-480p, .quality, .item__quality')
             quality = utils.safe_get_text(quality_tag)
 
-            cm_lookupinfo = (utils.addon_sys + "?mode=watchporn.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
-            cm_related = (utils.addon_sys + "?mode=watchporn.Related&url=" + urllib_parse.quote_plus(videopage))
+            quoted_videopage = urllib_parse.quote_plus(videopage)
             context_menu = [
-                ('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'),
-                ('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')
+                ('[COLOR deeppink]Lookup info[/COLOR]',
+                 f'RunPlugin({utils.addon_sys}?mode=watchporn.Lookupinfo&url={quoted_videopage})'),
+                ('[COLOR deeppink]Related videos[/COLOR]',
+                 f'RunPlugin({utils.addon_sys}?mode=watchporn.Related&url={quoted_videopage})')
             ]
 
             site.add_download_link(title, videopage, 'Playvid', thumb, title, duration=duration, quality=quality,
@@ -101,7 +102,7 @@ def List(url):
     next_link = None
     for candidate in soup.select('a.next, a[data-block-id]'):
         text = utils.safe_get_text(candidate).lower()
-        classes = candidate.get('class', []) if hasattr(candidate, 'get') else []
+        classes = candidate.get('class', [])
         if 'next' in text or 'page-next' in classes:
             next_link = candidate
             break
@@ -112,39 +113,29 @@ def List(url):
         except ValueError:
             current_page = 0
 
+        next_page_num = current_page + 1 if current_page > 0 else 2
+        next_page_url = None
+
         block_id = next_link.get('data-block-id')
         params = next_link.get('data-parameters')
         if block_id and params:
             params = params.replace(';', '&').replace(':', '=')
             tm = int(time.time() * 1000)
             base_url = url.split('?')[0]
-            npage = current_page + 1 if current_page else 2
-            nurl = (base_url + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'
-                    .format(block_id, params, str(tm)))
+            nurl = (f'{base_url}?mode=async&function=get_block&block_id={block_id}&{params}&_={tm}')
             nurl = nurl.replace('+from_albums', '')
-            if npage:
-                nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
-
-            cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage&url=" + urllib_parse.quote_plus(nurl)
-                       + "&np=" + str(npage if npage else 1) + "&listmode=watchporn.List")
-            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-
-            page_label = '[COLOR hotpink]Next Page...[/COLOR]'
-            if npage:
-                page_label += ' ({})'.format(npage)
-
-            site.add_dir(page_label, nurl, 'List', site.img_next, contextm=cm)
+            next_page_url = re.sub(r'&from([^=]*)=\d+', rf'&from\1={next_page_num}', nurl)
         else:
             href = utils.safe_get_attr(next_link, 'href')
             if href:
-                next_url = urllib_parse.urljoin(site.url, href)
-                cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage&url=" + urllib_parse.quote_plus(next_url)
-                           + "&np=" + str(current_page + 1 if current_page else 2) + "&listmode=watchporn.List")
-                cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-                label = '[COLOR hotpink]Next Page...[/COLOR]'
-                if current_page:
-                    label += ' ({})'.format(current_page + 1)
-                site.add_dir(label, next_url, 'List', site.img_next, contextm=cm)
+                next_page_url = urllib_parse.urljoin(site.url, href)
+
+        if next_page_url:
+            cm_page_url = (f"{utils.addon_sys}?mode=watchporn.GotoPage&url="
+                           f"{urllib_parse.quote_plus(next_page_url)}&np={next_page_num}&listmode=watchporn.List")
+            cm = [('[COLOR violet]Goto Page #[/COLOR]', f'RunPlugin({cm_page_url})')]
+            label = f'[COLOR hotpink]Next Page...[/COLOR] ({next_page_num})'
+            site.add_dir(label, next_page_url, 'List', site.img_next, contextm=cm)
 
     utils.eod()
 
@@ -191,12 +182,11 @@ def Categories(url):
             continue
 
         img_tag = anchor.select_one('img')
-        img = ''
+        img = None
         if img_tag:
-            img = utils.safe_get_attr(img_tag, 'src', ['data-original', 'data-src', 'data-lazy'])
-            if img:
-                img = utils.fix_url(img, site.url)
-        img = img or None
+            thumb_url = utils.safe_get_attr(img_tag, 'src', ['data-original', 'data-src', 'data-lazy'])
+            if thumb_url:
+                img = utils.fix_url(thumb_url, site.url)
 
         videos_tag = anchor.select_one('.videos, .item__videos, .meta__videos')
         videos = utils.safe_get_text(videos_tag)
