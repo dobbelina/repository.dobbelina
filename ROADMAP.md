@@ -62,7 +62,7 @@ These are the highest-traffic mainstream sites that break most often.
 
 ---
 
-### 🎯 Phase 2: Medium Priority Sites (10/20 completed - 50%)
+### 🎯 Phase 2: Medium Priority Sites (11/20 completed - 55%)
 
 Secondary mainstream sites with good traffic.
 
@@ -78,7 +78,7 @@ Secondary mainstream sites with good traffic.
 | whoreshub | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for List, Categories, Playlist, ListPL |
 | yespornplease | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for List, Categories with error handling |
 | porngo | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings, categories, pagination, and playback |
-| watchporn | ⏳ Pending | Mainstream | **Next focus:** begin BeautifulSoup migration after PornGO |
+| watchporn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings, categories & pagination |
 | justporn | ⏳ Pending | Mainstream | |
 | netflixporno | ⏳ Pending | Mainstream | |
 | peekvids | ⏳ Pending | Mainstream | |
