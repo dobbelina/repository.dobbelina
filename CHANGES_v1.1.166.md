@@ -46,7 +46,7 @@
 ---
 
 ## 📈 Roadmap Impact
-- BeautifulSoup migration progress: **22/137 sites (16.1%) - Phase 2 60% complete**.
+- BeautifulSoup migration progress: **24/137 sites (17.5%) - Phase 2 60% complete**.
 - Next focus: Continue Phase 2 mainstream providers (12 remaining sites).
 
 ---

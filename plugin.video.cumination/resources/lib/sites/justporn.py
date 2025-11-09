@@ -29,6 +29,21 @@ site = AdultSite('justporn', "[COLOR hotpink]JustPorn[/COLOR]", 'https://justpor
 
 
 def _extract_meta_text(item):
+    """Extract metadata text such as duration or quality from ``item``.
+
+    The helper walks through a series of CSS selectors looking for child
+    elements that expose duration/quality text or ``data-duration`` attributes.
+    If no child element matches, it falls back to reading the
+    ``data-duration``/``data-length`` attributes directly from the item.
+
+    Args:
+        item: A BeautifulSoup tag (or tag-like object) representing a video
+            entry. Expected to support ``select_one`` for CSS lookups and
+            ``get`` for attribute access.
+
+    Returns:
+        str: Extracted metadata text, or an empty string when unavailable.
+    """
     meta_selectors = [
         '.thumb-info',
         '.thumb__meta',
@@ -61,15 +76,20 @@ def _extract_meta_text(item):
 
 
 def _duration_transform(value, item):
+    """Normalize duration strings extracted from a video ``item``.
+
+    Args:
+        value (str): Initial duration value provided by upstream extraction (may be empty).
+        item: BeautifulSoup tag (or tag-like object) for the video entry.
+
+    Returns:
+        str: A ``MM:SS`` duration string when detected, otherwise ``''``.
+    """
+
     candidates = [value or '']
     meta_text = _extract_meta_text(item)
     if meta_text:
         candidates.insert(0, meta_text)
-
-    if hasattr(item, 'get'):
-        data_duration = item.get('data-duration') or item.get('data-length') or ''
-        if data_duration:
-            candidates.insert(0, data_duration)
 
     for text in candidates:
         if not text:
@@ -81,6 +101,19 @@ def _duration_transform(value, item):
 
 
 def _quality_transform(value, item):
+    """Return ``'HD'`` when high-definition metadata is detected for ``item``.
+
+    Args:
+        value (str): Initial quality indicator extracted by selectors (may be empty).
+        item: BeautifulSoup tag (or tag-like object) for the video entry.
+
+    Returns:
+        str: ``'HD'`` when HD keywords are detected, otherwise ``''``.
+
+    The helper inspects both the provided value and any metadata text discovered
+    via :func:`_extract_meta_text` for an ``hd`` substring.
+    """
+
     candidates = [value or '', _extract_meta_text(item)]
     for text in candidates:
         if not text:
@@ -91,6 +124,17 @@ def _quality_transform(value, item):
 
 
 def _is_video_item(item):
+    """Return ``True`` when ``item`` contains a playable video link.
+
+    Args:
+        item: BeautifulSoup tag (or tag-like object) representing a candidate
+            video entry.
+
+    Returns:
+        bool: ``True`` if the item has a hyperlink with an ``href`` attribute;
+        ``False`` otherwise.
+    """
+
     if not hasattr(item, 'select_one'):
         return False
     link = item.select_one('a[href]')
@@ -142,31 +186,9 @@ def List(url):
             'fallback_attrs': ['src', 'data-lazy', 'data-original']
         },
         'duration': {
-            'selector': [
-                '.thumb-info',
-                '.thumb__meta',
-                '.content__meta',
-                '.content-info',
-                '.video-info',
-                '.meta',
-                '.time',
-                '.thumb .time'
-            ],
-            'text': True,
             'transform': _duration_transform
         },
         'quality': {
-            'selector': [
-                '.thumb-info',
-                '.thumb__meta',
-                '.content__meta',
-                '.content-info',
-                '.video-info',
-                '.meta',
-                '.time',
-                '.thumb .time'
-            ],
-            'text': True,
             'transform': _quality_transform
         }
     }
