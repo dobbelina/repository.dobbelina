@@ -1,0 +1,46 @@
+name: Build Kodi Add-on Packages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Build add-on archives
+        run: |
+          python build_repo_addons.py --out build/addons --update-index
+
+      - name: Collect build artifacts
+        run: |
+          mkdir -p upload
+          cp addons.xml addons.xml.md5 upload/
+          cp build/addons/*.zip upload/
+
+      - name: Upload packages artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kodi-addons
+          path: upload
+          if-no-files-found: error
+          retention-days: 7
