@@ -4,7 +4,7 @@
 
 **Started**: 2025-11-01
 **Current Version**: v1.1.181
-**Progress**: 21/137 sites (15.3%) migrated
+**Progress**: 24/137 sites (17.5%) migrated
 
 ---
 
@@ -62,7 +62,7 @@ These are the highest-traffic mainstream sites that break most often.
 
 ---
 
-### 🎯 Phase 2: Medium Priority Sites (11/20 completed - 55%)
+### 🎯 Phase 2: Medium Priority Sites (12/20 completed - 60%)
 
 Secondary mainstream sites with good traffic.
 
@@ -79,7 +79,7 @@ Secondary mainstream sites with good traffic.
 | yespornplease | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for List, Categories with error handling |
 | porngo | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings, categories, pagination, and playback |
 | watchporn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings, categories & pagination |
-| justporn | ⏳ Pending | Mainstream | |
+| justporn | ✅ **COMPLETED** | Mainstream | BeautifulSoup migration for listings & categories |
 | netflixporno | ⏳ Pending | Mainstream | |
 | peekvids | ⏳ Pending | Mainstream | |
 | playvids | ⏳ Pending | Mainstream | |
@@ -346,9 +346,9 @@ Part of BeautifulSoup migration roadmap (site X/137)
 ### Overall Progress
 
 - **Total Sites**: 137
-- **Completed**: 20 (14.6%)
+- **Completed**: 24 (17.5%)
 - **In Progress**: 0
-- **Remaining**: 117 (85.4%)
+- **Remaining**: 113 (82.5%)
 
 ### Phase Progress
 
@@ -356,8 +356,8 @@ Part of BeautifulSoup migration roadmap (site X/137)
 |-------|-------|-----------|------------|
 | Phase 0: Infrastructure | 3 items | 3 | 100% ✅ |
 | Phase 1: High Priority | 10 | 8 | 80% 🚧 |
-| Phase 2: Medium Priority | 20 | 9 | 45% 🚀 |
-| Phase 3: Live Cams | 8 | 0 | 0% |
+| Phase 2: Medium Priority | 20 | 12 | 60% 🚀 |
+| Phase 3: Live Cams | 8 | 1 | 12.5% |
 | Phase 4: JAV Sites | 20 | 0 | 0% |
 | Phase 5: Hentai/Anime | 10 | 0 | 0% |
 | Phase 6: International | 15 | 0 | 0% |
@@ -433,5 +433,5 @@ grep -c "✅ \*\*COMPLETED\*\*" ROADMAP.md
 
 ---
 
-**Last Updated**: 2025-11-07 (yespornplease migration)
+**Last Updated**: 2025-11-08 (justporn migration)
 **Next Review**: After each Phase 2 site completion

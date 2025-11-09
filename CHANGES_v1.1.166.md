@@ -20,6 +20,7 @@
 - **sxyprn** – Listings, categories, and pornstar directories refactored to BeautifulSoup with resilient pagination.
 - **pornkai** – API-driven listings parsed via BeautifulSoup with guarded pagination fallbacks and refreshed categories.
 - **whoreshub** – Complete migration of List, Categories, Playlist, and ListPL functions to BeautifulSoup with improved error handling.
+- **justporn** – Listings and categories migrated to BeautifulSoup with preserved context menus and pagination tools.
 
 ### Already Compliant (API/JSON)
 - **pornhub** (migrated in v1.1.165)
@@ -45,7 +46,7 @@
 ---
 
 ## 📈 Roadmap Impact
-- BeautifulSoup migration progress: **19/137 sites (13.9%) - Phase 2 40% complete**.
+- BeautifulSoup migration progress: **24/137 sites (17.5%) - Phase 2 60% complete**.
 - Next focus: Continue Phase 2 mainstream providers (12 remaining sites).
 
 ---

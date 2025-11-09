@@ -17,13 +17,131 @@
 '''
 
 import re
+
 import xbmc
 import xbmcgui
+
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
 site = AdultSite('justporn', "[COLOR hotpink]JustPorn[/COLOR]", 'https://justporn.com/', 'justporn.png', 'justporn')
+
+
+def _extract_meta_text(item):
+    """Extract metadata text such as duration or quality from ``item``.
+
+    The helper walks through a series of CSS selectors looking for child
+    elements that expose duration/quality text or ``data-duration`` attributes.
+    If no child element matches, it falls back to reading the
+    ``data-duration``/``data-length`` attributes directly from the item.
+
+    Args:
+        item: A BeautifulSoup tag (or tag-like object) representing a video
+            entry. Expected to support ``select_one`` for CSS lookups and
+            ``get`` for attribute access.
+
+    Returns:
+        str: Extracted metadata text, or an empty string when unavailable.
+    """
+    meta_selectors = [
+        '.thumb-info',
+        '.thumb__meta',
+        '.content__meta',
+        '.content-info',
+        '.video-info',
+        '.meta',
+        '.time',
+        '.thumb .time',
+        '[data-duration]'
+    ]
+
+    for selector in meta_selectors:
+        tag = item.select_one(selector) if hasattr(item, 'select_one') else None
+        if tag:
+            text = utils.safe_get_text(tag, default='', strip=True)
+            if text:
+                return text
+            data_duration = utils.safe_get_attr(tag, 'data-duration', default='')
+            if data_duration:
+                return data_duration
+
+    if hasattr(item, 'get'):
+        for attr_name in ('data-duration', 'data-length'):
+            data_attr = item.get(attr_name) or ''
+            if data_attr:
+                return data_attr
+
+    return ''
+
+
+def _duration_transform(value, item):
+    """Normalize duration strings extracted from a video ``item``.
+
+    Args:
+        value (str): Initial duration value provided by upstream extraction (may be empty).
+        item: BeautifulSoup tag (or tag-like object) for the video entry.
+
+    Returns:
+        str: A ``MM:SS`` duration string when detected, otherwise ``''``.
+    """
+
+    candidates = [value or '']
+    meta_text = _extract_meta_text(item)
+    if meta_text:
+        candidates.insert(0, meta_text)
+
+    for text in candidates:
+        if not text:
+            continue
+        match = re.search(r'(\d{1,2}:\d{2})', text)
+        if match:
+            return match.group(1)
+    return ''
+
+
+def _quality_transform(value, item):
+    """Return ``'HD'`` when high-definition metadata is detected for ``item``.
+
+    Args:
+        value (str): Initial quality indicator extracted by selectors (may be empty).
+        item: BeautifulSoup tag (or tag-like object) for the video entry.
+
+    Returns:
+        str: ``'HD'`` when HD keywords are detected, otherwise ``''``.
+
+    The helper inspects both the provided value and any metadata text discovered
+    via :func:`_extract_meta_text` for an ``hd`` substring.
+    """
+
+    candidates = [value or '', _extract_meta_text(item)]
+    for text in candidates:
+        if not text:
+            continue
+        if 'hd' in text.lower():
+            return 'HD'
+    return ''
+
+
+def _is_video_item(item):
+    """Return ``True`` when ``item`` contains a playable video link.
+
+    Args:
+        item: BeautifulSoup tag (or tag-like object) representing a candidate
+            video entry.
+
+    Returns:
+        bool: ``True`` if the item has a hyperlink with an ``href`` attribute;
+        ``False`` otherwise.
+    """
+
+    if not hasattr(item, 'select_one'):
+        return False
+    link = item.select_one('a[href]')
+    if not link:
+        return False
+    href = utils.safe_get_attr(link, 'href', default='')
+    return bool(href)
 
 
 @site.register(default_mode=True)
@@ -40,20 +158,41 @@ def List(url):
     url = url if 'page=' in url else url + '?page=1'
 
     listhtml = utils.getHtml(url, site.url)
-
-    delimiter = '<div class="content"'
-    re_videopage = '<a href="([^"]+)"'
-    re_name = '>([^<]+)</a></h2>'
-    re_img = '<img src="([^"]+)"'
-    re_duration = r'</div>\s*([\d:]+)\s*h*d*\s*</div>'
-    re_quality = r'\s(hd)\s*</div>'
+    soup = utils.parse_html(listhtml)
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('justporn.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=" + str('justporn.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
-    utils.videos_list(site, 'justporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    selectors = {
+        'base_url': site.url,
+        'items': [
+            'div.content',
+            'div.video-item',
+            'article.video-item'
+        ],
+        'filter': _is_video_item,
+        'url': {'selector': 'a', 'attr': 'href'},
+        'title': {
+            'selector': 'h2 a',
+            'fallback_selectors': ['a[title]', 'a'],
+            'text': True,
+            'clean': True
+        },
+        'thumbnail': {
+            'selector': 'img',
+            'attr': 'data-src',
+            'fallback_attrs': ['src', 'data-lazy', 'data-original']
+        },
+        'duration': {
+            'transform': _duration_transform
+        },
+        'quality': {
+            'transform': _quality_transform
+        }
+    }
+    utils.soup_videos_list(site, soup, selectors, play_mode='justporn.Playvid', contextm=cm)
 
     match = re.search(r'page=(\d+)', url, re.IGNORECASE)
     if match:
@@ -99,11 +238,24 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'<div class="filter featured-category\s*"\s*data-val="(\d+)">\s*([^<]+)\s*<', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    match.sort(key=lambda x: x[1])
-    for data, name in match:
-        name = utils.cleantext(name)
-        caturl = '{0}?page=1&category[]={1}'.format(site.url, data)
+    soup = utils.parse_html(cathtml)
+
+    categories = []
+    if soup:
+        for node in soup.select('div.filter.featured-category[data-val]'):
+            data_val = utils.safe_get_attr(node, 'data-val', default='')
+            if not data_val:
+                continue
+            name = utils.safe_get_text(node, default='', strip=True)
+            name = utils.cleantext(name)
+            if not name:
+                continue
+            categories.append((name, data_val))
+
+    categories.sort(key=lambda item: item[0].lower())
+
+    for name, data_val in categories:
+        caturl = '{0}?page=1&category[]={1}'.format(site.url, data_val)
         site.add_dir(name, caturl, 'List', '')
     utils.eod()
 
