@@ -17,13 +17,15 @@
 '''
 
 import re
-from resources.lib import utils
-from resources.lib.adultsite import AdultSite
-from six.moves import urllib_parse
+import time
+
 import xbmc
 import xbmcgui
+from six.moves import urllib_parse
+
+from resources.lib import utils
+from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
-import time
 
 
 site = AdultSite('watchporn', '[COLOR hotpink]WatchPorn[/COLOR]', 'https://watchporn.to/', 'https://watchporn.to/contents/djifbwwmsrbs/theme/logo.png', 'watchporn')
@@ -44,35 +46,105 @@ def List(url):
         url = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&_=' + str(tm)
     listhtml = utils.getHtml(url)
 
-    delimiter = '<div class="item  ">'
-    re_videopage = '<a href="([^"]+)"'
-    re_name = 'title="([^"]+)"'
-    re_img = 'data-original="([^"]+)"'
-    re_duration = '"duration">([^<]+)<'
-    re_quality = 'class="is[^"]+">([^<]+)<'
+    soup = utils.parse_html(listhtml)
 
-    cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('watchporn.Lookupinfo') + "&url=")
-    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
-    cm_related = (utils.addon_sys + "?mode=" + str('watchporn.Related') + "&url=")
-    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+    video_items = soup.select('div.item, div.item.item-video, div.video-item')
 
-    utils.videos_list(site, 'watchporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    items_added = 0
+    for item in video_items:
+        try:
+            link = item.select_one('a[href]')
+            if not link:
+                continue
 
-    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
-    if match:
-        npage = int(match.group(1)) + 1
-        block_id = match.group(2)
-        params = match.group(3).replace(';', '&').replace(':', '=')
-        tm = int(time.time() * 1000)
-        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, str(tm))
-        nurl = nurl.replace('+from_albums', '')
-        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+            videopage = utils.safe_get_attr(link, 'href')
+            if not videopage:
+                continue
+            videopage = urllib_parse.urljoin(site.url, videopage)
 
-        cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=watchporn.List")
-        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+            title = utils.safe_get_attr(link, 'title')
+            if not title:
+                title_tag = item.select_one('.item__title, .title, a.title')
+                title = utils.safe_get_text(title_tag)
+            title = utils.cleantext(title)
+            if not title:
+                continue
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'List', site.img_next, contextm=cm)
+            img_tag = item.select_one('img')
+            thumb = utils.safe_get_attr(img_tag, 'data-original', ['data-src', 'data-lazy', 'src'])
+            if thumb:
+                thumb = utils.fix_url(thumb, site.url)
+
+            duration_tag = item.select_one('.duration, .item__time, .time, .item__meta .meta__time')
+            duration = utils.safe_get_text(duration_tag)
+
+            quality_tag = item.select_one('.is-hd, .is-4k, .is-1080p, .is-720p, .is-480p, .quality, .item__quality')
+            quality = utils.safe_get_text(quality_tag)
+
+            cm_lookupinfo = (utils.addon_sys + "?mode=watchporn.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
+            cm_related = (utils.addon_sys + "?mode=watchporn.Related&url=" + urllib_parse.quote_plus(videopage))
+            context_menu = [
+                ('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'),
+                ('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')
+            ]
+
+            site.add_download_link(title, videopage, 'Playvid', thumb, title, duration=duration, quality=quality,
+                                   contextm=context_menu)
+            items_added += 1
+        except Exception as exc:
+            utils.kodilog('Error parsing WatchPorn video item: {}'.format(exc))
+            continue
+
+    if not items_added:
+        utils.notify(msg='Nothing found')
+
+    next_link = None
+    for candidate in soup.select('a.next, a[data-block-id]'):
+        text = utils.safe_get_text(candidate).lower()
+        classes = candidate.get('class', []) if hasattr(candidate, 'get') else []
+        if 'next' in text or 'page-next' in classes:
+            next_link = candidate
+            break
+    if next_link:
+        current_span = soup.select_one('.page-current span, span.page-current, li.active span')
+        try:
+            current_page = int(utils.safe_get_text(current_span, '0'))
+        except ValueError:
+            current_page = 0
+
+        block_id = next_link.get('data-block-id')
+        params = next_link.get('data-parameters')
+        if block_id and params:
+            params = params.replace(';', '&').replace(':', '=')
+            tm = int(time.time() * 1000)
+            base_url = url.split('?')[0]
+            npage = current_page + 1 if current_page else 2
+            nurl = (base_url + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'
+                    .format(block_id, params, str(tm)))
+            nurl = nurl.replace('+from_albums', '')
+            if npage:
+                nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+
+            cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage&url=" + urllib_parse.quote_plus(nurl)
+                       + "&np=" + str(npage if npage else 1) + "&listmode=watchporn.List")
+            cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+            page_label = '[COLOR hotpink]Next Page...[/COLOR]'
+            if npage:
+                page_label += ' ({})'.format(npage)
+
+            site.add_dir(page_label, nurl, 'List', site.img_next, contextm=cm)
+        else:
+            href = utils.safe_get_attr(next_link, 'href')
+            if href:
+                next_url = urllib_parse.urljoin(site.url, href)
+                cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage&url=" + urllib_parse.quote_plus(next_url)
+                           + "&np=" + str(current_page + 1 if current_page else 2) + "&listmode=watchporn.List")
+                cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+                label = '[COLOR hotpink]Next Page...[/COLOR]'
+                if current_page:
+                    label += ' ({})'.format(current_page + 1)
+                site.add_dir(label, next_url, 'List', site.img_next, contextm=cm)
 
     utils.eod()
 
@@ -103,11 +175,36 @@ def Categories(url):
     url = url + str(tm)
     cathtml = utils.getHtml(url)
 
-    match = re.compile(r'class="item"\shref="([^"]+)"\stitle="([^"]+)".+?((?:src="[^"]+jpg|>no image<)).+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, videos in match:
-        name = utils.cleantext(name) + " [COLOR deeppink]" + videos + "[/COLOR]"
-        img = None if '>no image<' in img else img.split('src="')[1]
-        site.add_dir(name, catpage, 'List', img)
+    soup = utils.parse_html(cathtml)
+
+    for anchor in soup.select('a.item[href], a.categories-list__item[href]'):
+        catpage = utils.safe_get_attr(anchor, 'href')
+        if not catpage:
+            continue
+        catpage = urllib_parse.urljoin(site.url, catpage)
+
+        name = utils.safe_get_attr(anchor, 'title')
+        if not name:
+            name = utils.safe_get_text(anchor.select_one('.title, .item__title'))
+        name = utils.cleantext(name)
+        if not name:
+            continue
+
+        img_tag = anchor.select_one('img')
+        img = ''
+        if img_tag:
+            img = utils.safe_get_attr(img_tag, 'src', ['data-original', 'data-src', 'data-lazy'])
+            if img:
+                img = utils.fix_url(img, site.url)
+        img = img or None
+
+        videos_tag = anchor.select_one('.videos, .item__videos, .meta__videos')
+        videos = utils.safe_get_text(videos_tag)
+        label = name
+        if videos:
+            label = f"{name} [COLOR deeppink]{videos}[/COLOR]"
+
+        site.add_dir(label, catpage, 'List', img)
     utils.eod()
 
 
