@@ -49,17 +49,57 @@ def List(url):
     if len(listhtml) == 0:
         listhtml = 'Empty'
 
-    match = re.compile(r'<article class.+?href="([^"]+)".+?(?:data-lazy-src=|\ssrc=)"([^"]+\.jpg[^"]*)".+?Title">([^"]+)</div', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name in match:
-        name = utils.cleantext(name)
-        site.add_download_link(name, videopage, 'Playvid', img, '')
+    # Parse with BeautifulSoup
+    soup = utils.parse_html(listhtml)
 
-    nextp = re.compile(r'<a\s*class="next page-numbers"\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if nextp:
-        nextp = nextp.group(1).replace("&#038;", "&")
-        currpg = re.compile(r'class="page-numbers\s*current">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        lastpg = re.compile(r'>([^<]+)</a>\s*<a\s*class="next\s*page', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpg, lastpg), nextp, 'List', site.img_next)
+    # Extract video items from article elements
+    articles = soup.select('article')
+    for article in articles:
+        try:
+            # Get video link
+            link = article.select_one('a')
+            if not link:
+                continue
+            videopage = utils.safe_get_attr(link, 'href')
+            if not videopage:
+                continue
+
+            # Get thumbnail image (try data-lazy-src first, then src)
+            img_tag = article.select_one('img')
+            img = utils.safe_get_attr(img_tag, 'data-lazy-src', ['src'])
+            if img and '.jpg' not in img:
+                img = utils.safe_get_attr(img_tag, 'src')
+
+            # Get title from div with 'Title' class or containing 'Title'
+            title_div = article.select_one('[class*="Title"]')
+            name = utils.safe_get_text(title_div)
+            if not name:
+                continue
+
+            name = utils.cleantext(name)
+            site.add_download_link(name, videopage, 'Playvid', img, '')
+        except Exception as e:
+            utils.log('Error parsing video item: {}'.format(e))
+            continue
+
+    # Handle pagination with BeautifulSoup
+    next_link = soup.select_one('a.next.page-numbers')
+    if next_link:
+        nextp = utils.safe_get_attr(next_link, 'href', default='').replace("&#038;", "&")
+        if nextp:
+            # Get current and last page numbers
+            current_page = soup.select_one('.page-numbers.current')
+            currpg = utils.safe_get_text(current_page, '1')
+
+            # Find last page number (the link before the "next" button)
+            page_numbers = soup.select('.page-numbers:not(.next):not(.prev):not(.current)')
+            lastpg = currpg
+            for page_num in page_numbers:
+                page_text = utils.safe_get_text(page_num)
+                if page_text.isdigit():
+                    lastpg = page_text
+
+            site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpg, lastpg), nextp, 'List', site.img_next)
 
     utils.eod()
 
@@ -82,9 +122,27 @@ def Categories(url):
     except urllib_error.URLError as e:
         utils.notify(e)
         return
-    match = re.compile(r'cat-item-\d+"><a href="([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name in match:
-        site.add_dir(name, catpage, 'List', site.img_cat)
+
+    # Parse with BeautifulSoup
+    soup = utils.parse_html(cathtml)
+
+    # Find category items (li elements with class starting with "cat-item-")
+    cat_items = soup.select('li[class*="cat-item-"]')
+    for cat_item in cat_items:
+        try:
+            link = cat_item.select_one('a')
+            if not link:
+                continue
+
+            catpage = utils.safe_get_attr(link, 'href')
+            name = utils.safe_get_text(link)
+
+            if catpage and name:
+                site.add_dir(name, catpage, 'List', site.img_cat)
+        except Exception as e:
+            utils.log('Error parsing category item: {}'.format(e))
+            continue
+
     utils.eod()
 
 
@@ -95,9 +153,27 @@ def Studios(url):
     except urllib_error.URLError as e:
         utils.notify(e)
         return
-    match = re.compile(r'director\s*menu-item.+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(studhtml)
-    for studpage, name in match:
-        site.add_dir(name, studpage, 'List', site.img_cat)
+
+    # Parse with BeautifulSoup
+    soup = utils.parse_html(studhtml)
+
+    # Find studio/director menu items (li elements with class containing "director" and "menu-item")
+    studio_items = soup.select('li[class*="director"][class*="menu-item"]')
+    for studio_item in studio_items:
+        try:
+            link = studio_item.select_one('a')
+            if not link:
+                continue
+
+            studpage = utils.safe_get_attr(link, 'href')
+            name = utils.safe_get_text(link)
+
+            if studpage and name:
+                site.add_dir(name, studpage, 'List', site.img_cat)
+        except Exception as e:
+            utils.log('Error parsing studio item: {}'.format(e))
+            continue
+
     utils.eod()
 
 
