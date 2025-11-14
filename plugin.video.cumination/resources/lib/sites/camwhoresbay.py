@@ -20,6 +20,8 @@ import re
 from six.moves import urllib_parse
 import xbmcplugin
 import xbmc
+import xbmcgui
+import time
 from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -56,6 +58,7 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    utils.kodilog('CWB List URL: {}'.format(url))
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     listhtml = utils.getHtml(url, site.url, headers=hdr)
@@ -93,42 +96,76 @@ def List(url, page=1):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=name2, quality=hd)
 
-    if re.search(r'<li\s*class="next"><a', listhtml, re.DOTALL | re.IGNORECASE):
-        lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lastp = '/{}'.format(lastp[0]) if lastp else ''
-        if not page:
-            page = 1
-        npage = page + 1
+    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">Next', listhtml, re.DOTALL | re.IGNORECASE)
+    if match:
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        ts = int(time.time() * 1000)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
+        lpnr, lastp = None, ''
+        match = re.search(r':(\d+)">Last', listhtml, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lastp = '/{}'.format(lpnr)
+        nurl = nurl.replace('+from_albums', '')
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
 
-        if '/categories/' in url:
-            if '/{}/'.format(page) in url:
-                nurl = url.replace(str(page), str(npage))
-            else:
-                nurl = url + '{}/'.format(npage)
-        elif '/search/' in url:
-            if 'from_videos={0:02d}'.format(page) in url:
-                nurl = url.replace('from_videos={0:02d}'.format(page), 'from_videos={0:02d}'.format(npage))
-            else:
-                searchphrase = url.split('/')[-2]
-                nurl = url + '?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos={1:02d}'.format(searchphrase, npage)
-        elif '/favourites/' in url:
-            if 'from_my_fav_videos={0:02d}'.format(page) in url:
-                nurl = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
-            else:
-                utils.kodilog(' favorites pagination error')
-                nurl = url
-        elif '/playlists/' in url:
-            if '?mode' not in url:
-                url += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=added2fav_date&from=1'
-            if 'from={}'.format(page) in url:
-                nurl = url.replace('from={}'.format(page), 'from={}'.format(npage))
-            else:
-                utils.kodilog(' playlist pagination error')
-                nurl = url
-        else:
-            nurl = site.url[:-1] + re.compile(r'next"><a\s*href="(/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
+        cm_page = (utils.addon_sys + "?mode=camwhoresbay.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
     utils.eod()
+
+
+@site.register()
+def GotoPage(url, np, lp=None):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
+        contexturl = (utils.addon_sys + "?mode=" + "camwhoresbay.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+    # if re.search(r'<li\s*class="next"><a', listhtml, re.DOTALL | re.IGNORECASE):
+    #     lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    #     lastp = '/{}'.format(lastp[0]) if lastp else ''
+    #     if not page:
+    #         page = 1
+    #     npage = page + 1
+
+    #     if '/categories/' in url:
+    #         if '/{}/'.format(page) in url:
+    #             nurl = url.replace(str(page), str(npage))
+    #         else:
+    #             nurl = url + '{}/'.format(npage)
+    #     elif '/search/' in url:
+    #         if 'from_videos={0:02d}'.format(page) in url:
+    #             nurl = url.replace('from_videos={0:02d}'.format(page), 'from_videos={0:02d}'.format(npage))
+    #         else:
+    #             searchphrase = url.split('/')[-2]
+    #             nurl = url + '?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos={1:02d}'.format(searchphrase, npage)
+    #     elif '/favourites/' in url:
+    #         if 'from_my_fav_videos={0:02d}'.format(page) in url:
+    #             nurl = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
+    #         else:
+    #             utils.kodilog(' favorites pagination error')
+    #             nurl = url
+    #     elif '/playlists/' in url:
+    #         if '?mode' not in url:
+    #             url += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=added2fav_date&from=1'
+    #         if 'from={}'.format(page) in url:
+    #             nurl = url.replace('from={}'.format(page), 'from={}'.format(npage))
+    #         else:
+    #             utils.kodilog(' playlist pagination error')
+    #             nurl = url
+    #     else:
+    #         nurl = site.url[:-1] + re.compile(r'next"><a\s*href="(/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+    #     site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
+    # utils.eod()
 
 
 @site.register()
