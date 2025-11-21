@@ -25,7 +25,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
 
-site = AdultSite('terebon', '[COLOR hotpink]Terebon[/COLOR]', 'https://a.terebon.net/', 'terebon.png', 'terebon')
+site = AdultSite('terebon', '[COLOR hotpink]Terebon[/COLOR]', 'https://b.terebon.net/', 'terebon.png', 'terebon')
 
 
 @site.register(default_mode=True)
