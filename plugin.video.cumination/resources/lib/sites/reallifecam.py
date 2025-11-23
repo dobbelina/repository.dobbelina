@@ -26,7 +26,7 @@ site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://realli
 # site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
 site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.cc[/COLOR]', 'https://www.voyeur-house.cc/', 'https://www.voyeur-house.cc/images/logo/logo.png', 'vhlife')
 site3 = AdultSite('vhlife1', '[COLOR hotpink]Reallifecams.in[/COLOR]', 'https://www.reallifecams.in/', 'https://www.reallifecams.in/images/logo/logo.png', 'vhlife1')
-site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps.to[/COLOR]', 'https://camcaps.to/', 'https://camcaps.to/images/logo/logo.png', 'camcapsto')
+site4 = AdultSite('simpvids', '[COLOR hotpink]Simpvids[/COLOR]', 'https://simpvids.com/', 'https://simpvids.com/images/logo/logo.png', 'simpvids')
 
 
 def getBaselink(url):
@@ -38,7 +38,7 @@ def getBaselink(url):
         siteurl = site2.url
     elif 'reallifecams.in' in url:
         siteurl = site3.url
-    elif 'camcaps.to' in url:
+    elif 'simpvids.com' in url:
         siteurl = site4.url
     return siteurl
 
@@ -51,7 +51,7 @@ def getBaselink(url):
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
-    if 'camcaps.to' in url:
+    if 'simpvids.com' in url:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos/', 'Search', site.img_search)
     else:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos?search_query=', 'Search', site.img_search)
