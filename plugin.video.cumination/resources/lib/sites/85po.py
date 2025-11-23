@@ -51,7 +51,7 @@ def List(url):
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
     re_duration = r'fa-clock"></span>\s*([^<]+)<'
-    re_quality = r'class="qualtiy \d+k">([^<]+)<'
+    re_quality = r'class="quality \d+k">([^<]+)<'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('85po.Lookupinfo') + "&url=")
