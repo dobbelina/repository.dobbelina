@@ -109,11 +109,11 @@ def SiteMain(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?float-right"(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?float-right(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videourl, name, thumb, info, provider in match:
         name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), utils.cleantext(name))
         hd = 'HD' if ' HD' in info else ''
-        duration = re.findall(r'([\d:]+)', info)
+        duration = re.findall(r'\s([\d:]+)\s', info)
         duration = duration[0] if duration else ""
         site.add_download_link(name, siteurl[:-1] + videourl.replace('&amp;', '&'), 'Playvid', thumb, name, duration=duration, quality=hd)
     p = re.search(r'href="([^"]+)"[^>]+?label="Next\s*Page"', listhtml, re.DOTALL | re.IGNORECASE)
@@ -185,8 +185,11 @@ def Playvid(url, name, download=None):
         for pattern in patterns:
             match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
             if match:
-                sources.update({title: src for src, title in match})
-        videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+                sources.update({title: src for src, title in match if title != 'Auto'})
+        try:
+            videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+        except Exception:
+            videourl = utils.selector('Select quality', sources, reverse=True)
         if videourl:
             videourl = videourl.replace(r'\/', '/')
             vp.play_from_direct_link(videourl)
