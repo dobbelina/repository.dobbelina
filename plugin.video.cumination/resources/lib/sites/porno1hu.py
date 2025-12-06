@@ -17,10 +17,12 @@
 '''
 
 import re
+import time
 from six.moves import urllib_parse
 from resources.lib import utils
+import xbmc
+import xbmcgui
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite('porno1hu', '[COLOR hotpink]Porno1.hu[/COLOR]', 'https://porno1.hu/', 'https://porno1.hu/static/images/logo.png')
 
@@ -52,32 +54,47 @@ def List(url, page=1):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration)
 
-    np = re.compile(r'\D(\d+)">Utols.+?class="next">.*?sort_by:[^;]*?;from[^\d]+(\d+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        lp = '/' + np.group(1)
-        np = np.group(2)
-        nextp = url
-        for p in ['from', 'from_videos']:
-            nextp = nextp.replace('{}={}'.format(p, str(page)), '{}={}'.format(p, np))
-        site.add_dir('Next Page ({}{})'.format(np, lp), nextp, 'List', site.img_next, page=np)
+    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next".+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
+    if match:
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        ts = int(time.time() * 1000)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
+        lpnr, lastp = 0, ''
+        match = re.search(r'<li class="last"><a href="[^"]+/(\d+)/"', listhtml, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lastp = '/{}'.format(lpnr)
+        nurl = nurl.replace('+from_albums', '')
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
 
+        cm_page = (utils.addon_sys + "?mode=porno1hu.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
 @site.register()
+def GotoPage(url, np, lp=0):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
+        contexturl = (utils.addon_sys + "?mode=" + "porno1hu.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download)
+    vp = utils.VideoPlayer(name, download, direct_regex='<source title="[^>]+src="([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url, site.url)
-    embedurl = re.compile(r'embedURL" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)[0]
-    embedhtml = utils.getHtml(embedurl, url)
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(embedhtml)[0]
-    videourl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(embedhtml)[0]
-    videourl = kvs_decode(videourl, license)
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.play_from_direct_link(videourl + '|referer=' + url)
+    videohtml = utils.getHtml(url, site.url)
+    vp.play_from_html(videohtml)
 
 
 @site.register()

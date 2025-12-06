@@ -196,8 +196,7 @@ def List(channel, section, page=0):
     urldata = utils.getHtml(site.url + "posts/load_more_posts", site.url, headers, data=data)
     urldata = ParseJson(urldata)
     i = 0
-    match = re.compile(r'<section.+?href="([^"]+)">([^<]+).+?class="([^"]+).+?<img.+?src="([^"]+).+?tion">(?:<span>)?([^<]+)',
-                       re.DOTALL | re.IGNORECASE).findall(urldata)
+    match = re.compile(r'<section.+?href="([^"]+)">([^<]+).+?class="([^"]+).+?<img.+?src="([^"]+jpg).+?tion">(?:<span>)?([^<]+)', re.DOTALL | re.IGNORECASE).findall(urldata)
     for url, name, hd, img, duration in match:
         if 'full' in hd:
             hd = "[COLOR yellow]FULLHD[/COLOR]"

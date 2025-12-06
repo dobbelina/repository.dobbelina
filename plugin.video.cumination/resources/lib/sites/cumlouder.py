@@ -65,12 +65,10 @@ def Playvid(url, name, download=None):
     vpage = utils.getHtml(url, site.url)
     match = re.compile(r'''<iframe\s*src=["']([^"']+)''', re.DOTALL | re.IGNORECASE).findall(vpage)
     if match:
-        videourl = match[-1]
-    else:
-        vp.progress.close()
-        return
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_link_to_resolve(videourl)
+        vp.progress.update(75, "[CR]Video found[CR]")
+        iframe = match[-1]
+        iframehtml = utils.getHtml(iframe, site.url)
+        vp.play_from_html(iframehtml)
 
 
 @site.register()

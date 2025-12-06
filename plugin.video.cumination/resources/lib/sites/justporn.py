@@ -17,6 +17,7 @@
 '''
 
 import re
+import time
 import xbmc
 import xbmcgui
 from resources.lib import utils
@@ -28,9 +29,9 @@ site = AdultSite('justporn', "[COLOR hotpink]JustPorn[/COLOR]", 'https://justpor
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_search)
-    # site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + 'video-list?lang=en&page=1')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{}/', 'Search', site.img_search)
+    List(site.url + 'porn-videos/')
     utils.eod()
 
 
@@ -41,12 +42,12 @@ def List(url):
 
     listhtml = utils.getHtml(url, site.url)
 
-    delimiter = '<div class="content"'
+    delimiter = '<div class="thumb thumb_rel item'
     re_videopage = '<a href="([^"]+)"'
-    re_name = '>([^<]+)</a></h2>'
-    re_img = '<img src="([^"]+)"'
-    re_duration = r'</div>\s*([\d:]+)\s*h*d*\s*</div>'
-    re_quality = r'\s(hd)\s*</div>'
+    re_name = ' title="([^"]+)"'
+    re_img = 'data-original="([^"]+)"'
+    re_duration = r'class="time">([\d:]+)<'
+    re_quality = r'class="qualtiy">([^<]+)<'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('justporn.Lookupinfo') + "&url=")
@@ -55,29 +56,38 @@ def List(url):
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
     utils.videos_list(site, 'justporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
 
-    match = re.search(r'page=(\d+)', url, re.IGNORECASE)
+    match = re.search(r'''<a class="active[^"]+">(\d+)<.+?class='next'.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">''', listhtml, re.DOTALL | re.IGNORECASE)
     if match:
-        cp = match.group(1)
-        np = int(cp) + 1
-        npurl = url.replace('page={}'.format(cp), 'page={}'.format(np))
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        ts = int(time.time() * 1000)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
+        lpnr, lastp = 0, ''
+        match = re.search(r">(\d+)</a>\s*<a\s+class='next'", listhtml, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lastp = '/{}'.format(lpnr)
+        nurl = nurl.replace('+from_albums', '')
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
 
-        cm_page = (utils.addon_sys + "?mode=justporn.GotoPage&list_mode=justporn.List&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(np))
+        cm_page = (utils.addon_sys + "?mode=justporn.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np), npurl, 'List', site.img_next, contextm=cm)
 
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
     utils.eod()
 
 
 @site.register()
-def GotoPage(list_mode, url, np, lp=0):
+def GotoPage(url, np, lp=0):
     dialog = xbmcgui.Dialog()
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
-        url = url.replace('page={}'.format(np), 'page={}'.format(pg))
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
-        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url))
+        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
+        contexturl = (utils.addon_sys + "?mode=" + "justporn.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -92,19 +102,16 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = "{0}{1}/".format(url, keyword.replace(' ', '-'))
-        List(url)
+        List(url.format(keyword.replace(' ', '-')))
 
 
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'<div class="filter featured-category\s*"\s*data-val="(\d+)">\s*([^<]+)\s*<', re.IGNORECASE | re.DOTALL).findall(cathtml)
-    match.sort(key=lambda x: x[1])
-    for data, name in match:
+    match = re.compile(r'<a href="([^"]+)"\s*title="([^"]+)">\s*<div class="img-holder">\s*<img src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for data, name, img in match:
         name = utils.cleantext(name)
-        caturl = '{0}?page=1&category[]={1}'.format(site.url, data)
-        site.add_dir(name, caturl, 'List', '')
+        site.add_dir(name, data, 'List', img)
     utils.eod()
 
 
@@ -113,22 +120,22 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url)
-
-    match = re.compile(r'<source src="([^"]+)" title="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    match = re.compile(r"video(?:_|_alt_)url\d*:\s*'([^']+)'.+?video(?:_|_alt_)url\d*_size:\s*'\d+x(\d+)'", re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
-        sources = {m[1]: site.url[:-1] + m[0].replace('&amp;', '&') for m in match}
-        videourl = utils.prefquality(sources, reverse=True)
+        sources = {m[1]: m[0] for m in match}
+        vp.progress.update(75, "[CR]Video found[CR]")
+        videourl = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
         if videourl:
             vp.play_from_direct_link(videourl)
-    else:
-        utils.notify('Oh Oh', 'No Videos found')
 
 
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Cat", r'href="(/category/[^"]+)" style="cursor: pointer">\s*([^<]+)\s*</a', ''),
-        ("Tag", r'href="(/tag/[^"]+)" style="cursor: pointer">\s*<i>#</i>([^<]+)\s*</a', '')
+        (" Model", r'href="https://www.justporn.com(/models/[^"]+)">\s*<i><svg class.*?</i>\s*(\S[^<]*\S)\s*</a', ''),
+        (" Sites", r'href="https://www.justporn.com(/sites/[^"]+)">\s*<i><svg class.*?</i>\s*(\S[^<]*\S)\s*</a', ''),
+        ("Cat", r'href="https://www.justporn.com(/categories/[^"]+)">\s*(\S[^<]*\S)\s*</a', ''),
+        ("Tag", r'href="https://www.justporn.com(/tags/[^"]+)">\s*(\S[^<]*\S)\s*</a', '')
     ]
 
     lookupinfo = utils.LookupInfo('', url, 'justporn.List', lookup_list)
