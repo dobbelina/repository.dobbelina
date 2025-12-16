@@ -373,6 +373,7 @@ def refresh():
 
 
 def playvid(videourl, name, download=None, subtitle=None, IA_check='check'):
+    videourl = cleantext(videourl)
     if download == 1:
         downloadVideo(videourl, name)
     else:
@@ -1831,3 +1832,4 @@ class Thumbnails:
             return img_path
         Thread(target=self.download_image, args=(img, img_path), daemon=True).start()
         return img_path
+
