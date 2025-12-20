@@ -1,2 +1,3 @@
 [B]Version 1.1.163[/B]
 - stripchat - fix playback (SD only)
+- americass - removed
