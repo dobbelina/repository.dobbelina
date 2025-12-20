@@ -1,11 +1,2 @@
-[B]Version 1.1.162[/B]
-- AWM Netork - fix listing
-- camwhoresbay - fix playback
-- cumlouder - fix playback
-- justporn - fix site
-- porndig - fix thumbnails
-- porn1hu - fix site
-- bubaporn - site removed
-- cambro - site removed
-- yespornplease - site removed
-- iflix - site removed
+[B]Version 1.1.163[/B]
+- stripchat - fix playback (SD only)

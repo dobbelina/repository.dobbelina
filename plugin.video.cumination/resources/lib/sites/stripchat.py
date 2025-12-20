@@ -121,18 +121,15 @@ def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
-    if not utils.checkUrl(url):
-        data = json.loads(utils._getHtml(altUrl + name))["models"][0]
-        if data["username"] == name:
-            url = data['stream']['url']
-        else:
-            utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
-            vp.progress.close()
-            return
-
-    url = re.sub(r'_\d+p\.', '.', url)
+    data = json.loads(utils._getHtml(altUrl + name))
+    data = data['models'][0]
+    if data["username"] == name:
+        url = data['stream']['url']
+    else:
+        utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
+        vp.progress.close()
+        return
     vp.progress.update(75, "[CR]Found Stream[CR]")
-    vp = utils.VideoPlayer(name)
     vp.play_from_direct_link(url)
 
 
