@@ -2,4 +2,4 @@
 - stripchat - fix playback (SD only)
 - americass - removed
 Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
-
+- pornxp - fix listing
