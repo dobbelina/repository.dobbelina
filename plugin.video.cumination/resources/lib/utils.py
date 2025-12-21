@@ -373,6 +373,7 @@ def refresh():
 
 
 def playvid(videourl, name, download=None, subtitle=None, IA_check='check'):
+    videourl = videourl.replace('&amp;', '&')
     if download == 1:
         downloadVideo(videourl, name)
     else:
