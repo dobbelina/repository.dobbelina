@@ -22,6 +22,7 @@ from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 import xbmc
+import xbmcgui
 
 site = AdultSite('celebsroulette', '[COLOR hotpink]CelebsRoulette[/COLOR]', 'https://celebsroulette.com/', 'https://celebsroulette.com/images/logo.png', 'celebsroulette')
 
@@ -69,10 +70,28 @@ def List(url):
         else:
             next_page = url + '{0}/'.format(np)
         lp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lp = '/' + lp[0] if lp else ''
-        site.add_dir('Next Page (' + np + lp + ')', next_page, 'List', site.img_next)
-
+        lp = lp[0] if lp else ''
+        cm_page = (utils.addon_sys + "?mode=celebsroulette.GotoPage" + "&url=" + urllib_parse.quote_plus(next_page) + "&np=" + str(np) + "&lp=" + str(lp))
+        cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+        lp = '/' + lp if lp else ''
+        site.add_dir('Next Page (' + np + lp + ')', next_page, 'List', site.img_next, contextm=cm)
     utils.eod()
+
+
+@site.register()
+def GotoPage(url, np, lp=None):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        utils.notify(msg='Going to page ' + str(pg))
+        url = url.replace('/' + np + '/', '/' + str(pg) + '/')
+        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
+        utils.notify(msg='Loading page ' + str(url))
+        contexturl = (utils.addon_sys + "?mode=" + "celebsroulette.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -179,13 +198,20 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url)
     surl = re.search(r"video_url:\s*'([^']+)'", html)
+    referer = site.url
+    if not surl:
+        match = re.compile(r'<iframe[^>]+src="([^"]+/embed/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+        if match:
+            referer = match[0]
+            html = utils.getHtml(match[0])
+            surl = re.search(r"video_url:\s*'([^']+)'", html)
     if surl:
         surl = surl.group(1)
         if surl.startswith('function/'):
             license = re.findall(r"license_code:\s*'([^']+)", html)[0]
             surl = kvs_decode(surl, license)
-            surl = utils.getVideoLink(surl)
-            surl += '|Referer=' + site.url
+        surl = utils.getVideoLink(surl)
+        surl += '|Referer=' + referer
     else:
         vp.progress.close()
         return

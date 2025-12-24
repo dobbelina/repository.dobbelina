@@ -172,7 +172,7 @@ def Playvid(url, name, download=None):
         else:
             found = True
     vp.progress.update(50, "[CR]Scraping video page[CR]")
-    if not vp.resolveurl.HostedMediaFile(vlink):
+    if not vp.resolveurl.HostedMediaFile(vlink) or 'zbporn' in vlink:
         if '&lander=' in vlink:
             vlink = vlink.split('&lander=')[-1]
             vlink = urllib_parse.unquote(vlink)
@@ -180,7 +180,9 @@ def Playvid(url, name, download=None):
         vpage = utils.getHtml(url, site.url)
 
         patterns = [r'''<source\s+[^>]*src=['"]([^'"]+\.mp4[^'"]*)['"]\s+[^>]*title=['"]([^'"]+)''',
-                    r'\{"src":"([^"]+)","desc":"([^"]+)"']
+                    r'\{"src":"([^"]+)","desc":"([^"]+)"',
+                    r'\\"url\\",\\"([^"]+)\\",\\"width\\",\d+,\\"height\\",(\d+)'  # around.xxx
+                    ]
         sources = {}
         for pattern in patterns:
             match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
@@ -189,15 +191,17 @@ def Playvid(url, name, download=None):
         try:
             videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
         except Exception:
-            videourl = utils.selector('Select quality', sources, reverse=True)
+            videourl = utils.selector('Select source', sources, reverse=True)
         if videourl:
             videourl = videourl.replace(r'\/', '/')
             vp.play_from_direct_link(videourl)
             return
 
-        patterns = [r'embed_url:\s*"([^"]+)"',
-                    r"video_url:\s*'([^']+.mp4)'",
-                    r'rel="video_src" href="([^"]+)"']
+        patterns = [r'embed_url":\s*"([^"]+)"',
+                    r"video_url:\s*'([^']+(?:\.m3u8|\.mp4))'",
+                    r'rel="video_src" href="([^"]+)"',
+                    r'<source src="([^"]+(?:\.m3u8|\.mp4))"',
+                    ]
         sources = []
         for pattern in patterns:
             match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
@@ -205,14 +209,17 @@ def Playvid(url, name, download=None):
                 sources = sources + match
         videourl = utils.selector('Select source', sources)
         if videourl:
-            videourl = 'https:' + match[0] if match[0].startswith('//') else match[0]
+            videourl = 'https:' + videourl if videourl.startswith('//') else videourl
             vp.play_from_direct_link(videourl)
             return
-
-        if 'function/0/http' not in vpage and '<div class="embed-wrap"' in vpage:
+        if 'function/0/http' not in vpage and ('<div class="embed-wrap"' in vpage or '"embedUrl": "' in vpage):
             match = re.compile(r'<div class="embed-wrap".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(vpage)
             if match:
                 vpage = utils.getHtml(match[0], url)
+            else:
+                match = re.compile(r'"embedUrl":\s*"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(vpage)
+                if match:
+                    vpage = utils.getHtml(match[0], url)
 
         if "license_code: '" in vpage:
             sources = {}
@@ -229,12 +236,15 @@ def Playvid(url, name, download=None):
                     qual = '720p' if qual == 'HD' else qual
                     if 'function/0/http' in surl:
                         surl = kvs_decode(surl, license)
-
-                    surl = utils.getVideoLink(surl)
-                    surl = surl.replace('//', '/%2F').replace('https:/%2F', 'https://')
+                    referer = '/'.join(surl.split('/')[:3]) + '/'
+                    surl = utils.getVideoLink(surl, referer)
+                    surl = surl + '|Referer={}'.format(referer)
                     if '.mp4' in surl:
                         sources.update({qual: surl})
-            videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+            try:
+                videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+            except Exception:
+                videourl = utils.selector('Select source', sources, reverse=True)
 
             if videourl:
                 vp.play_from_direct_link(videourl)

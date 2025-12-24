@@ -3,3 +3,5 @@
 - americass - removed
 Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - pornxp - fix listing
+- celebsroulette - fix playback, gotopage
+- awmnetwork - fix playback
