@@ -215,7 +215,8 @@ def Playvid(url, name, download=None):
     vp.progress.update(75, "[CR]Video found[CR]")
     videourl = utils.prefquality(sources, sort_by=lambda x: int(x.split(' ')[0][:-1]), reverse=True)
     if videourl:
-        videourl = videourl + '|Cookie=' + get_cookies()
+        # videourl = videourl + '|Cookie=' + get_cookies()
+        videourl = videourl + '|Referer=' + url
         vp.play_from_direct_link(videourl)
 
 
