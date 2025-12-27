@@ -8,4 +8,6 @@ Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - porntn - fix listing
 - premiumporn - fix playback
 - tnaflix - fix thumbnails
+- whoreshub - fix playback
+- pornhub - fix categories
 
