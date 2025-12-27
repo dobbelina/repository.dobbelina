@@ -6,3 +6,5 @@ Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - celebsroulette - fix playback, gotopage
 - awmnetwork - fix playback
 - porntn - fix listing
+- premiumporn - fix playback
+

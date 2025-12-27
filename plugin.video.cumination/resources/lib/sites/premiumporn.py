@@ -22,6 +22,10 @@ import xbmcgui
 from resources.lib import utils
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
+import json
+import base64
+from Cryptodome.Cipher import AES
+
 
 site = AdultSite('premiumporn', '[COLOR hotpink]PremiumPorn[/COLOR]', 'https://premiumporn.org/', 'premiumporn.png', 'premiumporn')
 
@@ -100,14 +104,65 @@ def Search(url, keyword=None):
         List(url)
 
 
+def base64_url_decode(data):
+    padding = 4 - (len(data) % 4)
+    if padding != 4:
+        data += '=' * padding
+    data = data.replace('-', '+').replace('_', '/')
+    return base64.b64decode(data)
+
+
+def decrypt_aes_gcm(payload, key, iv):
+    try:
+        cipher = AES.new(key, AES.MODE_GCM, nonce=iv)
+        plaintext = cipher.decrypt_and_verify(payload[:-16], payload[-16:])
+        return plaintext.decode('utf-8')
+    except Exception as e:
+        return f"Decryption failed: {str(e)}"
+
+
 @site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     html = utils.getHtml(url)
-    iframematch = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
-    if iframematch:
-        iframe = iframematch[0]
-        vp.play_from_link_to_resolve(iframe)
+    match = re.compile(r'itemprop="embedURL" content="(https://[^/]+/e/([^/]+)/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    if match:
+        embed_url = match[0][0]
+        id = match[0][1]
+        details_url = 'https://bysewihe.com/api/videos/{}/embed/details'.format(id)
+        details_data = utils.getHtml(details_url, url)
+        details_json = json.loads(details_data)
+        embed = details_json.get('embed_frame_url', '')
+
+        api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
+        hdr = utils.base_hdrs.copy()
+        hdr['X-Embed-Origin'] = 'premiumporn.org'
+        hdr['X-Embed-Parent'] = embed_url
+        hdr['X-Embed-Referer'] = site.url
+
+        api_data = utils.getHtml(api_url, embed, headers=hdr)
+        encrypted_data = json.loads(api_data)
+
+        playback = encrypted_data["playback"]
+
+        iv = base64_url_decode(playback["iv"])
+        payload = base64_url_decode(playback["payload"])
+
+        key_part1 = base64_url_decode(playback["key_parts"][0])
+        key_part2 = base64_url_decode(playback["key_parts"][1])
+        combined_key = key_part1 + key_part2
+
+        result = decrypt_aes_gcm(payload, combined_key, iv)
+        src = {}
+        for source in json.loads(result).get('sources', []):
+            video_url = source.get('url', '').replace('\\u0026', '&')
+            label = source.get('label', '')
+            src[label] = video_url
+
+        video_url = utils.prefquality(src, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+        if video_url:
+            vp.play_from_direct_link(video_url)
+
     else:
         utils.notify('Oh oh', 'No video found')
 
