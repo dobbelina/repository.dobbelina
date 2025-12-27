@@ -7,4 +7,5 @@ Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - awmnetwork - fix playback
 - porntn - fix listing
 - premiumporn - fix playback
+- tnaflix - fix thumbnails
 

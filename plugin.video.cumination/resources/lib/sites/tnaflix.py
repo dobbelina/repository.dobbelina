@@ -48,7 +48,7 @@ def List(url):
     delimiter = 'data-vid="'
     re_videopage = 'href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
-    re_img = 'data-src="([^"]+)"'
+    re_img = 'src="([^"]+)" alt'
     re_quality = 'quality">([^<]+)<'
     re_duration = 'video-duration">([^<]+)<'
     utils.videos_list(site, 'tnaflix.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, re_duration=re_duration, contextm='tnaflix.Related')
