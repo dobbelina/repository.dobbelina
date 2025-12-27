@@ -21,39 +21,38 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
+import xbmc
 
 site = AdultSite('porntn', '[COLOR hotpink]PornTN[/COLOR]', 'https://porntn.com/', 'https://porntn.com/static/images/logo.png')
 
 
 @site.register(default_mode=True)
 def Main(url):
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'new/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'new/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + '?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=post_date&from=1', 1)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/{0}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos=1', 'Search', site.img_search)
+    List(site.url + 'video/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q=&category_ids=&sort_by=title&from_videos=1', page=1)
     utils.eod()
 
 
 @site.register()
 def List(url, page=1):
-    try:
-        listhtml = utils.getHtml(url, '')
-    except Exception:
-        return None
+    utils.kodilog('porntn List: ' + url)
+    listhtml = utils.getHtml(url, '')
 
-    match = re.compile(r'class="item\s*?">\s+<a href="https://porntn\.com/([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, name, img, duration in match:
-        name = utils.cleantext(name)
-        videopage = site.url + videopage
-        img = img if img.startswith('http') else site.url + img if not img.startswith('//') else 'https:' + img
+    delimiter = r'<div class="item\s*">\s+'
+    re_videopage = r'<a href="([^"]+)"\s+title='
+    re_name = 'title="([^"]+)"'
+    re_img = r'data-original="([^"]+)"'
+    re_duration = r'class="duration">([\d:]+)<'
 
-        contextmenu = []
-        contexturl = (utils.addon_sys
-                      + "?mode=porntn.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+    cm = []
+    # cm_lookupinfo = (utils.addon_sys + "?mode=" + str('porntn.Lookupinfo') + "&url=")
+    # cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=" + str('porntn.Related') + "&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu, duration=duration)
+    utils.videos_list(site, 'porntn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
     np = re.compile(r'class="next">.*?sort_by:[^;]*?;from[^\d]+(\d+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
@@ -67,7 +66,14 @@ def List(url, page=1):
 
 
 @site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('porntn.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+@site.register()
 def Playvid(url, name, download=None):
+    utils.kodilog('porntn Playvid: ' + url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     html = utils.getHtml(url, site.url)
@@ -123,13 +129,10 @@ def Tags(url):
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
-        site.search_dir(searchUrl, 'Search')
+        site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '-')
-        searchUrl = searchUrl + title + '?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&category_ids=&sort_by=&from_videos=1'
-        List(searchUrl, 1)
+        List(url.format(keyword.replace(' ', '-')), page=1)
 
 
 @site.register()
