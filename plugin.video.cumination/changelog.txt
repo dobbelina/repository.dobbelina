@@ -1,7 +1,7 @@
 [B]Version 1.1.163[/B]
 - stripchat - fix playback (SD only)
 - americass - removed
-Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
+- Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - pornxp - fix listing
 - celebsroulette - fix playback, gotopage
 - awmnetwork - fix playback
@@ -10,4 +10,4 @@ Fix video playback for FlareSolverr scraped sites (e.g. luxuretv)
 - tnaflix - fix thumbnails
 - whoreshub - fix playback
 - pornhub - fix categories
-
+- pornhoarder - fix pornstars & studios
