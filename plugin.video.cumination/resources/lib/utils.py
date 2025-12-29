@@ -857,39 +857,19 @@ def parse_query(query):
 
 
 def cleantext(text):
+    text = text.strip()
+    text = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), text)
+    try:
+        text = text.encode('utf-8', 'ignore').decode("utf-8")
+    except:
+        pass
+    text = six.ensure_str(text)
     if PY3:
         import html
         text = html.unescape(text)
     else:
         h = html_parser.HTMLParser()
         text = h.unescape(text.decode('utf8')).encode('utf8')
-    text = text.replace('&amp;', '&')
-    text = text.replace('&apos;', "'")
-    text = text.replace('&lt;', '<')
-    text = text.replace('&gt;', '>')
-    text = text.replace('&ndash;', '-')
-    text = text.replace('&quot;', '"')
-    text = text.replace('&ntilde;', '~')
-    text = text.replace('&rsquo;', '\'')
-    text = text.replace('&nbsp;', ' ')
-    text = text.replace('&equals;', '=')
-    text = text.replace('&quest;', '?')
-    text = text.replace('&comma;', ',')
-    text = text.replace('&period;', '.')
-    text = text.replace('&colon;', ':')
-    text = text.replace('&lpar;', '(')
-    text = text.replace('&rpar;', ')')
-    text = text.replace('&excl;', '!')
-    text = text.replace('&dollar;', '$')
-    text = text.replace('&num;', '#')
-    text = text.replace('&ast;', '*')
-    text = text.replace('&lowbar;', '_')
-    text = text.replace('&lsqb;', '[')
-    text = text.replace('&rsqb;', ']')
-    text = text.replace('&half;', '1/2')
-    text = text.replace('&DiacriticalTilde;', '~')
-    text = text.replace('&OpenCurlyDoubleQuote;', '"')
-    text = text.replace('&CloseCurlyDoubleQuote;', '"')
     return text.strip()
 
 
@@ -1642,10 +1622,7 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
             if re_name:
                 match = re.search(re_name, video, flags=re.DOTALL | re.IGNORECASE)
                 if match:
-                    name = re.sub(r"\\u([0-9A-Fa-f]{4})", lambda x: six.unichr(int(x.group(1), 16)), match.group(1).strip())
-                    name = name.encode('utf-8', 'ignore').decode("utf-8")
-                    name = six.ensure_str(name)
-                    name = cleantext(name)
+                    name = cleantext(match.group(1))
             img = ''
             if re_img:
                 match = re.search(re_img, video, flags=re.DOTALL | re.IGNORECASE)

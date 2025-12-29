@@ -118,7 +118,7 @@ def decrypt_aes_gcm(payload, key, iv):
         plaintext = cipher.decrypt_and_verify(payload[:-16], payload[-16:])
         return plaintext.decode('utf-8')
     except Exception as e:
-        return f"Decryption failed: {str(e)}"
+        return "Decryption failed: {}".format(str(e))
 
 
 @site.register()
