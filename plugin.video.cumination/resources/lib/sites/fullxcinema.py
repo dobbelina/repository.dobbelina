@@ -37,16 +37,20 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url)
     html = listhtml.split('>SHOULD WATCH<')[0]
-    videos = html.split('article data-video-uid')
-    videos.pop(0)
-    for video in videos:
-        # if 'type-photos' in video:
-        #     continue
-        match = re.search(r'href="([^"]+).+?data-src="([^"]+)"\salt="([^"]+)".+?fa-clock-o"></i>([^<]+)<', video, re.DOTALL | re.IGNORECASE)
-        if match:
-            videourl, img, name, duration = match.group(1), match.group(2), match.group(3), match.group(4)
-            name = utils.cleantext(name)
-            site.add_download_link(name, videourl, 'Play', img, name, duration=duration)
+
+    delimiter = '<article data-video-id'
+    re_videopage = '<a href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = 'data-main-thumb="([^"]+)"'
+    re_duration = r'fa-clock-o"></i>([^<]+)<'
+
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('fullxcinema.Lookupinfo') + "&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=" + str('fullxcinema.Related') + "&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
+
+    utils.videos_list(site, 'fullxcinema.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
@@ -100,3 +104,20 @@ def Play(url, name, download=None):
         else:
             html = utils.getHtml(link)
             vp.play_from_html(html)
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Actor", r'href="{}(/actor/[^"]+)" title="([^"]+)">'.format(site.url[:-1]), ''),
+        ("Category", r'href="{}(/category/[^"]+)" class="label" title="([^"]+)"'.format(site.url[:-1]), ''),
+        ("Tag", r'href="{}(/tag/[^"]+)" class="label" title="([^"]+)"'.format(site.url[:-1]), '')
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'fullxcinema.List', lookup_list)
+    lookupinfo.getinfo()
+
+
+@site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('fullxcinema.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
