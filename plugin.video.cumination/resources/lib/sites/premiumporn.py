@@ -24,8 +24,10 @@ from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 import json
 import base64
-from Cryptodome.Cipher import AES
-
+try:
+    from Cryptodome.Cipher import AES
+except Exception as error:
+    utils.kodilog('Import Error Cryptodome: {}'.format(error))
 
 site = AdultSite('premiumporn', '[COLOR hotpink]PremiumPorn[/COLOR]', 'https://premiumporn.org/', 'premiumporn.png', 'premiumporn')
 
