@@ -25,7 +25,7 @@ import xbmc
 import xbmcgui
 from random import randint
 
-site = AdultSite('watchmdh', '[COLOR hotpink]WatchMDH[/COLOR]', 'https://watchdirty.is/', 'https://watchdirty.is/contents/playerother/theme/logo.png', 'watchmdh')
+site = AdultSite('fyxxr', '[COLOR hotpink]fyxXR[/COLOR]', 'https://fyxxr.to/', 'https://fyxxr.to/contents/playerother/theme/logo.png', 'fyxxr')
 
 
 @site.register(default_mode=True)
@@ -49,12 +49,12 @@ def List(url):
     re_quality = '"is-hd">([^<]+)<'
 
     cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('watchmdh.Lookupinfo') + "&url=")
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('fyxxr.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
-    cm_related = (utils.addon_sys + "?mode=" + str('watchmdh.Related') + "&url=")
+    cm_related = (utils.addon_sys + "?mode=" + str('fyxxr.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'watchmdh.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    utils.videos_list(site, 'fyxxr.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
 
     match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
     if match:
@@ -70,7 +70,7 @@ def List(url):
         lpparam = "&lp={}".format(match.group(1)) if match else "&lp=0"
         lptxt = "/{}".format(match.group(1)) if match else ""
 
-        cm_page = (utils.addon_sys + "?mode=watchmdh.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + lpparam + "&listmode=watchmdh.List")
+        cm_page = (utils.addon_sys + "?mode=fyxxr.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + lpparam + "&listmode=fyxxr.List")
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lptxt + ')', nurl, 'List', site.img_next, contextm=cm)
@@ -126,7 +126,7 @@ def Categories(url):
         lpparam = "&lp={}".format(match.group(1)) if match else "&lp=0"
         lptxt = "/{}".format(match.group(1)) if match else ""
 
-        cm_page = (utils.addon_sys + "?mode=watchmdh.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + lpparam + "&listmode=watchmdh.Categories")
+        cm_page = (utils.addon_sys + "?mode=fyxxr.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + lpparam + "&listmode=fyxxr.Categories")
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lptxt + ')', nurl, 'Categories', site.img_next, contextm=cm)
@@ -164,11 +164,11 @@ def Lookupinfo(url):
         ("Tags", r'<a href="([^"]+/tags/[^"]+)">([^<]+)<', ''),
         ("Models", r'<a href="([^"]+/models/[^"]+)">([^<]+)<', '')
     ]
-    lookupinfo = utils.LookupInfo('', url, 'watchmdh.List', lookup_list)
+    lookupinfo = utils.LookupInfo('', url, 'fyxxr.List', lookup_list)
     lookupinfo.getinfo()
 
 
 @site.register()
 def Related(url):
-    contexturl = (utils.addon_sys + "?mode=" + str('watchmdh.List') + "&url=" + urllib_parse.quote_plus(url))
+    contexturl = (utils.addon_sys + "?mode=" + str('fyxxr.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')

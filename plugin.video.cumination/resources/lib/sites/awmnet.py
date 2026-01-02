@@ -25,7 +25,7 @@ from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.decrypters import txxx
 
 
-site = AdultSite('awmnet', '[COLOR hotpink]AWM Network[/COLOR] - [COLOR deeppink]48 sites[/COLOR]', '', 'awmnet.jpg', 'awmnet')
+site = AdultSite('awmnet', '[COLOR hotpink]AWM Network[/COLOR] - [COLOR deeppink]49 sites[/COLOR]', '', 'awmnet.jpg', 'awmnet')
 
 sitelist = [
     ['4tube', 'https://www.4tube.com/templates/4tube/images/logo.png', 'https://www.4tube.com/'],
@@ -37,6 +37,7 @@ sitelist = [
     ['BigCockXXX', 'https://www.bigcockxxx.com/images/bigcockxxx/logo.png', 'https://www.bigcockxxx.com/'],
     ['Biporn', 'https://www.biporn.com/templates/biporn/images/logo.png', 'https://www.biporn.com/'],
     ['Cartoon Porn Videos', 'https://www.cartoonpornvideos.com/templates/cartoonpornvideos/images/logo.png', 'https://www.cartoonpornvideos.com/'],
+    ['CoqNu', 'https://www.coqnu.com/templates/coqnu/images/logo.png', 'https://www.coqnu.com/'],
     ['Dino Tube', 'https://www.dinotube.com/templates/dinotube/images/logo.png', 'https://www.dinotube.com/'],
     ['Ebony Galore', 'https://www.ebonygalore.com/templates/ebonygalore/images/logo.png', 'https://www.ebonygalore.com/'],
     ['EL Ladies', 'https://www.el-ladies.com/templates/el-ladies/images/logo.png', 'https://www.el-ladies.com/'],
@@ -111,6 +112,9 @@ def List(url):
     listhtml = utils.getHtml(url, siteurl)
     match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?float-right(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videourl, name, thumb, info, provider in match:
+        if 'class="font-[100]"' in info:
+            name = '[COLOR red](Paid Video)[/COLOR] ' + name
+            # continue  # skip paid videos
         name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), utils.cleantext(name))
         hd = 'HD' if ' HD' in info else ''
         duration = re.findall(r'\s([\d:]+)\s', info)
@@ -150,7 +154,7 @@ def Tags(url):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'class="card\s*group".+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'class="card\s*group.+?href="([^"]+)"\s*title="([^"]+)".+?src="([^"]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, image, videos in match:
         name = utils.cleantext(name) + " [COLOR deeppink](" + videos + " videos)[/COLOR]"
         site.add_dir(name, siteurl[:-1] + catpage + '?pricing=free', 'List', image)
@@ -212,6 +216,7 @@ def Playvid(url, name, download=None):
             videourl = 'https:' + videourl if videourl.startswith('//') else videourl
             vp.play_from_direct_link(videourl)
             return
+
         if 'function/0/http' not in vpage and ('<div class="embed-wrap"' in vpage or '"embedUrl": "' in vpage):
             match = re.compile(r'<div class="embed-wrap".+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(vpage)
             if match:

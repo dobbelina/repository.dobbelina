@@ -161,6 +161,7 @@ def Playvid(url, name, download=None):
     if match:
         videourl = match.group(1)
         videourl = videourl.replace('.av1.', '.h264.')
+        utils.kodilog('xHamster direct m3u8 URL found: {}'.format(videourl))
     else:
         jsondata = videopage.split('>window.initials=')[-1].split(';</script>')[0]
         jdata = json.loads(jsondata)
@@ -186,7 +187,12 @@ def Playvid(url, name, download=None):
         if hexurl:
             from resources.lib.decrypters import xhamster_decrypt
             try:
-                videourl = xhamster_decrypt.deobfuscate_url(hexurl)
+                if not hexurl.startswith('http'):
+                    videourl = xhamster_decrypt.deobfuscate_url(hexurl)
+                else:
+                    enc_string = hexurl.split('/')[3]
+                    dec_string = xhamster_decrypt.deobfuscate_url(enc_string)
+                    videourl = hexurl.replace(enc_string, dec_string)
             except Exception as e:
                 utils.notify('Oh Oh', 'Failed to deobfuscate video URL - {}'.format(e))
                 return

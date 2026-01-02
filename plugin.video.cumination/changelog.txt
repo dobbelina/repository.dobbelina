@@ -1,3 +1,8 @@
 [B]Version 1.1.164[/B]
 - fix compatibility with Python 2
 - fullxcinema - fix listing, lookup info, related videos
+- awmnetwork - new site Coq Nu, fix Category
+- xhamster - fix playback
+- watchmdh renamed to fyxxr
+- porntn - fix listing
+

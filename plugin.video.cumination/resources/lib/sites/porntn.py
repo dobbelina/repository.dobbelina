@@ -31,13 +31,12 @@ def Main(url):
     # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'new/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/{0}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos=1', 'Search', site.img_search)
-    List(site.url + 'video/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q=&category_ids=&sort_by=title&from_videos=1', page=1)
+    List(site.url + 'latest-updates/?mode=async&function=get_block&block_id=list_videos_latest_videos_list&sort_by=post_date&from=1', page=1)
     utils.eod()
 
 
 @site.register()
 def List(url, page=1):
-    utils.kodilog('porntn List: ' + url)
     listhtml = utils.getHtml(url, '')
 
     delimiter = r'<div class="item\s*">\s+'
