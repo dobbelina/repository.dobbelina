@@ -39,11 +39,11 @@ def List(url):
         name = utils.cleantext(name)
         site.add_download_link(name, video, 'Play', img, name, duration=duration)
 
-    np = re.compile(r'''pagination">.+?href='([^']+)'>Suivante''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'''pagination["']>.+?href=['"]([^'"]+)["']>Suivante''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         np = url.split('page')[0] + np.group(1)
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np.split('page')[-1].split('.')[0]), np, 'List', site.img_next)
-
+    utils.kodilog(listhtml)
     utils.eod()
 
 

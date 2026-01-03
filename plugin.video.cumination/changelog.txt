@@ -5,4 +5,5 @@
 - xhamster - fix playback
 - watchmdh renamed to fyxxr
 - porntn - fix listing
+- luxuretv - fix nextpage
 
