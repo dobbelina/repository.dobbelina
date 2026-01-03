@@ -43,7 +43,6 @@ def List(url):
     if np:
         np = url.split('page')[0] + np.group(1)
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np.split('page')[-1].split('.')[0]), np, 'List', site.img_next)
-    utils.kodilog(listhtml)
     utils.eod()
 
 
