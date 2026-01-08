@@ -21,7 +21,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 
-site = AdultSite('luxuretv', '[COLOR hotpink]LuxureTV[/COLOR]', 'https://luxuretv.com/', 'https://luxuretv.com/images/logo.png', 'luxuretv')
+site = AdultSite('luxuretv', '[COLOR hotpink]LuxureTV[/COLOR]', 'https://en.luxuretv.com/', 'https://en.luxuretv.com/images/logo.png', 'luxuretv')
 
 
 @site.register(default_mode=True)
@@ -37,9 +37,10 @@ def List(url):
     match = re.compile(r'''content">.+?href="([^"]+).+?title="([^"]+).+?src="([^"]+).+?time">(?:<b>)?([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img, duration in match:
         name = utils.cleantext(name)
+        img = img.replace(' ', '%20')
         site.add_download_link(name, video, 'Play', img, name, duration=duration)
 
-    np = re.compile(r'''pagination["']>.+?href=['"]([^'"]+)["']>Suivante''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'''pagination["']>.+?href=['"]([^'"]+)["']>(?:Suivante|Next|Siguiente)''', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         np = url.split('page')[0] + np.group(1)
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(np.split('page')[-1].split('.')[0]), np, 'List', site.img_next)
