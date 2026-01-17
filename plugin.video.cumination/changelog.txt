@@ -1,4 +1,3 @@
-[B]Version 1.1.166[/B]
-- Service release
-- luxuretv - fix nextpage, thumbnails
+[B]Version 1.1.168[/B]
+- xxxvideo - new site
 
