@@ -31,7 +31,7 @@ site = AdultSite('xxxtube', '[COLOR hotpink]X-X-X Video[/COLOR]', 'https://x-x-x
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/search/{0}/', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{0}/', 'Search', site.img_search)
     List(site.url + 'videos/?by=post_date')
     utils.eod()
 
@@ -59,7 +59,7 @@ def List(url):
 
     utils.videos_list(site, 'xxxtube.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
-    re_npurl = 'class="item active">.+?href="([^"]+)"'
+    re_npurl = 'class="item active">.+?href="/([^"]+)"'
     re_npnr = r'class="item active">.+?href="[^"]+">(\d+)<'
     re_lpnr = r'>(\d+)</a>\s+</li>\s+<li class="item pager">'
     utils.next_page(site, 'xxxtube.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xxxtube.GotoPage')
