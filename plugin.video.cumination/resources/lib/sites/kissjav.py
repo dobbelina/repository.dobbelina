@@ -42,7 +42,7 @@ def List(url):
     delimiter = '<div class="thumb '
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-original="([^"]+)"'
+    re_img = 'data-webp="([^"]+)"'
     re_duration = 'time">([^<]+)<'
     re_quality = 'qualtiy">(HD)<'
     utils.videos_list(site, 'kissjav.Playvid', html, delimiter, re_videopage, re_name, re_img, re_quality, re_duration)
@@ -125,6 +125,8 @@ def Playvid(url, name, download=None):
         if surl.startswith('function/'):
             license = re.findall(r"license_code:\s*'([^']+)", html)[0]
             surl = kvs_decode(surl, license)
+        elif not surl.startswith('http'):
+            surl = utils._bdecode(surl)
     else:
         vp.progress.close()
         return
