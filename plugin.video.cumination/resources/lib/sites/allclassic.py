@@ -26,43 +26,46 @@ from resources.lib.decrypters.kvsplayer import kvs_decode
 import ast
 
 
-site = AdultSite('xxxtube', '[COLOR hotpink]X-X-X Video[/COLOR]', 'https://x-x-x.tube/', 'xxxtube.png', 'xxxtube')
+site = AdultSite('allclassic', '[COLOR hotpink]AllClassic.Porn[/COLOR]', 'https://allclassic.porn/', 'https://allclassic.porn/images/logo.png', 'allclassic')
 
 
 @site.register(default_mode=True)
 def Main():
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_search)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{0}/', 'Search', site.img_search)
-    List(site.url + 'videos/?by=post_date')
+    List(site.url + 'page/1/')
     utils.eod()
 
 
 @site.register()
 def List(url):
-    if '/videos/' not in url and ('/categories/' in url or '/tags/' in url or '/models/' in url):
-        url += 'videos/?by=post_date'
-    listhtml = utils.getHtml(url)
-    if 'class="buttons flex"' not in listhtml and 'Related Videos' not in listhtml:
+    try:
+        listhtml = utils.getHtml(url)
+    except Exception:
+        utils.notify(msg='No videos found!')
+        return
+    if 'No videos found ' in listhtml:
         utils.notify(msg='No videos found!')
         return
 
-    delimiter = r'class="thumb-inner"'
-    re_videopage = '<a href="([^"]+)"'
-    re_name = 'title="([^"]+)"'
-    re_img = r'data-original="([^"]+)"'
-    re_duration = r'class="duration">\s*([\d:]+)\s*<'
+    delimiter = r'<a class="th item"'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'class="th-description">([^<]+)<'
+    re_img = r'img src="([^"]+)"'
+    re_duration = r'la-clock-o"></i>([\d:]+)<'
+    skip = 'class="th-title"'
 
     cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('xxxtube.Lookupinfo') + "&url=")
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('allclassic.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
-    cm_related = (utils.addon_sys + "?mode=" + str('xxxtube.Related') + "&url=")
+    cm_related = (utils.addon_sys + "?mode=" + str('allclassic.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'xxxtube.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
+    utils.videos_list(site, 'allclassic.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip, contextm=cm)
 
-    re_npurl = 'class="item active">.+?href="/([^"]+)"'
-    re_npnr = r'class="item active">.+?href="[^"]+">(\d+)<'
-    re_lpnr = r'>(\d+)</a>\s+</li>\s+<li class="item pager">'
-    utils.next_page(site, 'xxxtube.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xxxtube.GotoPage')
+    re_npurl = 'class="active">.+?href="/([^"]+)"'
+    re_npnr = r'class="active">.+?href="[^"]+">0*(\d+)<'
+    utils.next_page(site, 'allclassic.List', listhtml, re_npurl, re_npnr, contextm='allclassic.GotoPage')
     utils.eod()
 
 
@@ -74,9 +77,8 @@ def GotoPage(url, np, lp=None):
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
-        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
         url = url.replace('/{}/'.format(np), '/{}/'.format(pg))
-        contexturl = (utils.addon_sys + "?mode=" + "xxxtube.List&url=" + urllib_parse.quote_plus(url))
+        contexturl = (utils.addon_sys + "?mode=" + "allclassic.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -127,17 +129,27 @@ def Search(url, keyword=None):
 
 
 @site.register()
+def Categories(url):
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'class="th" href="([^"]+)".+?img src="([^"]+)" alt="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    for caturl, img, name in match:
+        name = utils.cleantext(name)
+        site.add_dir(name, caturl, 'List', img)
+    utils.eod()
+
+
+@site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Actor", r'<a href="{}(models/([^"]+)/)" class="btn">\s*View Model\s*<'.format(site.url), ''),
-        ("Category", r'<a class="btn" href="{}(categories/[^"]+)">([^<]+)<'.format(site.url), ''),
-        ("Tag", r'<a class="btn" href="{}(tags/[^"]+)">([^<]+)<'.format(site.url), '')
-    ]
-    lookupinfo = utils.LookupInfo(site.url, url, 'xxxtube.List', lookup_list)
+        ("Actor", r'btn-small" href="{}(models/[^"]+)"\s*itemprop="actor">([^<]+)<'.format(site.url), ''),
+        ("Studio", r'btn-small" href="{}(studios/[^"]+)">([^<]+)<'.format(site.url), ''),
+        ("Category", r'btn-small" href="{}(categories/[^"]+)"\s*itemprop="genre">([^<]+)<'.format(site.url), ''),
+        ("Tag", r'btn-small" href="{}(tags/[^"]+)"\s*itemprop="keywords">([^<]+)<'.format(site.url), '')]
+    lookupinfo = utils.LookupInfo(site.url, url, 'allclassic.List', lookup_list)
     lookupinfo.getinfo()
 
 
 @site.register()
 def Related(url):
-    contexturl = (utils.addon_sys + "?mode=" + str('xxxtube.List') + "&url=" + urllib_parse.quote_plus(url))
+    contexturl = (utils.addon_sys + "?mode=" + str('allclassic.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
