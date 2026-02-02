@@ -360,7 +360,7 @@ def onlineFav(url):
             tags = tags if utils.PY3 else tags.encode('utf8')
             subject += "[CR][CR]" + tags
 
-            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True)
+            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True, fav='del')
     utils.eod()
 
 
