@@ -1,4 +1,2 @@
-[B]Version 1.1.169[/B]
-- kissjav - fix thumbnails, playback
-- xxxvideos - fix duration
-- allclassic - new site
+[B]Version 1.1.170[/B]
+- sxyprn - fix search

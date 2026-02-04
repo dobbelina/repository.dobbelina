@@ -159,7 +159,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '_')
+        title = keyword.replace(' ', '-')
         searchUrl = url + title + '.html'
         List(searchUrl)
 
