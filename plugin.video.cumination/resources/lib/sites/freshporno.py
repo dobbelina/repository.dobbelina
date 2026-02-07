@@ -22,7 +22,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.decrypters.kvsplayer import kvs_decode
 
-site = AdultSite('freshporno', '[COLOR hotpink]FreshPorno[/COLOR]', 'https://freshporno.net/', 'freshporno.jpg', 'freshporno')
+site = AdultSite('freshporno', '[COLOR hotpink]FreshPorno[/COLOR]', 'https://freshporno.org/', 'freshporno.jpg', 'freshporno')
 
 
 @site.register(default_mode=True)
