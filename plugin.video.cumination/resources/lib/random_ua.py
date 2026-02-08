@@ -25,7 +25,7 @@ def generate_ua():
     RAND_UAS = [
         'Mozilla/5.0 ({os_ver}{feature}; rv:{br_ver}) Gecko/20100101 Firefox/{br_ver}',
         'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36',
-        'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36 Edg/{br_ver}',
+        'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36 Edg/{br_ver}'
     ]
 
     browser = random.choice(list(BR_VERS.keys()))

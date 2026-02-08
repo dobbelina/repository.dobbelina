@@ -1,3 +1,5 @@
 [B]Version 1.1.171[/B]
 - javguru - fix playback, thumbnails
+- hentaidude - fix listing
+
 

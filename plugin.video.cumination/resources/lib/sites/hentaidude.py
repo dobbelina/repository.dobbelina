@@ -60,10 +60,9 @@ def List(url, page=1):
         return
 
     if '?s=' in url:
-        match = re.compile(r'class="tab-thumb.+?href="([^"]+)"\s+title="([^"]+)".+?src="([^"]+)".+?chapter"><a href="[^"]+">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+        match = re.compile(r'class="tab-thumb.+?href="([^"]+)"\s+title="([^"]+)".+?src="([^"]+)".+?chapter"><a href="[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     else:
-        match = re.compile(r'class="page-item-detail.+?href="([^"]+)"\s+title="([^"]+)".+?<img src="([^"]+)".+?class="btn-link">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-
+        match = re.compile(r'class="page-item-detail.+?href="([^"]+)"\s+title="([^"]+)".+?<img src="([^"]+)".+?class="btn-link"[^>]*>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, name, img, ep in match:
         name = utils.cleantext(name)
         img = img.replace(' ', '%20')
