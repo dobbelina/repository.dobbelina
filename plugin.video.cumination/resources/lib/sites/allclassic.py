@@ -117,7 +117,8 @@ def Playvid(url, name, download=None):
 
     if enc_videourl:
         videourl = kvs_decode(enc_videourl, license) if enc_videourl.startswith('function/0/') else enc_videourl
-        vp.play_from_direct_link(videourl + '|Referer=' + url)
+        videourl += '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, site.url)
+        vp.play_from_direct_link(videourl)
 
 
 @site.register()

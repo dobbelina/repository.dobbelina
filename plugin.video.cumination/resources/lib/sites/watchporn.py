@@ -118,6 +118,8 @@ def Playvid(url, name, download=None):
     videohtml = utils.getHtml(url, site.url)
 
     match = re.compile(r"video(?:_|_alt_)url\d*: '([^']+)'.+?video(?:_|_alt_)url\d*_text: '([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
+    if not match:
+        match = re.compile(r"video(?:_|_alt_)url\d*: '([^']+)'.+?postfix\s*:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     sources = {}
     if match:
@@ -125,7 +127,10 @@ def Playvid(url, name, download=None):
             sources[video[1]] = video[0]
     vp.progress.update(75, "[CR]Video found[CR]")
 
-    videourl = utils.prefquality(sources, sort_by=lambda x: int(x.replace(' 4k', '')[:-1]), reverse=True)
+    try:
+        videourl = utils.prefquality(sources, sort_by=lambda x: int(x.replace(' 4k', '')[:-1]), reverse=True)
+    except:
+        videourl = utils.selector('Select quality', sources, reverse=True)
     if videourl:
         if videourl.startswith('function'):
             license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(videohtml)[0]

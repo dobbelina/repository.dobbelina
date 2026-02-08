@@ -1,3 +1,6 @@
 [B]Version 1.1.170[/B]
 - sxyprn - fix search
 - freshporno - fix domain name
+- allclassic - fix playback
+- watchporn - fix playback
+
