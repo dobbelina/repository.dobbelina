@@ -22,7 +22,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru/', 'https://cdn.javsts.com/wp-content/uploads/2018/12/logofinal6.png', 'javguru')
+site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru/', 'https://cdn.javmiku.com/wp-content/uploads/2018/12/logofinal6.png|User-Agent={}&Accept-Language=en-US,en;q=0.5'.format(utils.USER_AGENT), 'javguru')
 
 
 @site.register(default_mode=True)
@@ -43,6 +43,7 @@ def List(url):
     match = re.compile(r"""class=['"]inside-article['"].+?href=['"]([^"']+)['"]>\s*<img\s+src=['"]([^"']+)['"].+?title=['"]([^"']+)['"]""", re.DOTALL | re.IGNORECASE).findall(listhtml)
     for video, img, name in match:
         name = utils.cleantext(name)
+        img += '|User-Agent={}&Accept-Language=en-US,en;q=0.5'.format(utils.USER_AGENT)
 
         contextmenu = []
         contexturl = (utils.addon_sys
@@ -129,14 +130,8 @@ def Play(url, name, download=None):
         for i, stream in enumerate(match):
             link = utils._bdecode(stream)
             vp.progress.update(25 + (i * 5), "[CR]Loading streaming link {0} page[CR]".format(i + 1))
-            streamhtml = utils.getHtml(link, url, error='raise')
-            match = re.compile(r'''var OLID = '([^']+)'.+?src="([^']+)''', re.DOTALL | re.IGNORECASE).findall(streamhtml)
-            if match:
-                (olid, vurl) = match[0]
-                olid = olid[::-1]
-            else:
-                continue
-            src = vurl + olid
+            vlink = link.replace('d=', 'r=').split("=")
+            src = vlink[0] + '=' + vlink[1].split("&")[0][::-1]
             src = utils.getVideoLink(src, link)
             sources.append('"{}"'.format(src))
     match = re.compile(r"window\.open\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)

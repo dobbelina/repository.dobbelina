@@ -1,6 +1,3 @@
-[B]Version 1.1.170[/B]
-- sxyprn - fix search
-- freshporno - fix domain name
-- allclassic - fix playback
-- watchporn - fix playback
+[B]Version 1.1.171[/B]
+- javguru - fix playback, thumbnails
 

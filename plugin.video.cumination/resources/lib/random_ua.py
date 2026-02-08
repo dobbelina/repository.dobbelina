@@ -16,16 +16,16 @@ def set_setting(id, value):
 
 def generate_ua():
     BR_VERS = {
-        'Firefox': ['%s.0' % i for i in range(90, 118)],
-        'Chrome': ['%s.0.0.0' % i for i in range(90, 117)],
-        'Edge': ['%s.0.0.0' % i for i in range(90, 117)]
+        'Firefox': ['%s.0' % i for i in range(120, 147)],
+        'Chrome': ['%s.0.0.0' % i for i in range(120, 144)],
+        'Edg': ['%s.0.0.0' % i for i in range(120, 144)]
     }
-    WIN_VERS = ['Windows NT 10.0', 'Windows NT 6.3', 'Windows NT 6.2']
-    FEATURES = ['; WOW64', '; Win64; x64', '']
+    WIN_VERS = ['Windows NT 10.0']
+    FEATURES = ['; Win64; x64']
     RAND_UAS = [
         'Mozilla/5.0 ({os_ver}{feature}; rv:{br_ver}) Gecko/20100101 Firefox/{br_ver}',
         'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36',
-        'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36 Edg/{br_ver}'
+        'Mozilla/5.0 ({os_ver}{feature}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{br_ver} Safari/537.36 Edg/{br_ver}',
     ]
 
     browser = random.choice(list(BR_VERS.keys()))
