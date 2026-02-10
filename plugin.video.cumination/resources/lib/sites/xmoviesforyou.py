@@ -16,21 +16,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
-import json
 import xbmc
+import xbmcgui
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('xmoviesforyou', '[COLOR hotpink]Xmoviesforyou[/COLOR]', 'https://xmoviesforyou.com/', 'https://xmoviesforyou.com/wp-content/uploads/2018/08/logo.png', 'xmoviesforyou')
+site = AdultSite('xmoviesforyou', '[COLOR hotpink]Xmoviesforyou[/COLOR]', 'https://xmoviesforyou.com/', 'https://xmoviescdn.online/2018/08/logo.png', 'xmoviesforyou')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'wp-json/wp/v2/categories?page=1', 'Categories', site.img_cat)
-    # site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'wp-json/wp/v2/tags?page=1', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?q=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
 
@@ -38,28 +35,38 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'class="grid-box-img"><a href="([^"]+)" rel="bookmark" title="([^"]+)">.+?src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if not match:
-        return
-    for videopage, name, img in match:
-        name = name.replace('[', '[COLOR pink]').replace('] ', '[/COLOR] ')
-        name = utils.cleantext(name)
 
-        contextmenu = []
-        contexturl = (utils.addon_sys
-                          + "?mode=" + str('xmoviesforyou.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+    delimiter = r'<article class="group'
+    re_videopage = '<a href="([^"]+)"'
+    re_name = 'alt="([^"]+)"'
+    re_img = r'<img src="([^"]+)"'
+    re_quality = '">(HD)</span>'
+    skip = 'class="th-title"'
 
-        site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
-    nextp = re.compile(r'class="next page-numbers"\s*href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if nextp:
-        np = nextp[0]
-        npage = re.findall(r'\d+', np)[-1]
-        lastp = re.compile(r'>([^<]+)<[^"]+class="next page-numbers"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-        lpage = '/' + lastp[0] if lastp else ""
-        site.add_dir('Next Page ({}{})'.format(npage, lpage), np, 'List', site.img_next)
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('xmoviesforyou.Lookupinfo') + "&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+
+    utils.videos_list(site, 'xmoviesforyou.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, skip=skip, contextm=cm)
+
+    re_npurl = '<a href="([^"]+)"[^>]+>Next<'
+    re_npnr = r'page=(\d+)"[^>]+>Next</a>'
+    re_lpnr = r'of (\d+)\s+</span>\s+<a href'
+    utils.next_page(site, 'xmoviesforyou.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xmoviesforyou.GotoPage')
     utils.eod()
+
+
+@site.register()
+def GotoPage(url, np, lp=None):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = url.replace('page={}'.format(np), 'page={}'.format(pg))
+        contexturl = (utils.addon_sys + "?mode=" + "xmoviesforyou.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -74,38 +81,16 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
+        title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
         List(searchUrl)
 
 
 @site.register()
-def Categories(url):
-    cathtml = utils.getHtml(url, '')
-    catjson = json.loads(cathtml)
-    jdata = []
-    i = 0
-    while i < 10 and len(catjson) > 0:
-        i += 1
-        jdata += catjson
-        url = url.split('?page=')
-        url[1] = str(int(url[1]) + 1)
-        url = '?page='.join(url)
-        cathtml = utils.getHtml(url, '')
-        catjson = json.loads(cathtml)
-
-    for category in jdata:
-        name = '{} ([COLOR hotpink]{}[/COLOR])'.format(category['name'], category['count'])
-        site.add_dir(name, category['link'], 'List', '')
-    utils.eod()
-
-
-@site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Cat", '(category/[^"]+)" rel="tag">([^<]+)', ''),
-        ("Tag", '(tag/[^"]+)" rel="tag">([^<]+)', '')]
+        ("Cat", r'(category/[^"]+)".+?>category</span>([^<]+)<', ''),
+        ("Tag", r'(tag/[^"]+)"[^>]+?>([^<]+)', '')]
 
     lookupinfo = utils.LookupInfo(site.url, url, 'xmoviesforyou.List', lookup_list)
     lookupinfo.getinfo()
-
