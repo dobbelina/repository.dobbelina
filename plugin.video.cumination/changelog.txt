@@ -3,3 +3,4 @@
 - hentaidude - fix listing
 - xmoviesforyou - fix listing
 - simpvids - name chaged to camcaps
+- pornkai - fix listing, playback

@@ -29,7 +29,7 @@ site = AdultSite('pornkai', "[COLOR hotpink]PornKai[/COLOR]", 'https://pornkai.c
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'all-categories', 'Categories', site.img_search)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'api?query={}&sort=best&page=0&method=search', 'Search', site.img_search)
-    List(site.url + 'api?query=_best&sort=new&page=0&method=search')
+    List(site.url + 'api?query=&sort=new&page=0&method=search')
     utils.eod()
 
 
@@ -78,7 +78,7 @@ def Search(url, keyword=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url)
-    match = re.compile(r'''thumbnail_link"\s*href="([^"]+)".+?data-src='([^']+)'.+?title">([^<]+)<''', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    match = re.compile(r'''thumbnail_link"\s*href="([^"]+)".+?src='([^']+)'.+?title">([^<]+)<''', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name in match:
         name = utils.cleantext(name)
         caturl = site.url + 'api?query={}&sort=best&page=0&method=search'.format(caturl.split('?q=')[-1])
@@ -95,6 +95,10 @@ def Playvid(url, name, download=None):
     match = re.compile(r'iframe.+?src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         videolink = match[0]
-        if 'xh.video' in videolink:
+        if '//xh.' in videolink:
             videolink = utils.getVideoLink(videolink).split('?')[0]
+        if 'xhamster' in videolink:
+            from resources.lib.sites.xhamster import Playvid as xhamsterPlayvid
+            xhamsterPlayvid(videolink, name, download)
+            return
         vp.play_from_link_to_resolve(videolink)
