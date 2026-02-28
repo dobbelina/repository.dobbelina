@@ -133,6 +133,7 @@ def Play(url, name, download=None):
             vlink = link.replace('d=', 'r=').split("=")
             src = vlink[0] + '=' + vlink[1].split("&")[0][::-1]
             src = utils.getVideoLink(src, link)
+            src = utils.getVideoLink(src, link)
             sources.append('"{}"'.format(src))
     match = re.compile(r"window\.open\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
     if match:

@@ -24,7 +24,6 @@ import xbmcgui
 from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 
 site = AdultSite('javbangers', '[COLOR hotpink]JAV Bangers[/COLOR]', 'https://www.javbangers.com/', 'javbangers.png', 'javbangers')
@@ -135,31 +134,16 @@ def GotoPage(url, np, lp=None):
 
 @site.register()
 def Playvid(url, name, download=None):
+    utils.kodilog('Playing video: ' + url)
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     vpage = utils.getHtml(url, site.url, headers=hdr)
-
-    sources = {}
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
-    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
-        for surl, qual in items:
-            qual = '00' if qual == 'preview' else qual
-            surl = kvs_decode(surl, license)
-            sources.update({qual: surl})
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.play_from_direct_link(videourl + '|referer=' + url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

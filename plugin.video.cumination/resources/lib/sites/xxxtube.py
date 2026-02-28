@@ -22,9 +22,6 @@ import xbmc
 import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
-import ast
-
 
 site = AdultSite('xxxtube', '[COLOR hotpink]X-X-X Video[/COLOR]', 'https://x-x-x.tube/', 'xxxtube.png', 'xxxtube')
 
@@ -86,36 +83,9 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     vpage = utils.getHtml(url, site.url)
-
-    sources = {}
-    flashvars = re.compile(r'flashvars\s*=\s*({.+?});', re.DOTALL | re.IGNORECASE).findall(vpage)
-    if flashvars:
-        vpage = flashvars[0]
-        vpage = re.sub(r'(\w+):\s+', r'"\1":', vpage)
-        fwdict = ast.literal_eval(vpage)
-        license = fwdict.get('license_code', '')
-
-        for (k, v) in ((fwdict.get('video_url_text'), fwdict.get('video_url')),
-                       (fwdict.get('video_alt_url_text'), fwdict.get('video_alt_url')),
-                       (fwdict.get('video_alt_url2_text'), fwdict.get('video_alt_url2'))):
-            if v and k:
-                key = k if k.upper() not in ('MAX', 'HD') else '720p'
-                sources[key] = v
-            elif v:
-                for q in ['4k', '2160p', '1440p', '1080p', '720p', '480p', '360p', '240p']:
-                    if q in v:
-                        sources[q] = v
-                        continue
-                if v not in sources.values():
-                    sources['0p'] = v
-    try:
-        enc_videourl = utils.prefquality(sources, setting_valid='qualityask', sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
-    except:
-        enc_videourl = utils.selector('Select quality', sources, reverse=True)
-
-    if enc_videourl:
-        videourl = kvs_decode(enc_videourl, license) if enc_videourl.startswith('function/0/') else enc_videourl
-        vp.play_from_direct_link(videourl + '|Referer=' + url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

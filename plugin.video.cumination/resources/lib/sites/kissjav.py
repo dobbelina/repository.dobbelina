@@ -118,12 +118,12 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url)
-    surl = re.search(r"video_url:\s*'([^']+)'", html)
+    vpage = utils.getHtml(url)
+    surl = re.search(r"video_url:\s*'([^']+)'", vpage)
     if surl:
         surl = surl.group(1)
         if surl.startswith('function/'):
-            license = re.findall(r"license_code:\s*'([^']+)", html)[0]
+            license = re.findall(r"license_code:\s*'([^']+)", vpage)[0]
             surl = kvs_decode(surl, license)
         elif not surl.startswith('http'):
             surl = utils._bdecode(surl)

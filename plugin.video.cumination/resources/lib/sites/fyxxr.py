@@ -18,7 +18,6 @@
 
 import re
 from resources.lib import utils
-from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 import xbmc
@@ -138,24 +137,10 @@ def Categories(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videohtml = utils.getHtml(url)
-    match = re.compile(r"video(?:_|_alt_)url\d*: '([^']+)'.+?video(?:_|_alt_)url\d*_text: '([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
-
-    sources = {}
-    if match:
-        for video in match:
-            sources[video[1]] = video[0]
-    else:
-        match = re.compile(r"video_url:\s+'([^']+)'", re.DOTALL | re.IGNORECASE).findall(videohtml)
-        sources['0p'] = match[0]
-    vp.progress.update(75, "[CR]Video found[CR]")
-    videourl = utils.prefquality(sources, sort_by=lambda x: int(x.replace(' 4k', '')[:-1]), reverse=True)
-    if videourl:
-        if videourl.startswith('function/'):
-            license = re.findall(r"license_code:\s*'([^']+)", videohtml)[0]
-            videourl = kvs_decode(videourl, license)
-        videourl += '|Referer=' + url
-        vp.play_from_direct_link(videourl)
+    vpage = utils.getHtml(url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

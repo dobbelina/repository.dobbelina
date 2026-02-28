@@ -183,21 +183,10 @@ def PTPlayvid(url, name, download=None):
 
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
-    videopage = utils.getHtml(url, site.url, headers=hdr)
-
-    if 'video_url_text' not in videopage:
-        videourl = re.compile("video_url: '([^']+)'", re.DOTALL | re.IGNORECASE).search(videopage).group(1)
-    else:
-        sources = {}
-        srcs = re.compile("video(?:_alt_|_)url(?:[0-9]|): '([^']+)'.*?video(?:_alt_|_)url(?:[0-9]|)_text: '([^']+)'", re.DOTALL | re.IGNORECASE).findall(videopage)
-        for src, quality in srcs:
-            sources[quality] = src
-        videourl = utils.prefquality(sources, sort_by=lambda x: int(''.join([y for y in x if y.isdigit()])), reverse=True)
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_direct_link(videourl + '|Referer=' + url)
+    vpage = utils.getHtml(url, site.url, headers=hdr)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

@@ -19,7 +19,6 @@
 import re
 import xbmc
 from resources.lib import utils
-from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 from kodi_six import xbmcgui, xbmcplugin
@@ -46,7 +45,7 @@ def List(url):
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
     re_duration = 'item-panel-col">([^<]+)<'
-    re_quality = '>HD<'
+    re_quality = '>(HD)<'
     utils.videos_list(site, 'heroero.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm='heroero.Related')
 
     if '?' in url:
@@ -107,18 +106,17 @@ def Categories(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url)
-    surl = re.search(r"video_url:\s*'([^']+)'", html)
-    if surl:
-        surl = surl.group(1)
-        if surl.startswith('function/'):
-            license = re.findall(r"license_code:\s*'([^']+)", html)[0]
-            surl = kvs_decode(surl, license)
-    else:
-        vp.progress.close()
-        return
-    vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_direct_link(surl)
+    vpage = utils.getHtml(url)
+
+    match = re.compile(r"videoFormats\.push\(\{title:'([^']+)',file_name:'([^']+)',w:'(\d+)',h:'(\d+)'", re.IGNORECASE | re.DOTALL).findall(vpage)
+    if match:
+        formats = {str(m[3]) + 'p': m[1] for m in match}
+        format = utils.prefquality(formats, sort_by=lambda x: int(x[:-1]), reverse=True)
+        if format:
+            video_id = url.split('/')[4]
+            s = video_id[:-3] + '000'
+            videourl = 'https://media.heroero.com/contents/videos/{}/{}/{}'.format(s, video_id, format)
+            vp.play_from_direct_link(videourl + '|Referer={}'.format(site.url))
 
 
 @site.register()

@@ -20,7 +20,6 @@ import re
 import xbmc
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 from six.moves import urllib_parse
 
 site = AdultSite('pornhat', '[COLOR hotpink]Pornhat[/COLOR]', 'https://www.pornhat.com/', 'pornhat.png', 'pornhat')
@@ -164,37 +163,22 @@ def Search(url, keyword=None):
 
 @site.register()
 def Play(url, name, download=None):
+    utils.kodilog("Playing video: {}".format(url))
     siteurl = getSite(url).url
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vpage = utils.getHtml(url, siteurl)
-    sources = {}
-    if 'license_code:' in vpage:
-        license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
-        patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                    r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                    r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                    r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-        for pattern in patterns:
-            items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
-            for surl, qual in items:
-                qual = '00' if qual == 'preview' else qual
-                surl = kvs_decode(surl, license)
-                sources.update({qual: surl})
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
     elif '<source' in vpage:
+        sources = {}
         sources = re.compile(r'<source\s*src="([^"]+)".+?label="([^"]+)', re.DOTALL | re.IGNORECASE).findall(vpage)
         sources = {quality: videourl for videourl, quality in sources if quality.lower() != 'auto'}
-    else:
-        vp.progress.close()
-        return
-
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x.lower() == '4k' else int(x[:-1]), reverse=True)
-
-    if not videourl:
-        vp.progress.close()
-        return
-    videourl = utils.getVideoLink(videourl, siteurl)
-    vp.play_from_direct_link(videourl)
+        videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x.lower() == '4k' else int(x[:-1]), reverse=True)
+        if videourl:
+            videourl = utils.getVideoLink(videourl, siteurl)
+            vp.play_from_direct_link(videourl)
 
 
 @site.register()

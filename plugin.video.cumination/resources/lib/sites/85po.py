@@ -23,7 +23,6 @@ from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 import xbmc
 import xbmcgui
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 
 site = AdultSite('85po', '[COLOR hotpink]85po[/COLOR]', 'https://85po.com/', '85po.png', '85po')
@@ -108,26 +107,10 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    videopage = utils.getHtml(url, site.url)
-    sources = {}
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(videopage)[0]
-    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                r"video_alt_url3:\s*'([^']+)[^;]+?video_alt_url3_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*(postfix):\s*'\.mp4'"]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(videopage)
-        for surl, qual in items:
-            qual = '480p' if qual == 'postfix' else qual
-            qual = '2160p' if qual == '4K' else qual
-            surl = kvs_decode(surl, license)
-            sources.update({qual: surl})
-    vp.progress.update(50, "[CR]Loading video[CR]")
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-    if videourl:
-        vp.progress.update(75, "[CR]Video found[CR]")
-        vp.play_from_direct_link(videourl)
+    vpage = utils.getHtml(url, site.url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

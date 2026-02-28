@@ -25,10 +25,9 @@ import time
 from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 
-site = AdultSite('camwhoresbay', '[COLOR hotpink]camwhoresbay[/COLOR]', 'https://www.camwhoresbay.com/', 'camwhoresbay.png', 'camwhoresbay')
+site = AdultSite('camwhoresbay', '[COLOR hotpink]CamWhoresBay[/COLOR]', 'https://www.camwhoresbay.com/', 'camwhoresbay.png', 'camwhoresbay')
 
 getinput = utils._get_keyboard
 cblogged = 'true' in utils.addon.getSetting('cblogged')
@@ -58,7 +57,6 @@ def Main():
 
 @site.register()
 def List(url, page=1):
-    utils.kodilog('CWB List URL: {}'.format(url))
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     listhtml = utils.getHtml(url, site.url, headers=hdr)
@@ -130,43 +128,6 @@ def GotoPage(url, np, lp=None):
         contexturl = (utils.addon_sys + "?mode=" + "camwhoresbay.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
-    # if re.search(r'<li\s*class="next"><a', listhtml, re.DOTALL | re.IGNORECASE):
-    #     lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    #     lastp = '/{}'.format(lastp[0]) if lastp else ''
-    #     if not page:
-    #         page = 1
-    #     npage = page + 1
-
-    #     if '/categories/' in url:
-    #         if '/{}/'.format(page) in url:
-    #             nurl = url.replace(str(page), str(npage))
-    #         else:
-    #             nurl = url + '{}/'.format(npage)
-    #     elif '/search/' in url:
-    #         if 'from_videos={0:02d}'.format(page) in url:
-    #             nurl = url.replace('from_videos={0:02d}'.format(page), 'from_videos={0:02d}'.format(npage))
-    #         else:
-    #             searchphrase = url.split('/')[-2]
-    #             nurl = url + '?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos={1:02d}'.format(searchphrase, npage)
-    #     elif '/favourites/' in url:
-    #         if 'from_my_fav_videos={0:02d}'.format(page) in url:
-    #             nurl = url.replace('from_my_fav_videos={0:02d}'.format(page), 'from_my_fav_videos={0:02d}'.format(npage))
-    #         else:
-    #             utils.kodilog(' favorites pagination error')
-    #             nurl = url
-    #     elif '/playlists/' in url:
-    #         if '?mode' not in url:
-    #             url += '?mode=async&function=get_block&block_id=playlist_view_playlist_view&sort_by=added2fav_date&from=1'
-    #         if 'from={}'.format(page) in url:
-    #             nurl = url.replace('from={}'.format(page), 'from={}'.format(npage))
-    #         else:
-    #             utils.kodilog(' playlist pagination error')
-    #             nurl = url
-    #     else:
-    #         nurl = site.url[:-1] + re.compile(r'next"><a\s*href="(/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-    #     site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, npage)
-    # utils.eod()
-
 
 @site.register()
 def Playvid(url, name, download=None):
@@ -176,25 +137,9 @@ def Playvid(url, name, download=None):
     hdr = dict(utils.base_hdrs)
     hdr['Cookie'] = get_cookies()
     vpage = utils.getHtml(url, site.url, headers=hdr)
-
-    sources = {}
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
-    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
-        for surl, qual in items:
-            qual = '00' if qual == 'preview' else qual
-            surl = kvs_decode(surl, license)
-            sources.update({qual: surl})
-    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.play_from_direct_link(videourl + '|Referer=' + url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()
@@ -225,7 +170,6 @@ def Playlists(url, page=1):
         if 'from={0:02d}'.format(page) in url:
             nurl = url.replace('from={0:02d}'.format(page), 'from={0:02d}'.format(npage))
         else:
-            utils.kodilog(' Playlists pagination error')
             nurl = url
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'Playlists', site.img_next, npage)
     utils.eod()

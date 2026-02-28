@@ -20,7 +20,6 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite('tabootube', '[COLOR hotpink]TabooTube[/COLOR]', 'https://www.tabootube.xxx/', 'https://www.tabootube.xxx/contents/other/theme/logo.png', 'tabootube')
 
@@ -66,22 +65,10 @@ def List(url, page=1):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url, site.url)
-    srcs = re.findall(r"video_url:\s*'([^']+)'", html)
-    if srcs:
-        surl = srcs[0]
-        vp.progress.update(50, "[CR]Video found[CR]")
-        if surl.startswith('function/'):
-            lcode = re.findall(r"license_code:\s*'([^']+)", html)[0]
-            surl = kvs_decode(surl, lcode)
-        if 'get_file' in surl:
-            surl = utils.getVideoLink(surl, site.url)
-        surl = '{0}|User-Agent=iPad&Referer={1}'.format(surl, site.url)
-        vp.play_from_direct_link(surl)
-    else:
-        vp.progress.close()
-        utils.notify('Oh oh', 'No video found')
-        return
+    vpage = utils.getHtml(url, site.url)
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
 
 
 @site.register()

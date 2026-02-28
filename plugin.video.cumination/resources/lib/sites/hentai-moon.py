@@ -20,7 +20,6 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite("hentai-moon", "[COLOR hotpink]Hentai Moon[/COLOR]", 'https://hentai-moon.com/', "hentai-moon.png", "hentai-moon")
 
@@ -127,35 +126,15 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     vpage = utils.getHtml(url, site.url)
-
-    videourl = None
-    sources = {}
-    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(vpage)[0]
-    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-                r"video_alt_url\d*?:\s*'([^']+)[^;]+?video_alt_url\d*?_text:\s*'([^']+)",
-                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(vpage)
-        for surl, qual in items:
-            qual = '00' if qual == 'preview' else qual
-            surl = kvs_decode(surl, license)
-            sources.update({qual: surl})
-
-    if len(sources) > 0:
-        videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
-        if not videourl:
-            vp.progress.close()
-            return
+    if "kt_player('kt_player'" in vpage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(vpage, url)
     else:
         match = re.search(r'Download:\s*?<a href="([^"]+)"', vpage, re.IGNORECASE | re.DOTALL)
         if match:
             videourl = match.group(1)
-
-    if videourl:
-        vp.play_from_direct_link(videourl)
-    else:
-        vp.progress.close()
-        utils.notify('Oh Oh', 'No Videos found')
+            if videourl:
+                vp.play_from_direct_link(videourl)
 
 
 @site.register()

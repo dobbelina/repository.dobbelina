@@ -1421,6 +1421,47 @@ class VideoPlayer():
             raise ValueError(i18n('no_regex'))
 
     @_cancellable
+    def play_from_kt_player(self, html, url=None):
+        license = re.search(r"license_code:\s*'(\$\d+)", html, re.DOTALL | re.IGNORECASE)
+        if license:
+            license = license.group(1)
+
+        match = re.compile(r"video(?:_|_alt_)url\d?:\s*'([^']+)[^;]+?video(?:_|_alt_)url\d?_text:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(html)
+        if not match:
+            match = re.compile(r"video(?:_|_alt_)url\d?: '([^']+)'.+?postfix\s*:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)
+
+        sources = {qual: videourl for videourl, qual in match}
+
+        if len(sources.keys()) == 1:
+            videourl = list(sources.values())[0]
+        else:
+            try:
+                videourl = prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x.split('p')[0]), reverse=True)
+            except:
+                videourl = selector('Select quality', sources, reverse=True)
+
+        if not videourl:
+            self.progress.close()
+            return
+        if '?login' in videourl:
+            notify(i18n('oh_oh'), i18n('Login required for this quality.'))
+            self.progress.close()
+            return
+        if videourl.startswith('function/0/'):
+            if not license:
+                notify(i18n('oh_oh'), 'Unable to play video: License code not found')
+                self.progress.close()
+                return
+            from resources.lib.decrypters.kvsplayer import kvs_decode
+            videourl = kvs_decode(videourl, license)
+        videourl += '|User-Agent={0}&Referer={1}'.format(USER_AGENT, url)
+
+        if not videourl:
+            self.progress.close()
+            return
+        self.play_from_direct_link(videourl)
+
+    @_cancellable
     def play_from_link_list(self, links):
         use_universal = addon.getSetting("universal_resolvers") == "true"
         links = self.bypass_hosters(links)

@@ -18,7 +18,6 @@
 
 import re
 from resources.lib import utils
-from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 import xbmc
@@ -196,27 +195,19 @@ def Models(url):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    html = utils.getHtml(url)
-    surl = re.search(r"video_url:\s*'([^']+)'", html)
-    referer = site.url
-    if not surl:
+    html = utils.getHtml(url, site.url)
+    referer = url
+    if "kt_player('kt_player'" not in html:
         match = re.compile(r'<iframe[^>]+src="([^"]+/embed/[^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
         if match:
-            referer = match[0]
-            html = utils.getHtml(match[0])
-            surl = re.search(r"video_url:\s*'([^']+)'", html)
-    if surl:
-        surl = surl.group(1)
-        if surl.startswith('function/'):
-            license = re.findall(r"license_code:\s*'([^']+)", html)[0]
-            surl = kvs_decode(surl, license)
-        surl = utils.getVideoLink(surl)
-        surl += '|Referer=' + referer
-    else:
-        vp.progress.close()
-        return
+            embedurl = match[0]
+            referer = embedurl
+            html = utils.getHtml(embedurl, url)
+            if "kt_player('kt_player'" not in html:
+                vp.progress.close()
+                return
     vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_direct_link(surl)
+    vp.play_from_kt_player(html, referer)
 
 
 @site.register()
