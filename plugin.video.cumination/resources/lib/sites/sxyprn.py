@@ -17,6 +17,7 @@
 '''
 
 import re
+import base64
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -34,7 +35,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Top viewed last week[/COLOR]', site.url + 'popular/top-viewed.html', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Orgasmic[/COLOR]', site.url + 'orgasm/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url, 'Search', site.img_search)
-    List('https://sxyprn.com/blog/all/0.html?fl=all&sm=latest')
+    List(site.url + 'blog/all/0.html?fl=all&sm=latest')
     utils.eod()
 
 
@@ -75,13 +76,13 @@ def List(url):
         if t:
             thumb = t.group(1)
             if thumb.startswith('//'):
-                thumb = 'http:' + thumb
+                thumb = 'https:' + thumb
         else:
             t = re.search(r"src='([^']+)", item)
             if t:
                 thumb = t.group(1)
                 if thumb.startswith('//'):
-                    thumb = 'http:' + thumb
+                    thumb = 'https:' + thumb
 
         t = re.search(r"duration_small.+?';?>([\d:]+)", item)
         if t:
@@ -124,14 +125,6 @@ def List(url):
     utils.eod()
 
 
-def ssut51(j):
-    j = re.sub(r'\D', '', j)
-    sut = 0
-    for i in range(len(j)):
-        sut += int(j[i])
-    return sut
-
-
 @site.register()
 def Cat(url):
     cathtml = utils.getHtml(url, site.url)
@@ -139,7 +132,7 @@ def Cat(url):
     for caturl, img, name, count in cats:
         name += ' [COLOR deeppink]({0})[/COLOR]'.format(count)
         caturl = site.url[:-1] + caturl
-        img = 'http:' + img
+        img = 'https:' + img
         site.add_dir(name, caturl, 'List', img)
     utils.eod()
 
@@ -166,6 +159,25 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
+    def ssut51(arg):
+        digits = re.sub(r'[\D]', '', str(arg))
+        return sum(int(c) for c in digits)
+
+    def boo(ss, es):
+        host = site.url.lower().split("/")[-2]
+        b = base64.b64encode("{}-{}-{}".format(ss, host, es).encode()).decode()
+        return b.replace('+', '-').replace('/', '_').replace('=', '.')
+
+    def preda(arg):
+        arg[5] = str(int(arg[5]) - ssut51(arg[6]) - ssut51(arg[7]))
+        return arg
+
+    def getvsrc(src):
+        tmp = src.split("/")
+        tmp[1] += "8/" + boo(ssut51(tmp[6]), ssut51(tmp[7]))
+        tmp = preda(tmp)
+        return "/".join(tmp)
+
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videourl = ''
@@ -177,10 +189,7 @@ def Playvid(url, name, download=None):
     else:
         videopage = utils.getHtml(url, site.url)
         videourl = re.compile('''data-vnfo='{".+?":"(.+?)"''', re.DOTALL | re.IGNORECASE).findall(videopage)[0].replace(r'\/', '/')
-        tmpfile = videourl.split('/')
-        tmpfile[5] = str(int(tmpfile[5]) - ssut51(tmpfile[6]) - ssut51(tmpfile[7]))
-        videourl = '/'.join(tmpfile)
-        videourl = site.url[:-1] + videourl.replace('/cdn/', '/cdn8/')
+        videourl = site.url[:-1] + getvsrc(videourl)
 
     if not videourl:
         utils.notify('Oh Oh', 'No Videos found')
