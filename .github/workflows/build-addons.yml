@@ -105,12 +105,17 @@ jobs:
               print("No add-on directories changed; no version bump needed.")
           PY
 
-      - name: Commit version bumps
+      - name: Update Changelog
+        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        run: |
+          python scripts/update_changelog.py
+
+      - name: Commit version bumps and changelog
         if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "*/addon.xml"
+          git add "*/addon.xml" "*/changelog.txt"
           if git diff --cached --quiet; then
             echo "No version bump changes to commit."
             exit 0
