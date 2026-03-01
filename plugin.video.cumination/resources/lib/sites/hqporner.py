@@ -21,21 +21,21 @@ from six.moves import urllib_parse, urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('hqporner', '[COLOR hotpink]HQPorner[/COLOR]', 'https://hqporner.com', 'hqporner.png', 'hqporner')
+site = AdultSite('hqporner', '[COLOR hotpink]HQPorner[/COLOR]', 'https://hqporner.com/', 'hqporner.png', 'hqporner')
 
 
 @site.register(default_mode=True)
 def HQMAIN():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + '/categories', 'HQCAT', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + '/studios', 'HQCAT', '', '')
-    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + '/girls', 'HQCAT', '', '')
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '/?q=', 'HQSEARCH', site.img_search)
-    HQLIST(site.url + '/hdporn/1')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios', 'Categories', '', '')
+    site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + 'girls', 'Categories', '', '')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?q=', 'Search', site.img_search)
+    List(site.url + 'hdporn/1')
     utils.eod()
 
 
 @site.register()
-def HQLIST(url):
+def List(url):
     try:
         link = utils.getHtml(url, '')
     except:
@@ -43,52 +43,50 @@ def HQLIST(url):
     match = re.compile(r'<a\s*href="([^"]+)"\s*class="image\s*featured\s*non.+?src="([^"]+)"\s*alt="([^"]+).+?data">(\d[^<]+)', re.DOTALL | re.IGNORECASE).findall(link)
     for url, img, name, duration in match:
         name = utils.cleantext(name).title()
-        videourl = urllib_parse.quote(site.url + url, safe=':/')
+        videourl = urllib_parse.quote(site.url[:-1] + url, safe=':/')
         if img.startswith('//'):
-            img = 'https:' + img
+            img = 'https:' + img + '|Referer=' + site.url
 
         contextmenu = []
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('hqporner.Lookupinfo')
-                      + "&url=" + urllib_parse.quote_plus(videourl))
+        contexturl = (utils.addon_sys + "?mode=hqporner.Lookupinfo&url=" + urllib_parse.quote_plus(videourl))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
-        site.add_download_link(name, videourl, 'HQPLAY', img, name, duration=duration, contextm=contextmenu)
+        site.add_download_link(name, videourl, 'Playvid', img, name, duration=duration, contextm=contextmenu)
     try:
         nextp = re.compile('<a href="([^"]+)"[^>]+>Next', re.DOTALL | re.IGNORECASE).findall(link)
         nextp = "https://www.hqporner.com" + nextp[0]
-        site.add_dir('Next Page', nextp, 'HQLIST', site.img_next)
+        site.add_dir('Next Page', nextp, 'List', site.img_next)
     except:
         pass
     utils.eod()
 
 
 @site.register()
-def HQCAT(url):
+def Categories(url):
     link = utils.getHtml(url, '')
     tags = re.compile(r'<a\s*href="([^"]+)"[^<]+<img\s*src="([^"]+)"\s*alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(link)
     tags = sorted(tags, key=lambda x: x[2])
     for caturl, img, catname in tags:
-        caturl = site.url + caturl
+        caturl = site.url[:-1] + caturl
         if img.startswith('//'):
             img = 'https:' + img
-        site.add_dir(catname.title(), caturl, 'HQLIST', img)
+        site.add_dir(catname.title(), caturl, 'List', img)
     utils.eod()
 
 
 @site.register()
-def HQSEARCH(url, keyword=None):
+def Search(url, keyword=None):
     searchUrl = url
     if not keyword:
-        site.search_dir(url, 'HQSEARCH')
+        site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
         searchUrl = searchUrl + title
-        HQLIST(searchUrl)
+        List(searchUrl)
 
 
 @site.register()
-def HQPLAY(url, name, download=None):
+def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
@@ -187,5 +185,5 @@ def Lookupinfo(url):
         ("Tag", 'href="(/category/[^"]+)"[^>]+>([^<]+)<', '')
     ]
 
-    lookupinfo = utils.LookupInfo(site.url, url, 'hqporner.HQLIST', lookup_list)
+    lookupinfo = utils.LookupInfo(site.url, url, 'hqporner.List', lookup_list)
     lookupinfo.getinfo()
