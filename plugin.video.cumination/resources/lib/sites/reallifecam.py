@@ -38,7 +38,7 @@ site2 = AdultSite(
 )
 site3 = AdultSite(
     "vhlife1",
-    "[COLOR hotpink]Reallifecams.in[/COLOR]",
+    "[COLOR hotpink]Reallifecams[/COLOR]",
     "https://www.reallifecams.in/",
     "vhlife1.png",
     "vhlife1",
@@ -57,10 +57,15 @@ def getBaselink(url):
         siteurl = site.url
     elif "voyeur-house.cc" in url:
         siteurl = site2.url
-    elif "reallifecams.in" in url:
-        siteurl = site3.url
+    elif "reallifecams." in url:
+        # Use the actual domain from the URL if it's a reallifecams variant
+        parsed = urlparse(url)
+        siteurl = "{0}://{1}/".format(parsed.scheme, parsed.netloc)
     elif "camcaps.to" in url or "simpvids.com" in url or "camcaps.tv" in url:
         siteurl = site4.url
+    else:
+        parsed = urlparse(url)
+        siteurl = "{0}://{1}/".format(parsed.scheme, parsed.netloc)
     return siteurl
 
 
@@ -310,9 +315,12 @@ def Playvid(url, name, download=None):
             vp.direct_regex = '{"file":"([^"]+)"'
             vp.play_from_html(videourlpage)
         else:
+            # More flexible packed script detection (handles cases without > before eval)
             packed_match = re.compile(
-                r">(eval.+?)<\/script>", re.DOTALL | re.IGNORECASE
+                r"(eval\s*\(function\(p,a,c,k,e,d\).+?)\s*<\/script>", 
+                re.DOTALL | re.IGNORECASE
             ).findall(refpage)
+            
             if packed_match:
                 videourl = unpack(packed_match[0])
                 videolink = re.compile(
@@ -324,6 +332,28 @@ def Playvid(url, name, download=None):
                         videolink = "https://oracle.vidello.net" + videolink
                     vp.play_from_direct_link(videolink)
                     return
+            
+            # If not packed, look for direct file/src links in the iframe page
+            videolinks = re.compile(
+                r'(?:src|file)\s*:\s*"([^"]+?\.m3u8[^"]*)"', 
+                re.IGNORECASE
+            ).findall(refpage)
+            if not videolinks:
+                videolinks = re.compile(
+                    r'(?:src|file)\s*:\s*"([^"]+?\.mp4[^"]*)"', 
+                    re.IGNORECASE
+                ).findall(refpage)
+            
+            if videolinks:
+                videolink = videolinks[0]
+                if videolink.startswith("//"):
+                    videolink = "https:" + videolink
+                elif videolink.startswith("/"):
+                    videolink = urllib_parse.urljoin(refurl, videolink)
+                
+                videolink = videolink + "|Referer=" + refurl + "&verifypeer=false"
+                vp.play_from_direct_link(videolink)
+                return
 
     # Fallback to direct page scraping
     vp.play_from_html(videopage)

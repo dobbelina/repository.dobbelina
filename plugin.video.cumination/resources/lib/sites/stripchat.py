@@ -871,6 +871,8 @@ def Playvid(url, name):
         def _mirror_saaws_to_doppi(stream_url):
             if not isinstance(stream_url, str) or "saawsedge.com" not in stream_url:
                 return None
+            if utils.addon.getSetting("stripchat_mirror") == "false":
+                return None
             return stream_url.replace(
                 "edge-hls.saawsedge.com", "edge-hls.doppiocdn.com"
             )
@@ -1329,31 +1331,18 @@ def Playvid(url, name):
 
     utils.kodilog("Stripchat: Starting playback")
     proxy_url = None
-    if utils.addon.getSetting("stripchat_proxy") == "true":
+    # Use proxy by default if setting is not found (bool check handles 'true')
+    if utils.addon.getSetting("stripchat_proxy") != "false":
         proxy_url = _start_manifest_proxy(stream_url, name)
         
     if proxy_url:
         utils.kodilog("Stripchat: Using manifest proxy: {}".format(proxy_url))
         vp.play_from_direct_link(proxy_url)
     elif ia_headers:
-        # If no proxy, we need to rewrite the manifest once and play it
-        # Actually, if we use IA headers, Kodi might be able to handle it if we clean the manifest
-        try:
-            # Quick rewrite to remove MOUFLON tags and resolve relative URLs
-            # even if not using the persistent proxy server.
-            resp = requests.get(stream_url, headers={
-                "User-Agent": utils.USER_AGENT,
-                "Origin": "https://stripchat.com",
-                "Referer": "https://stripchat.com/{0}".format(name)
-            }, timeout=10)
-            if resp.status_code == 200 and "#EXTM3U" in resp.text:
-                # If it's a master playlist, we just play it with headers
-                # IA will handle the sub-playlists
-                vp.play_from_direct_link(stream_url + "|" + ia_headers)
-                return
-        except:
-            pass
-        vp.play_from_direct_link(stream_url + "|" + ia_headers)
+        # If no proxy, we play with headers
+        # Append manifest_headers=1 so ISA uses the provided headers for sub-manifests/segments
+        full_url = stream_url + "|" + ia_headers + "&manifest_headers=1"
+        vp.play_from_direct_link(full_url)
     else:
         vp.play_from_direct_link(stream_url)
 
