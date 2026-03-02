@@ -111,11 +111,19 @@ def List(url):
             )
         if not title:
             continue
+            
+        if thumb:
+            thumb = urllib_parse.urljoin(site.url, thumb)
+            # Add session headers for thumbnails
+            thumb = utils.get_kodi_url(thumb, referer=url)
+        else:
+            thumb = site.image
+
         items.append(
             {
                 "title": title,
                 "url": video_url,
-                "thumb": urllib_parse.urljoin(site.url, thumb) if thumb else site.image,
+                "thumb": thumb,
             }
         )
 
@@ -195,6 +203,7 @@ def Playvid(url, name, download=None):
     video_url = _extract_playerjs_best_url(pagehtml)
     if video_url:
         utils.kodilog(f"anybunny Playvid: Found video URL in page: {video_url[:100]}")
+        video_url = utils.get_kodi_url(video_url, referer=url)
         vp.play_from_direct_link(video_url)
         return
 
@@ -220,6 +229,7 @@ def Playvid(url, name, download=None):
     video_url = _extract_playerjs_best_url(iframe_html)
     if video_url:
         utils.kodilog(f"anybunny Playvid: Found video URL in iframe: {video_url[:100]}")
+        video_url = utils.get_kodi_url(video_url, referer=iframe_url)
         vp.play_from_direct_link(video_url)
         return
 

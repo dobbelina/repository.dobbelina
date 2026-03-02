@@ -486,6 +486,9 @@ def soup_videos_list(
                 thumb_base = image_conf.get("base_url", thumb_base)
             if join_thumb:
                 thumb = urllib_parse.urljoin(thumb_base or "", thumb)
+            
+            # Wrap thumbnail with Kodi-compatible headers (UA/Cookies)
+            thumb = get_kodi_url(thumb, referer=url_base)
 
         duration = (
             _extract_value(item, duration_conf, default="") if duration_conf else ""
@@ -1359,6 +1362,7 @@ def get_html_with_cloudflare_retry(
 
 
 def savecookies(flarejson):
+    global USER_AGENT
     cj_cf = cj
     for cookie in flarejson["solution"]["cookies"]:
         c = http_cookiejar.Cookie(
@@ -1385,6 +1389,59 @@ def savecookies(flarejson):
     cj_cf.save(cookiePath, ignore_discard=True)
     UA = flarejson["solution"]["userAgent"]
     random_ua.set_ua(UA)
+    USER_AGENT = UA
+
+
+def get_cookies_string(domain):
+    """
+    Get cookies for a domain as a string compatible with Kodi's URL format.
+    """
+    if not domain:
+        return ""
+
+    if domain.startswith("http"):
+        domain = urllib_parse.urlparse(domain).netloc
+
+    # Remove 'www.' prefix for broader matching
+    clean_domain = domain[4:] if domain.startswith("www.") else domain
+    
+    cookiestr = ""
+    for cookie in cj:
+        # Match domain exactly or as a parent domain (e.g. .site.com matches site.com)
+        c_domain = cookie.domain.lstrip(".")
+        if clean_domain.endswith(c_domain) or c_domain.endswith(clean_domain):
+            cookiestr += "{}={}; ".format(cookie.name, cookie.value)
+
+    return cookiestr.rstrip("; ")
+
+
+def get_kodi_url(url, referer=None):
+    """
+    Append User-Agent, Referer, and Cookies to a URL for Kodi's internal downloader.
+    Format: URL|User-Agent=UA&Referer=REF&Cookie=COOKIES
+    """
+    if not url:
+        return url
+
+    # Remove existing pipe if present to avoid double-encoding issues
+    if "|" in url:
+        url = url.split("|")[0]
+
+    params = []
+
+    # Use current USER_AGENT (updated by FlareSolverr)
+    params.append("User-Agent={}".format(urllib_parse.quote(USER_AGENT)))
+
+    if referer:
+        params.append("Referer={}".format(urllib_parse.quote(referer)))
+
+    domain = urllib_parse.urlparse(url).netloc
+    if domain:
+        cookies = get_cookies_string(domain)
+        if cookies:
+            params.append("Cookie={}".format(urllib_parse.quote(cookies)))
+
+    return "{}|{}".format(url, "&".join(params))
 
 
 def get_sucuri_cookie(html):

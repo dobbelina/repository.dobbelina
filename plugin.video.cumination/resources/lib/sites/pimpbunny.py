@@ -25,20 +25,19 @@ site = AdultSite(
     "pimpbunny",
     "[COLOR hotpink]PimpBunny[/COLOR]",
     "https://pimpbunny.com/",
-    "pimpbunny.png",
+    "https://pimpbunny.com/static/images/logo.png",
     "pimpbunny",
 )
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir("[COLOR hotpink]New Videos[/COLOR]", site.url + "videos/", "List", site.img_cat)
+    site.add_dir("[COLOR hotpink]Search[/COLOR]", site.url + "search/videos/", "Search", site.img_search)
+    site.add_dir("[COLOR hotpink]Categories[/COLOR]", site.url + "categories/videos/", "Categories", site.img_cat)
     site.add_dir("[COLOR hotpink]Most Viewed[/COLOR]", site.url + "videos/?sort_by=video_viewed", "List", site.img_cat)
     site.add_dir("[COLOR hotpink]Best Rated[/COLOR]", site.url + "videos/?sort_by=rating", "List", site.img_cat)
-    site.add_dir("[COLOR hotpink]Popular[/COLOR]", site.url + "videos/?sort_by=most_favourited", "List", site.img_cat)
-    site.add_dir("[COLOR hotpink]Longest[/COLOR]", site.url + "videos/?sort_by=duration", "List", site.img_cat)
-    site.add_dir("[COLOR hotpink]Categories[/COLOR]", site.url + "categories/videos/", "Categories", site.img_cat)
-    site.add_dir("[COLOR hotpink]Search[/COLOR]", site.url + "search/videos/", "Search", site.img_search)
-    utils.eod()
+    
+    # List latest videos directly on main screen
+    List(site.url + "videos/")
 
 @site.register()
 def List(url):
@@ -67,8 +66,11 @@ def List(url):
             
         img_tag = card.select_one('img')
         img = utils.get_thumbnail(img_tag)
-        if img and not img.startswith('http'):
-            img = urllib_parse.urljoin(site.url, img)
+        if img:
+            if not img.startswith('http'):
+                img = urllib_parse.urljoin(site.url, img)
+            # Add session headers (UA/Cookies) for thumbnails
+            img = utils.get_kodi_url(img, referer=url)
             
         duration_tag = card.select_one('[class*="duration"]')
         duration = utils.safe_get_text(duration_tag)
@@ -128,8 +130,8 @@ def Playvid(url, name, download=None):
         qualities.sort(key=lambda x: x[0], reverse=True)
         best_link = qualities[0][1]
         
-        # Add referer just in case
-        best_link = best_link + "|Referer=" + url
+        # Add session headers (UA/Cookies) and referer for video playback
+        best_link = utils.get_kodi_url(best_link, referer=url)
         vp.play_from_direct_link(best_link)
     else:
         utils.notify("PimpBunny", "Could not find video link")
@@ -158,8 +160,11 @@ def Categories(url):
         
         img_tag = cat.select_one('img')
         img = utils.get_thumbnail(img_tag)
-        if img and not img.startswith('http'):
-            img = urllib_parse.urljoin(site.url, img)
+        if img:
+            if not img.startswith('http'):
+                img = urllib_parse.urljoin(site.url, img)
+            # Add session headers (UA/Cookies) for category thumbnails
+            img = utils.get_kodi_url(img, referer=url)
             
         site.add_dir(name, cat_url, "List", img)
         
