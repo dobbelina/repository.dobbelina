@@ -25,7 +25,7 @@ from resources.lib.adultsite import AdultSite
 site = AdultSite(
     "hqporner",
     "[COLOR hotpink]HQPorner[/COLOR]",
-    "https://hqporner.com",
+    "https://hqporner.com/",
     "hqporner.png",
     "hqporner",
 )
@@ -101,6 +101,8 @@ def HQLIST(url):
         img = utils.get_thumbnail(img_tag)
         if img and img.startswith("//"):
             img = "https:" + img
+        if img:
+            img = img + "|Referer=" + site.url
 
         title_link = card.select_one(".meta-data-title a") or anchor
         name = utils.cleantext(utils.safe_get_text(title_link)).title()

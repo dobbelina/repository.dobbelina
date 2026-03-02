@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
 import re
+import base64
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -56,7 +57,7 @@ def Main():
         "[COLOR hotpink]Orgasmic[/COLOR]", site.url + "orgasm/", "List", site.img_cat
     )
     site.add_dir("[COLOR hotpink]Search[/COLOR]", site.url, "Search", site.img_search)
-    List("https://sxyprn.com/blog/all/0.html?fl=all&sm=latest")
+    List(site.url + "blog/all/0.html?fl=all&sm=latest")
     utils.eod()
 
 
@@ -194,12 +195,27 @@ def List(url):
     utils.eod()
 
 
-def ssut51(j):
-    j = re.sub(r"\D", "", j)
-    sut = 0
-    for i, item in enumerate(j):
-        sut += int(item)
-    return sut
+def ssut51(arg):
+    digits = re.sub(r"[\D]", "", str(arg))
+    return sum(int(c) for c in digits)
+
+
+def boo(ss, es):
+    host = site.url.lower().split("/")[-2]
+    b = base64.b64encode("{}-{}-{}".format(ss, host, es).encode()).decode()
+    return b.replace("+", "-").replace("/", "_").replace("=", ".")
+
+
+def preda(arg):
+    arg[5] = str(int(arg[5]) - ssut51(arg[6]) - ssut51(arg[7]))
+    return arg
+
+
+def getvsrc(src):
+    tmp = src.split("/")
+    tmp[1] += "8/" + boo(ssut51(tmp[6]), ssut51(tmp[7]))
+    tmp = preda(tmp)
+    return "/".join(tmp)
 
 
 @site.register()
@@ -325,22 +341,15 @@ def Playvid(url, name, download=None):
 
             if path:
                 path = path.replace(r"\/", "/")
-                if path.startswith("/"):
+                if "/cdn/" in path:
+                    videourl = getvsrc(path)
+                elif path.startswith("/"):
                     videourl = site.url[:-1] + path
                 else:
                     videourl = path
 
-                if "/cdn/" in videourl:
-                    tmpfile = videourl.split("/")
-                    if len(tmpfile) > 7:
-                        try:
-                            tmpfile[5] = str(
-                                int(tmpfile[5]) - ssut51(tmpfile[6]) - ssut51(tmpfile[7])
-                            )
-                            videourl = "/".join(tmpfile)
-                        except Exception:
-                            pass
-                    videourl = videourl.replace("/cdn/", "/cdn8/")
+                if videourl.startswith("/"):
+                    videourl = site.url[:-1] + videourl
 
     if not videourl:
         utils.notify("Oh Oh", "No Videos found")
