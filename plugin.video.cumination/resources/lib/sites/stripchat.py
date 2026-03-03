@@ -239,23 +239,23 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
                 if not lines[j].strip().startswith("#"):
                     break
             
-            if found_full_mouflon:
-                # We have a full segment! Prefer it over parts.
-                if not stripped.endswith(","): stripped += ","
-                lines_out.append(stripped)
-                lines_out.append(found_full_mouflon)
-                pending_part_segments = [] # Clear any parts for this segment
-                skip_next_placeholder = True
-                replaced_segments += 1
-                continue
-            elif pending_part_segments:
-                # No full segment yet, use the parts
+            if pending_part_segments:
+                # Prefer LL-HLS parts when available. The paired full segment
+                # often points at the placeholder media.mp4 URL and is less reliable.
                 for duration, part_url in pending_part_segments:
                     lines_out.append("#EXTINF:{0},".format(duration))
                     lines_out.append(part_url)
                     replaced_parts += 1
                 pending_part_segments = []
                 skip_next_placeholder = True
+                continue
+            elif found_full_mouflon:
+                if not stripped.endswith(","):
+                    stripped += ","
+                lines_out.append(stripped)
+                lines_out.append(found_full_mouflon)
+                skip_next_placeholder = True
+                replaced_segments += 1
                 continue
 
         if stripped and not stripped.startswith("#"):
@@ -485,10 +485,15 @@ def _start_manifest_proxy(selected_url, name):
     segment_cache = {}
     segment_cache_lock = threading.Lock()
 
-    # Bind socket first so port is known for segment URL rewriting
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
-        port = s.getsockname()[1]
+    # Bind socket first so port is known for segment URL rewriting.
+    # Some test/sandbox environments disallow localhost listeners entirely.
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+    except OSError as exc:
+        utils.kodilog("Stripchat proxy: bind failed, falling back: {}".format(str(exc)))
+        return None
 
     def _prefetch_segment(cdn_url):
         """Fetch one segment from CDN and store in cache."""

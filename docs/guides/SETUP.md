@@ -16,6 +16,8 @@ The script detects the distribution, installs system packages (Python 3, git, Im
 source .venv/bin/activate
 ```
 
+On Ubuntu, `setup.sh` also installs `python-is-python3`, so both `python` and `python3` resolve correctly for commands like `python run_tests.py`.
+
 ## Windows 10/11
 
 Open an **Administrator** PowerShell session in the repository root and run:

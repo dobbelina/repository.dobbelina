@@ -487,9 +487,6 @@ def soup_videos_list(
             if join_thumb:
                 thumb = urllib_parse.urljoin(thumb_base or "", thumb)
             
-            # Wrap thumbnail with Kodi-compatible headers (UA/Cookies)
-            thumb = get_kodi_url(thumb, referer=url_base)
-
         duration = (
             _extract_value(item, duration_conf, default="") if duration_conf else ""
         )
@@ -1429,11 +1426,11 @@ def get_kodi_url(url, referer=None):
 
     params = []
 
-    # Use current USER_AGENT (updated by FlareSolverr)
-    params.append("User-Agent={}".format(urllib_parse.quote(USER_AGENT)))
-
     if referer:
         params.append("Referer={}".format(urllib_parse.quote(referer)))
+
+    # Use current USER_AGENT (updated by FlareSolverr)
+    params.append("User-Agent={}".format(urllib_parse.quote(USER_AGENT)))
 
     domain = urllib_parse.urlparse(url).netloc
     if domain:

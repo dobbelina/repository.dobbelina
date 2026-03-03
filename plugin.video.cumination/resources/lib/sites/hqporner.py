@@ -95,7 +95,7 @@ def HQLIST(url):
         videopage = utils.safe_get_attr(anchor, "href")
         if not videopage:
             continue
-        videourl = site.url + "/" + videopage.lstrip("/")
+        videourl = urllib_parse.urljoin(site.url, videopage)
 
         img_tag = anchor.select_one("img")
         img = utils.get_thumbnail(img_tag)
@@ -130,7 +130,7 @@ def HQLIST(url):
         if next_link:
             next_href = utils.safe_get_attr(next_link, "href")
             if next_href:
-                next_url = site.url + "/" + next_href.lstrip("/")
+                next_url = urllib_parse.urljoin(site.url, next_href)
                 site.add_dir("Next Page", next_url, "HQLIST", site.img_next)
     utils.eod()
 

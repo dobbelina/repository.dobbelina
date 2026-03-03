@@ -30,7 +30,8 @@ install_ubuntu() {
     echo "Detected Ubuntu/Debian. Installing dependencies..."
     require_sudo
     $SUDO apt-get update
-    $SUDO apt-get install -y python3 python3-venv python3-pip imagemagick pngquant git
+    # Provide both python3 and the `python` shim used in repo docs.
+    $SUDO apt-get install -y python3 python3-venv python3-pip python-is-python3 imagemagick pngquant git
 }
 
 install_fedora() {
