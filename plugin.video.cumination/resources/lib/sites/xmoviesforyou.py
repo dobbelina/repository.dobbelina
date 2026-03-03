@@ -50,7 +50,7 @@ def List(url):
     utils.videos_list(site, 'xmoviesforyou.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, skip=skip, contextm=cm)
 
     re_npurl = '<a href="([^"]+)"[^>]+>Next<'
-    re_npnr = r'page=(\d+)"[^>]+>Next</a>'
+    re_npnr = r'page[/=](\d+)"[^>]+>Next</a>'
     re_lpnr = r'of (\d+)\s+</span>\s+<a href'
     utils.next_page(site, 'xmoviesforyou.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xmoviesforyou.GotoPage')
     utils.eod()
@@ -65,6 +65,7 @@ def GotoPage(url, np, lp=None):
             utils.notify(msg='Out of range!')
             return
         url = url.replace('page={}'.format(np), 'page={}'.format(pg))
+        url = url.replace('page/{}'.format(np), 'page/{}'.format(pg))
         contexturl = (utils.addon_sys + "?mode=" + "xmoviesforyou.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 

@@ -2,5 +2,6 @@
 - sxyprn - fix playback (direct links)
 - hqporner - fix thumbnails
 - heroero - fix playback
+- xmoviesforyou - fix page numbers, goto page
 
 
