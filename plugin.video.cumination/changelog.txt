@@ -1,3 +1,11 @@
+[B]Version 1.1.301[/B]
+- fix: update Python version and executable paths in virtual environment configuration; enhance setup script for Ubuntu
+- feat: update version to 1.1.299 and enhance playback functionality for sxyprn and hqporner
+- Enhance video playback and thumbnail handling across multiple sites
+- feat: add changelog update step to build process and implement changelog script
+- docs: update README.md to reflect modernization efforts and installation instructions
+- Add tests for PimpBunny site functionality
+
 [B]Version 1.1.300[/B]
 - feat: update version to 1.1.299 and enhance playback functionality for sxyprn and hqporner
 - Enhance video playback and thumbnail handling across multiple sites
