@@ -33,12 +33,13 @@ def Main():
     site.add_dir('[COLOR hotpink]Porn videos[/COLOR]', '{}xxxfree/'.format(site.url), 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{}all-porn-movie-studios/'.format(site.url), 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}?s='.format(site.url), 'Search', site.img_search)
-    List('{}?filter=latest'.format(site.url))
+    List(site.url + 'category/1-porn-movies/')
     utils.eod()
 
 
 @site.register()
 def List(url):
+    utils.kodilog('speedporn List: ' + url)
     try:
         listhtml = utils.getHtml(url)
     except:
