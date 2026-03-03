@@ -109,14 +109,22 @@ def Playvid(url, name, download=None):
     vpage = utils.getHtml(url)
 
     match = re.compile(r"videoFormats\.push\(\{title:'([^']+)',file_name:'([^']+)',w:'(\d+)',h:'(\d+)'", re.IGNORECASE | re.DOTALL).findall(vpage)
-    if match:
-        formats = {str(m[3]) + 'p': m[1] for m in match}
-        format = utils.prefquality(formats, sort_by=lambda x: int(x[:-1]), reverse=True)
-        if format:
-            video_id = url.split('/')[4]
-            s = video_id[:-3] + '000'
-            videourl = 'https://media.heroero.com/contents/videos/{}/{}/{}'.format(s, video_id, format)
-            vp.play_from_direct_link(videourl + '|Referer={}'.format(site.url))
+    if not match:
+        match = re.compile(r'<iframe.+?src="([^"]+embed[^"]+)"', re.IGNORECASE | re.DOTALL).findall(vpage)
+        url = match[0]
+        vpage = utils.getHtml(url, site.url)
+        match = re.compile(r"videoFormats\.push\(\{title:'([^']+)',file_name:'([^']+)',w:'(\d+)',h:'(\d+)'", re.IGNORECASE | re.DOTALL).findall(vpage)
+        if not match:
+            utils.notify(msg='Video URL not found!')
+            return
+
+    formats = {str(m[3]) + 'p': m[1] for m in match}
+    format = utils.prefquality(formats, sort_by=lambda x: int(x[:-1]), reverse=True)
+    if format:
+        video_id = url.split('/')[4].split('?')[0]
+        s = '0' if len(video_id) < 4 else video_id[:-3] + '000'
+        videourl = 'https://media.heroero.com/contents/videos/{}/{}/{}'.format(s, video_id, format)
+        vp.play_from_direct_link(videourl + '|Referer={}'.format(site.url))
 
 
 @site.register()
