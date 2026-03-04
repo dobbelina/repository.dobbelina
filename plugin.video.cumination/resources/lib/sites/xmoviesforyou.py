@@ -45,7 +45,7 @@ VIDEO_LIST_SPEC = SoupSiteSpec(
             "transform": lambda v, item: utils.get_thumbnail(item.select_one("img"))
         },
         "pagination": {
-            "selector": "a.next.page-numbers, a[href*='?page=']",
+            "selector": "a.next.page-numbers, a[href*='?page='], a[href*='/page/']",
             "attr": "href",
             "text_matches": ["next"],
         },

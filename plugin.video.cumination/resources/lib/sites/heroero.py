@@ -310,12 +310,50 @@ def Categories(url):
 
 @site.register()
 def Playvid(url, name, download=None):
+    def ssut51(arg):
+        digits = re.sub(r"[\D]", "", str(arg))
+        return sum(int(c) for c in digits)
+
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     vpage = utils.getHtml(url, site.url)
+
+    match = re.compile(
+        r"videoFormats\.push\(\{title:'([^']+)',file_name:'([^']+)',w:'(\d+)',h:'(\d+)'",
+        re.IGNORECASE | re.DOTALL,
+    ).findall(vpage)
+    if not match:
+        match = re.compile(
+            r'<iframe.+?src="([^"]+embed[^"]+)"', re.IGNORECASE | re.DOTALL
+        ).findall(vpage)
+        if match:
+            url = match[0]
+            if url.startswith("//"):
+                url = "https:" + url
+            vpage = utils.getHtml(url, site.url)
+            match = re.compile(
+                r"videoFormats\.push\(\{title:'([^']+)',file_name:'([^']+)',w:'(\d+)',h:'(\d+)'",
+                re.IGNORECASE | re.DOTALL,
+            ).findall(vpage)
+
+    if match:
+        formats = {str(m[3]) + "p": m[1] for m in match}
+        format = utils.prefquality(formats, sort_by=lambda x: int(x[:-1]), reverse=True)
+        if format:
+            video_id = url.split("/")[4].split("?")[0]
+            s = "0" if len(video_id) < 4 else video_id[:-3] + "000"
+            videourl = "https://media.heroero.com/contents/videos/{}/{}/{}".format(
+                s, video_id, format
+            )
+            vp.play_from_direct_link(videourl + "|Referer={}".format(site.url))
+            return
+
     if "kt_player('kt_player'" in vpage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
         vp.play_from_kt_player(vpage, url)
+    else:
+        utils.notify(msg="Video URL not found!")
+        vp.progress.close()
 
 
 @site.register()

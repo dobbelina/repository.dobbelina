@@ -69,7 +69,7 @@ def Main():
         "Search",
         site.img_search,
     )
-    List("{}?filter=latest".format(site.url))
+    List(site.url + "category/1-porn-movies/")
     utils.eod()
 
 

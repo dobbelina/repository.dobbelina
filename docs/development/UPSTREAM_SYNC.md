@@ -52,6 +52,16 @@ These upstream commits have been integrated into the fork:
 |---------------|---------|-----------|-----------------|-------|
 | `af3c079` | porntn liting, fixes #1731 | `3ccc67f` | 2026-02-12 | Cherry-picked with manual conflict resolution (preserved BS4 parsers) |
 
+### 2026-03-03 Cherry-Pick Session
+
+| Upstream Hash | Message | Fork Hash | Date Integrated | Notes |
+|---------------|---------|-----------|-----------------|-------|
+| `ebf141f` | speedporn - fixes #1770 | `manual` | 2026-03-03 | Manual integration in BS4 scraper |
+| `ef8811d` | xmoviesforyou - fix page numbers, goto page | `manual` | 2026-03-03 | Manual integration in BS4 scraper (updated pagination spec) |
+| `3a8df5f` | heroero - fix playback | `manual` | 2026-03-03 | Manual integration in BS4 scraper (added iframe/videoFormats parsing) |
+| `e90da9b` | hqporner - fix thumbnails fixes #1769 | `already-in` | 2026-03-03 | Fork already has Referer fix for hqporner |
+| `73a6488` | sxyprn - fix playback (direct links) fixes #1763 | `already-in` | 2026-03-03 | Fork already has updated getvsrc logic |
+
 ### Previously Integrated (Manual)
 
 | Upstream Hash | Message | Fork Hash | Date Integrated | Notes |
