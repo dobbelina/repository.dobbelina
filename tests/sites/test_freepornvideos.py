@@ -1,153 +1,243 @@
-"""
-Test module for freepornvideos site
-"""
+"""Behavior tests for freepornvideos site module."""
 
-import pytest
 from resources.lib.sites import freepornvideos
 
 
-class TestFreePornVideos:
-    """Test cases for freepornvideos site functionality"""
+def test_main_adds_search_and_lists_latest(monkeypatch):
+    dirs = []
+    list_calls = []
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert freepornvideos.site.name == "freepornvideos"
-        assert "[COLOR hotpink]FreePornVideos[/COLOR]" in freepornvideos.site.title
-        assert freepornvideos.site.url == "https://www.freepornvideos.xxx/"
-        assert "freepornvideos.png" in freepornvideos.site.image
-
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        # This is a basic smoke test to ensure the function exists
-        assert hasattr(freepornvideos, "Main")
-        assert callable(freepornvideos.Main)
-
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(freepornvideos, "List")
-        assert callable(freepornvideos.List)
-
-    def test_playvid_function_structure(self):
-        """Test that Playvid function exists and has expected structure"""
-        assert hasattr(freepornvideos, "Playvid")
-        assert callable(freepornvideos.Playvid)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(freepornvideos, "Search")
-        assert callable(freepornvideos.Search)
-
-    def test_lookupinfo_function_structure(self):
-        """Test that Lookupinfo function exists and has expected structure"""
-        assert hasattr(freepornvideos, "Lookupinfo")
-        assert callable(freepornvideos.Lookupinfo)
-
-    def test_related_function_structure(self):
-        """Test that Related function exists and has expected structure"""
-        assert hasattr(freepornvideos, "Related")
-        assert callable(freepornvideos.Related)
-
-    def test_gotopage_function_structure(self):
-        """Test that GotoPage function exists and has expected structure"""
-        assert hasattr(freepornvideos, "GotoPage")
-        assert callable(freepornvideos.GotoPage)
-
-    @pytest.mark.parametrize(
-        "function_name",
-        ["Main", "List", "Playvid", "Search", "Lookupinfo", "Related", "GotoPage"],
+    monkeypatch.setattr(
+        freepornvideos.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(freepornvideos, function_name)
-        assert callable(func)
+    monkeypatch.setattr(freepornvideos, "List", lambda url: list_calls.append(url))
+    monkeypatch.setattr(freepornvideos.utils, "eod", lambda: None)
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup instead of regex"""
-        import inspect
+    freepornvideos.Main()
 
-        source = inspect.getsource(freepornvideos.List)
+    assert len(dirs) == 1
+    assert dirs[0]["mode"] == "Search"
+    assert "search/{}/" in dirs[0]["url"]
+    assert list_calls == ["https://www.freepornvideos.xxx/latest-updates/"]
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
 
-        # Should not use the old regex-based utils.videos_list
-        assert "utils.videos_list" not in source
-        assert "delimiter" not in source
-        assert "re_videopage" not in source
+def test_list_parses_items_adds_headers_and_next_page(monkeypatch):
+    html = """
+    <div class="item">
+      <a href="https://www.freepornvideos.xxx/v/1" title="Video One"></a>
+      <img data-src="https://img.freepornvideos.xxx/1.jpg" />
+      <span class="duration">10:00</span>
+      <div class="k4"></div>
+    </div>
+    <div class="item">
+      <a href="https://www.freepornvideos.xxx/v/2" title="Video Two"></a>
+      <img src="https://cdn.example.com/2.jpg" />
+      <span class="duration">08:00</span>
+    </div>
+    <a class="page" href="https://www.freepornvideos.xxx/latest-updates/2/">2</a>
+    <a class="page" href="https://www.freepornvideos.xxx/latest-updates/9/">Last</a>
+    """
 
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling"""
-        import inspect
+    downloads = []
+    dirs = []
 
-        source = inspect.getsource(freepornvideos.List)
+    monkeypatch.setattr(freepornvideos.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(freepornvideos.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        freepornvideos.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", duration="", quality="", contextm=None, **kwargs: downloads.append(
+            {
+                "name": name,
+                "url": url,
+                "mode": mode,
+                "icon": icon,
+                "duration": duration,
+                "quality": quality,
+                "contextm": contextm,
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        freepornvideos.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, contextm=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "contextm": contextm}
+        ),
+    )
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    freepornvideos.List("https://www.freepornvideos.xxx/latest-updates/")
 
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods"""
-        import inspect
+    assert len(downloads) == 2
+    assert downloads[0]["duration"] == "10:00"
+    assert downloads[0]["quality"] == "FHD"
+    assert "Referer=https://www.freepornvideos.xxx/" in downloads[0]["icon"]
+    assert "User-Agent=" in downloads[0]["icon"]
+    assert downloads[1]["icon"] == "https://cdn.example.com/2.jpg"
+    assert downloads[0]["contextm"] and len(downloads[0]["contextm"]) == 2
+    assert any("Next Page" in d["name"] and d["mode"] == "List" for d in dirs)
 
-        source = inspect.getsource(freepornvideos.List)
 
-        # Should use bs4 selectors
-        assert "div.item" in source
-        assert "select_one" in source
-        assert "safe_get_attr" in source
-        assert "safe_get_text" in source
+def test_list_notifies_when_empty(monkeypatch):
+    notifications = []
 
-    def test_pagination_handling(self):
-        """Test that pagination is handled with bs4"""
-        import inspect
+    monkeypatch.setattr(
+        freepornvideos.utils,
+        "getHtml",
+        lambda *a, **k: "There is no data in this list.",
+    )
+    monkeypatch.setattr(
+        freepornvideos.utils, "notify", lambda *a, **k: notifications.append((a, k))
+    )
 
-        source = inspect.getsource(freepornvideos.List)
+    freepornvideos.List("https://www.freepornvideos.xxx/search/none/")
+    assert notifications, "Expected a user notification for empty list"
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert "page-current" in source or "page" in source
 
-    def test_context_menu_structure(self):
-        """Test that context menu is properly structured"""
-        import inspect
+def test_search_empty_and_keyword(monkeypatch):
+    searches = []
+    list_calls = []
 
-        source = inspect.getsource(freepornvideos.List)
+    monkeypatch.setattr(
+        freepornvideos.site, "search_dir", lambda url, mode: searches.append((url, mode))
+    )
+    monkeypatch.setattr(freepornvideos, "List", lambda url: list_calls.append(url))
 
-        # Should have context menu items
-        assert "contextm=" in source
-        assert "Lookupinfo" in source
-        assert "Related" in source
+    freepornvideos.Search("https://www.freepornvideos.xxx/search/{}/")
+    freepornvideos.Search(
+        "https://www.freepornvideos.xxx/search/{}/", keyword="test phrase"
+    )
 
-    def test_video_playback_patterns(self):
-        """Test that Playvid function has multiple source extraction patterns"""
-        import inspect
+    assert searches == [("https://www.freepornvideos.xxx/search/{}/", "Search")]
+    assert list_calls == ["https://www.freepornvideos.xxx/search/test-phrase/"]
 
-        source = inspect.getsource(freepornvideos.Playvid)
 
-        # Should have multiple regex patterns for video source extraction
-        assert "Pattern 1:" in source
-        assert "Pattern 2:" in source
-        assert "Pattern 3:" in source
-        assert "Pattern 4:" in source
+def test_playvid_selects_quality_and_plays(monkeypatch):
+    video_html = """
+    <source src='https://cdn.example.com/2160.m3u8' label="2160p">
+    <source src='https://cdn.example.com/720.m3u8' label="720p">
+    """
 
-    def test_quality_selection_logic(self):
-        """Test that quality selection logic is present"""
-        import inspect
+    class _VP:
+        def __init__(self):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.direct = None
+            self.resolve = None
 
-        source = inspect.getsource(freepornvideos.Playvid)
+        def play_from_direct_link(self, url):
+            self.direct = url
 
-        # Should have quality selection
-        assert "utils.selector" in source
-        assert "Select quality" in source
+        def play_from_link_to_resolve(self, url):
+            self.resolve = url
 
-    def test_fallback_to_resolveurl(self):
-        """Test that there's fallback to resolveurl when no sources found"""
-        import inspect
+    vp = _VP()
 
-        source = inspect.getsource(freepornvideos.Playvid)
+    monkeypatch.setattr(freepornvideos.utils, "getHtml", lambda *a, **k: video_html)
+    monkeypatch.setattr(freepornvideos.utils, "VideoPlayer", lambda *a, **k: vp)
+    monkeypatch.setattr(
+        freepornvideos.utils,
+        "selector",
+        lambda title, sources, **kwargs: sources["1080p"],
+    )
 
-        # Should have fallback
-        assert "resolveurl" in source
-        assert "No video sources found" in source
+    freepornvideos.Playvid("https://www.freepornvideos.xxx/v/1", "Video One")
+
+    assert vp.direct == "https://cdn.example.com/2160.m3u8"
+    assert vp.resolve is None
+
+
+def test_playvid_falls_back_to_resolver_when_no_sources(monkeypatch):
+    vp_logs = []
+
+    class _VP:
+        def __init__(self):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.direct = None
+            self.resolve = None
+
+        def play_from_direct_link(self, url):
+            self.direct = url
+
+        def play_from_link_to_resolve(self, url):
+            self.resolve = url
+
+    vp = _VP()
+    monkeypatch.setattr(freepornvideos.utils, "getHtml", lambda *a, **k: "<html></html>")
+    monkeypatch.setattr(freepornvideos.utils, "VideoPlayer", lambda *a, **k: vp)
+    monkeypatch.setattr(freepornvideos.utils, "kodilog", lambda msg: vp_logs.append(msg))
+
+    freepornvideos.Playvid("https://www.freepornvideos.xxx/v/2", "Video Two")
+
+    assert vp.direct is None
+    assert vp.resolve == "https://www.freepornvideos.xxx/v/2"
+    assert any("No video sources found" in msg for msg in vp_logs)
+
+
+def test_lookupinfo_builds_expected_patterns(monkeypatch):
+    captured = {}
+
+    class _LookupInfo:
+        def __init__(self, base, url, mode, lookup_list):
+            captured["base"] = base
+            captured["url"] = url
+            captured["mode"] = mode
+            captured["lookup_list"] = lookup_list
+
+        def getinfo(self):
+            captured["called"] = True
+
+    monkeypatch.setattr(freepornvideos.utils, "LookupInfo", _LookupInfo)
+    freepornvideos.Lookupinfo("https://www.freepornvideos.xxx/v/1")
+
+    assert captured["base"] == "https://www.freepornvideos.xxx/"
+    assert captured["mode"] == "freepornvideos.List"
+    assert captured["called"] is True
+    labels = [x[0] for x in captured["lookup_list"]]
+    assert labels == ["Channel", "Pornstar", "Network", "Tags"]
+
+
+def test_related_updates_container(monkeypatch):
+    calls = []
+    monkeypatch.setattr(freepornvideos.xbmc, "executebuiltin", lambda cmd: calls.append(cmd))
+
+    freepornvideos.Related("https://www.freepornvideos.xxx/latest-updates/")
+
+    assert calls and calls[0].startswith("Container.Update(")
+    assert "mode=freepornvideos.List" in calls[0]
+
+
+def test_gotopage_updates_container(monkeypatch):
+    calls = []
+
+    class _Dialog:
+        def numeric(self, *_args, **_kwargs):
+            return "4"
+
+    monkeypatch.setattr(freepornvideos.xbmcgui, "Dialog", lambda: _Dialog())
+    monkeypatch.setattr(freepornvideos.xbmc, "executebuiltin", lambda cmd: calls.append(cmd))
+
+    freepornvideos.GotoPage("https://www.freepornvideos.xxx/latest-updates/2/", "2", "10")
+
+    assert calls and calls[0].startswith("Container.Update(")
+    from urllib.parse import unquote
+
+    assert "/latest-updates/4/" in unquote(calls[0])
+
+
+def test_gotopage_out_of_range_notifies(monkeypatch):
+    notices = []
+
+    class _Dialog:
+        def numeric(self, *_args, **_kwargs):
+            return "11"
+
+    monkeypatch.setattr(freepornvideos.xbmcgui, "Dialog", lambda: _Dialog())
+    monkeypatch.setattr(freepornvideos.utils, "notify", lambda *a, **k: notices.append((a, k)))
+    monkeypatch.setattr(freepornvideos.xbmc, "executebuiltin", lambda *_a, **_k: None)
+
+    freepornvideos.GotoPage("https://www.freepornvideos.xxx/latest-updates/2/", "2", "10")
+    assert notices, "Expected out-of-range notification"

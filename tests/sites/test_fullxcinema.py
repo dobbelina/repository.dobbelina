@@ -1,280 +1,302 @@
-"""
-Test module for fullxcinema site
-"""
+"""Behavior tests for fullxcinema site module."""
 
-import pytest
 from resources.lib.sites import fullxcinema
 
 
-class TestFullXCinema:
-    """Test cases for fullxcinema site functionality"""
+def test_site_initialization_values():
+    assert fullxcinema.site.name == "fullxcinema"
+    assert fullxcinema.site.url == "https://fullxcinema.com/"
+    assert "fullxcinema.png" in fullxcinema.site.image
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert fullxcinema.site.name == "fullxcinema"
-        assert "[COLOR hotpink]fullxcinema[/COLOR]" in fullxcinema.site.title
-        assert fullxcinema.site.url == "https://fullxcinema.com/"
-        assert "fullxcinema.png" in fullxcinema.site.image
 
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Main")
-        assert callable(fullxcinema.Main)
+def test_main_builds_menu_and_lists_latest(monkeypatch):
+    dirs = []
+    list_calls = []
 
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(fullxcinema, "List")
-        assert callable(fullxcinema.List)
-
-    def test_play_function_structure(self):
-        """Test that Play function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Play")
-        assert callable(fullxcinema.Play)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Search")
-        assert callable(fullxcinema.Search)
-
-    def test_cat_function_structure(self):
-        """Test that Cat function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Cat")
-        assert callable(fullxcinema.Cat)
-
-    def test_goto_page_function_structure(self):
-        """Test that GotoPage function exists and has expected structure"""
-        assert hasattr(fullxcinema, "GotoPage")
-        assert callable(fullxcinema.GotoPage)
-
-    def test_lookupinfo_function_structure(self):
-        """Test that Lookupinfo function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Lookupinfo")
-        assert callable(fullxcinema.Lookupinfo)
-
-    def test_related_function_structure(self):
-        """Test that Related function exists and has expected structure"""
-        assert hasattr(fullxcinema, "Related")
-        assert callable(fullxcinema.Related)
-
-    @pytest.mark.parametrize(
-        "function_name",
-        ["Main", "List", "Play", "Search", "Cat", "GotoPage", "Lookupinfo", "Related"],
+    monkeypatch.setattr(
+        fullxcinema.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(fullxcinema, function_name)
-        assert callable(func)
+    monkeypatch.setattr(fullxcinema, "List", lambda url: list_calls.append(url))
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup instead of regex"""
-        import inspect
+    fullxcinema.Main()
 
-        source = inspect.getsource(fullxcinema.List)
+    assert len(dirs) == 2
+    assert any(d["mode"] == "Cat" for d in dirs)
+    assert any(d["mode"] == "Search" for d in dirs)
+    assert list_calls == ["https://fullxcinema.com/?filter=latest"]
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
 
-        # Should not use old utils.videos_list
-        assert "utils.videos_list" not in source
-        assert "delimiter" not in source
-        assert "re_videopage" not in source
+def test_list_parses_videos_and_skips_after_should_watch(monkeypatch):
+    html = """
+    <article data-video-id="1" data-main-thumb="https://img/one.jpg">
+      <a href="https://fullxcinema.com/v/one/" title="One Title"></a>
+      <i class="fa-clock-o">09:30</i>
+    </article>
+    >SHOULD WATCH<
+    <article data-video-id="2" data-main-thumb="https://img/two.jpg">
+      <a href="https://fullxcinema.com/v/two/" title="Two Title"></a>
+      <i class="fa-clock-o">04:00</i>
+    </article>
+    """
+    downloads = []
 
-    def test_bs4_usage_in_cat_function(self):
-        """Test that Cat function uses BeautifulSoup"""
-        import inspect
+    monkeypatch.setattr(fullxcinema.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullxcinema.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        fullxcinema.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", duration="", contextm=None, **kwargs: downloads.append(
+            {
+                "name": name,
+                "url": url,
+                "mode": mode,
+                "icon": icon,
+                "duration": duration,
+                "contextm": contextm,
+            }
+        ),
+    )
+    monkeypatch.setattr(fullxcinema.site, "add_dir", lambda *_a, **_k: None)
 
-        source = inspect.getsource(fullxcinema.Cat)
+    fullxcinema.List("https://fullxcinema.com/?filter=latest")
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    assert len(downloads) == 1
+    assert downloads[0]["url"] == "https://fullxcinema.com/v/one/"
+    assert downloads[0]["duration"] == "09:30"
+    assert downloads[0]["contextm"]
+    assert "Lookup info" in downloads[0]["contextm"][0][0]
+    assert "Related videos" in downloads[0]["contextm"][1][0]
 
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling"""
-        import inspect
 
-        source = inspect.getsource(fullxcinema.List)
+def test_list_adds_next_page_using_current_page_fallback(monkeypatch):
+    html = """
+    <article data-video-id="1" data-main-thumb="https://img/one.jpg">
+      <a href="https://fullxcinema.com/v/one/" title="One"></a>
+    </article>
+    <span class="current">2</span>
+    <a href="https://fullxcinema.com/page/3/">3</a>
+    <a href="https://fullxcinema.com/page/8/">8</a>
+    """
+    dirs = []
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    monkeypatch.setattr(fullxcinema.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullxcinema.utils, "eod", lambda: None)
+    monkeypatch.setattr(fullxcinema.site, "add_download_link", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        fullxcinema.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, contextm=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "contextm": contextm}
+        ),
+    )
 
-    def test_error_handling_in_cat_function(self):
-        """Test that Cat function has proper error handling"""
-        import inspect
+    fullxcinema.List("https://fullxcinema.com/page/2/")
 
-        source = inspect.getsource(fullxcinema.Cat)
+    next_dirs = [d for d in dirs if d["mode"] == "List"]
+    assert len(next_dirs) == 1
+    assert next_dirs[0]["url"] == "https://fullxcinema.com/page/3/"
+    assert next_dirs[0]["name"] == "Next Page (3)/8"
+    assert "Goto Page #" in next_dirs[0]["contextm"][0][0]
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
 
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods"""
-        import inspect
+def test_cat_parses_tag_links_from_tags_section(monkeypatch):
+    html = """
+    <div>ignore</div>
+    title">Tags<
+    <a href="https://fullxcinema.com/tag/a/" aria-label="Tag A"></a>
+    <a href="https://fullxcinema.com/tag/b/" aria-label="Tag B"></a>
+    /section>
+    <a href="https://fullxcinema.com/tag/c/" aria-label="Tag C"></a>
+    """
+    dirs = []
 
-        source = inspect.getsource(fullxcinema.List)
+    monkeypatch.setattr(fullxcinema.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullxcinema.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        fullxcinema.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
 
-        # Should use bs4 selectors
-        assert "article[data-video-id]" in source
-        assert "select_one" in source
-        assert "safe_get_attr" in source
-        assert "safe_get_text" in source
+    fullxcinema.Cat(fullxcinema.site.url)
 
-    def test_should_watch_splitting_logic(self):
-        """Test that the SHOULD WATCH splitting logic is preserved"""
-        import inspect
+    assert len(dirs) == 2
+    assert all(d["mode"] == "List" for d in dirs)
+    assert {d["name"] for d in dirs} == {"Tag A", "Tag B"}
 
-        source = inspect.getsource(fullxcinema.List)
 
-        # Should split at SHOULD WATCH
-        assert ">SHOULD WATCH<" in source
-        assert 'split(">SHOULD WATCH<")' in source
+def test_search_routes_to_search_dir_or_list(monkeypatch):
+    searches = []
+    list_calls = []
 
-    def test_pagination_handling(self):
-        """Test that pagination is handled with bs4"""
-        import inspect
+    monkeypatch.setattr(
+        fullxcinema.site,
+        "search_dir",
+        lambda url, mode: searches.append((url, mode)),
+    )
+    monkeypatch.setattr(fullxcinema, "List", lambda url: list_calls.append(url))
 
-        source = inspect.getsource(fullxcinema.List)
+    fullxcinema.Search("https://fullxcinema.com/?s=")
+    fullxcinema.Search("https://fullxcinema.com/?s=", keyword="test phrase")
 
-        # Should handle pagination
-        assert "Next" in source
-        assert ".current" in source
-        assert "find_next" in source
+    assert searches == [("https://fullxcinema.com/?s=", "Search")]
+    assert list_calls == ["https://fullxcinema.com/?s=test%20phrase"]
 
-    def test_context_menu_structure(self):
-        """Test that context menu is properly structured"""
-        import inspect
 
-        source = inspect.getsource(fullxcinema.List)
+def test_play_uses_resolver_for_hosted_media(monkeypatch):
+    video_html = 'player">\n<iframe src="https://host/video-page"></iframe>'
 
-        # Should have context menu items
-        assert "contextm=" in source
-        assert "Lookupinfo" in source
-        assert "Related" in source
+    class _Hosted:
+        @staticmethod
+        def valid_url():
+            return True
 
-    def test_duration_extraction(self):
-        """Test that duration extraction logic is preserved"""
-        import inspect
+    class _Resolver:
+        @staticmethod
+        def HostedMediaFile(_link):
+            return _Hosted()
 
-        source = inspect.getsource(fullxcinema.List)
+    class _VP:
+        def __init__(self):
+            self.resolveurl = _Resolver()
+            self.played_link = None
+            self.played_html = None
 
-        # Should handle duration extraction
-        assert "fa-clock-o" in source
-        assert "duration_tag" in source
+        def play_from_link_to_resolve(self, link):
+            self.played_link = link
 
-    def test_image_extraction_logic(self):
-        """Test that image extraction logic is preserved"""
-        import inspect
+        def play_from_html(self, html):
+            self.played_html = html
 
-        source = inspect.getsource(fullxcinema.List)
+    vp = _VP()
+    monkeypatch.setattr(fullxcinema.utils, "VideoPlayer", lambda *_a, **_k: vp)
+    monkeypatch.setattr(fullxcinema.utils, "getHtml", lambda url: video_html)
 
-        # Should handle image extraction
-        assert "data-main-thumb" in source
+    fullxcinema.Play("https://fullxcinema.com/v/one/", "One")
 
-    def test_category_section_splitting(self):
-        """Test that category section splitting is preserved"""
-        import inspect
+    assert vp.played_link == "https://host/video-page"
+    assert vp.played_html is None
 
-        source = inspect.getsource(fullxcinema.Cat)
 
-        # Should split to focus on tags section
-        assert 'title">Tags<' in source
-        assert "split('title\">Tags<')" in source
+def test_play_falls_back_to_iframe_html_when_not_hosted(monkeypatch):
+    video_html = 'player">\n<iframe src="https://embed/page"></iframe>'
+    embed_html = "<source src='https://cdn/vid.mp4'>"
 
-    def test_category_link_selection(self):
-        """Test that category links are selected properly"""
-        import inspect
+    class _Resolver:
+        @staticmethod
+        def HostedMediaFile(_link):
+            return None
 
-        source = inspect.getsource(fullxcinema.Cat)
+    class _VP:
+        def __init__(self):
+            self.resolveurl = _Resolver()
+            self.played_link = None
+            self.played_html = None
 
-        # Should select links with aria-label
-        assert "a[href][aria-label]" in source
+        def play_from_link_to_resolve(self, link):
+            self.played_link = link
 
-    def test_search_keyword_handling(self):
-        """Test that search function handles keywords properly"""
-        import inspect
+        def play_from_html(self, html):
+            self.played_html = html
 
-        source = inspect.getsource(fullxcinema.Search)
+    def _get_html(url):
+        if "embed/page" in url:
+            return embed_html
+        return video_html
 
-        # Should handle keyword replacement
-        assert 'replace(" ", "%20")' in source
+    vp = _VP()
+    monkeypatch.setattr(fullxcinema.utils, "VideoPlayer", lambda *_a, **_k: vp)
+    monkeypatch.setattr(fullxcinema.utils, "getHtml", _get_html)
 
-    def test_play_function_regex_usage(self):
-        """Test that Play function still uses regex for video extraction"""
-        import inspect
+    fullxcinema.Play("https://fullxcinema.com/v/two/", "Two")
 
-        source = inspect.getsource(fullxcinema.Play)
+    assert vp.played_link is None
+    assert vp.played_html == embed_html
 
-        # Should use regex for video source extraction
-        assert "regex=" in source
-        assert '<source src="([^"]+)"' in source
 
-    def test_play_function_iframe_handling(self):
-        """Test that Play function handles iframe extraction"""
-        import inspect
+def test_gotopage_updates_container_when_in_range(monkeypatch):
+    builtins = []
 
-        source = inspect.getsource(fullxcinema.Play)
+    class _Dialog:
+        @staticmethod
+        def numeric(_kind, _title):
+            return "7"
 
-        # Should handle iframe extraction
-        assert 'player">' in source
-        assert "<iframe src=" in source
+    monkeypatch.setattr(fullxcinema.xbmcgui, "Dialog", lambda: _Dialog())
+    monkeypatch.setattr(fullxcinema.xbmc, "executebuiltin", lambda cmd: builtins.append(cmd))
+    monkeypatch.setattr(fullxcinema.utils, "notify", lambda **_k: (_ for _ in ()).throw(AssertionError("unexpected notify")))
 
-    def test_goto_page_functionality(self):
-        """Test that GotoPage function handles URL replacement"""
-        import inspect
+    fullxcinema.GotoPage(
+        "fullxcinema.List",
+        "https://fullxcinema.com/page/3/",
+        np="3",
+        lp="10",
+    )
 
-        source = inspect.getsource(fullxcinema.GotoPage)
+    assert builtins
+    assert "page%2F7%2F" in builtins[0]
+    assert "Container.Update(" in builtins[0]
 
-        # Should handle page replacement
-        assert 'replace("/page/{}"' in source
-        assert "Out of range" in source
 
-    def test_lookupinfo_patterns(self):
-        """Test that Lookupinfo has proper regex patterns"""
-        import inspect
+def test_gotopage_notifies_when_out_of_range(monkeypatch):
+    notices = []
+    builtins = []
 
-        source = inspect.getsource(fullxcinema.Lookupinfo)
+    class _Dialog:
+        @staticmethod
+        def numeric(_kind, _title):
+            return "11"
 
-        # Should have lookup patterns
-        assert "Actor" in source
-        assert "Category" in source
-        assert "Tag" in source
-        assert "/actor/" in source
-        assert "/category/" in source
-        assert "/tag/" in source
+    monkeypatch.setattr(fullxcinema.xbmcgui, "Dialog", lambda: _Dialog())
+    monkeypatch.setattr(fullxcinema.xbmc, "executebuiltin", lambda cmd: builtins.append(cmd))
+    monkeypatch.setattr(fullxcinema.utils, "notify", lambda **k: notices.append(k))
 
-    def test_related_function_redirect(self):
-        """Test that Related function redirects to List"""
-        import inspect
+    fullxcinema.GotoPage(
+        "fullxcinema.List",
+        "https://fullxcinema.com/page/3/",
+        np="3",
+        lp="10",
+    )
 
-        source = inspect.getsource(fullxcinema.Related)
+    assert notices and notices[0]["msg"] == "Out of range!"
+    assert builtins == []
 
-        # Should redirect to List
-        assert "Container.Update" in source
-        assert "fullxcinema.List" in source
 
-    def test_main_menu_structure(self):
-        """Test that Main function creates expected menu structure"""
-        import inspect
+def test_lookupinfo_builds_expected_patterns(monkeypatch):
+    captured = {}
 
-        source = inspect.getsource(fullxcinema.Main)
+    class _LookupInfo:
+        def __init__(self, base, url, mode, lookup_list):
+            captured["base"] = base
+            captured["url"] = url
+            captured["mode"] = mode
+            captured["lookup_list"] = lookup_list
 
-        # Should have expected menu items
-        assert "Categories" in source
-        assert "Search" in source
-        assert "?filter=latest" in source
+        def getinfo(self):
+            captured["called"] = True
 
-    def test_name_cleaning_logic(self):
-        """Test that name cleaning logic is preserved"""
-        import inspect
+    monkeypatch.setattr(fullxcinema.utils, "LookupInfo", _LookupInfo)
 
-        source_list = inspect.getsource(fullxcinema.List)
-        source_cat = inspect.getsource(fullxcinema.Cat)
+    fullxcinema.Lookupinfo("https://fullxcinema.com/v/one/")
 
-        # Should clean names
-        assert "utils.cleantext" in source_list
-        assert "utils.cleantext" in source_cat
+    assert captured["base"] == "https://fullxcinema.com/"
+    assert captured["mode"] == "fullxcinema.List"
+    assert captured["called"] is True
+    assert [entry[0] for entry in captured["lookup_list"]] == ["Actor", "Category", "Tag"]
+
+
+def test_related_updates_container(monkeypatch):
+    builtins = []
+    monkeypatch.setattr(fullxcinema.xbmc, "executebuiltin", lambda cmd: builtins.append(cmd))
+
+    fullxcinema.Related("https://fullxcinema.com/v/related/")
+
+    assert builtins
+    assert "Container.Update(" in builtins[0]
+    assert "mode=fullxcinema.List" in builtins[0]

@@ -34,6 +34,7 @@ import six
 import StorageServer
 from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs, xbmcaddon
 from resources.lib import cloudflare, random_ua, strings, jsunpack
+from resources.lib.http_timeouts import HTTP_TIMEOUT_DEFAULT, HTTP_TIMEOUT_LONG
 from resources.lib.basics import (
     addDir,
     addon,
@@ -682,7 +683,7 @@ def downloadVideo(url, name):
 
             req = Request(url, headers=headers2)
 
-            resp = urlopen(req, timeout=30)
+            resp = urlopen(req, timeout=HTTP_TIMEOUT_DEFAULT)
             return resp
         except Exception:
             return None
@@ -1007,9 +1008,18 @@ def getHtml(
     data=None,
     error="return",
     ignoreCertificateErrors=False,
+    timeout=HTTP_TIMEOUT_DEFAULT,
 ):
     return cache.cacheFunction(
-        _getHtml, url, referer, headers, NoCookie, data, error, ignoreCertificateErrors
+        _getHtml,
+        url,
+        referer,
+        headers,
+        NoCookie,
+        data,
+        error,
+        ignoreCertificateErrors,
+        timeout,
     )
 
 
@@ -1021,6 +1031,7 @@ def _getHtml(
     data=None,
     error="return",
     ignoreCertificateErrors=False,
+    timeout=HTTP_TIMEOUT_DEFAULT,
 ):
     url = urllib_parse.quote(url, r":/%?+&=")
 
@@ -1045,11 +1056,11 @@ def _getHtml(
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
-            response = urlopen(req, timeout=30, context=ctx)
+            response = urlopen(req, timeout=timeout, context=ctx)
         else:
-            response = urlopen(req, timeout=30)
+            response = urlopen(req, timeout=timeout)
     except urllib_error.HTTPError as e:
-        print(e)
+        kodilog("getHtml HTTPError: {}".format(str(e)), xbmc.LOGDEBUG)
         if error is True:
             response = e
         else:
@@ -1072,7 +1083,7 @@ def _getHtml(
                     handle = [urllib_request.HTTPSHandler(context=ctx)]
                     opener = urllib_request.build_opener(*handle)
                     try:
-                        response = opener.open(req, timeout=30)
+                        response = opener.open(req, timeout=timeout)
                     except urllib_error.HTTPError as e:
                         if e.info().get("Content-Encoding", "").lower() == "gzip":
                             buf = six.BytesIO(e.read())
@@ -1092,7 +1103,7 @@ def _getHtml(
                             handle = [urllib_request.HTTPSHandler(context=ctx)]
                             opener = urllib_request.build_opener(*handle)
                             try:
-                                response = opener.open(req, timeout=30)
+                                response = opener.open(req, timeout=timeout)
                             except Exception:
                                 notify(i18n("oh_oh"), i18n("site_down"))
                                 if "return" in error:
@@ -1147,7 +1158,7 @@ def _getHtml(
                 notify(i18n("oh_oh"), i18n("site_down"))
                 return ""
     except urllib_error.URLError as e:
-        print(e)
+        kodilog("getHtml URLError: {}".format(str(e)), xbmc.LOGDEBUG)
         if "return" in error:
             notify(i18n("oh_oh"), i18n("slow_site"))
             xbmc.log(str(e), xbmc.LOGDEBUG)
@@ -1155,7 +1166,7 @@ def _getHtml(
         else:
             raise
     except Exception as e:
-        print(e)
+        kodilog("getHtml unexpected error: {}".format(str(e)), xbmc.LOGDEBUG)
         if "SSL23_GET_SERVER_HELLO" in str(e):
             notify(i18n("oh_oh"), i18n("python_old"))
             return ""
@@ -1241,6 +1252,7 @@ def flaresolve(url, referer):
     if not fs_host:
         fs_host = "http://127.0.0.1:8191/v1"
 
+    flaresolverr = None
     try:
         flaresolverr = FlareSolverrManager(fs_host)
         response = flaresolverr.request(url)
@@ -1280,6 +1292,9 @@ def flaresolve(url, referer):
             "FlareSolverr error for {}: {}. "
             "Check if FlareSolverr is running at {}".format(url, str(e), fs_host)
         )
+    finally:
+        if flaresolverr:
+            flaresolverr.close(destroy_session=True)
 
 
 _CLOUDFLARE_CHALLENGE_MARKERS = (
@@ -1511,7 +1526,7 @@ def _postHtml(
         req.add_header("Accept-Encoding", "gzip")
 
     try:
-        response = urllib_request.urlopen(req)
+        response = urllib_request.urlopen(req, timeout=HTTP_TIMEOUT_DEFAULT)
     except urllib_error.HTTPError as e:
         if e.info().get("Content-Encoding", "").lower() == "gzip":
             buf = six.BytesIO(e.read())
@@ -1531,7 +1546,7 @@ def _postHtml(
             handle = [urllib_request.HTTPSHandler(context=ctx)]
             opener = urllib_request.build_opener(*handle)
             try:
-                response = opener.open(req, timeout=30)
+                response = opener.open(req, timeout=HTTP_TIMEOUT_DEFAULT)
             except urllib_error.HTTPError as e:
                 if e.info().get("Content-Encoding", "").lower() == "gzip":
                     buf = six.BytesIO(e.read())
@@ -1551,7 +1566,7 @@ def _postHtml(
                     handle = [urllib_request.HTTPSHandler(context=ctx)]
                     opener = urllib_request.build_opener(*handle)
                     try:
-                        response = opener.open(req, timeout=30)
+                        response = opener.open(req, timeout=HTTP_TIMEOUT_DEFAULT)
                     except Exception:
                         notify(i18n("oh_oh"), i18n("site_down"))
                         raise
@@ -1611,7 +1626,7 @@ def checkUrl(url, headers=None):
     req = Request(url, headers=headers)
     req.get_method = lambda: "HEAD"
     try:
-        response = urlopen(req, timeout=60)
+        response = urlopen(req, timeout=HTTP_TIMEOUT_LONG)
         code = response.code
     except urllib_error.HTTPError as e:
         code = e.code
@@ -1624,7 +1639,7 @@ def getHtml2(url):
 
 def _getHtml2(url):
     req = Request(url)
-    response = urlopen(req, timeout=60)
+    response = urlopen(req, timeout=HTTP_TIMEOUT_LONG)
     data = response.read()
     response.close()
     data = data.decode("latin-1") if PY3 else data
@@ -1646,7 +1661,7 @@ def getVideoLink(url, referer="", headers=None, data=None):
     opener = urllib_request.build_opener(NoRedirection())
 
     try:
-        response = opener.open(req2, timeout=30)
+        response = opener.open(req2, timeout=HTTP_TIMEOUT_DEFAULT)
     except urllib_error.HTTPError as e:
         response = e
 

@@ -1,255 +1,202 @@
-"""
-Test module for fullporner site
-"""
+"""Behavior tests for fullporner site module."""
 
-import pytest
 from resources.lib.sites import fullporner
 
 
-class TestFullPorner:
-    """Test cases for fullporner site functionality"""
+def test_site_initialization_values():
+    assert fullporner.site.name == "fullporner"
+    assert fullporner.site.url == "https://fullporner.org/"
+    assert "fullporner.png" in fullporner.site.image
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert fullporner.site.name == "fullporner"
-        assert "[COLOR hotpink]Fullporner[/COLOR]" in fullporner.site.title
-        assert fullporner.site.url == "https://fullporner.org/"
-        assert "fullporner.png" in fullporner.site.image
 
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        assert hasattr(fullporner, "Main")
-        assert callable(fullporner.Main)
+def test_main_builds_menu_and_lists_latest(monkeypatch):
+    dirs = []
+    list_calls = []
+    eod_calls = []
 
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(fullporner, "List")
-        assert callable(fullporner.List)
-
-    def test_playvid_function_structure(self):
-        """Test that Playvid function exists and has expected structure"""
-        assert hasattr(fullporner, "Playvid")
-        assert callable(fullporner.Playvid)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(fullporner, "Search")
-        assert callable(fullporner.Search)
-
-    def test_categories_function_structure(self):
-        """Test that Categories function exists and has expected structure"""
-        assert hasattr(fullporner, "Categories")
-        assert callable(fullporner.Categories)
-
-    def test_actors_function_structure(self):
-        """Test that Actors function exists and has expected structure"""
-        assert hasattr(fullporner, "Actors")
-        assert callable(fullporner.Actors)
-
-    @pytest.mark.parametrize(
-        "function_name", ["Main", "List", "Playvid", "Search", "Categories", "Actors"]
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(fullporner, function_name)
-        assert callable(func)
+    monkeypatch.setattr(fullporner, "List", lambda url: list_calls.append(url))
+    monkeypatch.setattr(fullporner.utils, "eod", lambda: eod_calls.append(True))
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup instead of regex"""
-        import inspect
+    fullporner.Main()
 
-        source = inspect.getsource(fullporner.List)
+    assert len(dirs) == 4
+    assert any(d["mode"] == "Categories" for d in dirs)
+    assert any(d["mode"] == "Actors" and "Pornstars" in d["name"] for d in dirs)
+    assert any(d["mode"] == "Actors" and "Channels" in d["name"] for d in dirs)
+    assert any(d["mode"] == "Search" for d in dirs)
+    assert list_calls == ["https://fullporner.org/porn-channels/latest-videos/page/1/"]
+    assert eod_calls == [True]
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
 
-        # Should not use old regex patterns
-        assert "re.compile" not in source
-        assert "findall" not in source
+def test_list_parses_articles_and_adds_next_page(monkeypatch):
+    html = """
+    <article>
+      <a href="https://fullporner.org/v/one/" title="One"></a>
+      <img poster="https://img/one.jpg"/>
+      <i>10:00</i>
+    </article>
+    <article>
+      <a href="https://fullporner.org/v/two/" title="Two"></a>
+      <img src="https://img/two.jpg"/>
+      <i>08:00</i>
+    </article>
+    <div class="pagination"><span class="current">1</span><a href="https://fullporner.org/page/2/">2</a></div>
+    """
+    downloads = []
+    dirs = []
 
-    def test_bs4_usage_in_categories_function(self):
-        """Test that Categories function uses BeautifulSoup"""
-        import inspect
+    monkeypatch.setattr(fullporner.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullporner.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", duration="", **kwargs: downloads.append(
+            {
+                "name": name,
+                "url": url,
+                "mode": mode,
+                "icon": icon,
+                "duration": duration,
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
 
-        source = inspect.getsource(fullporner.Categories)
+    fullporner.List("https://fullporner.org/porn-channels/latest-videos/page/1/")
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    assert len(downloads) == 2
+    assert downloads[0]["mode"] == "Playvid"
+    assert downloads[0]["icon"] == "https://img/one.jpg"
+    assert downloads[1]["icon"] == "https://img/two.jpg"
+    assert downloads[0]["duration"] == "10:00"
 
-    def test_bs4_usage_in_actors_function(self):
-        """Test that Actors function uses BeautifulSoup"""
-        import inspect
+    next_dirs = [d for d in dirs if d["mode"] == "List"]
+    assert len(next_dirs) == 1
+    assert next_dirs[0]["name"] == "Next Page (2)"
+    assert next_dirs[0]["url"] == "https://fullporner.org/page/2/"
 
-        source = inspect.getsource(fullporner.Actors)
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+def test_list_returns_early_when_no_articles(monkeypatch):
+    monkeypatch.setattr(fullporner.utils, "getHtml", lambda *_a, **_k: "<html></html>")
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_download_link",
+        lambda *_a, **_k: (_ for _ in ()).throw(AssertionError("unexpected add")),
+    )
+    monkeypatch.setattr(
+        fullporner.utils,
+        "eod",
+        lambda: (_ for _ in ()).throw(AssertionError("unexpected eod")),
+    )
 
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling"""
-        import inspect
+    fullporner.List("https://fullporner.org/none")
 
-        source = inspect.getsource(fullporner.List)
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+def test_categories_parses_and_sorts_with_filter(monkeypatch):
+    html = """
+    <article>
+      <a href="https://fullporner.org/cat/z/"></a>
+      <img src="https://img/z.jpg"/>
+      <div class="cat-title"> Zeta </div>
+    </article>
+    <article>
+      <a href="https://fullporner.org/cat/a/"></a>
+      <img src="https://img/a.jpg"/>
+      <div class="cat-title"> Alpha </div>
+    </article>
+    """
+    dirs = []
 
-    def test_error_handling_in_categories_function(self):
-        """Test that Categories function has proper error handling"""
-        import inspect
+    monkeypatch.setattr(fullporner.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullporner.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon}
+        ),
+    )
 
-        source = inspect.getsource(fullporner.Categories)
+    fullporner.Categories(fullporner.site.url)
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    assert [d["name"] for d in dirs] == ["Alpha", "Zeta"]
+    assert all(d["mode"] == "List" for d in dirs)
+    assert dirs[0]["url"].endswith("&filter=latest")
 
-    def test_error_handling_in_actors_function(self):
-        """Test that Actors function has proper error handling"""
-        import inspect
 
-        source = inspect.getsource(fullporner.Actors)
+def test_actors_parses_sorted_and_adds_next_page(monkeypatch):
+    html = """
+    <article>
+      <a href="https://fullporner.org/actor/z/" title="Zed"></a>
+      <img src="https://img/z.jpg"/>
+    </article>
+    <article>
+      <a href="https://fullporner.org/actor/a/" title="Adam"></a>
+      <img src="https://img/a.jpg"/>
+    </article>
+    <div class="pagination"><span class="current">3</span><a href="https://fullporner.org/porno-actors/page/4/">4</a></div>
+    """
+    dirs = []
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    monkeypatch.setattr(fullporner.utils, "getHtml", lambda *_a, **_k: html)
+    monkeypatch.setattr(fullporner.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        fullporner.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon}
+        ),
+    )
 
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods"""
-        import inspect
+    fullporner.Actors("https://fullporner.org/porno-actors/page/3/")
 
-        source = inspect.getsource(fullporner.List)
+    actor_dirs = [d for d in dirs if d["mode"] == "List"]
+    assert [d["name"] for d in actor_dirs] == ["Adam", "Zed"]
+    next_dirs = [d for d in dirs if d["mode"] == "Actors"]
+    assert len(next_dirs) == 1
+    assert next_dirs[0]["name"] == "Next Page (4)"
 
-        # Should use bs4 selectors
-        assert "article" in source
-        assert "select_one" in source
-        assert "safe_get_attr" in source
-        assert "safe_get_text" in source
 
-    def test_pagination_handling_in_list(self):
-        """Test that pagination is handled with bs4 in List function"""
-        import inspect
+def test_search_routes_empty_and_keyword(monkeypatch):
+    searches = []
+    list_calls = []
 
-        source = inspect.getsource(fullporner.List)
+    monkeypatch.setattr(fullporner.site, "search_dir", lambda url, mode: searches.append((url, mode)))
+    monkeypatch.setattr(fullporner, "List", lambda url: list_calls.append(url))
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert ".pagination" in source
-        assert ".current" in source
+    fullporner.Search("https://fullporner.org/?s=")
+    fullporner.Search("https://fullporner.org/?s=", keyword="red shoes")
 
-    def test_pagination_handling_in_actors(self):
-        """Test that pagination is handled with bs4 in Actors function"""
-        import inspect
+    assert searches == [("https://fullporner.org/?s=", "Search")]
+    assert list_calls == ["https://fullporner.org/?s=red+shoes"]
 
-        source = inspect.getsource(fullporner.Actors)
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert ".pagination" in source
-        assert ".current" in source
+def test_playvid_uses_site_link_playback(monkeypatch):
+    captured = {}
 
-    def test_image_extraction_logic(self):
-        """Test that image extraction logic is preserved"""
-        import inspect
+    class _VP:
+        def play_from_site_link(self, source_url, page_url):
+            captured["source_url"] = source_url
+            captured["page_url"] = page_url
 
-        source_list = inspect.getsource(fullporner.List)
-        source_categories = inspect.getsource(fullporner.Categories)
-        source_actors = inspect.getsource(fullporner.Actors)
+    monkeypatch.setattr(fullporner.utils, "VideoPlayer", lambda *_a, **_k: _VP())
 
-        # Should handle image extraction
-        assert "poster" in source_list
-        assert "src" in source_list
-        assert "src" in source_categories
-        assert "src" in source_actors
+    fullporner.Playvid("https://fullporner.org/v/one/", "One")
 
-    def test_name_cleaning_logic(self):
-        """Test that name cleaning logic is preserved"""
-        import inspect
-
-        source_list = inspect.getsource(fullporner.List)
-        source_categories = inspect.getsource(fullporner.Categories)
-        source_actors = inspect.getsource(fullporner.Actors)
-
-        # Should clean names
-        assert "utils.cleantext" in source_list
-        assert "utils.cleantext" in source_categories
-        assert "utils.cleantext" in source_actors
-
-    def test_duration_extraction(self):
-        """Test that duration extraction logic is preserved"""
-        import inspect
-
-        source = inspect.getsource(fullporner.List)
-
-        # Should handle duration extraction
-        assert "duration_tag" in source
-        assert 'select_one("i")' in source
-
-    def test_category_title_extraction(self):
-        """Test that category title extraction is implemented"""
-        import inspect
-
-        source = inspect.getsource(fullporner.Categories)
-
-        # Should extract category titles
-        assert ".cat-title" in source
-        assert "title_tag" in source
-
-    def test_search_keyword_handling(self):
-        """Test that search function handles keywords properly"""
-        import inspect
-
-        source = inspect.getsource(fullporner.Search)
-
-        # Should handle keyword replacement
-        assert 'replace(" ", "+")' in source
-
-    def test_category_filter_parameter(self):
-        """Test that categories function adds filter parameter"""
-        import inspect
-
-        source = inspect.getsource(fullporner.Categories)
-
-        # Should add filter parameter to URLs
-        assert "&filter=latest" in source
-
-    def test_sorting_logic(self):
-        """Test that categories and actors are sorted alphabetically"""
-        import inspect
-
-        source_categories = inspect.getsource(fullporner.Categories)
-        source_actors = inspect.getsource(fullporner.Actors)
-
-        # Should sort by name
-        assert "sorted(" in source_categories
-        assert "sorted(" in source_actors
-        assert "key=lambda x: x[0].lower()" in source_categories
-        assert "key=lambda x: x[0].lower()" in source_actors
-
-    def test_playvid_implementation(self):
-        """Test that Playvid uses site link playback"""
-        import inspect
-
-        source = inspect.getsource(fullporner.Playvid)
-
-        # Should use site link playback
-        assert "play_from_site_link" in source
-
-    def test_main_menu_structure(self):
-        """Test that Main function creates expected menu structure"""
-        import inspect
-
-        source = inspect.getsource(fullporner.Main)
-
-        # Should have expected menu items
-        assert "Categories" in source
-        assert "Pornstars" in source
-        assert "Channels" in source
-        assert "Search" in source
+    assert captured == {
+        "source_url": "https://fullporner.org/v/one/",
+        "page_url": "https://fullporner.org/v/one/",
+    }

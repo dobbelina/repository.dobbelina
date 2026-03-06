@@ -1,297 +1,216 @@
-"""
-Test module for freshporno site
-"""
+"""Behavior tests for freshporno site module."""
 
-import pytest
 from resources.lib.sites import freshporno
 
 
-class TestFreshPorno:
-    """Test cases for freshporno site functionality"""
+def test_main_adds_menu_entries_and_lists_home(monkeypatch):
+    dirs = []
+    list_calls = []
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert freshporno.site.name == "freshporno"
-        assert "[COLOR hotpink]FreshPorno[/COLOR]" in freshporno.site.title
-        assert freshporno.site.url == "https://freshporno.org/"
-        assert "freshporno.png" in freshporno.site.image
-
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        assert hasattr(freshporno, "Main")
-        assert callable(freshporno.Main)
-
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(freshporno, "List")
-        assert callable(freshporno.List)
-
-    def test_playvid_function_structure(self):
-        """Test that Playvid function exists and has expected structure"""
-        assert hasattr(freshporno, "Playvid")
-        assert callable(freshporno.Playvid)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(freshporno, "Search")
-        assert callable(freshporno.Search)
-
-    def test_tags_function_structure(self):
-        """Test that Tags function exists and has expected structure"""
-        assert hasattr(freshporno, "Tags")
-        assert callable(freshporno.Tags)
-
-    def test_channels_function_structure(self):
-        """Test that Channels function exists and has expected structure"""
-        assert hasattr(freshporno, "Channels")
-        assert callable(freshporno.Channels)
-
-    def test_models_function_structure(self):
-        """Test that Models function exists and has expected structure"""
-        assert hasattr(freshporno, "Models")
-        assert callable(freshporno.Models)
-
-    def test_lookupinfo_function_structure(self):
-        """Test that Lookupinfo function exists and has expected structure"""
-        assert hasattr(freshporno, "Lookupinfo")
-        assert callable(freshporno.Lookupinfo)
-
-    @pytest.mark.parametrize(
-        "function_name",
-        [
-            "Main",
-            "List",
-            "Playvid",
-            "Search",
-            "Tags",
-            "Channels",
-            "Models",
-            "Lookupinfo",
-        ],
+    monkeypatch.setattr(
+        freshporno.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(freshporno, function_name)
-        assert callable(func)
+    monkeypatch.setattr(freshporno, "List", lambda url: list_calls.append(url))
+    monkeypatch.setattr(freshporno.utils, "eod", lambda: None)
+
+    freshporno.Main()
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup or soup_videos_list"""
-        import inspect
-
-        source = inspect.getsource(freshporno.List)
-
-        # Should use BeautifulSoup or helper
-        assert "utils.parse_html" in source
-        assert "soup.select" in source or "utils.soup_videos_list" in source
-
-        # Should not use old regex patterns
-        assert "re.compile" not in source
-        assert "thumbs-inner" in source  # It's okay to have it in the spec now
-
-    def test_bs4_usage_in_tags_function(self):
-        """Test that Tags function uses BeautifulSoup"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Tags)
-
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
-        assert "fa-tag" in source
-
-    def test_bs4_usage_in_channels_function(self):
-        """Test that Channels function uses BeautifulSoup"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Channels)
-
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select_one" in source
-        assert "content-wrapper" in source
-
-    def test_bs4_usage_in_models_function(self):
-        """Test that Models function uses BeautifulSoup"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Models)
-
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select_one" in source
-        assert "content-wrapper" in source
-
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling (via helper)"""
-        import inspect
-
-        source = inspect.getsource(freshporno.List)
-
-        # Should have try-except blocks or use helper which has them
-        assert "try:" in source or "utils.soup_videos_list" in source
-
-    def test_error_handling_in_tags_function(self):
-        """Test that Tags function has proper error handling"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Tags)
-
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
-
-    def test_error_handling_in_channels_function(self):
-        """Test that Channels function has proper error handling"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Channels)
-
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
-
-    def test_error_handling_in_models_function(self):
-        """Test that Models function has proper error handling"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Models)
-
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
-
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods or helper"""
-        import inspect
-
-        source = inspect.getsource(freshporno.List)
-
-        # Should use bs4 selectors or helper
-        assert ".thumbs-inner" in source
-        assert "select_one" in source or "utils.soup_videos_list" in source
-
-    def test_pagination_handling_in_list(self):
-        """Test that pagination is handled with bs4 or helper"""
-        import inspect
-
-        source = inspect.getsource(freshporno.List)
-
-        # Should use bs4 for pagination or helper
-        assert "soup.select_one" in source or "utils.soup_videos_list" in source
-        assert "a.next" in source
-
-    def test_pagination_handling_in_models(self):
-        """Test that pagination is handled with bs4 in Models function"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Models)
-
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert "a.next" in source
-
-    def test_context_menu_structure(self):
-        """Test that context menu is properly structured"""
-        import inspect
-
-        source = inspect.getsource(freshporno.List)
-
-        # Should have context menu items
-        assert "contextm=" in source
-        assert "Lookupinfo" in source
-
-    def test_kvs_decoder_usage(self):
-        """Test that Playvid function uses play_from_kt_player"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Playvid)
-
-        # Should use the centralized kt_player handler
-        assert "play_from_kt_player" in source
-        assert "kt_player('kt_player'" in source
-
-    def test_video_source_patterns(self):
-        """Test that Playvid function calls play_from_kt_player"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Playvid)
-
-        # Should delegate to play_from_kt_player for kt_player pages
-        assert "play_from_kt_player" in source
-
-    def test_quality_selection_logic(self):
-        """Test that Playvid uses play_from_kt_player which handles quality internally"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Playvid)
-
-        # play_from_kt_player handles quality selection internally
-        assert "play_from_kt_player" in source
-
-    def test_fallback_download_button(self):
-        """Test that Playvid calls play_from_kt_player when kt_player detected"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Playvid)
-
-        # Should trigger on kt_player detection
-        assert "kt_player('kt_player'" in source
-        assert "play_from_kt_player" in source
-
-    def test_tag_icon_detection(self):
-        """Test that tag function properly detects tag icons"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Tags)
-
-        # Should look for tag icons
-        assert "i.fa-tag" in source
-
-    def test_channel_model_count_extraction(self):
-        """Test that channels and models functions extract video counts"""
-        import inspect
-
-        source_channels = inspect.getsource(freshporno.Channels)
-        source_models = inspect.getsource(freshporno.Models)
-
-        # Should extract video counts
-        assert "video_match" in source_channels
-        assert "video_match" in source_models
-        assert r"(\d+)" in source_channels
-        assert r"(\d+)" in source_models
-
-    def test_image_extraction_logic(self):
-        """Test that image extraction logic is preserved"""
-        import inspect
-
-        source_channels = inspect.getsource(freshporno.Channels)
-        source_models = inspect.getsource(freshporno.Models)
-
-        # Should handle image extraction
-        assert "data-original" in source_channels
-        assert "data-original" in source_models
-        assert "no image" in source_channels
-        assert "no image" in source_models
-
-    def test_name_formatting(self):
-        """Test that names are properly formatted with video counts"""
-        import inspect
-
-        source_channels = inspect.getsource(freshporno.Channels)
-        source_models = inspect.getsource(freshporno.Models)
-
-        # Should format names with video counts
-        assert ".format(" in source_channels
-        assert ".format(" in source_models
-
-    def test_search_keyword_handling(self):
-        """Test that search function handles keywords properly"""
-        import inspect
-
-        source = inspect.getsource(freshporno.Search)
-
-        # Should handle keyword replacement
-        assert 'replace(" ", "-")' in source
+    assert len(dirs) == 4
+    assert any(d["mode"] == "Tags" for d in dirs)
+    assert any(d["mode"] == "Channels" for d in dirs)
+    assert any(d["mode"] == "Models" for d in dirs)
+    assert any(d["mode"] == "Search" for d in dirs)
+    assert list_calls == ["https://freshporno.org/"]
+
+
+def test_list_calls_soup_videos_list_with_spec_and_context_builder(monkeypatch):
+    captured = {}
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: "<html></html>")
+    monkeypatch.setattr(
+        freshporno.utils,
+        "parse_html",
+        lambda html: type("S", (), {"dummy": True})(),
+    )
+    monkeypatch.setattr(freshporno.utils, "eod", lambda: None)
+
+    def _fake_soup_videos_list(site_obj, soup, spec, contextm=None):
+        captured["site"] = site_obj
+        captured["soup"] = soup
+        captured["spec"] = spec
+        captured["contextm"] = contextm
+
+    monkeypatch.setattr(freshporno.utils, "soup_videos_list", _fake_soup_videos_list)
+
+    freshporno.List("https://freshporno.org/")
+
+    assert captured["site"] is freshporno.site
+    assert captured["spec"]["items"] == ".thumbs-inner"
+    assert captured["spec"]["pagination"]["selector"] == "a.next[href]"
+    cm = captured["contextm"]("https://freshporno.org/v/1", "Title")
+    assert "Lookup info" in cm[0][0]
+    assert "mode=freshporno.Lookupinfo" in cm[0][1]
+
+
+def test_search_routes_keyword_and_empty(monkeypatch):
+    searches = []
+    list_calls = []
+
+    monkeypatch.setattr(
+        freshporno.site, "search_dir", lambda url, mode: searches.append((url, mode))
+    )
+    monkeypatch.setattr(freshporno, "List", lambda url: list_calls.append(url))
+
+    freshporno.Search("https://freshporno.org/search/")
+    freshporno.Search("https://freshporno.org/search/", keyword="test phrase")
+
+    assert searches == [("https://freshporno.org/search/", "Search")]
+    assert list_calls == ["https://freshporno.org/search/test-phrase"]
+
+
+def test_playvid_uses_kt_player_path(monkeypatch):
+    class _VP:
+        def __init__(self):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.kt = None
+
+        def play_from_kt_player(self, html, url=None):
+            self.kt = (html, url)
+
+    vp = _VP()
+    monkeypatch.setattr(
+        freshporno.utils, "getHtml", lambda *a, **k: "kt_player('kt_player' ... )"
+    )
+    monkeypatch.setattr(freshporno.utils, "VideoPlayer", lambda *a, **k: vp)
+
+    freshporno.Playvid("https://freshporno.org/video/1", "name")
+    assert vp.kt == ("kt_player('kt_player' ... )", "https://freshporno.org/video/1")
+
+
+def test_tags_parses_only_tag_items(monkeypatch):
+    html = """
+    <a href="/tags/tag-one/"><i class="fa-tag"></i> icon Tag One </a>
+    <a href="/tags/tag-two/">Tag Two without icon</a>
+    <a href="/tags/tag-three/"><i class="fa-tag"></i>Tag Three</a>
+    """
+    dirs = []
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(freshporno.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        freshporno.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+
+    freshporno.Tags("https://freshporno.org/tags/")
+
+    assert len(dirs) == 2
+    assert all(d["mode"] == "List" for d in dirs)
+    assert any("tag-one" in d["url"] for d in dirs)
+    assert any("Tag Three" in d["name"] for d in dirs)
+
+
+def test_channels_parses_count_and_image(monkeypatch):
+    html = """
+    <div class="content-wrapper">
+      <div><a href="https://freshporno.org/channels/ch-1/" title="Channel One">123 videos</a>
+        <img data-original="https://img/ch1.jpg"/>
+      </div>
+      <div class="no image"><a href="https://freshporno.org/channels/ch-2/" title="Channel Two">25 videos</a></div>
+    </div>
+    """
+    dirs = []
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(freshporno.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        freshporno.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon}
+        ),
+    )
+
+    freshporno.Channels("https://freshporno.org/channels/")
+
+    assert len(dirs) == 2
+    assert dirs[0]["mode"] == "List"
+    assert " - 123" in dirs[0]["name"]
+    assert dirs[0]["icon"] == "https://img/ch1.jpg"
+    assert dirs[1]["icon"] == ""
+
+
+def test_models_parses_and_adds_next_page(monkeypatch):
+    html = """
+    <div class="content-wrapper">
+      <div><a href="https://freshporno.org/models/m-1/" title="Model One">88 videos</a>
+        <img data-original="https://img/m1.jpg"/>
+      </div>
+    </div>
+    <a class="next" href="/models/page/3/"></a>
+    """
+    dirs = []
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(freshporno.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        freshporno.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon}
+        ),
+    )
+
+    freshporno.Models("https://freshporno.org/models/")
+
+    assert any(d["mode"] == "List" and "Model One - 88" in d["name"] for d in dirs)
+    assert any(
+        d["mode"] == "Models"
+        and "Next Page (3)" == d["name"]
+        and d["url"].endswith("/models/page/3/")
+        for d in dirs
+    )
+
+
+def test_lookupinfo_selects_and_updates_container(monkeypatch):
+    html = """
+    <a href="/channels/ch-one/" title="Channel One">Channel One</a>
+    <a href="/tags/tag-one/"><i class="fa-tag"></i>Tag One</a>
+    <a href="/models/model-one/" title="Model One">Model One</a>
+    """
+    commands = []
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(
+        freshporno.utils,
+        "selector",
+        lambda title, choices, show_on_one=True: choices["Tag - Tag One"],
+    )
+    monkeypatch.setattr(
+        freshporno.utils.xbmc, "executebuiltin", lambda cmd: commands.append(cmd)
+    )
+
+    freshporno.Lookupinfo("https://freshporno.org/video/1")
+
+    assert commands and commands[0].startswith("Container.Update(")
+    assert "mode=freshporno.List" in commands[0]
+    assert "tags%2Ftag-one%2F" in commands[0]
+
+
+def test_lookupinfo_notifies_when_no_info(monkeypatch):
+    notices = []
+
+    monkeypatch.setattr(freshporno.utils, "getHtml", lambda *a, **k: "<html></html>")
+    monkeypatch.setattr(
+        freshporno.utils, "notify", lambda *a, **k: notices.append((a, k))
+    )
+
+    freshporno.Lookupinfo("https://freshporno.org/video/2")
+    assert notices and notices[0][0][1] == "No info found"

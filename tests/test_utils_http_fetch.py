@@ -39,7 +39,9 @@ def test_posthtml_returns_decoded_response(monkeypatch):
         },
     )
 
-    monkeypatch.setattr(utils.urllib_request, "urlopen", lambda req: response)
+    monkeypatch.setattr(
+        utils.urllib_request, "urlopen", lambda req, timeout=30: response
+    )
 
     result = utils._postHtml("https://example.com", form_data={"a": "b"})
 
@@ -56,7 +58,7 @@ def test_posthtml_raises_on_404(monkeypatch):
         io.BytesIO(error_body),
     )
 
-    def _raise_error(_req):
+    def _raise_error(_req, timeout=30):
         raise error
 
     monkeypatch.setattr(utils.urllib_request, "urlopen", _raise_error)

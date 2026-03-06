@@ -47,8 +47,19 @@ def test_list_parses_video_items(monkeypatch):
     assert "/page/2/" in dirs[0]["url"]
 
 
-def test_playvid_implementation():
-    """Test that Playvid uses site link playback"""
-    import inspect
-    source = inspect.getsource(porndish.Playvid)
-    assert "play_from_site_link" in source
+def test_playvid_implementation(monkeypatch):
+    """Test that Playvid routes through site-link playback."""
+    captured = {}
+
+    class _VP:
+        def play_from_site_link(self, source_url, page_url):
+            captured["source_url"] = source_url
+            captured["page_url"] = page_url
+
+    monkeypatch.setattr(porndish.utils, "VideoPlayer", lambda *_a, **_k: _VP())
+    porndish.Playvid("https://www.porndish.com/video-one/", "Video One")
+
+    assert captured == {
+        "source_url": "https://www.porndish.com/video-one/",
+        "page_url": "https://www.porndish.com/video-one/",
+    }

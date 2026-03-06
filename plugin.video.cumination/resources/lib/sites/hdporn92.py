@@ -20,6 +20,7 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.http_timeouts import HTTP_TIMEOUT_CONNECT
 import requests
 import json
 
@@ -131,7 +132,13 @@ def Playvid(url, name, download=None):
     if match:
         link = match[0]
         if vp.resolveurl.HostedMediaFile(link):
-            link = requests.head(link, allow_redirects=True, verify=False).url
+            try:
+                response = requests.head(
+                    link, allow_redirects=True, timeout=HTTP_TIMEOUT_CONNECT
+                )
+                link = response.url or link
+            except requests.RequestException as e:
+                utils.kodilog("hdporn92: redirect probe failed: {}".format(str(e)))
             vp.play_from_link_to_resolve(link)
             return
         else:

@@ -1,302 +1,234 @@
-"""
-Test module for porn4k site
-"""
+"""Behavior tests for porn4k site module."""
 
-import pytest
 from resources.lib.sites import porn4k
 
 
-class TestPorn4K:
-    """Test cases for porn4k site functionality"""
+def test_main_builds_menu_and_lists_first_page(monkeypatch):
+    dirs = []
+    list_calls = []
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert porn4k.site.name == "porn4k"
-        assert "[COLOR hotpink]Porn4K[/COLOR]" in porn4k.site.title
-        assert porn4k.site.url == "https://porn4k.to/"
-        assert "porn4k.png" in porn4k.site.image
-
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        assert hasattr(porn4k, "Main")
-        assert callable(porn4k.Main)
-
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(porn4k, "List")
-        assert callable(porn4k.List)
-
-    def test_playvid_function_structure(self):
-        """Test that Playvid function exists and has expected structure"""
-        assert hasattr(porn4k, "Playvid")
-        assert callable(porn4k.Playvid)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(porn4k, "Search")
-        assert callable(porn4k.Search)
-
-    def test_categories_function_structure(self):
-        """Test that Categories function exists and has expected structure"""
-        assert hasattr(porn4k, "Categories")
-        assert callable(porn4k.Categories)
-
-    def test_everything_function_structure(self):
-        """Test that Everything function exists and has expected structure"""
-        assert hasattr(porn4k, "Everything")
-        assert callable(porn4k.Everything)
-
-    def test_lookupinfo_function_structure(self):
-        """Test that Lookupinfo function exists and has expected structure"""
-        assert hasattr(porn4k, "Lookupinfo")
-        assert callable(porn4k.Lookupinfo)
-
-    @pytest.mark.parametrize(
-        "function_name",
-        ["Main", "List", "Playvid", "Search", "Categories", "Everything", "Lookupinfo"],
+    monkeypatch.setattr(
+        porn4k.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(porn4k, function_name)
-        assert callable(func)
+    monkeypatch.setattr(porn4k, "List", lambda url: list_calls.append(url))
+    monkeypatch.setattr(porn4k.utils, "eod", lambda: None)
+
+    porn4k.Main()
+
+    assert len(dirs) == 3
+    assert any(d["mode"] == "Everything" for d in dirs)
+    assert any(d["mode"] == "Categories" for d in dirs)
+    assert any(d["mode"] == "Search" for d in dirs)
+    assert list_calls == ["https://porn4k.to/page/1/"]
+
+
+def test_list_parses_articles_and_adds_next_page(monkeypatch):
+    html = """
+    <article>
+      <a href="https://porn4k.to/v/1/" title="One"></a>
+      <img src="https://img/1.jpg"/>
+    </article>
+    <article>
+      <a href="https://porn4k.to/v/2/" title="Two"></a>
+      <img src="https://img/2.jpg"/>
+    </article>
+    <a rel="next" href="https://porn4k.to/page/3/"></a>
+    """
+    downloads = []
+    dirs = []
+
+    monkeypatch.setattr(porn4k.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(porn4k.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        porn4k.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", contextm=None, **kwargs: downloads.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon, "contextm": contextm}
+        ),
+    )
+    monkeypatch.setattr(
+        porn4k.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+
+    porn4k.List("https://porn4k.to/page/1/")
+
+    assert len(downloads) == 2
+    assert downloads[0]["url"] == "https://porn4k.to/v/1/"
+    assert downloads[0]["contextm"] and "Lookup info" in downloads[0]["contextm"][0][0]
+    assert any(d["mode"] == "List" and "Next Page (3)" == d["name"] for d in dirs)
+
+
+def test_search_routes_empty_and_keyword(monkeypatch):
+    searches = []
+    list_calls = []
+
+    monkeypatch.setattr(porn4k.site, "search_dir", lambda url, mode: searches.append((url, mode)))
+    monkeypatch.setattr(porn4k, "List", lambda url: list_calls.append(url))
+
+    porn4k.Search("https://porn4k.to/?s=")
+    porn4k.Search("https://porn4k.to/?s=", keyword="hello world")
+
+    assert searches == [("https://porn4k.to/?s=", "Search")]
+    assert list_calls == ["https://porn4k.to/?s=hello+world"]
+
+
+def test_categories_parses_cat_items(monkeypatch):
+    html = """
+    <li class="cat-item"><a href="https://porn4k.to/cat/a/"> A Cat </a></li>
+    <li class="cat-item"><a href="https://porn4k.to/cat/b/">B Cat</a></li>
+    """
+    dirs = []
+
+    monkeypatch.setattr(porn4k.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(porn4k.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        porn4k.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+
+    porn4k.Categories("https://porn4k.to/")
+    assert len(dirs) == 2
+    assert all(d["mode"] == "List" for d in dirs)
+
+
+def test_everything_parses_links(monkeypatch):
+    html = """
+    <li><a href="https://porn4k.to/v/10/"> Movie One </a></li>
+    <li><a href="https://porn4k.to/v/11/">Movie Two</a></li>
+    """
+    downloads = []
+
+    monkeypatch.setattr(porn4k.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(porn4k.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        porn4k.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", **kwargs: downloads.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup instead of regex"""
-        import inspect
+    porn4k.Everything("https://porn4k.to/filme-von-a-z/")
+    assert len(downloads) == 2
+    assert all(d["mode"] == "Playvid" for d in downloads)
 
-        source = inspect.getsource(porn4k.List)
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+def test_playvid_selects_and_plays_resolved_link(monkeypatch):
+    html = """
+    <a href="https://host/one" target="_blank" rel="nofollow">one</a>
+    <a href="https://host/two" target="_blank" rel="nofollow">two</a>
+    """
 
-        # Should not use old regex patterns
-        assert "re.compile" not in source
-        assert "findall" not in source
+    class _Resolved:
+        def __init__(self, ok):
+            self._ok = ok
 
-    def test_bs4_usage_in_categories_function(self):
-        """Test that Categories function uses BeautifulSoup"""
-        import inspect
+        def valid_url(self):
+            return self._ok
 
-        source = inspect.getsource(porn4k.Categories)
+    class _Resolver:
+        @staticmethod
+        def HostedMediaFile(link):
+            return _Resolved(link.endswith("/one"))
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    class _Progress:
+        def update(self, *_a, **_k):
+            return None
 
-    def test_bs4_usage_in_everything_function(self):
-        """Test that Everything function uses BeautifulSoup"""
-        import inspect
+        def close(self):
+            return None
 
-        source = inspect.getsource(porn4k.Everything)
+    class _VP:
+        def __init__(self):
+            self.progress = _Progress()
+            self.resolveurl = _Resolver()
+            self.played = None
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+        @staticmethod
+        def bypass_hosters_single(link):
+            return link.endswith("/two")
 
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling"""
-        import inspect
+        def play_from_link_to_resolve(self, link):
+            self.played = link
 
-        source = inspect.getsource(porn4k.List)
+    vp = _VP()
+    monkeypatch.setattr(porn4k.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(porn4k.utils, "VideoPlayer", lambda *a, **k: vp)
+    monkeypatch.setattr(porn4k.utils, "selector", lambda *_a, **_k: "https://host/one")
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    porn4k.Playvid("https://porn4k.to/v/1/", "name")
+    assert vp.played == "https://host/one"
 
-    def test_error_handling_in_categories_function(self):
-        """Test that Categories function has proper error handling"""
-        import inspect
 
-        source = inspect.getsource(porn4k.Categories)
+def test_playvid_notifies_when_no_playable_links(monkeypatch):
+    html = '<a href="https://host/one" target="_blank" rel="nofollow">one</a>'
+    notices = []
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    class _Resolved:
+        @staticmethod
+        def valid_url():
+            return False
 
-    def test_error_handling_in_everything_function(self):
-        """Test that Everything function has proper error handling"""
-        import inspect
+    class _Resolver:
+        @staticmethod
+        def HostedMediaFile(_link):
+            return _Resolved()
 
-        source = inspect.getsource(porn4k.Everything)
+    class _Progress:
+        def update(self, *_a, **_k):
+            return None
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+        def close(self):
+            return None
 
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods"""
-        import inspect
+    class _VP:
+        def __init__(self):
+            self.progress = _Progress()
+            self.resolveurl = _Resolver()
 
-        source = inspect.getsource(porn4k.List)
+        @staticmethod
+        def bypass_hosters_single(_link):
+            return False
 
-        # Should use bs4 selectors
-        assert "article" in source
-        assert "select_one" in source
-        assert "safe_get_attr" in source
+        def play_from_link_to_resolve(self, _link):
+            raise AssertionError("should not play")
 
-    def test_pagination_handling(self):
-        """Test that pagination is handled with bs4"""
-        import inspect
+    monkeypatch.setattr(porn4k.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(porn4k.utils, "VideoPlayer", lambda *a, **k: _VP())
+    monkeypatch.setattr(porn4k.utils, "notify", lambda *a, **k: notices.append((a, k)))
 
-        source = inspect.getsource(porn4k.List)
+    porn4k.Playvid("https://porn4k.to/v/2/", "name")
+    assert notices and notices[0][0][1] == "No playable links found"
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert 'rel="next"' in source
 
-    def test_context_menu_structure(self):
-        """Test that context menu is properly structured"""
-        import inspect
+def test_lookupinfo_uses_expected_lookup_list(monkeypatch):
+    captured = {}
 
-        source = inspect.getsource(porn4k.List)
+    class _LookupInfo:
+        def __init__(self, base, url, mode, lookup_list):
+            captured["base"] = base
+            captured["url"] = url
+            captured["mode"] = mode
+            captured["lookup_list"] = lookup_list
 
-        # Should have context menu items
-        assert "contextm=" in source
-        assert "Lookupinfo" in source
+        def getinfo(self):
+            captured["called"] = True
 
-    def test_image_extraction_logic(self):
-        """Test that image extraction logic is preserved"""
-        import inspect
+    monkeypatch.setattr(porn4k.utils, "LookupInfo", _LookupInfo)
+    porn4k.Lookupinfo("https://porn4k.to/v/3/")
 
-        source = inspect.getsource(porn4k.List)
-
-        # Should handle image extraction
-        assert "src" in source
-
-    def test_name_cleaning_logic(self):
-        """Test that name cleaning logic is preserved"""
-        import inspect
-
-        source_list = inspect.getsource(porn4k.List)
-        source_categories = inspect.getsource(porn4k.Categories)
-        source_everything = inspect.getsource(porn4k.Everything)
-
-        # Should clean names
-        assert "utils.cleantext" in source_list
-        assert "utils.cleantext" in source_categories
-        assert "utils.cleantext" in source_everything
-
-    def test_search_keyword_handling(self):
-        """Test that search function handles keywords properly"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Search)
-
-        # Should handle keyword replacement
-        assert 'replace(" ", "+")' in source
-
-    def test_category_item_selection(self):
-        """Test that category items are selected properly"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Categories)
-
-        # Should select category items
-        assert "li.cat-item" in source
-
-    def test_everything_list_selection(self):
-        """Test that everything function selects list items"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Everything)
-
-        # Should select list items
-        assert 'soup.select("li")' in source
-
-    def test_playvid_regex_usage(self):
-        """Test that Playvid function still uses regex for source extraction"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Playvid)
-
-        # Should use regex for source extraction
-        assert "re.compile" in source
-        assert 'target="_blank"' in source
-        assert 'rel="nofollow"' in source
-
-    def test_playvid_progress_update(self):
-        """Test that Playvid function shows progress"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Playvid)
-
-        # Should update progress
-        assert "progress.update" in source
-        assert "Loading video page" in source
-
-    def test_playvid_link_processing(self):
-        """Test that Playvid function processes links properly"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Playvid)
-
-        # Should process links
-        assert "bypass_hosters_single" in source
-        assert "HostedMediaFile" in source
-        assert "valid_url" in source
-
-    def test_playvid_selector_usage(self):
-        """Test that Playvid function uses selector for link selection"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Playvid)
-
-        # Should use selector
-        assert "utils.selector" in source
-        assert "Select link" in source
-
-    def test_playvid_error_handling(self):
-        """Test that Playvid function handles errors"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Playvid)
-
-        # Should handle no playable links
-        assert "No playable links found" in source
-
-    def test_lookupinfo_patterns(self):
-        """Test that Lookupinfo has proper regex patterns"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Lookupinfo)
-
-        # Should have lookup patterns
-        assert "Cat" in source
-        assert "Tag" in source
-        assert 'rel="category tag' in source
-        assert 'rel="tag' in source
-
-    def test_main_menu_structure(self):
-        """Test that Main function creates expected menu structure"""
-        import inspect
-
-        source = inspect.getsource(porn4k.Main)
-
-        # Should have expected menu items
-        assert "All titles" in source
-        assert "Categories" in source
-        assert "Search" in source
-        assert "filme-von-a-z" in source
-
-    def test_module_name_usage(self):
-        """Test that module name is used in context menu"""
-        import inspect
-
-        source = inspect.getsource(porn4k.List)
-
-        # Should use module name
-        assert "site.module_name" in source
-
-    def test_context_url_construction(self):
-        """Test that context URL is constructed properly"""
-        import inspect
-
-        source = inspect.getsource(porn4k.List)
-
-        # Should construct context URL
-        assert "contexturl" in source
-        assert "urllib_parse.quote_plus" in source
+    assert captured["base"] == "https://porn4k.to/"
+    assert captured["mode"] == "porn4k.List"
+    assert captured["called"] is True
+    assert [x[0] for x in captured["lookup_list"]] == ["Cat", "Tag"]

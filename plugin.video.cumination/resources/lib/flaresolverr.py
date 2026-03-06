@@ -1,5 +1,7 @@
 import requests
 import time
+from kodi_six import xbmc
+from resources.lib.http_timeouts import HTTP_TIMEOUT_CONNECT, HTTP_TIMEOUT_SHORT
 
 
 class FlareSolverrManager:
@@ -7,6 +9,8 @@ class FlareSolverrManager:
         self.session = requests.session()
         self.flaresolverr_url = flaresolverr_url or "http://127.0.0.1:8191/v1"
         self.session_id = session_id or "cumination_session_{}".format(int(time.time()))
+        self.flaresolverr_session = self.session_id
+        self._destroyed = False
 
         # Only clear old cumination sessions to avoid conflicts with other addons
         self.clear_old_sessions()
@@ -15,7 +19,9 @@ class FlareSolverrManager:
         session_create_request = {"cmd": "sessions.create", "session": self.session_id}
         try:
             session_create_response = requests.post(
-                self.flaresolverr_url, json=session_create_request, timeout=10
+                self.flaresolverr_url,
+                json=session_create_request,
+                timeout=HTTP_TIMEOUT_CONNECT,
             )
             response_data = session_create_response.json()
 
@@ -35,11 +41,34 @@ class FlareSolverrManager:
             )
 
     def __del__(self):
-        session_destroy_request = {
-            "cmd": "sessions.destroy",
-            "session": self.flaresolverr_session,
-        }
-        requests.post(self.flaresolverr_url, json=session_destroy_request)
+        # Avoid network I/O in destructor paths; Kodi shutdown/GC should never block here.
+        self.close(destroy_session=False)
+
+    def close(self, destroy_session=False):
+        """Close local resources and optionally destroy the remote FlareSolverr session."""
+        try:
+            if self.session:
+                self.session.close()
+        except Exception:
+            pass
+
+        if not destroy_session or self._destroyed:
+            return
+
+        try:
+            session_destroy_request = {
+                "cmd": "sessions.destroy",
+                "session": self.flaresolverr_session,
+            }
+            requests.post(
+                self.flaresolverr_url,
+                json=session_destroy_request,
+                timeout=HTTP_TIMEOUT_SHORT,
+            )
+            self._destroyed = True
+        except Exception:
+            # Session cleanup failures are non-fatal.
+            pass
 
     def clear_old_sessions(self):
         """Clear only old cumination sessions to avoid conflicts with other addons"""
@@ -47,7 +76,7 @@ class FlareSolverrManager:
             # Get session list
             session_list_request = {"cmd": "sessions.list"}
             session_list_response = requests.post(
-                self.flaresolverr_url, json=session_list_request, timeout=5
+                self.flaresolverr_url, json=session_list_request, timeout=HTTP_TIMEOUT_SHORT
             )
 
             sessions = session_list_response.json().get("sessions", [])
@@ -67,7 +96,7 @@ class FlareSolverrManager:
                             requests.post(
                                 self.flaresolverr_url,
                                 json=session_destroy_request,
-                                timeout=5,
+                                timeout=HTTP_TIMEOUT_SHORT,
                             )
         except Exception as e:
             from kodi_six import xbmc
@@ -156,26 +185,29 @@ class FlareSolverrManager:
                         request_timeout, try_count, tries
                     )
                 )
-                print(str(last_error))
+                xbmc.log("@@@@Cumination: " + str(last_error), xbmc.LOGDEBUG)
             except requests.exceptions.ConnectionError as e:
                 last_error = RuntimeError(
                     "Cannot connect to FlareSolverr at {} (try {}/{}): {}".format(
                         self.flaresolverr_url, try_count, tries, str(e)
                     )
                 )
-                print(str(last_error))
+                xbmc.log("@@@@Cumination: " + str(last_error), xbmc.LOGDEBUG)
             except Exception as error:
                 last_error = RuntimeError(
                     "FlareSolverr error (try {}/{}): {}".format(
                         try_count, tries, str(error)
                     )
                 )
-                print(str(last_error))
+                xbmc.log("@@@@Cumination: " + str(last_error), xbmc.LOGDEBUG)
 
             # Wait a bit before retrying (exponential backoff)
             if try_count < tries:
                 wait_time = try_count * 2
-                print("Waiting {}s before retry...".format(wait_time))
+                xbmc.log(
+                    "@@@@Cumination: FlareSolverr retrying in {}s".format(wait_time),
+                    xbmc.LOGDEBUG,
+                )
                 time.sleep(wait_time)
 
         if not flaresolverr_response and last_error:

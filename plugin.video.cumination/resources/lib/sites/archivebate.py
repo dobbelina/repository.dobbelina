@@ -24,6 +24,7 @@ import requests
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.http_timeouts import HTTP_TIMEOUT_MEDIUM
 
 site = AdultSite(
     "archivebate",
@@ -44,7 +45,7 @@ def _livewire_list(url):
     session = requests.Session()
     session.headers.update({"User-Agent": utils.USER_AGENT})
 
-    resp = session.get(url)
+    resp = session.get(url, timeout=HTTP_TIMEOUT_MEDIUM)
     # Derive base from the final URL after any redirect (.cc ↔ .com)
     final_url = resp.url
     base = final_url.split("//", 1)[0] + "//" + final_url.split("//", 1)[1].split("/")[0]
@@ -80,6 +81,7 @@ def _livewire_list(url):
             "Accept": "application/json",
             "Referer": final_url,
         },
+        timeout=HTTP_TIMEOUT_MEDIUM,
     )
     data = lw_resp.json()
     fragment = data.get("effects", {}).get("html")

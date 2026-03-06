@@ -20,6 +20,7 @@ import json
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.http_timeouts import HTTP_TIMEOUT_DEFAULT
 from six.moves import urllib_parse
 
 site = AdultSite(
@@ -181,7 +182,9 @@ def List(url, section="all"):
 @site.register()
 def Genres(url):
     try:
-        genrehtml = utils.getHtml(url, headers=make_netflav_headers(), timeout=30)
+        genrehtml = utils.getHtml(
+            url, headers=make_netflav_headers(), timeout=HTTP_TIMEOUT_DEFAULT
+        )
     except Exception as e:
         utils.kodilog("netflav Genres error: {}".format(str(e)))
         utils.eod()
@@ -246,7 +249,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     try:
-        html = utils.getHtml(url, site.url, timeout=30)
+        html = utils.getHtml(url, site.url, timeout=HTTP_TIMEOUT_DEFAULT)
     except Exception as e:
         utils.kodilog("netflav Playvid error loading page: {}".format(str(e)))
         vp.progress.close()

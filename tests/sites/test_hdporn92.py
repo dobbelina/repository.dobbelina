@@ -1,339 +1,281 @@
-"""
-Test module for hdporn92 site
-"""
+"""Behavior tests for hdporn92 site module."""
 
-import pytest
 from resources.lib.sites import hdporn92
 
 
-class TestHDPorn92:
-    """Test cases for hdporn92 site functionality"""
+def test_main_adds_expected_menu_and_lists_latest(monkeypatch):
+    dirs = []
+    list_calls = []
 
-    def test_site_initialization(self):
-        """Test that the site is properly initialized"""
-        assert hdporn92.site.name == "hdporn92"
-        assert "[COLOR hotpink]Hdporn92[/COLOR]" in hdporn92.site.title
-        assert hdporn92.site.url == "https://hdporn92.com/"
-        assert "hdporn92.png" in hdporn92.site.image
-
-    def test_main_function_structure(self):
-        """Test that Main function exists and has expected structure"""
-        assert hasattr(hdporn92, "Main")
-        assert callable(hdporn92.Main)
-
-    def test_list_function_structure(self):
-        """Test that List function exists and has expected structure"""
-        assert hasattr(hdporn92, "List")
-        assert callable(hdporn92.List)
-
-    def test_playvid_function_structure(self):
-        """Test that Playvid function exists and has expected structure"""
-        assert hasattr(hdporn92, "Playvid")
-        assert callable(hdporn92.Playvid)
-
-    def test_search_function_structure(self):
-        """Test that Search function exists and has expected structure"""
-        assert hasattr(hdporn92, "Search")
-        assert callable(hdporn92.Search)
-
-    def test_categories_function_structure(self):
-        """Test that Categories function exists and has expected structure"""
-        assert hasattr(hdporn92, "Categories")
-        assert callable(hdporn92.Categories)
-
-    def test_tags_function_structure(self):
-        """Test that Tags function exists and has expected structure"""
-        assert hasattr(hdporn92, "Tags")
-        assert callable(hdporn92.Tags)
-
-    def test_lookupinfo_function_structure(self):
-        """Test that Lookupinfo function exists and has expected structure"""
-        assert hasattr(hdporn92, "Lookupinfo")
-        assert callable(hdporn92.Lookupinfo)
-
-    @pytest.mark.parametrize(
-        "function_name",
-        ["Main", "List", "Playvid", "Search", "Categories", "Tags", "Lookupinfo"],
+    monkeypatch.setattr(
+        hdporn92.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
     )
-    def test_functions_exist(self, function_name):
-        """Test that all functions exist and are callable"""
-        func = getattr(hdporn92, function_name)
-        assert callable(func)
+    monkeypatch.setattr(hdporn92, "List", lambda url: list_calls.append(url))
+    monkeypatch.setattr(hdporn92.utils, "eod", lambda: None)
+
+    hdporn92.Main()
+
+    assert len(dirs) == 4
+    assert any("Categories" in d["name"] and d["mode"] == "Categories" for d in dirs)
+    assert any("Actors" in d["name"] and d["mode"] == "Categories" for d in dirs)
+    assert any("Tags" in d["name"] and d["mode"] == "Tags" for d in dirs)
+    assert any("Search" in d["name"] and d["mode"] == "Search" for d in dirs)
+    assert list_calls == ["https://hdporn92.com/?filter=latest"]
+
+
+def test_list_parses_videos_and_next_page(monkeypatch):
+    html = """
+    <article>
+      <a href="https://hdporn92.com/video-1" title=" First Video "></a>
+      <img poster="https://cdn/1.jpg"/>
+    </article>
+    <article>
+      <a href="https://hdporn92.com/video-2" title="Second Video"></a>
+      <img src="https://cdn/2.jpg"/>
+    </article>
+    <div class="pagination">
+      <span class="current">1</span>
+      <a href="https://hdporn92.com/page/2/">2</a>
+    </div>
+    """
+    downloads = []
+    dirs = []
+
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(hdporn92.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        hdporn92.site,
+        "add_download_link",
+        lambda name, url, mode, icon, desc="", contextm=None, **kwargs: downloads.append(
+            {
+                "name": name,
+                "url": url,
+                "mode": mode,
+                "icon": icon,
+                "contextm": contextm,
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        hdporn92.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+
+    hdporn92.List("https://hdporn92.com/?filter=latest")
+
+    assert len(downloads) == 2
+    assert downloads[0]["url"] == "https://hdporn92.com/video-1"
+    assert downloads[0]["icon"] == "https://cdn/1.jpg"
+    assert downloads[1]["icon"] == "https://cdn/2.jpg"
+    assert downloads[0]["contextm"] and "Lookup info" in downloads[0]["contextm"][0][0]
+    assert any(d["mode"] == "List" and "Next Page" in d["name"] for d in dirs)
+
+
+def test_list_handles_nothing_found(monkeypatch):
+    notices = []
+
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: "<h1>Nothing found</h1>")
+    monkeypatch.setattr(hdporn92.utils, "notify", lambda *a, **k: notices.append((a, k)))
+    monkeypatch.setattr(hdporn92.utils, "eod", lambda: None)
+
+    hdporn92.List("https://hdporn92.com/?s=none")
+
+    assert notices, "Expected a user notification for empty results"
+
+
+def test_categories_parses_and_sorts_and_paginates(monkeypatch):
+    html = """
+    <article><a href="https://hdporn92.com/category/z-cat" title="Z Cat"></a><img src="z.jpg"/></article>
+    <article><a href="https://hdporn92.com/category/a-cat" title="A Cat"></a><img poster="a.jpg"/></article>
+    <div class="pagination">
+      <span class="current">1</span>
+      <a href="https://hdporn92.com/categories/page/2/">2</a>
+    </div>
+    """
+    dirs = []
+
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(hdporn92.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        hdporn92.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode, "icon": icon}
+        ),
+    )
+
+    hdporn92.Categories("https://hdporn92.com/categories/")
+
+    cat_names = [d["name"] for d in dirs if d["mode"] == "List"]
+    assert cat_names[:2] == sorted(cat_names[:2], key=lambda x: x.lower())
+    assert all("?filter=latest" in d["url"] for d in dirs if d["mode"] == "List")
+    assert any(d["mode"] == "Categories" and "Next Page" in d["name"] for d in dirs)
 
-    def test_bs4_usage_in_list_function(self):
-        """Test that List function uses BeautifulSoup instead of regex"""
-        import inspect
 
-        source = inspect.getsource(hdporn92.List)
+def test_tags_extracts_tag_links(monkeypatch):
+    html = """
+    <a href="https://hdporn92.com/tag/amateur" aria-label=" Amateur "></a>
+    <a href="https://hdporn92.com/tag/milf" aria-label="Milf"></a>
+    <a href="https://hdporn92.com/other/path" aria-label="Ignore"></a>
+    """
+    dirs = []
+
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(hdporn92.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        hdporn92.site,
+        "add_dir",
+        lambda name, url, mode, icon=None, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+
+    hdporn92.Tags("https://hdporn92.com/tags/")
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    assert len(dirs) == 2
+    assert all(d["mode"] == "List" for d in dirs)
+    assert all("?filter=latest" in d["url"] for d in dirs)
+    assert any("amateur" in d["url"] for d in dirs)
+
+
+def test_search_routes_keyword_and_empty(monkeypatch):
+    searches = []
+    lists = []
+
+    monkeypatch.setattr(
+        hdporn92.site, "search_dir", lambda url, mode: searches.append((url, mode))
+    )
+    monkeypatch.setattr(hdporn92, "List", lambda url: lists.append(url))
+
+    hdporn92.Search("https://hdporn92.com/?s=")
+    hdporn92.Search("https://hdporn92.com/?s=", keyword="test phrase")
 
-        # Should not use old regex patterns
-        assert "re.compile" not in source
-        assert "findall" not in source
+    assert searches == [("https://hdporn92.com/?s=", "Search")]
+    assert lists == ["https://hdporn92.com/?s=test+phrase"]
 
-    def test_bs4_usage_in_categories_function(self):
-        """Test that Categories function uses BeautifulSoup"""
-        import inspect
 
-        source = inspect.getsource(hdporn92.Categories)
+def test_playvid_resolver_branch_uses_head_redirect(monkeypatch):
+    playhtml = '<iframe src="https://host/embed/abc" allowfullscreen></iframe>'
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    class _DummyVP:
+        def __init__(self, *a, **k):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.resolveurl = type(
+                "R", (), {"HostedMediaFile": lambda *a, **k: True}
+            )()
+            self.resolved = None
+            self.direct = None
 
-    def test_bs4_usage_in_tags_function(self):
-        """Test that Tags function uses BeautifulSoup"""
-        import inspect
+        def play_from_link_to_resolve(self, link):
+            self.resolved = link
 
-        source = inspect.getsource(hdporn92.Tags)
+        def play_from_direct_link(self, link):
+            self.direct = link
 
-        # Should use BeautifulSoup
-        assert "utils.parse_html" in source
-        assert "soup.select" in source
+    vp = _DummyVP()
 
-    def test_error_handling_in_list_function(self):
-        """Test that List function has proper error handling"""
-        import inspect
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: playhtml)
+    monkeypatch.setattr(hdporn92.utils, "VideoPlayer", lambda *a, **k: vp)
+    monkeypatch.setattr(
+        hdporn92.requests,
+        "head",
+        lambda *a, **k: type("R", (), {"url": "https://redir/final"})(),
+    )
 
-        source = inspect.getsource(hdporn92.List)
+    hdporn92.Playvid("https://hdporn92.com/video-1", "name")
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    assert vp.resolved == "https://redir/final"
+    assert vp.direct is None
 
-    def test_error_handling_in_categories_function(self):
-        """Test that Categories function has proper error handling"""
-        import inspect
 
-        source = inspect.getsource(hdporn92.Categories)
+def test_playvid_embed_branch_extracts_hls(monkeypatch):
+    playhtml = '<iframe src="https://embed/page" allowfullscreen></iframe>'
+    embedhtml = "<html>embed</html>"
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    class _DummyVP:
+        def __init__(self, *a, **k):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.resolveurl = type(
+                "R", (), {"HostedMediaFile": lambda *a, **k: False}
+            )()
+            self.resolved = None
+            self.direct = None
 
-    def test_error_handling_in_tags_function(self):
-        """Test that Tags function has proper error handling"""
-        import inspect
+        def play_from_link_to_resolve(self, link):
+            self.resolved = link
 
-        source = inspect.getsource(hdporn92.Tags)
+        def play_from_direct_link(self, link):
+            self.direct = link
 
-        # Should have try-except blocks
-        assert "try:" in source
-        assert "except" in source
-        assert "utils.kodilog" in source
+    vp = _DummyVP()
+    gethtml_calls = []
 
-    def test_video_item_parsing_logic(self):
-        """Test that video item parsing uses bs4 methods"""
-        import inspect
+    def _gethtml(url, *args, **kwargs):
+        gethtml_calls.append(url)
+        if url == "https://hdporn92.com/video-2":
+            return playhtml
+        return embedhtml
 
-        source = inspect.getsource(hdporn92.List)
+    monkeypatch.setattr(hdporn92.utils, "getHtml", _gethtml)
+    monkeypatch.setattr(hdporn92.utils, "VideoPlayer", lambda *a, **k: vp)
+    monkeypatch.setattr(
+        hdporn92.utils,
+        "get_packed_data",
+        lambda _html: 'var links={"hls2":"https://cdn/video.m3u8"}',
+    )
 
-        # Should use bs4 selectors
-        assert "article" in source
-        assert "select_one" in source
-        assert "safe_get_attr" in source
+    hdporn92.Playvid("https://hdporn92.com/video-2", "name")
 
-    def test_pagination_handling_in_list(self):
-        """Test that pagination is handled with bs4 in List function"""
-        import inspect
+    assert "https://embed/page" in gethtml_calls
+    assert vp.direct == "https://cdn/video.m3u8"
+    assert vp.resolved is None
 
-        source = inspect.getsource(hdporn92.List)
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert ".pagination" in source
-        assert ".current" in source
+def test_playvid_not_found_notifies(monkeypatch):
+    notices = []
 
-    def test_pagination_handling_in_categories(self):
-        """Test that pagination is handled with bs4 in Categories function"""
-        import inspect
+    class _DummyVP:
+        def __init__(self, *a, **k):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+            self.resolveurl = type(
+                "R", (), {"HostedMediaFile": lambda *a, **k: False}
+            )()
 
-        source = inspect.getsource(hdporn92.Categories)
+    monkeypatch.setattr(hdporn92.utils, "getHtml", lambda *a, **k: "<html></html>")
+    monkeypatch.setattr(hdporn92.utils, "VideoPlayer", lambda *a, **k: _DummyVP())
+    monkeypatch.setattr(hdporn92.utils, "notify", lambda *a, **k: notices.append((a, k)))
 
-        # Should use bs4 for pagination
-        assert "soup.select_one" in source
-        assert ".pagination" in source
-        assert ".current" in source
+    hdporn92.Playvid("https://hdporn92.com/video-3", "name")
 
-    def test_context_menu_structure(self):
-        """Test that context menu is properly structured"""
-        import inspect
+    assert notices and notices[0][0][1] == "No Videos found"
 
-        source = inspect.getsource(hdporn92.List)
 
-        # Should have context menu items
-        assert "contextm=" in source
-        assert "Lookupinfo" in source
+def test_lookupinfo_uses_expected_patterns(monkeypatch):
+    captured = {}
 
-    def test_image_extraction_logic(self):
-        """Test that image extraction logic is preserved"""
-        import inspect
+    class _FakeLookupInfo:
+        def __init__(self, base, url, mode, lookup_list):
+            captured["base"] = base
+            captured["url"] = url
+            captured["mode"] = mode
+            captured["lookup_list"] = lookup_list
 
-        source_list = inspect.getsource(hdporn92.List)
-        source_categories = inspect.getsource(hdporn92.Categories)
+        def getinfo(self):
+            captured["called"] = True
 
-        # Should handle image extraction
-        assert "poster" in source_list
-        assert "src" in source_list
-        assert "poster" in source_categories
-        assert "src" in source_categories
+    monkeypatch.setattr(hdporn92.utils, "LookupInfo", _FakeLookupInfo)
 
-    def test_name_cleaning_logic(self):
-        """Test that name cleaning logic is preserved"""
-        import inspect
+    hdporn92.Lookupinfo("https://hdporn92.com/video-4")
 
-        source_list = inspect.getsource(hdporn92.List)
-        source_categories = inspect.getsource(hdporn92.Categories)
-        source_tags = inspect.getsource(hdporn92.Tags)
-
-        # Should clean names
-        assert "utils.cleantext" in source_list
-        assert "utils.cleantext" in source_categories
-        assert "utils.cleantext" in source_tags
-
-    def test_nothing_found_handling(self):
-        """Test that "Nothing found" handling is preserved"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.List)
-
-        # Should handle nothing found
-        assert ">Nothing found</h1>" in source
-        assert 'notify(msg="Nothing found")' in source
-
-    def test_search_keyword_handling(self):
-        """Test that search function handles keywords properly"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Search)
-
-        # Should handle keyword replacement
-        assert 'replace(" ", "+")' in source
-
-    def test_category_filter_parameter(self):
-        """Test that categories function adds filter parameter"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Categories)
-
-        # Should add filter parameter to URLs
-        assert "?filter=latest" in source
-
-    def test_tag_filter_parameter(self):
-        """Test that tags function adds filter parameter"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Tags)
-
-        # Should add filter parameter to URLs
-        assert "?filter=latest" in source
-
-    def test_tag_link_selection(self):
-        """Test that tag links are selected properly"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Tags)
-
-        # Should select tag links with aria-label
-        assert 'a[href*="/tag/"][aria-label]' in source
-
-    def test_tag_url_extraction(self):
-        """Test that tag URL extraction is implemented"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Tags)
-
-        # Should extract tag part from URL
-        assert "/tag/" in source
-        assert "find(" in source
-
-    def test_sorting_logic(self):
-        """Test that categories are sorted alphabetically"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Categories)
-
-        # Should sort by name
-        assert "sorted(" in source
-        assert "key=lambda x: x[0].lower()" in source
-
-    def test_playvid_regex_usage(self):
-        """Test that Playvid function still uses regex for iframe extraction"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Playvid)
-
-        # Should use regex for iframe extraction
-        assert "re.compile" in source
-        assert "<iframe" in source
-        assert "allowfullscreen" in source
-
-    def test_playvid_progress_update(self):
-        """Test that Playvid function shows progress"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Playvid)
-
-        # Should update progress
-        assert "progress.update" in source
-        assert "Loading video page" in source
-
-    def test_playvid_embed_handling(self):
-        """Test that Playvid function handles embed pages"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Playvid)
-
-        # Should handle embed pages
-        assert "embedhtml" in source
-        assert "get_packed_data" in source
-        assert "var links=" in source
-
-    def test_playvid_json_parsing(self):
-        """Test that Playvid function parses JSON data"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Playvid)
-
-        # Should parse JSON
-        assert "json.loads" in source
-        assert "hls2" in source
-
-    def test_playvid_error_handling(self):
-        """Test that Playvid function handles errors"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Playvid)
-
-        # Should handle no videos found
-        assert "No Videos found" in source
-
-    def test_lookupinfo_patterns(self):
-        """Test that Lookupinfo has proper regex patterns"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Lookupinfo)
-
-        # Should have lookup patterns
-        assert "Cat" in source
-        assert "Model" in source
-        assert "category/" in source
-        assert "actor/" in source
-
-    def test_main_menu_structure(self):
-        """Test that Main function creates expected menu structure"""
-        import inspect
-
-        source = inspect.getsource(hdporn92.Main)
-
-        # Should have expected menu items
-        assert "Categories" in source
-        assert "Actors" in source
-        assert "Tags" in source
-        assert "Search" in source
-        assert "?filter=latest" in source
+    assert captured["base"] == "https://hdporn92.com/"
+    assert captured["mode"] == "hdporn92.List"
+    assert captured["called"] is True
+    labels = [x[0] for x in captured["lookup_list"]]
+    assert labels == ["Cat", "Model"]

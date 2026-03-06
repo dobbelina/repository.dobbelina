@@ -22,6 +22,12 @@ import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse, urljoin, quote, unquote
 
 from resources.lib import utils
+from resources.lib.http_timeouts import (
+    HTTP_TIMEOUT_MANIFEST,
+    HTTP_TIMEOUT_MEDIUM,
+    HTTP_TIMEOUT_PREFETCH,
+    HTTP_TIMEOUT_SHORT,
+)
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
 
@@ -342,7 +348,7 @@ def _keep_only_stable_segments(manifest_text, fetch_headers=None, keep_count=3, 
             resp = requests.get(
                 segment_url,
                 headers=fetch_headers or None,
-                timeout=5,
+                timeout=HTTP_TIMEOUT_SHORT,
                 stream=True,
             )
             ok = resp.status_code == 200
@@ -502,7 +508,7 @@ def _start_manifest_proxy(selected_url, name):
             if manifest_query_params and "psch" in manifest_query_params and "psch" not in cdn_url:
                 cdn_url = _merge_query(cdn_url, {k: v[0] for k, v in manifest_query_params.items()})
 
-            resp = session.get(cdn_url, timeout=12)
+            resp = session.get(cdn_url, timeout=HTTP_TIMEOUT_PREFETCH)
             if resp.status_code == 200:
                 with segment_cache_lock:
                     segment_cache[cdn_url] = resp.content
@@ -522,7 +528,7 @@ def _start_manifest_proxy(selected_url, name):
         nonlocal selected_url
         try:
             fetch_round["count"] += 1
-            resp = session.get(selected_url, timeout=8)
+            resp = session.get(selected_url, timeout=HTTP_TIMEOUT_MANIFEST)
             
             # Handle possible pkey expiration (403/404)
             if resp.status_code in (403, 404) and fetch_round["count"] > 1:
@@ -601,7 +607,9 @@ def _start_manifest_proxy(selected_url, name):
                     self.wfile.write(cached)
                 else:
                     try:
-                        seg_resp = session.get(cdn_url, timeout=15, stream=True)
+                        seg_resp = session.get(
+                            cdn_url, timeout=HTTP_TIMEOUT_MEDIUM, stream=True
+                        )
                         self.send_response(seg_resp.status_code)
                         self.send_header("Content-Type", seg_resp.headers.get("Content-Type", "video/mp4"))
                         cl = seg_resp.headers.get("Content-Length")
@@ -1070,7 +1078,7 @@ def Playvid(url, name):
                 # Some CDN paths (notably doppiocdn media manifests) are easier to
                 # inspect without custom headers; use requests as a probe fallback.
                 try:
-                    resp = requests.get(manifest_url, timeout=8)
+                    resp = requests.get(manifest_url, timeout=HTTP_TIMEOUT_MANIFEST)
                     if resp.status_code == 200 and "#EXTM3U" in resp.text:
                         text = resp.text
                         manifest_probe_errors.pop(manifest_url, None)

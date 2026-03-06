@@ -24,6 +24,7 @@ import time
 import requests
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.http_timeouts import HTTP_TIMEOUT_MEDIUM
 from six.moves import urllib_parse
 
 site = AdultSite(
@@ -174,7 +175,7 @@ def _write_local_manifest(manifest_url):
     try:
         response = requests.get(
             manifest_url,
-            timeout=15,
+            timeout=HTTP_TIMEOUT_MEDIUM,
             headers={"User-Agent": utils.USER_AGENT, "Referer": site.url},
         )
         if response.status_code != 200:
