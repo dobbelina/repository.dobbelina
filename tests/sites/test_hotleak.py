@@ -168,3 +168,41 @@ def test_hotleak_list_cleans_creator_id_suffix(monkeypatch):
 
     assert len(downloads) == 1
     assert downloads[0]["name"] == "@creator"
+
+
+def test_hotleak_materialized_manifest_rewrites_relative_urls(monkeypatch, tmp_path):
+    manifest_text = "\n".join(
+        [
+            "#EXTM3U",
+            '#EXT-X-KEY:METHOD=AES-128,URI="/keys/key.bin"',
+            "#EXTINF:4.0,",
+            "segment0.ts?token=abc",
+            "#EXT-X-ENDLIST",
+        ]
+    )
+
+    class _Resp:
+        status_code = 200
+        text = manifest_text
+
+    monkeypatch.setattr(hotleak.requests, "get", lambda *a, **k: _Resp())
+    monkeypatch.setattr(hotleak.utils, "TRANSLATEPATH", lambda _: str(tmp_path))
+
+    parent_path = hotleak._write_local_manifest(
+        "https://hotleak.vip/m3u8/123.m3u8?time=1&sig=2"
+    )
+
+    assert parent_path.endswith(".mp4")
+    parent = (tmp_path / parent_path.split("/")[-1]).read_text(encoding="utf-8")
+    local_manifest_path = parent.splitlines()[-1]
+    assert local_manifest_path.endswith(".m3u8")
+
+    local_manifest = (tmp_path / local_manifest_path.split("/")[-1]).read_text(
+        encoding="utf-8"
+    )
+    assert (
+        'URI="https://hotleak.vip/keys/key.bin"' in local_manifest
+    ), "Expected EXT-X-KEY URI to be absolutized"
+    assert (
+        "https://hotleak.vip/m3u8/segment0.ts?token=abc" in local_manifest
+    ), "Expected segment URL to be absolutized"

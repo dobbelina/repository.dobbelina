@@ -172,7 +172,11 @@ def _write_local_manifest(manifest_url):
     This avoids token reuse failures caused by repeated remote manifest requests.
     """
     try:
-        response = requests.get(manifest_url, timeout=15)
+        response = requests.get(
+            manifest_url,
+            timeout=15,
+            headers={"User-Agent": utils.USER_AGENT, "Referer": site.url},
+        )
         if response.status_code != 200:
             utils.kodilog(
                 "hotleak: Manifest fetch failed (status {}): {}".format(
@@ -185,12 +189,25 @@ def _write_local_manifest(manifest_url):
             utils.kodilog("hotleak: Invalid manifest content")
             return ""
 
+        # Rewrite all relative references in both media lines and URI="..."
+        # attributes so Kodi can resolve them from a local temp file.
+        uri_attr_pattern = re.compile(r'URI="([^"]+)"')
         rewritten = []
         for line in manifest.splitlines():
             stripped = line.strip()
-            if stripped and not stripped.startswith("#"):
-                stripped = urllib_parse.urljoin(manifest_url, stripped)
-            rewritten.append(stripped)
+            if not stripped:
+                rewritten.append("")
+                continue
+
+            if stripped.startswith("#"):
+                def _replace_uri(match):
+                    value = match.group(1)
+                    return 'URI="{0}"'.format(urllib_parse.urljoin(manifest_url, value))
+
+                rewritten.append(uri_attr_pattern.sub(_replace_uri, stripped))
+                continue
+
+            rewritten.append(urllib_parse.urljoin(manifest_url, stripped))
 
         temp_dir = utils.TRANSLATEPATH("special://temp")
         local_path = os.path.join(
@@ -198,7 +215,21 @@ def _write_local_manifest(manifest_url):
         )
         with open(local_path, "w", encoding="utf-8") as handle:
             handle.write("\n".join(rewritten))
-        return local_path
+
+        # Kodi can be inconsistent with directly opening local .m3u8 from add-ons.
+        # Wrap the local manifest in a parent playlist file for better compatibility.
+        parent_path = os.path.join(
+            temp_dir, "hotleak_parent_{0}.mp4".format(int(time.time() * 1000))
+        )
+        parent_manifest = (
+            "#EXTM3U\n"
+            "#EXT-X-VERSION:3\n"
+            "#EXT-X-STREAM-INF:PROGRAM-ID=1\n"
+            "{0}".format(local_path)
+        )
+        with open(parent_path, "w", encoding="utf-8") as handle:
+            handle.write(parent_manifest)
+        return parent_path
     except Exception as e:
         utils.kodilog("hotleak: Failed to materialize manifest: {}".format(e))
         return ""
