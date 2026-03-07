@@ -1,3 +1,10 @@
+[B]Version 1.1.305[/B]
+- update tests
+- Refactor tests for hdporn92, porn4k, and porndish sites to improve structure and readability
+- Enhance manifest handling in hotleak site
+- feat: manually integrate upstream fixes for speedporn, heroero, and xmoviesforyou
+- fix: update Python version and executable paths in virtual environment configuration; enhance setup script for Ubuntu
+
 [B]Version 1.1.304[/B]
 - Refactor tests for hdporn92, porn4k, and porndish sites to improve structure and readability
 - Enhance manifest handling in hotleak site
