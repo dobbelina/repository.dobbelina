@@ -1,3 +1,11 @@
+[B]Version 1.1.309[/B]
+- Stripchat updates
+- stripchat updates
+- Update resolveurl
+- Merge pull request #117 from rpeters1430/imgbot
+- [ImgBot] Optimize images
+- Added a new sit - pornditt
+
 [B]Version 1.1.308[/B]
 - stripchat updates
 - Update resolveurl
