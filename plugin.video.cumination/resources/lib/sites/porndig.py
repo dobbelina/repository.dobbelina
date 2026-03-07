@@ -100,7 +100,7 @@ def Categories(url):
 
             site.add_dir(utils.cleantext(catname), "", "List", "", 0, catchannel, 3)
         except Exception as e:
-            utils.log("porndig Categories: Error processing category - {}".format(e))
+            utils.kodilog("porndig Categories: Error processing category - {}".format(e))
             continue
 
     utils.eod()
@@ -249,7 +249,7 @@ def Pornstars(url, page=1):
             site.add_dir(title, "", "List", img, 0, ID, 2)
             i += 1
         except Exception as e:
-            utils.log("porndig Pornstars: Error processing pornstar - {}".format(e))
+            utils.kodilog("porndig Pornstars: Error processing pornstar - {}".format(e))
             continue
 
     if i >= 30:
@@ -307,7 +307,7 @@ def Studios(url, page=1):
             site.add_dir(title, "", "List", img, 0, ID, 1)
             i += 1
         except Exception as e:
-            utils.log("porndig Studios: Error processing studio - {}".format(e))
+            utils.kodilog("porndig Studios: Error processing studio - {}".format(e))
             continue
 
     if i >= 30:
@@ -399,7 +399,7 @@ def List(channel, section, page=0):
             )
             i += 1
         except Exception as e:
-            utils.log("porndig List: Error processing video - {}".format(e))
+            utils.kodilog("porndig List: Error processing video - {}".format(e))
             continue
 
     if i >= maxresult and channel:

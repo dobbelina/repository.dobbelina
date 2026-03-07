@@ -122,7 +122,7 @@ def List(url):
                 contextm=cm,
             )
         except Exception as e:
-            utils.log("longvideos List: Error processing video - {}".format(e))
+            utils.kodilog("longvideos List: Error processing video - {}".format(e))
             continue
 
     # Pagination
@@ -230,7 +230,7 @@ def Categories(url):
 
             site.add_dir(name, catpage, "List", "")
         except Exception as e:
-            utils.log("longvideos Categories: Error processing category - {}".format(e))
+            utils.kodilog("longvideos Categories: Error processing category - {}".format(e))
             continue
 
     utils.eod()
@@ -255,7 +255,7 @@ def Playvid(url, name, download=None):
                 label = label.replace("2160p", "1080p")
                 sources[label] = src
         except Exception as e:
-            utils.log("longvideos Playvid: Error processing source - {}".format(e))
+            utils.kodilog("longvideos Playvid: Error processing source - {}".format(e))
             continue
 
     if sources:

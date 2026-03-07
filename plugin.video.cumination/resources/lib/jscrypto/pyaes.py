@@ -332,7 +332,7 @@ class ECBMode(object):
             block_func(block)
             data[offset : offset + block_size] = block
 
-        return data.tostring()
+        return data.tobytes()
 
     def encrypt(self, data):
         """Encrypt data in ECB mode"""
@@ -385,7 +385,7 @@ class CBCMode(object):
             IV = block
 
         self.IV = IV
-        return data.tostring()
+        return data.tobytes()
 
     def decrypt(self, data):
         """Decrypt data in CBC mode"""
@@ -412,7 +412,7 @@ class CBCMode(object):
             IV = ctext
 
         self.IV = IV
-        return data.tostring()
+        return data.tobytes()
 
 
 ####

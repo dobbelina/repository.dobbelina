@@ -144,7 +144,7 @@ def List(url):
                 contextm=cm,
             )
         except Exception as e:
-            utils.log("pornmz List: Error processing video - {}".format(e))
+            utils.kodilog("pornmz List: Error processing video - {}".format(e))
             continue
 
     # Pagination - find current page and next inactive link
@@ -200,7 +200,7 @@ def Categories(url):
                 siteurl = sitepage + "/page/1?filter=latest"
                 site.add_dir(name, siteurl, "List", img)
             except Exception as e:
-                utils.log("pornmz Categories: Error processing category - {}".format(e))
+                utils.kodilog("pornmz Categories: Error processing category - {}".format(e))
                 continue
 
         # Check for next page - find current page, then next link
@@ -246,7 +246,7 @@ def Tags(url):
             tagpage = tagpage + "/page/1?filter=latest"
             site.add_dir(name, tagpage, "List", "")
         except Exception as e:
-            utils.log("pornmz Tags: Error processing tag - {}".format(e))
+            utils.kodilog("pornmz Tags: Error processing tag - {}".format(e))
             continue
 
     utils.eod()

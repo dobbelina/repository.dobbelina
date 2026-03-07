@@ -227,7 +227,7 @@ def List(url):
                 quality=hd,
             )
         except Exception as e:
-            utils.log("javbangers List: Error processing video - {}".format(e))
+            utils.kodilog("javbangers List: Error processing video - {}".format(e))
             continue
 
     next_link = soup.select_one("a.next")
@@ -361,7 +361,7 @@ def Categories(url):
 
             site.add_dir(name, catpage, "List", img, 1)
         except Exception as e:
-            utils.log("javbangers Categories: Error processing category - {}".format(e))
+            utils.kodilog("javbangers Categories: Error processing category - {}".format(e))
             continue
 
     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
@@ -407,7 +407,7 @@ def Playlists(url, page=1):
 
             site.add_dir(name, catpage, "List", img)
         except Exception as e:
-            utils.log("javbangers Playlists: Error processing playlist - {}".format(e))
+            utils.kodilog("javbangers Playlists: Error processing playlist - {}".format(e))
             continue
 
     # Pagination

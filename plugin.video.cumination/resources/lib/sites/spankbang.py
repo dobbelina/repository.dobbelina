@@ -190,7 +190,7 @@ def Tags(url):
             if name and catpage:
                 tags.append((catpage, name))
         except Exception as exc:
-            utils.log("spankbang Tags: Failed to parse tag - {}".format(exc))
+            utils.kodilog("spankbang Tags: Failed to parse tag - {}".format(exc))
             continue
 
     # Sort by name and add to directory

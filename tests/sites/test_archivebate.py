@@ -75,18 +75,28 @@ def test_list_parses_video_items(monkeypatch):
 
 def test_list_handles_empty_fragment(monkeypatch):
     """List() handles an empty Livewire fragment without crashing."""
-    session_mock = make_session_mock("<div></div>")
+    # Build a session mock where _livewire_list will return (None, None)
+    # This happens if csrf match fails.
+    get_response = MagicMock()
+    get_response.text = "no csrf here"
+    get_response.url = "https://archivebate.com/"
+    
+    session_instance = MagicMock()
+    session_instance.get.return_value = get_response
+    session_class = MagicMock(return_value=session_instance)
 
     downloads = []
+    eod_called = []
 
-    monkeypatch.setattr(archivebate.requests, "Session", session_mock)
+    monkeypatch.setattr(archivebate.requests, "Session", session_class)
     monkeypatch.setattr(archivebate.site, "add_download_link",
                         lambda *a, **k: downloads.append(a))
-    monkeypatch.setattr(archivebate.utils, "eod", lambda: None)
+    monkeypatch.setattr(archivebate.utils, "eod", lambda: eod_called.append(True))
 
     archivebate.List("https://archivebate.com/")
 
     assert len(downloads) == 0
+    assert len(eod_called) > 0
 
 
 def test_list_skips_items_without_watch_link(monkeypatch):
@@ -213,3 +223,21 @@ def test_main_adds_platform_dirs(monkeypatch):
     names = [d["name"] for d in dirs]
     assert any("Chaturbate" in n for n in names)
     assert any("Stripchat" in n for n in names)
+
+
+def test_livewire_list_edge_cases(monkeypatch):
+    """Test _livewire_list() return None paths (Lines 55, 62)."""
+    session_instance = MagicMock()
+    session_class = MagicMock(return_value=session_instance)
+    monkeypatch.setattr(archivebate.requests, "Session", session_class)
+
+    # 1. No csrf match (Line 55)
+    session_instance.get.return_value.text = "no csrf here"
+    session_instance.get.return_value.url = "https://archivebate.com/"
+    f, n = archivebate._livewire_list("https://archivebate.com/")
+    assert f is None and n is None
+
+    # 2. No wire match (Line 62)
+    session_instance.get.return_value.text = '<meta name="csrf-token" content="token">'
+    f, n = archivebate._livewire_list("https://archivebate.com/")
+    assert f is None and n is None

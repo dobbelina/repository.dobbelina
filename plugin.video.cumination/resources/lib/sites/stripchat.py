@@ -613,14 +613,18 @@ def _start_manifest_proxy(selected_url, name):
                         self.send_response(seg_resp.status_code)
                         self.send_header("Content-Type", seg_resp.headers.get("Content-Type", "video/mp4"))
                         cl = seg_resp.headers.get("Content-Length")
-                        if cl: self.send_header("Content-Length", cl)
+                        if cl:
+                            self.send_header("Content-Length", cl)
                         self.end_headers()
                         for chunk in seg_resp.iter_content(chunk_size=65536):
                             self.wfile.write(chunk)
                     except Exception as e:
                         utils.kodilog("Stripchat proxy: segment fetch error: {}".format(str(e)))
-                        try: self.send_response(503); self.end_headers()
-                        except Exception: pass
+                        try:
+                            self.send_response(503)
+                            self.end_headers()
+                        except Exception:
+                            pass
             else:
                 with state_lock:
                     content = state["content"]

@@ -182,3 +182,52 @@ def test_search_categories_lookup_related(monkeypatch):
     assert dirs and dirs[0]["name"] == "Alpha"
     assert lookup_calls and lookup_calls[-1] == "getinfo"
     assert builtins and builtins[0].startswith("Container.Update(")
+
+
+def test_allclassic_extra_branches(monkeypatch):
+    download_calls = []
+    dirs = []
+
+    monkeypatch.setattr(
+        allclassic.site,
+        "add_download_link",
+        lambda *a, **k: download_calls.append({"args": a, "kwargs": k}),
+    )
+    monkeypatch.setattr(
+        allclassic.site,
+        "add_dir",
+        lambda name, url, mode, iconimage=None, **kwargs: dirs.append(
+            {"name": name, "url": url}
+        ),
+    )
+    monkeypatch.setattr(allclassic.utils, "eod", lambda: None)
+    monkeypatch.setattr(allclassic.utils, "next_page", lambda *a, **k: None)
+
+    # Test List() branches:
+    # 1. th-title exists (continue)
+    # 2. videopage is empty (continue)
+    # 3. no th-description but has title attribute
+    html_list = """
+    <a class="th item" href="/v1/"><span class="th-title">Skip me</span></a>
+    <a class="th item" href="">Skip me too</a>
+    <a class="th item" href="/v3/" title="Title from attr">
+        <img src="3.jpg">
+    </a>
+    """
+    monkeypatch.setattr(allclassic.utils, "getHtml", lambda *a, **k: html_list)
+    allclassic.List("https://allclassic.porn/page/1/")
+    
+    assert len(download_calls) == 1
+    assert download_calls[0]["args"][0] == "Title from attr"
+
+    # Test Categories() branches:
+    # 1. missing caturl or name (continue)
+    html_cats = """
+    <a class="th" href=""><img></a>
+    <a class="th" href="/c1/"><img src="1.jpg" alt="Cat 1"></a>
+    """
+    monkeypatch.setattr(allclassic.utils, "getHtml", lambda *a, **k: html_cats)
+    allclassic.Categories("https://allclassic.porn/categories/")
+    
+    assert len(dirs) == 1
+    assert dirs[0]["name"] == "Cat 1"

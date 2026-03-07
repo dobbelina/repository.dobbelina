@@ -6,6 +6,7 @@ import shutil
 from kodi_six import xbmc, xbmcaddon, xbmcplugin, xbmcgui, xbmcvfs
 import os
 import sys
+import re
 
 __scriptname__ = "Cumination"
 __author__ = "Cumination"
@@ -45,8 +46,6 @@ if not os.path.exists(profileDir):
 
 if not os.path.exists(customSitesDir):
     os.makedirs(customSitesDir)
-
-import re
 
 if not os.path.exists(tempDir):
     os.makedirs(tempDir)
@@ -480,10 +479,14 @@ def addDir(
         iconimage = cuminationicon
     liz = xbmcgui.ListItem(name)
     fanart = os.path.join(rootDir, "fanart.jpg")
-    art = {"thumb": iconimage, "icon": "DefaultFolder.png", "fanart": fanart}
     if addon.getSetting("posterfanart") == "true":
         fanart = iconimage
-        art.update({"poster": iconimage})
+    art = {
+        "thumb": iconimage,
+        "icon": "DefaultFolder.png",
+        "fanart": fanart,
+        "poster": iconimage,
+    }
     liz.setArt(art)
     if KODIVER > 19.8:
         vtag = liz.getVideoInfoTag()

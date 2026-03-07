@@ -353,6 +353,38 @@ class TestParseQuery:
         assert "search" in result
 
 
+class TestFindThumbnail:
+    """Tests for find_thumbnail function"""
+
+    def test_find_thumbnail_basic(self):
+        html = '<img src="https://example.com/thumbnail_image.jpg">'
+        soup = utils.parse_html(html)
+        img = soup.find("img")
+        assert utils.get_thumbnail(img) == "https://example.com/thumbnail_image.jpg"
+
+    def test_find_thumbnail_data_src(self):
+        html = '<img data-src="https://example.com/lazy_loaded_image.jpg" src="placeholder.gif">'
+        soup = utils.parse_html(html)
+        img = soup.find("img")
+        assert utils.get_thumbnail(img) == "https://example.com/lazy_loaded_image.jpg"
+
+    def test_find_thumbnail_srcset(self):
+        html = '<img srcset="https://example.com/low_res.jpg 100w, https://example.com/high_res.jpg 500w">'
+        soup = utils.parse_html(html)
+        img = soup.find("img")
+        # Should take the last one (highest resolution)
+        assert utils.get_thumbnail(img) == "https://example.com/high_res.jpg"
+
+    def test_find_thumbnail_filters_placeholders(self):
+        html = '<img src="https://example.com/spacer.gif" data-lazy-src="https://example.com/real_image.jpg">'
+        soup = utils.parse_html(html)
+        img = soup.find("img")
+        assert utils.get_thumbnail(img) == "https://example.com/real_image.jpg"
+
+    def test_find_thumbnail_none_element(self):
+        assert utils.get_thumbnail(None, default="fallback.jpg") == "fallback.jpg"
+
+
 class TestI18n:
     """Tests for i18n function"""
 

@@ -309,15 +309,24 @@ def Cats(url):
                                 break
 
                 # Build next page URL
-                if "&from=" in url:
-                    nextpg = re.sub(r"&from=\d+", "", url)
-                else:
-                    nextpg = url
+                nextpg = re.sub(r"([?&])from=\d+&?", r"\1", url)
+                if nextpg.endswith("?") or nextpg.endswith("&"):
+                    nextpg = nextpg[:-1]
+
+                connector = "&" if "?" in nextpg else "?"
                 nextpg = re.sub(
                     r"&_=\d+",
-                    "&from={0}&_={1}".format(from_value, int(time.time() * 1000)),
+                    "{0}from={1}&_={2}".format(
+                        connector if "&_=" not in nextpg else "",
+                        from_value,
+                        int(time.time() * 1000),
+                    ),
                     nextpg,
                 )
+                if "&_=" not in nextpg:
+                    nextpg += "{0}from={1}&_={2}".format(
+                        connector, from_value, int(time.time() * 1000)
+                    )
                 site.add_dir(
                     "Next Page... (Currently in Page {} of {})".format(currpg, lastpg),
                     nextpg,

@@ -59,12 +59,12 @@ def getBaselink(url):
         siteurl = site2.url
     elif "reallifecams." in url:
         # Use the actual domain from the URL if it's a reallifecams variant
-        parsed = urlparse(url)
+        parsed = urllib_parse.urlparse(url)
         siteurl = "{0}://{1}/".format(parsed.scheme, parsed.netloc)
     elif "camcaps.to" in url or "simpvids.com" in url or "camcaps.tv" in url:
         siteurl = site4.url
     else:
-        parsed = urlparse(url)
+        parsed = urllib_parse.urlparse(url)
         siteurl = "{0}://{1}/".format(parsed.scheme, parsed.netloc)
     return siteurl
 

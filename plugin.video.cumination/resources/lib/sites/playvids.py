@@ -123,7 +123,7 @@ def List(url):
                 quality=hd,
             )
         except Exception as e:
-            utils.log("playvids List: Error processing item - {}".format(e))
+            utils.kodilog("playvids List: Error processing item - {}".format(e))
             continue
 
     # Pagination
@@ -199,7 +199,7 @@ def PList(url):
                 quality=hd,
             )
         except Exception as e:
-            utils.log("playvids PList: Error processing item - {}".format(e))
+            utils.kodilog("playvids PList: Error processing item - {}".format(e))
             continue
 
     # Pagination
@@ -271,7 +271,7 @@ def CList(url, page=1):
                 quality=hd,
             )
         except Exception as e:
-            utils.log("playvids CList: Error processing item - {}".format(e))
+            utils.kodilog("playvids CList: Error processing item - {}".format(e))
             continue
 
     # Check for "show more" button
@@ -307,7 +307,7 @@ def Cat(url):
 
             site.add_dir(name, catpage, "List", "")
         except Exception as e:
-            utils.log("playvids Cat: Error processing category - {}".format(e))
+            utils.kodilog("playvids Cat: Error processing category - {}".format(e))
             continue
 
     utils.eod()
@@ -355,7 +355,7 @@ def Channels(url):
 
             site.add_dir(name, chpage, "CList", img, page=1)
         except Exception as e:
-            utils.log("playvids Channels: Error processing channel - {}".format(e))
+            utils.kodilog("playvids Channels: Error processing channel - {}".format(e))
             continue
 
     # Pagination
@@ -403,7 +403,7 @@ def Pornstars(url):
 
             site.add_dir(name, chpage, "PList", img)
         except Exception as e:
-            utils.log("playvids Pornstars: Error processing pornstar - {}".format(e))
+            utils.kodilog("playvids Pornstars: Error processing pornstar - {}".format(e))
             continue
 
     # Pagination

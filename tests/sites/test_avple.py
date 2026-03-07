@@ -1,6 +1,8 @@
 """Comprehensive tests for avple site implementation."""
 
 from pathlib import Path
+from unittest.mock import MagicMock
+from six.moves import urllib_parse
 
 from resources.lib.sites import avple
 
@@ -241,8 +243,135 @@ def test_list_pagination_url_handling(monkeypatch):
 
     # Test URL without page parameter
     avple.List("https://avple.tv/")
-
-    # Should have next page link
     assert len(dirs) == 1
-    # URL should remain the same since it doesn't have page= or /1/date
     assert dirs[0]["url"] == "https://avple.tv/"
+
+    # Test URL with /1/date format (Line 129)
+    dirs.clear()
+    avple.List("https://avple.tv/tags/93/1/date")
+    assert len(dirs) == 1
+    assert "/2/date" in dirs[0]["url"]
+
+
+def test_main(monkeypatch):
+    """Test Main() function."""
+    dirs = []
+    monkeypatch.setattr(avple.site, "add_dir", lambda *a, **k: dirs.append(a))
+    monkeypatch.setattr(avple, "List", lambda *a: None)
+    monkeypatch.setattr(avple.utils, "eod", lambda: None)
+    
+    avple.Main()
+    assert len(dirs) == 3
+
+
+def test_gotopage(monkeypatch):
+    """Test GotoPage() logic (Lines 306-319)."""
+    builtins = []
+    notify_calls = []
+
+    class _Dialog:
+        def numeric(self, *_a, **_k):
+            return "5"
+
+    monkeypatch.setattr(avple.xbmcgui, "Dialog", _Dialog)
+    monkeypatch.setattr(avple.xbmc, "executebuiltin", lambda cmd: builtins.append(cmd))
+    monkeypatch.setattr(avple.utils, "notify", lambda msg=None: notify_calls.append(msg))
+
+    # 1. page= format
+    avple.GotoPage("https://avple.tv/search?page=1", "1", "10")
+    assert "page%3D5" in builtins[0] or "page=5" in urllib_parse.unquote(builtins[0])
+
+    # 2. /1/date format
+    builtins.clear()
+    avple.GotoPage("https://avple.tv/tags/93/1/date", "1", "10")
+    assert "/5/date" in urllib_parse.unquote(builtins[0])
+
+    # 3. Out of range
+    avple.GotoPage("https://avple.tv/search?page=1", "1", "2")
+    assert "Out of range!" in notify_calls
+
+
+def test_playvid_success_and_errors(monkeypatch):
+    """Test Playvid() paths (Lines 333-373)."""
+    html_success = "<script>var source = 'https://stream.mp4';</script>"
+    html_no_source = "<script>var nothing = '';</script>"
+    
+    played = []
+    notify_calls = []
+    
+    class MockPlayer:
+        def __init__(self, *a, **k):
+            self.progress = MagicMock()
+        def play_from_direct_link(self, url):
+            played.append(url)
+
+    monkeypatch.setattr(avple.utils, "VideoPlayer", MockPlayer)
+    monkeypatch.setattr(avple.utils, "notify", lambda *a, **k: notify_calls.append(a))
+
+    # 1. Success
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: html_success)
+    avple.Playvid("https://avple.tv/video/1", "Name")
+    assert any("https://stream.mp4" in p for p in played)
+
+    # 2. No source URL
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: html_no_source)
+    avple.Playvid("https://avple.tv/video/1", "Name")
+    assert any("Unable to find video source" in str(n) for n in notify_calls)
+
+    # 3. Load error
+    monkeypatch.setattr(avple.utils, "getHtml", MagicMock(side_effect=Exception("boom")))
+    avple.Playvid("https://avple.tv/video/1", "Name")
+    assert any("Unable to load video page" in str(n) for n in notify_calls)
+
+
+def test_list_extra_branches(monkeypatch):
+    """Test extra branches in List() (Lines 70-73, 94, 106, 109, 118, 153-154)."""
+    notify_calls = []
+    monkeypatch.setattr(avple.utils, "notify", lambda *a, **k: notify_calls.append(a))
+    monkeypatch.setattr(avple.utils, "eod", lambda: None)
+
+    # 1. getHtml error (Line 70-73)
+    monkeypatch.setattr(avple.utils, "getHtml", MagicMock(side_effect=Exception("boom")))
+    avple.List("https://avple.tv/")
+    
+    # 2. initialState fallback (Line 94)
+    html_initial = '<script id="__NEXT_DATA__" type="application/json">{"props":{"initialState":{"page":1,"totalPage":1,"data":[{"title":"T1","id":"id1"}]}}}</script>'
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: html_initial)
+    downloads = []
+    monkeypatch.setattr(avple.site, "add_download_link", lambda *a, **k: downloads.append(a))
+    avple.List("https://avple.tv/")
+    assert len(downloads) == 1
+
+    # 3. Skip non-list videos, non-dict video, missing videoid (Line 106, 109, 118)
+    html_skips = '<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"indexListObj":{"obj":"not a list", "obj2":["not a dict", {"title":"no id"}]}}}}</script>'
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: html_skips)
+    downloads.clear()
+    avple.List("https://avple.tv/")
+    assert len(downloads) == 0
+
+    # 4. Parsing error (Line 153-154)
+    html_bad_json = '<script id="__NEXT_DATA__" type="application/json">{invalid json}</script>'
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: html_bad_json)
+    avple.List("https://avple.tv/")
+    assert any("Unable to parse videos" in str(n) for n in notify_calls)
+
+
+def test_playvid_parsing_error(monkeypatch):
+    """Test Playvid() parsing error branch (Lines 370-373)."""
+    notify_calls = []
+    
+    class MockPlayer:
+        def __init__(self, *a, **k):
+            self.progress = MagicMock()
+        def play_from_direct_link(self, url):
+            pass
+
+    monkeypatch.setattr(avple.utils, "VideoPlayer", MockPlayer)
+    monkeypatch.setattr(avple.utils, "notify", lambda *a, **k: notify_calls.append(a))
+    
+    # Force error in parse_html
+    monkeypatch.setattr(avple.utils, "parse_html", MagicMock(side_effect=Exception("boom")))
+    monkeypatch.setattr(avple.utils, "getHtml", lambda *a, **k: "some html")
+    
+    avple.Playvid("https://avple.tv/video/1", "Name")
+    assert any("Unable to extract video link" in str(n) for n in notify_calls)

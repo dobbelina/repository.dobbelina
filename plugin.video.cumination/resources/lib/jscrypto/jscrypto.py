@@ -41,7 +41,7 @@ def encode(plaintext, passphrase, saltsize=8):
     decryptor = pyaes.new(data["key"], pyaes.MODE_CBC, IV=data["iv"])
     plaintext = PKCS7Encoder().encode(plaintext)
     enctext = decryptor.encrypt(plaintext)
-    return base64.b64encode("Salted__" + salt + enctext)
+    return base64.b64encode(b"Salted__" + salt + enctext)
 
 
 # ''if salt is provided, it should be string
@@ -56,4 +56,4 @@ def decode(ciphertext, passphrase, salt=None):
     data = evpKDF(six.ensure_binary(passphrase), salt)
     decryptor = pyaes.new(data["key"], pyaes.MODE_CBC, IV=data["iv"])
     d = decryptor.decrypt(ciphertext)
-    return PKCS7Encoder().decode(d.decode())
+    return PKCS7Encoder().decode(d).decode()

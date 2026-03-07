@@ -111,7 +111,7 @@ def List(url):
                 site.add_download_link(name, videopage, "Playvid", img, name)
                 items += 1
             except Exception as e:
-                utils.log("javmoe List: Error processing video - {}".format(e))
+                utils.kodilog("javmoe List: Error processing video - {}".format(e))
                 continue
 
         # Find next page link
@@ -160,7 +160,7 @@ def Categories(url):
 
             site.add_dir(name, catpage, "List", site.img_cat)
         except Exception as e:
-            utils.log("javmoe Categories: Error processing category - {}".format(e))
+            utils.kodilog("javmoe Categories: Error processing category - {}".format(e))
             continue
 
     utils.eod()
@@ -209,7 +209,7 @@ def Pornstars(url):
 
             site.add_dir(name, catpage.strip(), "List")
         except Exception as e:
-            utils.log("javmoe Pornstars: Error processing pornstar - {}".format(e))
+            utils.kodilog("javmoe Pornstars: Error processing pornstar - {}".format(e))
             continue
 
     utils.eod()

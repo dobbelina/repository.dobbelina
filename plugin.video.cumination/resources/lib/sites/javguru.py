@@ -116,7 +116,7 @@ def List(url):
 
             site.add_download_link(name, video, "Play", img, name, contextm=contextmenu)
         except Exception as e:
-            utils.log("javguru List: Error processing video - {}".format(e))
+            utils.kodilog("javguru List: Error processing video - {}".format(e))
             continue
 
     # Pagination - find current page and next link
@@ -190,7 +190,7 @@ def Cat(url):
                 display_name = "{0} ({1})".format(name, count) if count else name
                 site.add_dir(display_name, caturl, "List", "")
         except Exception as e:
-            utils.log("javguru Cat: Error processing cat-item - {}".format(e))
+            utils.kodilog("javguru Cat: Error processing cat-item - {}".format(e))
             continue
 
     # Pattern 2: tag links with span counts
@@ -215,7 +215,7 @@ def Cat(url):
                 display_name = "{0} ({1})".format(name, count) if count else name
                 site.add_dir(display_name, caturl, "List", "")
         except Exception as e:
-            utils.log("javguru Cat: Error processing tag link - {}".format(e))
+            utils.kodilog("javguru Cat: Error processing tag link - {}".format(e))
             continue
 
     utils.eod()
@@ -273,7 +273,7 @@ def Toplist(url):
 
             tag_items.append((caturl, img, name, plot, count))
         except Exception as e:
-            utils.log("javguru Toplist: Error processing tag item - {}".format(e))
+            utils.kodilog("javguru Toplist: Error processing tag item - {}".format(e))
             continue
 
     # Sort by name
@@ -339,7 +339,7 @@ def Actress(url):
             )
             site.add_dir(name, full_url, "List", img)
         except Exception as e:
-            utils.log("javguru Actress: Error processing actress - {}".format(e))
+            utils.kodilog("javguru Actress: Error processing actress - {}".format(e))
             continue
 
     # Pagination - find current page and next link

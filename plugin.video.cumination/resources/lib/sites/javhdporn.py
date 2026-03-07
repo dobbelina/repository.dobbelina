@@ -100,7 +100,7 @@ def List(url):
                 name, video, "Play", img, name, duration=duration, quality=hd
             )
         except Exception as e:
-            utils.log("javhdporn List: Error processing video - {}".format(e))
+            utils.kodilog("javhdporn List: Error processing video - {}".format(e))
             continue
 
     # Pagination
@@ -180,7 +180,7 @@ def Cat(url):
 
             site.add_dir(name, caturl, "List", img)
         except Exception as e:
-            utils.log("javhdporn Cat: Error processing category - {}".format(e))
+            utils.kodilog("javhdporn Cat: Error processing category - {}".format(e))
             continue
 
     # Pagination

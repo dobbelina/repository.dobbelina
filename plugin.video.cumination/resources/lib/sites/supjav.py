@@ -91,7 +91,7 @@ def List(url):
 
             site.add_download_link(name, videopage, "Playvid", img, name)
         except Exception as exc:
-            utils.log("supjav List: Failed to parse post - {}".format(exc))
+            utils.kodilog("supjav List: Failed to parse post - {}".format(exc))
             continue
 
     # Find pagination
@@ -158,7 +158,7 @@ def Cat(url):
             if name:
                 site.add_dir(name, catpage, "List", "")
         except Exception as exc:
-            utils.log("supjav Cat: Failed to parse menu item - {}".format(exc))
+            utils.kodilog("supjav Cat: Failed to parse menu item - {}".format(exc))
             continue
 
     utils.eod()
@@ -199,23 +199,22 @@ def Playvid(url, name, download=None):
                         sources[display_name] = embed
                 pno += 1
             except Exception as exc:
-                utils.log("supjav Playvid: Failed to parse cd-server - {}".format(exc))
+                utils.kodilog("supjav Playvid: Failed to parse cd-server - {}".format(exc))
                 continue
     else:
         # Single part video
-        buttons = btns_div.select(
-            'a.btn-server[data-link], a[class*="btn-server"][data-link]'
-        )
-        for btn in buttons:
-            try:
+        try:
+            buttons = btns_div.select(
+                'a.btn-server[data-link], a[class*="btn-server"][data-link]'
+            )
+            for btn in buttons:
                 embed = utils.safe_get_attr(btn, "data-link")
                 hoster = utils.safe_get_text(btn, "").strip()
                 if embed and hoster:
                     display_name = enames[hoster] if hoster in enames else hoster
                     sources[display_name] = embed
-            except Exception as exc:
-                utils.log("supjav Playvid: Failed to parse button - {}".format(exc))
-                continue
+        except Exception as exc:
+            utils.kodilog("supjav Playvid: Failed to parse buttons - {}".format(exc))
 
     olid = utils.selector("Select Hoster", sources)
     if olid:

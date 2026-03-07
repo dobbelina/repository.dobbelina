@@ -107,7 +107,7 @@ def List(url):
                 quality=quality,
             )
         except Exception as exc:
-            utils.log("kissjav List: Failed to parse video card - {}".format(exc))
+            utils.kodilog("kissjav List: Failed to parse video card - {}".format(exc))
             continue
 
     next_link = soup.select_one("a.next[href], a.pagination-next[href]")
@@ -201,7 +201,7 @@ def Categories(url):
 
             site.add_dir(name, caturl, "List", img)
         except Exception as exc:
-            utils.log("kissjav Categories: Failed to parse card - {}".format(exc))
+            utils.kodilog("kissjav Categories: Failed to parse card - {}".format(exc))
             continue
 
     xbmcplugin.addSortMethod(utils.addon_handle, xbmcplugin.SORT_METHOD_TITLE)
@@ -248,7 +248,7 @@ def Playlists(url):
                     name = name + " [COLOR hotpink]({0} videos)[/COLOR]".format(count)
                 site.add_dir(name, caturl, "List", img)
         except Exception as exc:
-            utils.log("kissjav Playlists: Failed to parse card - {}".format(exc))
+            utils.kodilog("kissjav Playlists: Failed to parse card - {}".format(exc))
             continue
 
     next_link = soup.select_one("a.pagination-next[href]")

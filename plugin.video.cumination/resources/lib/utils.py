@@ -2694,7 +2694,7 @@ class VideoPlayer:
         else:
             try:
                 videourl = prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x.split('p')[0]), reverse=True)
-            except:
+            except Exception:
                 videourl = selector('Select quality', sources, reverse=True)
 
         if not videourl:

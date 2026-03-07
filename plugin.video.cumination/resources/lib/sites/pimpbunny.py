@@ -104,7 +104,7 @@ def Playvid(url, name, download=None):
     links = list(set(links))
     
     # Filter out preview images and other junk
-    video_links = [l for l in links if '/get_file/' in l]
+    video_links = [link for link in links if '/get_file/' in link]
     
     if not video_links:
         # Fallback to direct page scraping for video tag
@@ -116,15 +116,21 @@ def Playvid(url, name, download=None):
     if video_links:
         # Quality mapping
         qualities = []
-        for l in video_links:
+        for link in video_links:
             q = 0
-            if '2160p' in l: q = 2160
-            elif '1440p' in l: q = 1440
-            elif '1080p' in l: q = 1080
-            elif '720p' in l: q = 720
-            elif '480p' in l: q = 480
-            elif '360p' in l: q = 360
-            qualities.append((q, l))
+            if '2160p' in link:
+                q = 2160
+            elif '1440p' in link:
+                q = 1440
+            elif '1080p' in link:
+                q = 1080
+            elif '720p' in link:
+                q = 720
+            elif '480p' in link:
+                q = 480
+            elif '360p' in link:
+                q = 360
+            qualities.append((q, link))
             
         # Sort by quality descending
         qualities.sort(key=lambda x: x[0], reverse=True)

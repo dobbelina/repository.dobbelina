@@ -83,7 +83,7 @@ def List(url):
                 name, videopage, "Playvid", img, name, contextm=contextmenu
             )
         except Exception as e:
-            utils.log("javgg List: Error processing video - {}".format(e))
+            utils.kodilog("javgg List: Error processing video - {}".format(e))
             continue
 
     # Pagination - find next link with id="next"
@@ -181,7 +181,7 @@ def Tags(url):
             )
             site.add_dir(name, full_url, "List", "")
         except Exception as e:
-            utils.log("javgg Tags: Error processing tag - {}".format(e))
+            utils.kodilog("javgg Tags: Error processing tag - {}".format(e))
             continue
 
     utils.eod()
