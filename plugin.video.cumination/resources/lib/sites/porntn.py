@@ -20,7 +20,6 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite(
     "porntn", "[COLOR hotpink]PornTN[/COLOR]", "https://porntn.com/", "porntn.png"
@@ -137,8 +136,6 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         return
 
-    sources = {}
-    
     # Try to find license code
     license_match = re.search(r"license_code:\s*['\"]([^\"']+)['\"]", html, re.IGNORECASE)
     
@@ -152,33 +149,8 @@ def Playvid(url, name, download=None):
         # Fallback to general html scanner if KVS pattern not found
         vp.play_from_html(html)
         return
-        
-    license = license_match.group(1)
-    patterns = [
-        r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
-        r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
-        r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
-        r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)",
-    ]
-    for pattern in patterns:
-        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
-        for surl, qual in items:
-            qual = "00" if qual == "preview" else qual
-            qual = qual.replace(" HD", "")
-            surl = kvs_decode(surl, license)
-            sources[qual] = surl
-    videourl = utils.selector(
-        "Select quality",
-        sources,
-        setting_valid="qualityask",
-        sort_by=lambda x: 1081 if x == "4k" else int(x[:-1]),
-        reverse=True,
-    )
 
-    if not videourl:
-        vp.progress.close()
-        return
-    vp.play_from_direct_link(videourl + "|referer=" + url)
+    vp.play_from_kt_player(html, url)
 
 
 @site.register()

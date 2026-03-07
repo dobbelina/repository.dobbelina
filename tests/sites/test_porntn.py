@@ -109,3 +109,39 @@ def test_tags(monkeypatch):
     assert dirs[0]["name"] == "Amateur"
     assert dirs[0]["url"].startswith("https://porntn.com/tags/amateur")
     assert "common_videos_list" in dirs[1]["url"]
+
+
+def test_playvid_uses_kt_helper_for_kvs_pages(monkeypatch):
+    html = """
+    <script>
+    license_code: '12345'
+    video_url: 'function/0/https://cdn.example.com/video.mp4', video_url_text: '720p'
+    </script>
+    """
+    calls = []
+
+    class FakeVideoPlayer:
+        def __init__(self, name, download=None):
+            self.progress = type(
+                "p",
+                (),
+                {
+                    "update": lambda *args, **kwargs: None,
+                    "close": lambda *args, **kwargs: None,
+                },
+            )()
+
+        def play_from_kt_player(self, page_html, referer=None):
+            calls.append((page_html, referer))
+
+        def play_from_html(self, html):
+            calls.append(("html", html))
+
+    monkeypatch.setattr(
+        porntn.utils, "get_html_with_cloudflare_retry", lambda *a, **k: (html, False)
+    )
+    monkeypatch.setattr(porntn.utils, "VideoPlayer", FakeVideoPlayer)
+
+    porntn.Playvid("https://porntn.com/video/test", "Test Video")
+
+    assert calls == [(html, "https://porntn.com/video/test")]

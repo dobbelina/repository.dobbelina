@@ -77,6 +77,9 @@ def test_playvid_decodes_kvs(monkeypatch):
         def play_from_html(self, html):
             player_calls.append("html_fallback")
 
+        def play_from_kt_player(self, html, url=None):
+            player_calls.append(("kt", html, url))
+
     def fake_get_html(url, ref=None, hdr=None):
         if "embed" in url:
             return embed_page
@@ -84,16 +87,10 @@ def test_playvid_decodes_kvs(monkeypatch):
 
     monkeypatch.setattr(porno1hu.utils, "getHtml", fake_get_html)
     monkeypatch.setattr(porno1hu.utils, "VideoPlayer", FakeVideoPlayer)
-    monkeypatch.setattr(porno1hu.utils, "selector", lambda t, d, **k: list(d.values())[0] if d else None)
-    monkeypatch.setattr(
-        porno1hu,
-        "kvs_decode",
-        lambda video_url, license_code: "https://cdn.example.com/decoded.mp4",
-    )
 
     porno1hu.Playvid("https://porno1.hu/video/test", "Test Video")
 
     assert player_calls
-    # Now it should NOT be html_fallback
-    assert player_calls[0].startswith("https://cdn.example.com/decoded.mp4")
-    assert "referer=" in player_calls[0]
+    assert player_calls[0][0] == "kt"
+    assert player_calls[0][1] == embed_page
+    assert player_calls[0][2] == "https://porno1.hu/video/test"

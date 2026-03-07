@@ -23,7 +23,6 @@ from six.moves import urllib_parse
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite(
     "porno1hu", "[COLOR hotpink]Porno1.hu[/COLOR]", "https://porno1.hu/", "porno1hu.png"
@@ -174,43 +173,9 @@ def Playvid(url, name, download=None):
     if not license_match:
         vp.play_from_html(embedhtml)
         return
-        
-    license_code = license_match.group(1)
-    sources = {}
-    # Find all kvs player vars with video urls
-    items = re.findall(r"video_url[23]*:\s*['\"]([^\"']+)['\"]", embedhtml)
-    # Also find labels
-    labels = re.findall(r"video_url[23]*_text:\s*['\"]([^\"']+)['\"]", embedhtml)
-    
-    if items:
-        for i, surl in enumerate(items):
-            surl = kvs_decode(surl, license_code)
-            if surl:
-                qual = labels[i] if i < len(labels) else "HD"
-                qual = qual.replace(" HD", "")
-                sources[qual] = surl
-    
-    # Try alternate pattern
-    if not sources:
-        matches = re.findall(r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)", embedhtml)
-        for surl, qual in matches:
-            surl = kvs_decode(surl, license_code)
-            sources["480p"] = surl
 
-    if sources:
-        videourl = utils.selector(
-            "Select quality",
-            sources,
-            setting_valid="qualityask",
-            sort_by=lambda x: 1081 if x == "4k" else (int(x[:-1]) if x[:-1].isdigit() else 0),
-            reverse=True,
-        )
-        if videourl:
-            vp.play_from_direct_link(videourl + "|referer=" + url)
-            return
-
-    # Final fallback
-    vp.play_from_html(embedhtml)
+    vp.play_from_kt_player(embedhtml, url)
+    return
 
 
 @site.register()
