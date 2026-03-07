@@ -4,4 +4,5 @@
 - heroero - fix playback
 - xmoviesforyou - fix page numbers, goto page
 - speedporn - fix listing
+- anybunny - fix listing, playback
 
