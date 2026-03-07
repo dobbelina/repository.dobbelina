@@ -19,6 +19,7 @@
 import re
 import json
 import codecs
+from six.moves import urllib_parse
 from resolveurl import common
 from resolveurl.lib import helpers
 from resolveurl.lib.jscrypto import jscrypto
@@ -27,15 +28,21 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 
 class PlayHDResolver(ResolveUrl):
     name = 'PlayHD'
-    domains = ['playhd.one', 'playdrive.xyz', 'prohd.one']
-    pattern = r'(?://|\.)((?:play|pro)(?:hd|drive)\.(?:one|xyz))/e(?:mbed)?/([0-9a-zA-Z-]+)'
+    domains = ['playhd.one', 'playdrive.xyz', 'prohd.one', 'rajtamil.org']
+    pattern = r'(?://|\.)((?:(?:play|pro)(?:hd|drive)|rajtamil)\.(?:one|xyz|org))/(?:embed|e|download)/([0-9a-zA-Z-:./$]+)'
 
     def __init__(self):
         self.net = common.Net(ssl_verify=False)
 
     def get_media_url(self, host, media_id):
+        referer = ''
+        if '$$' in media_id:
+            media_id, referer = media_id.split('$$')
+            referer = urllib_parse.urljoin(referer, '/')
         web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.RAND_UA}
+        if not referer:
+            referer = urllib_parse.urljoin(web_url, '/')
+        headers = {'User-Agent': common.RAND_UA, 'Referer': referer}
         html = self.net.http_GET(web_url, headers=headers).content
         r = re.search(r"_decx\('([^']+)", html)
         if r:
@@ -49,11 +56,14 @@ class PlayHDResolver(ResolveUrl):
                 headers.update({'Referer': 'https://{}/'.format(host)})
                 aurl = s.group(1).replace('\\', '')
                 jd = json.loads(self.net.http_GET(aurl, headers=headers).content)
-                url = jd.get('sources')[0].get('file').replace(' ', '%20')
-                if url.startswith('//'):
-                    url = 'https:' + url
-                headers.update({'verifypeer': 'false'})
-                return url + helpers.append_headers(headers)
+                src = jd.get('sources')[0]
+                if src:
+                    url = src.get('file')
+                    if url.startswith('//'):
+                        url = 'https:' + url
+                    urllib_parse.quote(url, safe=':/?&=')
+                    headers.update({'verifypeer': 'false'})
+                    return url + helpers.append_headers(headers)
 
         raise ResolverError('File Not Found or Removed')
 

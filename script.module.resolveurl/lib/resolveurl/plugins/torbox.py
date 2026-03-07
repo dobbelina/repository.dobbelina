@@ -182,7 +182,14 @@ class TorBoxResolver(ResolveUrl):
                 if ready:
                     break
                 if d.is_canceled():
-                    raise ResolverError("Cancelled by user")
+                    keep_transfer = common.kodi.yesnoDialog(
+                        heading="ResolveURL TorBox Transfer",
+                        line1="Keep transferring to TorBox Cloud in the background?"
+                    )
+                    if not keep_transfer:
+                        raise ResolverError("TorBox Transfer Cancelled by user")
+                    logger.log_debug("ResolveURL TorBox Transfer Cancelled by user - Transfer is alive")
+                    return
                 torrent_name = info.get("name")
                 progress = int(info.get("progress", 0) * 100)
                 status = "%s (ETA: %ss)" % (info.get("download_state"), info.get("eta"))
@@ -243,7 +250,14 @@ class TorBoxResolver(ResolveUrl):
                 if ready:
                     break
                 if d.is_canceled():
-                    raise ResolverError("Cancelled by user")
+                    keep_transfer = common.kodi.yesnoDialog(
+                        heading="ResolveURL TorBox Transfer",
+                        line1="Keep transferring to TorBox Cloud in the background?"
+                    )
+                    if not keep_transfer:
+                        raise ResolverError("TorBox Transfer Cancelled by user")
+                    logger.log_debug("ResolveURL TorBox Transfer Cancelled by user - Transfer is alive")
+                    return
                 webdl_name = info.get("name")
                 progress = int(info.get("progress", 0) * 100)
                 status = "%s (ETA: %ss)" % (info.get("download_state"), info.get("eta"))
@@ -274,6 +288,8 @@ class TorBoxResolver(ResolveUrl):
             links = [[f.get("short_name"), f.get("id")] for f in files]
             links.sort(key=lambda x: x[1])
             file_id = helpers.pick_source(links, auto_pick=False)
+        elif isinstance(file_id, int):
+            pass
         else:
             file_id = 0
 
