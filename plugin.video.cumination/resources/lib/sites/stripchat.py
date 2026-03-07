@@ -40,6 +40,13 @@ site = AdultSite(
     True,
 )
 
+# Stripchat's CDN increasingly rejects the addon-wide legacy Firefox UA on
+# HLS segment requests. Use a modern browser UA for all live stream fetches.
+STRIPCHAT_STREAM_UA = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+)
+
 
 def _normalize_model_image_url(url):
     if not isinstance(url, str) or not url:
@@ -52,6 +59,42 @@ def _normalize_model_image_url(url):
     if normalized.startswith("http"):
         return normalized
     return ""
+
+
+def _stripchat_stream_headers(model_name=""):
+    return {
+        "User-Agent": STRIPCHAT_STREAM_UA,
+        "Origin": "https://stripchat.com",
+        "Referer": "https://stripchat.com/",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+
+
+def _ensure_low_latency_playlist(url):
+    if not isinstance(url, str) or ".m3u8" not in url:
+        return url
+    return _merge_query(url, {"playlistType": "lowLatency"})
+
+
+def _should_use_manifest_proxy(stream_url):
+    """Use the proxy only for master/unsigned manifests that need rewriting."""
+    if not isinstance(stream_url, str) or ".m3u8" not in stream_url:
+        return False
+    lower_url = stream_url.lower()
+    if "media-hls." in lower_url and "psch=" in lower_url and "pkey=" in lower_url:
+        return False
+    return True
+
+
+def _iter_manifest_probe_urls(url):
+    """Probe LL-HLS first, then the original URL for older/plain manifests."""
+    if not isinstance(url, str) or ".m3u8" not in url:
+        return [url]
+    ll_url = _ensure_low_latency_playlist(url)
+    if ll_url == url:
+        return [url]
+    return [ll_url, url]
 
 
 def _live_preview_url(url, snapshot_ts=None, cache_bust=None):
@@ -468,15 +511,15 @@ def _start_manifest_proxy(selected_url, name):
         "/".join(parsed.path.split("/")[:-1]),
     )
     
-    # Capture original query params (psch, pkey) to pass to segments
+    # Only signing params belong on child manifests / segment URLs.
     manifest_query_params = parse_qs(parsed.query, keep_blank_values=True)
-
-    fetch_headers = {
-        "User-Agent": utils.USER_AGENT,
-        "Origin": "https://stripchat.com",
-        "Referer": selected_url, # Use manifest URL as Referer for segments
-        "Accept": "application/x-mpegURL,application/vnd.apple.mpegurl,*/*",
+    segment_auth_params = {
+        key: values[0]
+        for key, values in manifest_query_params.items()
+        if key in ("psch", "pkey") and values
     }
+
+    fetch_headers = _stripchat_stream_headers(name)
 
     # Shared session so CDN cookies from the manifest fetch carry over to
     # all segment requests (some CDNs set auth cookies on the manifest URL).
@@ -505,8 +548,8 @@ def _start_manifest_proxy(selected_url, name):
         """Fetch one segment from CDN and store in cache."""
         try:
             # Ensure segment URL has signing params if they were in the manifest URL
-            if manifest_query_params and "psch" in manifest_query_params and "psch" not in cdn_url:
-                cdn_url = _merge_query(cdn_url, {k: v[0] for k, v in manifest_query_params.items()})
+            if segment_auth_params and "psch" not in cdn_url:
+                cdn_url = _merge_query(cdn_url, segment_auth_params)
 
             resp = session.get(cdn_url, timeout=HTTP_TIMEOUT_PREFETCH)
             if resp.status_code == 200:
@@ -586,8 +629,8 @@ def _start_manifest_proxy(selected_url, name):
                     return
                 
                 # Re-apply signing params if missing
-                if manifest_query_params and "psch" in manifest_query_params and "psch" not in cdn_url:
-                    cdn_url = _merge_query(cdn_url, {k: v[0] for k, v in manifest_query_params.items()})
+                if segment_auth_params and "psch" not in cdn_url:
+                    cdn_url = _merge_query(cdn_url, segment_auth_params)
 
                 # Wait briefly for pre-fetch
                 for _ in range(30):
@@ -1017,25 +1060,21 @@ def Playvid(url, name):
                 return None
 
             try:
-                probe_headers = {
-                    "User-Agent": utils.USER_AGENT,
-                    "Origin": "https://stripchat.com",
-                    "Referer": "https://stripchat.com/{0}".format(name),
-                    "Accept": "application/x-mpegURL,application/vnd.apple.mpegurl,*/*",
-                }
-                probe_data = utils._getHtml(
-                    source_url,
-                    "https://stripchat.com/{0}".format(name),
-                    headers=probe_headers,
-                    error="throw",
-                )
-                if isinstance(probe_data, str) and "#EXTM3U" in probe_data:
-                    utils.kodilog(
-                        "Stripchat: Promoted variant stream to source playlist: {}".format(
-                            source_url[:80]
-                        )
+                probe_headers = _stripchat_stream_headers(name)
+                for probe_url in _iter_manifest_probe_urls(source_url):
+                    probe_data = utils._getHtml(
+                        probe_url,
+                        site.url,
+                        headers=probe_headers,
+                        error="throw",
                     )
-                    return source_url
+                    if isinstance(probe_data, str) and "#EXTM3U" in probe_data:
+                        utils.kodilog(
+                            "Stripchat: Promoted variant stream to source playlist: {}".format(
+                                source_url[:80]
+                            )
+                        )
+                        return source_url
             except Exception as e:
                 utils.kodilog(
                     "Stripchat: Source playlist probe failed for {}: {}".format(
@@ -1049,45 +1088,56 @@ def Playvid(url, name):
                 return ""
             if manifest_url in manifest_probe_cache:
                 return manifest_probe_cache[manifest_url]
-            try:
-                headers = {
-                    "User-Agent": utils.USER_AGENT,
-                    "Origin": "https://stripchat.com",
-                    "Referer": "https://stripchat.com/{0}".format(name),
-                    "Accept": "application/x-mpegURL,application/vnd.apple.mpegurl,*/*",
-                }
-                text = utils._getHtml(
-                    manifest_url,
-                    "https://stripchat.com/{0}".format(name),
-                    headers=headers,
-                    error="throw",
-                )
-                manifest_probe_errors.pop(manifest_url, None)
-            except Exception as e:
-                utils.kodilog(
-                    "Stripchat: Manifest probe failed for {}: {}".format(
-                        manifest_url[:80], str(e)
+            text = ""
+            headers = _stripchat_stream_headers(name)
+            last_error = None
+            for probe_url in _iter_manifest_probe_urls(manifest_url):
+                try:
+                    text = utils._getHtml(
+                        probe_url,
+                        site.url,
+                        headers=headers,
+                        error="throw",
                     )
-                )
+                    if isinstance(text, str) and "#EXTM3U" in text:
+                        manifest_probe_errors.pop(manifest_url, None)
+                        break
+                except Exception as e:
+                    last_error = e
+                    utils.kodilog(
+                        "Stripchat: Manifest probe failed for {}: {}".format(
+                            probe_url[:80], str(e)
+                        )
+                    )
+                    err = str(e).lower()
+                    if (
+                        "name or service not known" in err
+                        or "could not resolve host" in err
+                    ):
+                        manifest_probe_errors[manifest_url] = "dns"
                 text = ""
-                err = str(e).lower()
-                if (
-                    "name or service not known" in err
-                    or "could not resolve host" in err
-                ):
-                    manifest_probe_errors[manifest_url] = "dns"
-            if (not isinstance(text, str) or "#EXTM3U" not in text) and isinstance(
-                manifest_url, str
-            ):
+            if not isinstance(text, str) or "#EXTM3U" not in text:
                 # Some CDN paths (notably doppiocdn media manifests) are easier to
                 # inspect without custom headers; use requests as a probe fallback.
-                try:
-                    resp = requests.get(manifest_url, timeout=HTTP_TIMEOUT_MANIFEST)
-                    if resp.status_code == 200 and "#EXTM3U" in resp.text:
-                        text = resp.text
-                        manifest_probe_errors.pop(manifest_url, None)
-                except Exception:
-                    pass
+                for probe_url in _iter_manifest_probe_urls(manifest_url):
+                    try:
+                        resp = requests.get(
+                            probe_url,
+                            headers=headers,
+                            timeout=HTTP_TIMEOUT_MANIFEST,
+                        )
+                        if resp.status_code == 200 and "#EXTM3U" in resp.text:
+                            text = resp.text
+                            manifest_probe_errors.pop(manifest_url, None)
+                            break
+                    except Exception:
+                        pass
+            if last_error and (not isinstance(text, str) or "#EXTM3U" not in text):
+                utils.kodilog(
+                    "Stripchat: Manifest probe exhausted fallback URLs for {}".format(
+                        manifest_url[:80]
+                    )
+                )
             manifest_probe_cache[manifest_url] = text if isinstance(text, str) else ""
             return manifest_probe_cache[manifest_url]
 
@@ -1145,14 +1195,26 @@ def Playvid(url, name):
                 if line.strip() and not line.startswith("#")
             ]
             for child_url in child_urls[:2]:
-                signed_child_url = _merge_query(
+                signed_child_url = _ensure_low_latency_playlist(_merge_query(
                     child_url,
                     {"psch": psch, "pkey": pkey},
-                )
+                ))
                 child_text = _fetch_manifest_text(signed_child_url)
                 if not child_text or "#EXTM3U" not in child_text:
                     continue
                 if _is_ad_or_stub_manifest(child_text):
+                    continue
+                media_lines = [
+                    line.strip()
+                    for line in child_text.splitlines()
+                    if line.strip() and not line.startswith("#")
+                ]
+                if any(line.startswith("../") for line in media_lines):
+                    utils.kodilog(
+                        "Stripchat: Rejected signed media candidate with parent-relative segments: {}".format(
+                            signed_child_url[:80]
+                        )
+                    )
                     continue
                 utils.kodilog(
                     "Stripchat: Derived signed media candidate: {}".format(
@@ -1171,6 +1233,24 @@ def Playvid(url, name):
             if signed_media_url:
                 promoted.append(("media-signed", signed_media_url))
         candidates.extend(promoted)
+
+        # After source promotion, derive signed child manifests again so the
+        # source playlist can yield its own media child (often the best path).
+        seen_candidate_urls = set(
+            candidate_url
+            for _, candidate_url in candidates
+            if isinstance(candidate_url, str) and candidate_url
+        )
+        signed_followups = []
+        for _, candidate_url in list(candidates):
+            signed_media_url = _derive_signed_media_candidate(candidate_url)
+            if (
+                signed_media_url
+                and signed_media_url not in seen_candidate_urls
+            ):
+                signed_followups.append(("media-signed", signed_media_url))
+                seen_candidate_urls.add(signed_media_url)
+        candidates.extend(signed_followups)
 
         if not candidates:
             utils.kodilog("Stripchat: No stream candidates found")
@@ -1196,6 +1276,10 @@ def Playvid(url, name):
 
             # Fallback: infer quality from URL pattern when labels are generic.
             if isinstance(stream_url, str):
+                if re.search(r"/\d+\.m3u8($|\?)", stream_url) and not re.search(
+                    r"/\d+_\d{3,4}p\.m3u8($|\?)", stream_url
+                ):
+                    score = max(score, 16000 if "media-signed" in label else 9000)
                 if re.search(r"/master/\d+\.m3u8($|\?)", stream_url):
                     score = max(score, 9000)
                 url_quality = re.search(r"_(\d{3,4})p\.m3u8($|\?)", stream_url)
@@ -1258,7 +1342,7 @@ def Playvid(url, name):
             key=lambda c: (c["score"], 1 if "doppiocdn.com" in c["url"] else 0),
             reverse=True,
         )
-        selected_url = preferred[0]["url"]
+        selected_url = _ensure_low_latency_playlist(preferred[0]["url"])
         selected_label = preferred[0]["label"]
         utils.kodilog(
             "Stripchat: Selected stream: {} - {}".format(
@@ -1329,11 +1413,12 @@ def Playvid(url, name):
         # Continue anyway - let utils.playvid handle it
 
     # Build headers for HLS stream
-    ua = urllib_parse.quote(utils.USER_AGENT, safe="")
+    stream_headers = _stripchat_stream_headers(name)
+    ua = urllib_parse.quote(stream_headers["User-Agent"], safe="")
     origin_enc = urllib_parse.quote("https://stripchat.com", safe="")
-    referer_enc = urllib_parse.quote("https://stripchat.com/{0}".format(name), safe="")
-    accept_enc = urllib_parse.quote("application/x-mpegURL", safe="")
-    accept_lang = urllib_parse.quote("en-US,en;q=0.9", safe="")
+    referer_enc = urllib_parse.quote(stream_headers["Referer"], safe="")
+    accept_enc = urllib_parse.quote(stream_headers["Accept"], safe="")
+    accept_lang = urllib_parse.quote(stream_headers["Accept-Language"], safe="")
     ia_headers = (
         "User-Agent={0}&Origin={1}&Referer={2}&Accept={3}&Accept-Language={4}".format(
             ua, origin_enc, referer_enc, accept_enc, accept_lang
@@ -1343,7 +1428,10 @@ def Playvid(url, name):
     utils.kodilog("Stripchat: Starting playback")
     proxy_url = None
     # Use proxy by default if setting is not found (bool check handles 'true')
-    if utils.addon.getSetting("stripchat_proxy") != "false":
+    if (
+        utils.addon.getSetting("stripchat_proxy") != "false"
+        and _should_use_manifest_proxy(stream_url)
+    ):
         proxy_url = _start_manifest_proxy(stream_url, name)
         
     if proxy_url:
