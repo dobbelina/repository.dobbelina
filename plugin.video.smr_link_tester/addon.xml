@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.smr_link_tester" version="1.1.19" name="SMR Link Tester" provider-name="gujal">
+<?xml version='1.0' encoding='utf-8'?>
+<addon id="plugin.video.smr_link_tester" version="1.1.20" name="SMR Link Tester" provider-name="gujal">
     <requires>
-        <!-- <import addon="xbmc.python" version="3.0.0"/> -->
-        <import addon="script.module.resolveurl"/>
-        <import addon="script.module.resolveurl.xxx"/>
-        <import addon="script.module.six" version="0.0.1"/>
-        <import addon="script.module.kodi-six" version="0.0.1"/>
+        
+        <import addon="script.module.resolveurl" />
+        <import addon="script.module.resolveurl.xxx" />
+        <import addon="script.module.six" version="0.0.1" />
+        <import addon="script.module.kodi-six" version="0.0.1" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
         <summary>SMR Link Tester Addon</summary>
-        <description></description>
+        <description />
         <platform>all</platform>
         <assets>
             <icon>icon.png</icon>

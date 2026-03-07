@@ -1,3 +1,11 @@
+[B]Version 1.1.307[/B]
+- Merge pull request #117 from rpeters1430/imgbot
+- [ImgBot] Optimize images
+- Added a new sit - pornditt
+- update tests
+- Refactor tests for hdporn92, porn4k, and porndish sites to improve structure and readability
+- Enhance manifest handling in hotleak site
+
 [B]Version 1.1.306[/B]
 - Added a new sit - pornditt
 - update tests
