@@ -78,11 +78,8 @@ def _ensure_low_latency_playlist(url):
 
 
 def _should_use_manifest_proxy(stream_url):
-    """Use the proxy only for master/unsigned manifests that need rewriting."""
+    """Proxy all Stripchat HLS manifests so placeholder segments can be rewritten."""
     if not isinstance(stream_url, str) or ".m3u8" not in stream_url:
-        return False
-    lower_url = stream_url.lower()
-    if "media-hls." in lower_url and "psch=" in lower_url and "pkey=" in lower_url:
         return False
     return True
 

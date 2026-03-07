@@ -159,6 +159,18 @@ def test_normalize_stream_cdn_url_prefers_net_hosts():
     ) == "https://media-hls.doppiocdn.net/b-hls-1/1/1_480p.m3u8?psch=v2&pkey=abc"
 
 
+def test_should_use_manifest_proxy_for_signed_media_manifest():
+    assert stripchat._should_use_manifest_proxy(
+        "https://media-hls.doppiocdn.com/b-hls-1/1/1_480p.m3u8?playlistType=lowLatency&psch=v2&pkey=abc"
+    )
+
+
+def test_should_not_use_manifest_proxy_for_non_manifest_urls():
+    assert not stripchat._should_use_manifest_proxy(
+        "https://media-hls.doppiocdn.com/b-hls-1/media.mp4"
+    )
+
+
 def test_rewrite_mouflon_manifest_prefers_parts_over_broken_full_segments():
     manifest = (
         "#EXTM3U\n"
@@ -1021,8 +1033,8 @@ def test_playvid_uses_signed_media_child_to_avoid_ad_manifest(monkeypatch):
     assert played_urls[0].startswith(_ll(signed_child) + "|")
 
 
-def test_playvid_bypasses_proxy_for_signed_media_child(monkeypatch):
-    """Signed media child manifests should play directly, not through localhost proxy."""
+def test_playvid_uses_proxy_for_signed_media_child(monkeypatch):
+    """Signed media child manifests should go through localhost proxy rewriting."""
     played_urls = []
     proxy_calls = []
     model_data = {
@@ -1110,9 +1122,8 @@ def test_playvid_bypasses_proxy_for_signed_media_child(monkeypatch):
         "testmodel",
     )
 
-    assert played_urls
-    assert played_urls[0].startswith(_ll(signed_child) + "|")
-    assert not proxy_calls
+    assert played_urls == ["http://127.0.0.1/manifest.m3u8"]
+    assert proxy_calls == [_ll(signed_child)]
 
 
 def test_playvid_skips_signed_media_child_with_parent_relative_segments(monkeypatch):
