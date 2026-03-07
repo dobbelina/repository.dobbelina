@@ -1,3 +1,10 @@
+[B]Version 1.1.306[/B]
+- Added a new sit - pornditt
+- update tests
+- Refactor tests for hdporn92, porn4k, and porndish sites to improve structure and readability
+- Enhance manifest handling in hotleak site
+- feat: manually integrate upstream fixes for speedporn, heroero, and xmoviesforyou
+
 [B]Version 1.1.305[/B]
 - pornditt - add new site with categories, models, search, and KVS-decoded playback
 - Achieve 100% test coverage for rule34video, allclassic, archivebate, ask4porn, avple, supjav, and pornditt site modules
