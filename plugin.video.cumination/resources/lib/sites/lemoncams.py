@@ -228,15 +228,6 @@ def List(url, page=DEFAULT_PAGE):
             noDownload=True,
         )
 
-    if len(cams) >= 1:
-        site.add_dir(
-            "Next Page ({})".format(page + 1),
-            provider,
-            "List",
-            site.img_next,
-            page + 1,
-        )
-
     utils.eod()
 
 
