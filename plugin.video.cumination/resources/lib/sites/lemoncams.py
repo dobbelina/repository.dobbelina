@@ -72,20 +72,6 @@ def _parse_model_identifier(value, default_provider=DEFAULT_PROVIDER):
     return default_provider, value
 
 
-def _fetch_cam_payload(provider, username):
-    params = {
-        "page": "1",
-        "provider": provider,
-        "function": "cam",
-        "project": "lemoncams",
-        "tsp": str(int(time.time() * 1000)),
-    }
-    if username:
-        params["username"] = username
-        params["path"] = ".{}.{}".format(provider, username)
-    return _api_get(params)
-
-
 def _fetch_provider_payload(provider, page):
     params = {
         "page": str(page),
@@ -133,23 +119,20 @@ def _image_url(cam):
     )
 
 
-def _iter_search_results(provider, username):
-    payload = _fetch_cam_payload(provider, username)
-    cams = payload.get("cams", [])
-    exact = []
-    related = []
-    for cam in cams:
-        if cam.get("provider") != provider:
-            continue
-        cam_username = cam.get("username", "")
-        playable_url = _extract_playable_url(cam)
-        if not playable_url:
-            continue
-        if cam_username.lower() == username.lower():
-            exact.append(cam)
-        else:
-            related.append(cam)
-    return exact + related
+def _find_model_stream(provider, username, max_pages=3):
+    """Search listing pages for a specific model's stream URL.
+
+    The model-specific API endpoint returns empty URLs, so we scan the general
+    listing instead to find the model while they are online.
+    """
+    for page in range(1, max_pages + 1):
+        payload = _fetch_provider_payload(provider, page)
+        for cam in payload.get("cams", []):
+            if cam.get("username", "").lower() == username.lower():
+                url = _extract_playable_url(cam)
+                if url:
+                    return url
+    return ""
 
 
 def _provider_cams(provider, page):
@@ -157,9 +140,6 @@ def _provider_cams(provider, page):
     cams = []
     for cam in payload.get("cams", []):
         if provider != TOP_CAMS_KEY and cam.get("provider") != provider:
-            continue
-        playable_url = _extract_playable_url(cam)
-        if not playable_url:
             continue
         cams.append(cam)
     return cams
@@ -255,26 +235,20 @@ def Search(url, keyword=None):
         utils.eod()
         return
 
-    results = _iter_search_results(provider, username)
-    if not results:
-        utils.notify("LemonCams", "No playable result found for {}".format(username))
+    playable_url = _find_model_stream(provider, username)
+    if not playable_url:
+        utils.notify("LemonCams", "Model offline or no playable stream found for {}".format(username))
         utils.eod()
         return
 
-    for cam in results:
-        cam_username = cam.get("username", "unknown")
-        label = cam_username
-        if cam.get("title"):
-            label = "{} - {}".format(cam_username, cam["title"][:80])
-        site.add_download_link(
-            label,
-            _build_model_page_url(provider, cam_username),
-            "Playvid",
-            _image_url(cam),
-            _format_plot(cam),
-            noDownload=True,
-        )
-
+    site.add_download_link(
+        username,
+        _build_model_page_url(provider, username),
+        "Playvid",
+        "",
+        "",
+        noDownload=True,
+    )
     utils.eod()
 
 
@@ -285,22 +259,9 @@ def Playvid(url, name):
         utils.notify("LemonCams", "Could not parse model URL")
         return
 
-    results = _iter_search_results(provider, username)
-    if not results:
-        utils.notify("LemonCams", "Model offline or no playable stream found")
-        return
-
-    chosen = None
-    for cam in results:
-        if cam.get("username", "").lower() == username.lower():
-            chosen = cam
-            break
-    if not chosen:
-        chosen = results[0]
-
-    playable_url = _extract_playable_url(chosen)
+    playable_url = _find_model_stream(provider, username)
     if not playable_url:
-        utils.notify("LemonCams", "No direct playable URL found")
+        utils.notify("LemonCams", "Model offline or no playable stream found")
         return
 
     vp = utils.VideoPlayer(name)

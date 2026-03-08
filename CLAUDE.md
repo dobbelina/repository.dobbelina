@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Kodi addon repository for adult content. The primary addon is **Cumination** (`plugin.video.cumination`), providing access to ~145 adult video sites through Kodi's plugin system. This is a fork that tracks upstream (dobbelina/repository.dobbelina).
+Kodi addon repository for adult content. The primary addon is **Cumination** (`plugin.video.cumination`), providing access to ~163 adult video sites through Kodi's plugin system. This is a fork that tracks upstream (dobbelina/repository.dobbelina).
+
+Other addons in the repo: `plugin.video.uwc` (legacy fork), `repository.dobbelina` (repo installer), `script.video.F4mProxy` (HLS/F4M helper).
 
 ## Commands
 
@@ -108,7 +110,7 @@ If the site doesn't appear in Kodi: verify `AdultSite(...)` is at module level, 
 
 ## BeautifulSoup Migration
 
-Migration from regex to BeautifulSoup4 is **complete** (137/137 sites). Tracked in `docs/development/MODERNIZATION.md`. All new sites should use BeautifulSoup exclusively — use `parse_html()`, `safe_get_attr()`, `safe_get_text()`, and `soup_videos_list()` from utils. Reference implementation: `sites/pornhub.py`.
+Migration from regex to BeautifulSoup4 is **complete** (163/163 sites). Tracked in `docs/development/MODERNIZATION.md`. All new sites should use BeautifulSoup exclusively — use `parse_html()`, `safe_get_attr()`, `safe_get_text()`, and `soup_videos_list()` from utils. Reference implementation: `sites/pornhub.py`.
 
 Find sites needing tests:
 ```bash
@@ -126,6 +128,10 @@ comm -23 <(grep -l "parse_html" plugin.video.cumination/resources/lib/sites/*.py
 - Branch: `master`
 - Commit prefixes: `feat:`, `fix:`, `chore:`
 - Cherry-picks from upstream: always use `-x` flag, update `UPSTREAM_SYNC.md`
+
+## Custom Agents
+
+A `site-debugger` agent is available in `.claude/agents/site-debugger.md`. Use it when investigating new sites, fixing broken site modules, or reverse-engineering video player encryption. It uses Playwright for browser-based exploration and produces a final module using only `getHtml()`/BeautifulSoup (no Playwright in output).
 
 ## Common Issues
 
