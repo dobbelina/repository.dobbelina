@@ -798,12 +798,6 @@ def _start_manifest_proxy(selected_url, name):
     srv = _ThreadingHTTPServer(("127.0.0.1", port), ManifestHandler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
-    def _refresh():
-        while True:
-            time.sleep(1.5) # Slightly slower refresh to allow stability logic to work
-            _fetch_and_rewrite()
-
-    threading.Thread(target=_refresh, daemon=True).start()
     utils.kodilog(
         "Stripchat proxy: ready at http://127.0.0.1:{}/manifest.m3u8".format(port)
     )
