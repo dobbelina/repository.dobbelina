@@ -47,6 +47,7 @@ STRIPCHAT_STREAM_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 )
+STRIPCHAT_DISABLED = True
 STRIPCHAT_PROXY_SESSION_HEADERS = {}
 STRIPCHAT_PROXY_SESSION_COOKIES = {}
 
@@ -62,6 +63,11 @@ def _normalize_model_image_url(url):
     if normalized.startswith("http"):
         return normalized
     return ""
+
+
+def _notify_stripchat_disabled():
+    utils.notify("Stripchat", "Temporarily disabled")
+    utils.kodilog("Stripchat: site is temporarily disabled")
 
 
 def _stripchat_stream_headers(model_name=""):
@@ -651,9 +657,14 @@ def _start_manifest_proxy(selected_url, name):
             }
         )
 
-    state = {"content": b"", "last_selected_url": selected_url}
+    state = {
+        "content": b"",
+        "last_selected_url": selected_url,
+        "last_activity": time.time(),
+    }
     state_lock = threading.Lock()
     fetch_round = {"count": 0}
+    shutdown_started = {"value": False}
 
     # Bind socket first so port is known for segment URL rewriting.
     # Some test/sandbox environments disallow localhost listeners entirely.
@@ -749,6 +760,8 @@ def _start_manifest_proxy(selected_url, name):
 
     class ManifestHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
+            with state_lock:
+                state["last_activity"] = time.time()
             parsed_path = urlparse(self.path)
             if parsed_path.path == "/seg":
                 params = parse_qs(parsed_path.query, keep_blank_values=True)
@@ -798,6 +811,36 @@ def _start_manifest_proxy(selected_url, name):
     srv = _ThreadingHTTPServer(("127.0.0.1", port), ManifestHandler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
+    def _shutdown_proxy(reason):
+        if shutdown_started["value"]:
+            return
+        shutdown_started["value"] = True
+        utils.kodilog("Stripchat proxy: shutting down ({})".format(reason))
+        try:
+            srv.shutdown()
+        except Exception:
+            pass
+        try:
+            srv.server_close()
+        except Exception:
+            pass
+        try:
+            session.close()
+        except Exception:
+            pass
+
+    def _idle_watch():
+        idle_timeout = 8.0
+        while not shutdown_started["value"]:
+            time.sleep(1.0)
+            with state_lock:
+                idle_for = time.time() - state.get("last_activity", time.time())
+            if idle_for >= idle_timeout:
+                _shutdown_proxy("idle {:.1f}s".format(idle_for))
+                return
+
+    threading.Thread(target=_idle_watch, daemon=True).start()
+
     utils.kodilog(
         "Stripchat proxy: ready at http://127.0.0.1:{}/manifest.m3u8".format(port)
     )
@@ -806,6 +849,10 @@ def _start_manifest_proxy(selected_url, name):
 
 @site.register(default_mode=True)
 def Main():
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        utils.eod()
+        return
     female = utils.addon.getSetting("chatfemale") == "true"
     male = utils.addon.getSetting("chatmale") == "true"
     couple = utils.addon.getSetting("chatcouple") == "true"
@@ -873,6 +920,10 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        utils.eod()
+        return None
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
@@ -981,6 +1032,9 @@ def clean_database(showdialog=True):
 
 @site.register()
 def Playvid(url, name):
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        return
     vp = utils.VideoPlayer(name, IA_check="IA")
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
@@ -1675,6 +1729,10 @@ def Playvid(url, name):
 
 @site.register()
 def List2(url):
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        utils.eod()
+        return
     site.add_download_link(
         "[COLOR red][B]Refresh[/B][/COLOR]",
         url,
@@ -1815,6 +1873,10 @@ def List2(url):
 
 @site.register()
 def List3(url):
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        utils.eod()
+        return
     site.add_download_link(
         "[COLOR red][B]Refresh[/B][/COLOR]",
         url,
@@ -1953,8 +2015,15 @@ def List3(url):
 
 @site.register()
 def online(url):
+    if STRIPCHAT_DISABLED:
+        _notify_stripchat_disabled()
+        return
     if utils.addon.getSetting("online_only") == "true":
         utils.addon.setSetting("online_only", "false")
     else:
         utils.addon.setSetting("online_only", "true")
     utils.refresh()
+
+
+if STRIPCHAT_DISABLED:
+    site.default_mode = ""

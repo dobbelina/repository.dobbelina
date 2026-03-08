@@ -35,9 +35,24 @@ site = AdultSite(
     "hotleak",
 )
 
+
+def _is_homepage_url(url):
+    parsed = urllib_parse.urlparse(url)
+    path = (parsed.path or "").rstrip("/")
+    return not path
+
+
+def _homepage_videos_section(soup):
+    for section in soup.select("section.wrapper.category"):
+        title = utils.safe_get_text(section.select_one(".wrapper-title .page-title"))
+        if title and title.strip().lower() == "videos":
+            return section
+    return None
+
+
 @site.register(default_mode=True)
 def Main(url):
-    site.add_dir("[COLOR hotpink]Videos[/COLOR]", site.url + "videos", "List", "")
+    site.add_dir("[COLOR hotpink]Videos[/COLOR]", site.url, "List", "")
     site.add_dir(
         "[COLOR hotpink]Search[/COLOR]", site.url + "search?search=", "Search", site.img_search
     )
@@ -60,10 +75,16 @@ def List(url, page=1):
         return
 
     soup = utils.parse_html(listhtml)
-    items = soup.select("article.movie-item, article[class*='movie-item']")
+    listing_root = soup
+    if _is_homepage_url(url):
+        homepage_videos = _homepage_videos_section(soup)
+        if homepage_videos:
+            listing_root = homepage_videos
+
+    items = listing_root.select("article.movie-item, article[class*='movie-item']")
     if not items:
         # Fallback layout: derive entries directly from video/profile links.
-        items = soup.select("a[href*='/video/'], a[href*='/photo/']")
+        items = listing_root.select("a[href*='/video/'], a[href*='/photo/']")
 
     for item in items:
         link = item if getattr(item, "name", "") == "a" else item.select_one("a[href]")
@@ -77,11 +98,14 @@ def List(url, page=1):
             # Ignore photo posts in video listings.
             continue
 
-        img_tag = (
-            item.select_one("img.post-thumbnail, img")
-            if getattr(item, "name", "") != "a"
-            else item.select_one("img")
-        )
+        if getattr(item, "name", "") != "a":
+            img_tag = item.select_one("img.post-thumbnail")
+            if not img_tag:
+                img_tag = item.select_one("img")
+        else:
+            img_tag = item.select_one("img.post-thumbnail")
+            if not img_tag:
+                img_tag = item.select_one("img")
         img = utils.safe_get_attr(img_tag, "data-src", ["data-original", "srcset", "src"])
         if img and img.startswith("data:image"):
             img = utils.safe_get_attr(img_tag, "data-src", ["data-original", "src"])
@@ -89,7 +113,9 @@ def List(url, page=1):
             img = img.split(",")[0].strip().split(" ")[0].strip()
         if img:
             img = urllib_parse.urljoin(site.url, img)
-            img = img + "|User-Agent=" + utils.USER_AGENT
+            img = img + "|User-Agent={0}&Referer={1}".format(
+                urllib_parse.quote(utils.USER_AGENT), urllib_parse.quote(site.url)
+            )
 
         name = utils.safe_get_text(
             item.select_one(".movie-name h3, .movie-name, .post-title, .title")
@@ -122,9 +148,11 @@ def List(url, page=1):
             site.add_dir(name, videopage, "List", img, desc=description)
 
     # Next Page
-    next_el = soup.select_one(
-        "a.page-link[rel='next'], ul.pagination a[rel='next'], a[aria-label='Next'], a.next"
-    )
+    next_el = None
+    if not _is_homepage_url(url):
+        next_el = soup.select_one(
+            "a.page-link[rel='next'], ul.pagination a[rel='next'], a[aria-label='Next'], a.next"
+        )
     if next_el:
         np_url = utils.safe_get_attr(next_el, "href")
         if np_url:
