@@ -18,6 +18,7 @@ import sqlite3
 import json
 import re
 import time
+import base64
 import requests
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse, urljoin, quote, unquote
 
@@ -43,9 +44,11 @@ site = AdultSite(
 # Stripchat's CDN increasingly rejects the addon-wide legacy Firefox UA on
 # HLS segment requests. Use a modern browser UA for all live stream fetches.
 STRIPCHAT_STREAM_UA = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 )
+STRIPCHAT_PROXY_SESSION_HEADERS = {}
+STRIPCHAT_PROXY_SESSION_COOKIES = {}
 
 
 def _normalize_model_image_url(url):
@@ -68,20 +71,78 @@ def _stripchat_stream_headers(model_name=""):
         "Referer": "https://stripchat.com/",
         "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
+        "sec-ch-ua": '"Not:A-Brand";v="99", "HeadlessChrome";v="145", "Chromium";v="145"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
     }
+
+
+def _load_cookie_dict_for_url(url):
+    """Return saved addon cookies matching the given URL/domain."""
+    try:
+        parsed = urlparse(url if isinstance(url, str) else "")
+        domain = (parsed.netloc or "").lower()
+        if not domain:
+            return {}
+        clean_domain = domain[4:] if domain.startswith("www.") else domain
+        cookies = {}
+        for cookie in getattr(utils, "cj", []):
+            cookie_name = getattr(cookie, "name", "")
+            cookie_value = getattr(cookie, "value", "")
+            cookie_domain = (getattr(cookie, "domain", "") or "").lstrip(".").lower()
+            if (
+                cookie_name
+                and isinstance(cookie_value, str)
+                and cookie_domain
+                and (
+                    clean_domain.endswith(cookie_domain)
+                    or cookie_domain.endswith(clean_domain)
+                )
+            ):
+                cookies[cookie_name] = cookie_value
+        return cookies
+    except Exception as exc:
+        utils.kodilog("Stripchat cookies: load failed {}".format(str(exc)))
+        return {}
+
+
+def _prime_stream_session(model_url, model_name):
+    """Warm Cloudflare/session cookies before manifest and segment fetches."""
+    if not isinstance(model_url, str) or not model_url.startswith("http"):
+        return
+    try:
+        utils.kodilog(
+            "Stripchat: Priming stream session via {}".format(model_url[:140])
+        )
+        utils.get_html_with_cloudflare_retry(
+            model_url,
+            referer=site.url,
+            headers=_stripchat_stream_headers(model_name),
+            retry_on_empty=True,
+        )
+    except Exception as exc:
+        utils.kodilog("Stripchat: Session prime failed: {}".format(str(exc)))
 
 
 def _ensure_low_latency_playlist(url):
     if not isinstance(url, str) or ".m3u8" not in url:
         return url
-    return _merge_query(url, {"playlistType": "lowLatency"})
+    params = {"playlistType": "lowLatency"}
+    lower = url.lower()
+    if "media-hls." in lower or "doppiocdn" in lower:
+        params["preferredVideoCodec"] = "h264"
+    return _merge_query(url, params)
 
 
 def _should_use_manifest_proxy(stream_url):
-    """Proxy all Stripchat HLS manifests so placeholder segments can be rewritten."""
+    """Identify Stripchat manifests that require localhost rewrite/proxying."""
     if not isinstance(stream_url, str) or ".m3u8" not in stream_url:
         return False
-    return True
+    return (
+        "media-hls." in stream_url
+        or "doppiocdn" in stream_url
+        or "playlistType=lowLatency" in stream_url
+    )
 
 
 def _iter_manifest_probe_urls(url):
@@ -207,6 +268,21 @@ def _normalize_stream_cdn_url(url):
     )
 
 
+def _encode_proxy_target(url):
+    if not isinstance(url, str):
+        return ""
+    return base64.urlsafe_b64encode(url.encode("utf-8")).decode("ascii")
+
+
+def _decode_proxy_target(value):
+    if not isinstance(value, str) or not value:
+        return ""
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode((value + padding).encode("ascii")).decode(
+        "utf-8"
+    )
+
+
 def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
     """Rewrite a MOUFLON HLS manifest so Kodi can play it.
 
@@ -232,6 +308,7 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
 
     lines_out = []
     pending_mouflon_url = None
+    pending_full_segment_url = None
     pending_part_segments = []
     skip_next_placeholder = False
     
@@ -246,20 +323,28 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
         stripped = line.strip()
 
         if stripped.startswith("#EXT-X-MOUFLON:URI:"):
-            pending_mouflon_url = stripped[len("#EXT-X-MOUFLON:URI:"):]
-            if not pending_mouflon_url.startswith("http"):
-                pending_mouflon_url = urljoin(base_url, pending_mouflon_url)
+            utils.kodilog("Stripchat raw mouflon line: {!r}".format(line))
+            mouflon_url = stripped[len("#EXT-X-MOUFLON:URI:") :].strip()
+            if mouflon_url.startswith("http://") or mouflon_url.startswith("https://"):
+                pass
+            elif mouflon_url.startswith("/"):
+                mouflon_url = urljoin(base_url, mouflon_url)
+            elif "://" not in mouflon_url:
+                mouflon_url = urljoin(base_url, mouflon_url)
+            utils.kodilog("Stripchat raw mouflon uri: {!r}".format(mouflon_url))
+            pending_mouflon_url = mouflon_url
+            if "_part" in mouflon_url:
+                pending_full_segment_url = None
+            else:
+                pending_full_segment_url = mouflon_url
             continue
 
         if stripped.startswith("#EXT-X-PART:"):
-            if pending_mouflon_url:
-                duration_match = re.search(r"DURATION=([0-9.]+)", stripped)
-                if duration_match:
-                    # pending_mouflon_url is already absolute now
-                    pending_part_segments.append(
-                        (duration_match.group(1), pending_mouflon_url)
-                    )
-                pending_mouflon_url = None
+            duration_match = re.search(r"DURATION=([0-9.]+)", stripped)
+            if duration_match and pending_mouflon_url and "_part" in pending_mouflon_url:
+                part_url = pending_mouflon_url
+                pending_part_segments.append((duration_match.group(1), part_url))
+            pending_mouflon_url = None
             continue
 
         if any(stripped.startswith(p) for p in _STRIP_PREFIXES):
@@ -279,35 +364,47 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
             # Check if a full MOUFLON URI follows this EXTINF
             found_full_mouflon = None
             for j in range(i + 1, min(i + 5, len(lines))):
-                if lines[j].strip().startswith("#EXT-X-MOUFLON:URI:") and ".mp4" in lines[j] and "_part" not in lines[j]:
-                    found_full_mouflon = lines[j].strip()[len("#EXT-X-MOUFLON:URI:"):]
+                if (
+                    lines[j].strip().startswith("#EXT-X-MOUFLON:URI:")
+                    and ".mp4" in lines[j]
+                    and "_part" not in lines[j]
+                ):
+                    found_full_mouflon = lines[j].strip()[
+                        len("#EXT-X-MOUFLON:URI:")
+                    :]
+                    if not found_full_mouflon.startswith("http"):
+                        found_full_mouflon = urljoin(base_url, found_full_mouflon)
                     break
                 if not lines[j].strip().startswith("#"):
                     break
-            
+
             if pending_part_segments:
-                # Prefer LL-HLS parts when available. The paired full segment
-                # often points at the placeholder media.mp4 URL and is less reliable.
                 for duration, part_url in pending_part_segments:
                     lines_out.append("#EXTINF:{0},".format(duration))
                     lines_out.append(part_url)
                     replaced_parts += 1
                 pending_part_segments = []
                 skip_next_placeholder = True
+                pending_full_segment_url = None
+                pending_mouflon_url = None
                 continue
-            elif found_full_mouflon:
+            selected_full_segment = found_full_mouflon or pending_full_segment_url
+            if selected_full_segment:
                 if not stripped.endswith(","):
                     stripped += ","
                 lines_out.append(stripped)
-                lines_out.append(found_full_mouflon)
+                lines_out.append(selected_full_segment)
                 skip_next_placeholder = True
                 replaced_segments += 1
+                pending_full_segment_url = None
+                pending_mouflon_url = None
                 continue
 
         if stripped and not stripped.startswith("#"):
             if skip_next_placeholder:
                 skip_next_placeholder = False
                 pending_mouflon_url = None
+                pending_full_segment_url = None
                 continue
             
             # If we didn't skip it, and it's a relative URL, make it absolute
@@ -339,7 +436,12 @@ def _rewrite_mouflon_for_isa(manifest_text, base_url):
     return _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url)
 
 
-def _keep_only_stable_segments(manifest_text, fetch_headers=None, keep_count=3, edge_buffer=1):
+def _keep_only_stable_segments(
+    manifest_text,
+    fetch_headers=None,
+    keep_count=3,
+    edge_buffer=1,
+):
     """Build a minimal manifest from older, reachable full segments.
 
     Stripchat's newest live-edge segments can disappear before Kodi fetches them.
@@ -385,8 +487,9 @@ def _keep_only_stable_segments(manifest_text, fetch_headers=None, keep_count=3, 
 
     def _segment_ok(segment_url):
         try:
+            probe_url = segment_url
             resp = requests.get(
-                segment_url,
+                probe_url,
                 headers=fetch_headers or None,
                 timeout=HTTP_TIMEOUT_SHORT,
                 stream=True,
@@ -394,7 +497,7 @@ def _keep_only_stable_segments(manifest_text, fetch_headers=None, keep_count=3, 
             ok = resp.status_code == 200
             utils.kodilog(
                 "Stripchat stable: probe {0} -> HTTP {1}".format(
-                    segment_url[:140], resp.status_code
+                    probe_url[:140], resp.status_code
                 )
             )
             resp.close()
@@ -402,7 +505,7 @@ def _keep_only_stable_segments(manifest_text, fetch_headers=None, keep_count=3, 
         except Exception as e:
             utils.kodilog(
                 "Stripchat stable: probe error for {0}: {1}".format(
-                    segment_url[:140], str(e)
+                    probe_url[:140], str(e)
                 )
             )
             return False
@@ -474,13 +577,13 @@ def _proxy_segment_urls_in_manifest(manifest_text, port):
             if uri_match:
                 cdn_url = uri_match.group(1)
                 if cdn_url.startswith("http"):
-                    proxy_url = "http://127.0.0.1:{0}/seg?url={1}".format(
-                        port, quote(cdn_url, safe="")
+                    proxy_url = "http://127.0.0.1:{0}/seg?u={1}".format(
+                        port, _encode_proxy_target(cdn_url)
                     )
                     line = line.replace(cdn_url, proxy_url)
         elif stripped and not stripped.startswith("#") and stripped.startswith("http"):
-            line = "http://127.0.0.1:{0}/seg?url={1}".format(
-                port, quote(stripped, safe="")
+            line = "http://127.0.0.1:{0}/seg?u={1}".format(
+                port, _encode_proxy_target(stripped)
             )
         out.append(line)
     return "\n".join(out) + "\n"
@@ -501,6 +604,9 @@ def _start_manifest_proxy(selected_url, name):
     import socketserver
 
     selected_url = _normalize_stream_cdn_url(selected_url)
+    utils.kodilog(
+        "Stripchat proxy: starting for {}".format(selected_url[:140])
+    )
     parsed = urlparse(selected_url)
     base_url = "{0}://{1}{2}/".format(
         parsed.scheme,
@@ -510,26 +616,44 @@ def _start_manifest_proxy(selected_url, name):
     
     # Only signing params belong on child manifests / segment URLs.
     manifest_query_params = parse_qs(parsed.query, keep_blank_values=True)
-    segment_auth_params = {
+    child_manifest_auth_params = {
         key: values[0]
         for key, values in manifest_query_params.items()
         if key in ("psch", "pkey") and values
     }
 
     fetch_headers = _stripchat_stream_headers(name)
+    if isinstance(STRIPCHAT_PROXY_SESSION_HEADERS, dict):
+        fetch_headers.update(
+            {
+                key: value
+                for key, value in STRIPCHAT_PROXY_SESSION_HEADERS.items()
+                if isinstance(key, str) and isinstance(value, str) and value
+            }
+        )
 
     # Shared session so CDN cookies from the manifest fetch carry over to
     # all segment requests (some CDNs set auth cookies on the manifest URL).
     session = requests.Session()
     session.headers.update(fetch_headers)
+    saved_cookies = _load_cookie_dict_for_url(selected_url)
+    if saved_cookies:
+        session.cookies.update(saved_cookies)
+        utils.kodilog(
+            "Stripchat proxy: loaded {} saved cookie(s)".format(len(saved_cookies))
+        )
+    if isinstance(STRIPCHAT_PROXY_SESSION_COOKIES, dict):
+        session.cookies.update(
+            {
+                key: value
+                for key, value in STRIPCHAT_PROXY_SESSION_COOKIES.items()
+                if isinstance(key, str) and isinstance(value, str)
+            }
+        )
 
     state = {"content": b"", "last_selected_url": selected_url}
     state_lock = threading.Lock()
     fetch_round = {"count": 0}
-
-    # Segment byte cache: cdn_url -> bytes
-    segment_cache = {}
-    segment_cache_lock = threading.Lock()
 
     # Bind socket first so port is known for segment URL rewriting.
     # Some test/sandbox environments disallow localhost listeners entirely.
@@ -541,34 +665,44 @@ def _start_manifest_proxy(selected_url, name):
         utils.kodilog("Stripchat proxy: bind failed, falling back: {}".format(str(exc)))
         return None
 
-    def _prefetch_segment(cdn_url):
-        """Fetch one segment from CDN and store in cache."""
-        try:
-            # Ensure segment URL has signing params if they were in the manifest URL
-            if segment_auth_params and "psch" not in cdn_url:
-                cdn_url = _merge_query(cdn_url, segment_auth_params)
-
-            resp = session.get(cdn_url, timeout=HTTP_TIMEOUT_PREFETCH)
-            if resp.status_code == 200:
-                with segment_cache_lock:
-                    segment_cache[cdn_url] = resp.content
-                    # Keep cache bounded
-                    while len(segment_cache) > 20:
-                        del segment_cache[next(iter(segment_cache))]
-            else:
-                utils.kodilog(
-                    "Stripchat proxy: pre-fetch CDN HTTP {0} for ...{1}".format(
-                        resp.status_code, cdn_url[-70:]
-                    )
-                )
-        except Exception as e:
-            utils.kodilog("Stripchat proxy: pre-fetch error: {}".format(str(e)))
-
-    def _fetch_and_rewrite():
+    def _fetch_and_rewrite(extra_query=None):
         nonlocal selected_url
         try:
             fetch_round["count"] += 1
-            resp = session.get(selected_url, timeout=HTTP_TIMEOUT_MANIFEST)
+            upstream_url = selected_url
+            forwarded_params = {}
+            if isinstance(extra_query, dict):
+                forwarded_params = {
+                    key: values[0]
+                    for key, values in extra_query.items()
+                    if key in ("_HLS_msn", "_HLS_part") and values
+                }
+            if forwarded_params:
+                selected_parts = list(urlparse(selected_url))
+                selected_query = parse_qs(selected_parts[4], keep_blank_values=True)
+                for key, value in forwarded_params.items():
+                    selected_query[key] = [value]
+                selected_parts[4] = urlencode(selected_query, doseq=True)
+                upstream_url = urlunparse(selected_parts)
+                utils.kodilog(
+                    "Stripchat proxy: forwarding LL-HLS params {}".format(
+                        forwarded_params
+                    )
+                )
+            utils.kodilog(
+                "Stripchat proxy: initial manifest GET {}".format(
+                    upstream_url[:140]
+                )
+            )
+            resp = session.get(upstream_url, timeout=HTTP_TIMEOUT_MANIFEST)
+            utils.kodilog(
+                "Stripchat proxy: initial status {}".format(resp.status_code)
+            )
+            utils.kodilog(
+                "Stripchat proxy: manifest cookies resp={0} session={1}".format(
+                    resp.cookies.get_dict(), session.cookies.get_dict()
+                )
+            )
             
             # Handle possible pkey expiration (403/404)
             if resp.status_code in (403, 404) and fetch_round["count"] > 1:
@@ -580,28 +714,27 @@ def _start_manifest_proxy(selected_url, name):
                 return
 
             rewritten = _rewrite_mouflon_for_isa(resp.text, base_url)
-            if rewritten and "#EXTM3U" in rewritten:
-                # Use stability logic to avoid 404s on newest segments
-                rewritten = _keep_only_stable_segments(
-                    rewritten, fetch_headers=fetch_headers, keep_count=4, edge_buffer=1
+            utils.kodilog(
+                "Stripchat proxy: rewritten manifest size {}".format(
+                    len(rewritten or "")
                 )
-                
-                # Kick off pre-fetches
-                for line in rewritten.splitlines():
-                    stripped = line.strip()
-                    if stripped and not stripped.startswith("#") and stripped.startswith("http"):
-                        with segment_cache_lock:
-                            already = stripped in segment_cache
-                        if not already:
-                            threading.Thread(
-                                target=_prefetch_segment,
-                                args=(stripped,),
-                                daemon=True,
-                            ).start()
-                
+            )
+            if rewritten and "#EXTM3U" in rewritten:
+                if "media.mp4" in rewritten:
+                    utils.kodilog(
+                        "Stripchat proxy: rewrite incomplete, media.mp4 still present"
+                    )
+                else:
+                    utils.kodilog(
+                        "Stripchat proxy: rewrite removed placeholder media.mp4 references"
+                    )
+                # Stripchat's LL-HLS segments are not reliably probeable outside
+                # an active playback session. Serve the rewritten manifest as-is
+                # and let the player drive the HLS session.
                 rewritten = _proxy_segment_urls_in_manifest(rewritten, port)
                 with state_lock:
                     state["content"] = rewritten.encode("utf-8")
+                    state["last_selected_url"] = upstream_url
         except Exception as e:
             utils.kodilog("Stripchat proxy: fetch error: {}".format(str(e)))
 
@@ -618,54 +751,39 @@ def _start_manifest_proxy(selected_url, name):
         def do_GET(self):
             parsed_path = urlparse(self.path)
             if parsed_path.path == "/seg":
-                params = parse_qs(parsed_path.query)
-                cdn_url = unquote(params.get("url", [""])[0])
+                params = parse_qs(parsed_path.query, keep_blank_values=True)
+                encoded = params.get("u", [""])[0]
+                cdn_url = _decode_proxy_target(encoded) if encoded else ""
                 if not cdn_url:
                     self.send_response(400)
                     self.end_headers()
                     return
-                
-                # Re-apply signing params if missing
-                if segment_auth_params and "psch" not in cdn_url:
-                    cdn_url = _merge_query(cdn_url, segment_auth_params)
-
-                # Wait briefly for pre-fetch
-                for _ in range(30):
-                    with segment_cache_lock:
-                        if cdn_url in segment_cache:
-                            break
-                    time.sleep(0.05)
-                
-                with segment_cache_lock:
-                    cached = segment_cache.get(cdn_url)
-                
-                if cached:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "video/mp4")
-                    self.send_header("Content-Length", str(len(cached)))
+                try:
+                    seg_resp = session.get(
+                        cdn_url, timeout=HTTP_TIMEOUT_MEDIUM, stream=True
+                    )
+                    self.send_response(seg_resp.status_code)
+                    self.send_header(
+                        "Content-Type",
+                        seg_resp.headers.get("Content-Type", "video/mp4"),
+                    )
+                    cl = seg_resp.headers.get("Content-Length")
+                    if cl:
+                        self.send_header("Content-Length", cl)
                     self.end_headers()
-                    self.wfile.write(cached)
-                else:
+                    for chunk in seg_resp.iter_content(chunk_size=65536):
+                        self.wfile.write(chunk)
+                except Exception as e:
+                    utils.kodilog(
+                        "Stripchat proxy: segment fetch error: {}".format(str(e))
+                    )
                     try:
-                        seg_resp = session.get(
-                            cdn_url, timeout=HTTP_TIMEOUT_MEDIUM, stream=True
-                        )
-                        self.send_response(seg_resp.status_code)
-                        self.send_header("Content-Type", seg_resp.headers.get("Content-Type", "video/mp4"))
-                        cl = seg_resp.headers.get("Content-Length")
-                        if cl:
-                            self.send_header("Content-Length", cl)
+                        self.send_response(503)
                         self.end_headers()
-                        for chunk in seg_resp.iter_content(chunk_size=65536):
-                            self.wfile.write(chunk)
-                    except Exception as e:
-                        utils.kodilog("Stripchat proxy: segment fetch error: {}".format(str(e)))
-                        try:
-                            self.send_response(503)
-                            self.end_headers()
-                        except Exception:
-                            pass
+                    except Exception:
+                        pass
             else:
+                _fetch_and_rewrite(parse_qs(parsed_path.query, keep_blank_values=True))
                 with state_lock:
                     content = state["content"]
                 self.send_response(200)
@@ -686,6 +804,9 @@ def _start_manifest_proxy(selected_url, name):
             _fetch_and_rewrite()
 
     threading.Thread(target=_refresh, daemon=True).start()
+    utils.kodilog(
+        "Stripchat proxy: ready at http://127.0.0.1:{}/manifest.m3u8".format(port)
+    )
     return "http://127.0.0.1:{}/manifest.m3u8".format(port)
 
 
@@ -1080,6 +1201,49 @@ def Playvid(url, name):
                 )
             return None
 
+        def _promote_variant_to_auto_url(stream_url):
+            if not isinstance(stream_url, str) or ".m3u8" not in stream_url:
+                return None
+            match = re.search(r"/master/(\d+)_\d{3,4}p\.m3u8($|\?)", stream_url)
+            if not match:
+                return None
+
+            auto_url = stream_url.replace(
+                "/master/{}_".format(match.group(1)),
+                "/master/{}_".format(match.group(1)),
+            )
+            auto_url = re.sub(
+                r"/master/(\d+)_\d{3,4}p\.m3u8",
+                r"/master/\1_auto.m3u8",
+                auto_url,
+            )
+            if auto_url == stream_url:
+                return None
+
+            try:
+                probe_headers = _stripchat_stream_headers(name)
+                for probe_url in _iter_manifest_probe_urls(auto_url):
+                    probe_data = utils._getHtml(
+                        probe_url,
+                        site.url,
+                        headers=probe_headers,
+                        error="throw",
+                    )
+                    if isinstance(probe_data, str) and "#EXTM3U" in probe_data:
+                        utils.kodilog(
+                            "Stripchat: Promoted variant stream to auto playlist: {}".format(
+                                auto_url[:80]
+                            )
+                        )
+                        return auto_url
+            except Exception as e:
+                utils.kodilog(
+                    "Stripchat: Auto playlist probe failed for {}: {}".format(
+                        auto_url[:80], str(e)
+                    )
+                )
+            return None
+
         def _fetch_manifest_text(manifest_url):
             if not isinstance(manifest_url, str) or ".m3u8" not in manifest_url:
                 return ""
@@ -1172,26 +1336,39 @@ def Playvid(url, name):
                     return True
             return False
 
-        def _derive_signed_media_candidate(master_url):
+        def _derive_signed_media_candidate(master_url, source_label=""):
             master_text = _fetch_manifest_text(master_url)
             if not master_text or "#EXTM3U" not in master_text:
-                return None
+                return None, None
 
             mouflon = re.search(r"#EXT-X-MOUFLON:PSCH:(v\d+):([^\r\n]+)", master_text)
             if not mouflon:
-                return None
+                return None, None
 
             psch = mouflon.group(1)
             pkey = mouflon.group(2).strip()
             if not pkey:
-                return None
+                return None, None
 
             child_urls = [
                 line.strip()
                 for line in master_text.splitlines()
                 if line.strip() and not line.startswith("#")
             ]
-            for child_url in child_urls[:2]:
+            ranked_child_urls = []
+            for child_url in child_urls:
+                quality = 0
+                quality_match = re.search(r"_(\d{3,4})p(?:_blurred)?\.m3u8($|\?)", child_url)
+                if quality_match:
+                    try:
+                        quality = int(quality_match.group(1))
+                    except ValueError:
+                        quality = 0
+                ranked_child_urls.append((quality, child_url))
+
+            ranked_child_urls.sort(key=lambda item: item[0], reverse=True)
+
+            for _, child_url in ranked_child_urls:
                 signed_child_url = _ensure_low_latency_playlist(_merge_query(
                     child_url,
                     {"psch": psch, "pkey": pkey},
@@ -1213,22 +1390,30 @@ def Playvid(url, name):
                         )
                     )
                     continue
+                child_label = "media-signed"
+                if source_label:
+                    child_label = "media-signed-{}".format(source_label)
                 utils.kodilog(
                     "Stripchat: Derived signed media candidate: {}".format(
                         signed_child_url[:80]
                     )
                 )
-                return signed_child_url
-            return None
+                return child_label, signed_child_url
+            return None, None
 
         promoted = []
-        for _, candidate_url in list(candidates):
+        for label, candidate_url in list(candidates):
             source_url = _promote_variant_to_source_url(candidate_url)
             if source_url:
                 promoted.append(("source-derived", source_url))
-            signed_media_url = _derive_signed_media_candidate(candidate_url)
+            auto_url = _promote_variant_to_auto_url(candidate_url)
+            if auto_url:
+                promoted.append(("auto-derived", auto_url))
+            signed_label, signed_media_url = _derive_signed_media_candidate(
+                candidate_url, label
+            )
             if signed_media_url:
-                promoted.append(("media-signed", signed_media_url))
+                promoted.append((signed_label, signed_media_url))
         candidates.extend(promoted)
 
         # After source promotion, derive signed child manifests again so the
@@ -1239,13 +1424,15 @@ def Playvid(url, name):
             if isinstance(candidate_url, str) and candidate_url
         )
         signed_followups = []
-        for _, candidate_url in list(candidates):
-            signed_media_url = _derive_signed_media_candidate(candidate_url)
+        for label, candidate_url in list(candidates):
+            signed_label, signed_media_url = _derive_signed_media_candidate(
+                candidate_url, label
+            )
             if (
                 signed_media_url
                 and signed_media_url not in seen_candidate_urls
             ):
-                signed_followups.append(("media-signed", signed_media_url))
+                signed_followups.append((signed_label, signed_media_url))
                 seen_candidate_urls.add(signed_media_url)
         candidates.extend(signed_followups)
 
@@ -1256,35 +1443,58 @@ def Playvid(url, name):
         def quality_score(label, stream_url):
             if not label:
                 label = ""
-            score = -1
+            score = 0
             label = label.lower()
-            if "media-signed" in label:
-                # Signed media manifests are strongly preferred over master playlists
-                # when the proxy is involved, as they have correct MOUFLON hashes.
-                score = 15000
-            elif "source" in label:
-                score = max(score, 10000)
+            quality_value = 0
             match = re.search(r"(\d{3,4})p", label)
             if match:
                 try:
-                    score = max(score, int(match.group(1)))
+                    quality_value = int(match.group(1))
                 except ValueError:
-                    pass
+                    quality_value = 0
+
+            url_quality_value = 0
+            if isinstance(stream_url, str):
+                url_quality = re.search(r"_(\d{3,4})p(?:_blurred)?\.m3u8($|\?)", stream_url)
+                if url_quality:
+                    try:
+                        url_quality_value = int(url_quality.group(1))
+                    except ValueError:
+                        url_quality_value = 0
+
+            best_quality = max(quality_value, url_quality_value)
+            if label == "media-signed":
+                # Generic signed source manifests are less reliable than
+                # explicit quality-specific media manifests for Stripchat LL-HLS.
+                score = 8000 + best_quality
+            elif "media-signed-auto" in label:
+                score = 13000 + best_quality
+            elif "media-signed" in label:
+                # Signed media manifests are strongly preferred over master playlists
+                # when the proxy is involved, as they have correct MOUFLON hashes.
+                score = 12000 + best_quality
+            elif "auto" in label:
+                score = max(score, 11000 + best_quality)
+            elif "source" in label:
+                score = max(score, 10000 + best_quality)
+            else:
+                score = max(score, best_quality)
 
             # Fallback: infer quality from URL pattern when labels are generic.
             if isinstance(stream_url, str):
+                is_generic_media_manifest = bool(
+                    re.search(r"/\d+\.m3u8($|\?)", stream_url)
+                ) and not bool(
+                    re.search(r"/\d+_\d{3,4}p(?:_blurred)?\.m3u8($|\?)", stream_url)
+                )
                 if re.search(r"/\d+\.m3u8($|\?)", stream_url) and not re.search(
                     r"/\d+_\d{3,4}p\.m3u8($|\?)", stream_url
                 ):
-                    score = max(score, 16000 if "media-signed" in label else 9000)
+                    score = max(score, 7000 if "media-signed" in label else 9000)
                 if re.search(r"/master/\d+\.m3u8($|\?)", stream_url):
-                    score = max(score, 9000)
-                url_quality = re.search(r"_(\d{3,4})p\.m3u8($|\?)", stream_url)
-                if url_quality:
-                    try:
-                        score = max(score, int(url_quality.group(1)))
-                    except ValueError:
-                        pass
+                    score = max(score, 9000 + best_quality)
+                if is_generic_media_manifest and "source-derived" in label:
+                    score = min(score, 6500)
             return score
 
         evaluated = []
@@ -1366,6 +1576,8 @@ def Playvid(url, name):
         utils.notify("Stripchat", "Model not found or offline")
         return
 
+    _prime_stream_session(url, name)
+
     # Pick best stream URL
     stream_url, is_online_flag = _pick_stream(model_data, url)
     if not stream_url:
@@ -1424,17 +1636,41 @@ def Playvid(url, name):
 
     utils.kodilog("Stripchat: Starting playback")
     proxy_url = None
-    # Use proxy by default if setting is not found (bool check handles 'true')
-    if (
-        utils.addon.getSetting("stripchat_proxy") != "false"
-        and _should_use_manifest_proxy(stream_url)
-    ):
+    needs_proxy = _should_use_manifest_proxy(stream_url)
+    if utils.addon.getSetting("stripchat_proxy") != "false" and needs_proxy:
+        utils.kodilog(
+            "Stripchat: Attempting manifest proxy for {}".format(stream_url[:120])
+        )
         proxy_url = _start_manifest_proxy(stream_url, name)
-        
-    if proxy_url:
-        utils.kodilog("Stripchat: Using manifest proxy: {}".format(proxy_url))
-        vp.play_from_direct_link(proxy_url)
-    elif ia_headers:
+
+    if needs_proxy:
+        if proxy_url:
+            utils.kodilog("Stripchat: Using manifest proxy: {}".format(proxy_url))
+            vp.play_from_direct_link(proxy_url)
+            return
+
+        vp.progress.close()
+        if utils.addon.getSetting("stripchat_proxy") == "false":
+            utils.kodilog(
+                "Stripchat: Manifest proxy required but disabled in settings; refusing raw playback"
+            )
+            utils.notify(
+                "Stripchat",
+                "Proxy is disabled. Raw playback would hit 404 placeholder segments.",
+                duration=7000,
+            )
+        else:
+            utils.kodilog(
+                "Stripchat: Manifest proxy failed; refusing raw playback because Stripchat placeholders 404"
+            )
+            utils.notify(
+                "Stripchat",
+                "Proxy setup failed. Raw playback would hit 404 placeholder segments.",
+                duration=7000,
+            )
+        return
+
+    if ia_headers:
         # If no proxy, we play with headers
         # Append manifest_headers=1 so ISA uses the provided headers for sub-manifests/segments
         full_url = stream_url + "|" + ia_headers + "&manifest_headers=1"

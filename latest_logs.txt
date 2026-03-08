@@ -1,0 +1,466 @@
+python3 scripts/debug_stripchat_proxy.py https://stripchat.com/Anita-vega --dump-raw --browser-sniff
+
+[kodilog] Stripchat: Loading details for model: Anita-vega
+[kodilog] Stripchat: Fetching model details: https://stripchat.com/api/external/v4/widget/?limit=1&modelsList=Anita-vega
+[kodilog] Stripchat: Successfully loaded model details for Anita-vega
+[kodilog] Stripchat: Found quality stream: original - https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] Stripchat: Found quality stream: 480p - https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] Stripchat: Found quality stream: 240p - https://edge-hls.saawsedge.com/hls/198770662/master/198770662_240p.m3u8
+[kodilog] Stripchat: Found quality stream: 160p - https://edge-hls.saawsedge.com/hls/198770662/master/198770662_160p.m3u8
+[kodilog] Stripchat: Found direct stream URL: https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] Stripchat: Using fallback URL: https://stripchat.com/Anita-vega
+[kodilog] Stripchat: Added mirrored stream candidate: original - https://edge-hls.doppiocdn.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] Stripchat: Added mirrored stream candidate: 480p - https://edge-hls.doppiocdn.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] Stripchat: Added mirrored stream candidate: 240p - https://edge-hls.doppiocdn.com/hls/198770662/master/198770662_240p.m3u8
+[kodilog] Stripchat: Added mirrored stream candidate: 160p - https://edge-hls.doppiocdn.com/hls/198770662/master/198770662_160p.m3u8
+[kodilog] Stripchat: Added mirrored stream candidate: direct - https://edge-hls.doppiocdn.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Source playlist probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8?playlist: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] Stripchat: Manifest probe exhausted fallback URLs for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_480p.m3u8
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Source playlist probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Source playlist probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_240p.m3u8?playlist: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_240p.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] Stripchat: Manifest probe exhausted fallback URLs for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_240p.m3u8
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Source playlist probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_160p.m3u8?playlist: <urlopen error [Errno -2] Name or service not known>
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Manifest probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_160p.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] Stripchat: Manifest probe exhausted fallback URLs for https://edge-hls.saawsedge.com/hls/198770662/master/198770662_160p.m3u8
+[kodilog] getHtml URLError: <urlopen error [Errno -2] Name or service not known> 0
+[kodilog] Stripchat: Source playlist probe failed for https://edge-hls.saawsedge.com/hls/198770662/master/198770662.m3u8: <urlopen error [Errno -2] Name or service not known>
+[kodilog] Stripchat: Promoted variant stream to source playlist: https://edge-hls.doppiocdn.com/hls/198770662/master/198770662.m3u8
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Promoted variant stream to source playlist: https://edge-hls.doppiocdn.com/hls/198770662/master/198770662.m3u8
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Promoted variant stream to source playlist: https://edge-hls.doppiocdn.com/hls/198770662/master/198770662.m3u8
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_240p.m3u8?playlistT
+[kodilog] Stripchat: Promoted variant stream to source playlist: https://edge-hls.doppiocdn.com/hls/198770662/master/198770662.m3u8
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_160p.m3u8?playlistT
+[kodilog] Stripchat: Promoted variant stream to source playlist: https://edge-hls.doppiocdn.com/hls/198770662/master/198770662.m3u8
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_240p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_160p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_480p.m3u8?playlistT
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Derived signed media candidate: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Excluding saawsedge candidates in favor of reachable mirrored CDN
+[kodilog] Stripchat: Selected stream: media-signed-source-derived - https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=l
+[kodilog] Stripchat: Using selected stream URL directly without master playlist parsing
+[kodilog] Stripchat: Final stream URL: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pk
+[kodilog] Stripchat: Starting playback
+[kodilog] Stripchat: Attempting manifest proxy for https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat: Using manifest proxy: http://127.0.0.1/captured-manifest.m3u8
+RESOLVED_MANIFEST_URL: https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: starting for https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: initial manifest GET https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: initial status 200
+[kodilog] Stripchat proxy: manifest cookies resp={} session={}
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1153_Q/B7vo/0QzN+PuGwtkpv29_1772920829_part2.mp4'
+[kodilog] Stripchat rewrite: in_lines=58 out_lines=35 replaced_segments=0 replaced_parts=12 map_rewrites=0 normalized_relative=0
+[kodilog] Stripchat proxy: rewritten manifest size 1903
+[kodilog] Stripchat proxy: rewrite removed placeholder media.mp4 references
+[kodilog] Stripchat stable: header_lines=5 segments=12 keep_count=4 edge_buffer=1
+[kodilog] Stripchat stable: testing candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4
+[kodilog] Stripchat stable: no stable segments found, keeping original manifest
+[kodilog] Stripchat proxy: ready at http://127.0.0.1:43165/manifest.m3u8
+RESULT: proxy started
+PROXY_URL: http://127.0.0.1:43165/manifest.m3u8
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part0.mp4
+MANIFEST_STATUS: 200
+MANIFEST_BYTES: 2778
+MANIFEST_HAS_EXTM3U: True
+MANIFEST_HAS_PLACEHOLDER_MEDIA_MP4: False
+FIRST_MEDIA_URL: http://127.0.0.1:43165/seg?u=aHR0cHM6Ly9tZWRpYS1obHMuZG9wcGlvY2RuLm5ldC9iLWhscy0xOC8xOTg3NzA2NjIvMTk4NzcwNjYyXzExNTBfZ2hMZnNwTFFTckNLN3VWSUs2YW5FNF8xNzcyOTIwODIzX3BhcnQwLm1wNA==
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1150_ghLfspLQSrCK7uVIK6anE4_1772920823_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1151_QqejP+Y4jgozOs4oJqj/1y_1772920825_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1152_QpJ7e5adyoVCupQgLkrTll_1772920827_part0.mp4
+[kodilog] Stripchat proxy: initial manifest GET https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: initial status 200
+[kodilog] Stripchat proxy: manifest cookies resp={} session={}
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837_part0.mp4'
+[kodilog] Stripchat rewrite: in_lines=54 out_lines=35 replaced_segments=0 replaced_parts=12 map_rewrites=0 normalized_relative=0
+[kodilog] Stripchat proxy: rewritten manifest size 1903
+[kodilog] Stripchat proxy: rewrite removed placeholder media.mp4 references
+[kodilog] Stripchat stable: header_lines=5 segments=12 keep_count=4 edge_buffer=1
+[kodilog] Stripchat stable: testing candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4
+SEGMENT_STATUS: 404
+SEGMENT_CONTENT_TYPE: video/mp4
+SEGMENT_FIRST_CHUNK_BYTES: 10
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4
+RAW_MANIFEST_STATUS: 200
+RAW_MANIFEST_BYTES: 4956
+RAW_FULL_SEGMENT_COUNT: 3
+RAW_FULL_SEGMENT_0: https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4
+RAW_SEGMENT_PROBE_0_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4
+RAW_SEGMENT_PROBE_0_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+RAW_SEGMENT_PROBE_0_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4
+RAW_SEGMENT_PROBE_0_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+RAW_FULL_SEGMENT_1: https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4
+RAW_SEGMENT_PROBE_1_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4
+RAW_SEGMENT_PROBE_1_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+RAW_SEGMENT_PROBE_1_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4
+RAW_SEGMENT_PROBE_1_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+RAW_FULL_SEGMENT_2: https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4
+RAW_SEGMENT_PROBE_2_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837.mp4
+RAW_SEGMENT_PROBE_2_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+RAW_SEGMENT_PROBE_2_raw: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837.mp4
+RAW_SEGMENT_PROBE_2_with_auth: HTTP 404 bytes=10 type=video/mp4 url=https://media-hls.doppiocdn.com/b-hls-18/198770662/198770662_1157_AhbDJpngBvBmMp9YrsYfEm_1772920837.mp4?psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4
+[kodilog] Stripchat stable: no stable segments found, keeping original manifest
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1155_whj78pL8HmNmfve4bqpPVm_1772920833_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1154_QgGnM3VMAxzOPsi0tkCj03_1772920831_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1156_g/3z++iwin9yOgoMos4Wn2_1772920835_part3.mp4
+[kodilog] Stripchat proxy: initial manifest GET https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: initial status 200
+[kodilog] Stripchat proxy: manifest cookies resp={} session={}
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1161_AgGLt060TrTi+mn0quz6n4_1772920844_part2.mp4'
+[kodilog] Stripchat rewrite: in_lines=58 out_lines=35 replaced_segments=0 replaced_parts=12 map_rewrites=0 normalized_relative=0
+[kodilog] Stripchat proxy: rewritten manifest size 1903
+[kodilog] Stripchat proxy: rewrite removed placeholder media.mp4 references
+[kodilog] Stripchat stable: header_lines=5 segments=12 keep_count=4 edge_buffer=1
+[kodilog] Stripchat stable: testing candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=4 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=3 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=2 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=1 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=0 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4
+[kodilog] Stripchat stable: no stable segments found, keeping original manifest
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1158_An3nu8bxCmByLhHI6r8CX/_1772920838_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part0.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1159_Qvlj5+nAHnzGPzUoJ6aj3m_1772920840_part3.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part1.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part2.mp4
+[kodilog] Stripchat proxy: pre-fetch CDN HTTP 404 for ...8/198770662/198770662_1160_w/0n9quMzsxe8h4kdmOnFz_1772920842_part3.mp4
+[kodilog] Stripchat proxy: initial manifest GET https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+[kodilog] Stripchat proxy: initial status 200
+[kodilog] Stripchat proxy: manifest cookies resp={} session={}
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1162_Qt3L/+0wTxinskpE6lMTU+_1772920846.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part2.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part3.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part3.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part0.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part0.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part1.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part1.mp4'
+[kodilog] Stripchat raw mouflon line: '#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part2.mp4'
+[kodilog] Stripchat raw mouflon uri: 'https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1165_g/8z5/O8Rv4qvpagt7zi1l_1772920852_part2.mp4'
+[kodilog] Stripchat rewrite: in_lines=58 out_lines=35 replaced_segments=0 replaced_parts=12 map_rewrites=0 normalized_relative=0
+[kodilog] Stripchat proxy: rewritten manifest size 1903
+[kodilog] Stripchat proxy: rewrite removed placeholder media.mp4 references
+[kodilog] Stripchat stable: header_lines=5 segments=12 keep_count=4 edge_buffer=1
+[kodilog] Stripchat stable: testing candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=10 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part1.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part1.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=9 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part1.mp4
+[kodilog] Stripchat stable: testing candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part0.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part0.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=8 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1164_ggdzpqU0Alv/OvC4IpF7V/_1772920850_part0.mp4
+[kodilog] Stripchat stable: testing candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part3.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part3.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=7 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part3.mp4
+[kodilog] Stripchat stable: testing candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part2.mp4
+[kodilog] Stripchat stable: probe https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part2.mp4 -> HTTP 404
+[kodilog] Stripchat stable: rejected candidate index=6 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part2.mp4
+[kodilog] Stripchat stable: testing candidate index=5 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_1163_QmYPu8B8joLKNm3EIjYbll_1772920848_part1.mp4
+BROWSER_MEDIA_EVENT_COUNT: 125
+BROWSER_MEDIA_0: kind=request status=None url=https://edge-hls.doppiocdn.net/hls/198770662/master/198770662_auto.m3u8?playlistType=lowLatency
+BROWSER_MEDIA_1: kind=response status=200 url=https://edge-hls.doppiocdn.net/hls/198770662/master/198770662_auto.m3u8?playlistType=lowLatency
+BROWSER_MEDIA_2: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+BROWSER_MEDIA_3: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai
+BROWSER_MEDIA_4: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=1
+BROWSER_MEDIA_5: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4
+BROWSER_MEDIA_6: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part0.mp4
+BROWSER_MEDIA_7: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part1.mp4
+BROWSER_MEDIA_8: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part2.mp4
+BROWSER_MEDIA_9: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part3.mp4
+BROWSER_MEDIA_10: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part0.mp4
+BROWSER_MEDIA_11: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part1.mp4
+BROWSER_MEDIA_12: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part2.mp4
+BROWSER_MEDIA_13: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part3.mp4
+BROWSER_MEDIA_14: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part0.mp4
+BROWSER_MEDIA_15: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=2
+BROWSER_MEDIA_16: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part1.mp4
+BROWSER_MEDIA_17: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=1
+BROWSER_MEDIA_BODY_17: #EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-MOUFLON:PSCH:v2:Ook7quaiNgiyuhai\n#EXT-X-TARGETDURATION:2\n#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=2.000\n#EXT-X-PART-INF:PART-TARGET=0.500\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MEDIA-SEQUENCE:1137\n#EXT-X-DISCONTINUITY-SEQUENCE:0\n#EXT-X-MAP:URI="https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part0.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4",INDEPENDENT=YES\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part1.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part2.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_177292083
+BROWSER_MEDIA_18: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part0.mp4
+BROWSER_MEDIA_19: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part1.mp4
+BROWSER_MEDIA_20: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part0.mp4
+BROWSER_MEDIA_21: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part1.mp4
+BROWSER_MEDIA_22: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part3.mp4
+BROWSER_MEDIA_23: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part0.mp4
+BROWSER_MEDIA_24: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part3.mp4
+BROWSER_MEDIA_25: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1139_qUi4PEgOmHmShGLs_1772920841_part2.mp4
+BROWSER_MEDIA_26: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4
+BROWSER_MEDIA_27: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_c1ceKi1SV2X8MLg2_1772920839_part2.mp4
+BROWSER_MEDIA_28: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part1.mp4
+BROWSER_MEDIA_29: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=3
+BROWSER_MEDIA_30: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part2.mp4
+BROWSER_MEDIA_31: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=2
+BROWSER_MEDIA_BODY_31: #EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-MOUFLON:PSCH:v2:Ook7quaiNgiyuhai\n#EXT-X-TARGETDURATION:2\n#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=2.000\n#EXT-X-PART-INF:PART-TARGET=0.500\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MEDIA-SEQUENCE:1137\n#EXT-X-DISCONTINUITY-SEQUENCE:0\n#EXT-X-MAP:URI="https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part0.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4",INDEPENDENT=YES\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part1.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_1772920837_part2.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1137_AlA7JwKAHgWq+m1E6kgHUn_177292083
+BROWSER_MEDIA_32: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1141&_HLS_part=0
+BROWSER_MEDIA_33: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part2.mp4
+BROWSER_MEDIA_34: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part3.mp4
+BROWSER_MEDIA_35: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1140&_HLS_part=3
+BROWSER_MEDIA_BODY_35: #EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-MOUFLON:PSCH:v2:Ook7quaiNgiyuhai\n#EXT-X-TARGETDURATION:2\n#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=2.000\n#EXT-X-PART-INF:PART-TARGET=0.500\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MEDIA-SEQUENCE:1138\n#EXT-X-DISCONTINUITY-SEQUENCE:0\n#EXT-X-MAP:URI="https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part0.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4",INDEPENDENT=YES\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part1.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part2.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_177292083
+BROWSER_MEDIA_36: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1141&_HLS_part=1
+BROWSER_MEDIA_37: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1140_xGoNce7Bsf5l0SoH_1772920843_part3.mp4
+BROWSER_MEDIA_38: kind=request status=None url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1141_ZcRnkC3sOeBcKbDV_1772920845_part0.mp4
+BROWSER_MEDIA_39: kind=response status=200 url=https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p.m3u8?playlistType=lowLatency&psch=v2&pkey=Ook7quaiNgiyuhai&_HLS_msn=1141&_HLS_part=0
+BROWSER_MEDIA_BODY_39: #EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-MOUFLON:PSCH:v2:Ook7quaiNgiyuhai\n#EXT-X-TARGETDURATION:2\n#EXT-X-SERVER-CONTROL:CAN-BLOCK-RELOAD=YES,PART-HOLD-BACK=2.000\n#EXT-X-PART-INF:PART-TARGET=0.500\n#EXT-X-INDEPENDENT-SEGMENTS\n#EXT-X-MEDIA-SEQUENCE:1138\n#EXT-X-DISCONTINUITY-SEQUENCE:0\n#EXT-X-MAP:URI="https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_init_rbPHDfSSct9s4ilT.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part0.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4",INDEPENDENT=YES\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part1.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_1772920839_part2.mp4\n#EXT-X-PART:DURATION=0.500,URI="https://media-hls.doppiocdn.net/b-hls-18/media.mp4"\n#EXT-X-MOUFLON:URI:https://media-hls.doppiocdn.net/b-hls-18/198770662/198770662_960p_h264_1138_w/JTu3UFxxNiNxYQKupDSz_177292083
