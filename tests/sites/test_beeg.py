@@ -5,8 +5,8 @@ import base64
 from resources.lib.sites import beeg
 
 
-def test_bglist_parses_json(monkeypatch):
-    """Test that BGList correctly parses API JSON data."""
+def test_list_parses_json(monkeypatch):
+    """Test that List correctly parses API JSON data."""
     mock_data = [
         {
             "fc_facts": [{"fc_thumbs": [1, 2, 3], "fc_start": 0, "fc_end": 600}],
@@ -44,7 +44,7 @@ def test_bglist_parses_json(monkeypatch):
     monkeypatch.setattr(beeg.site, "add_dir", lambda *a, **k: None)
     monkeypatch.setattr(beeg.utils, "eod", lambda: None)
 
-    beeg.BGList("https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0")
+    beeg.List("https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0")
 
     assert len(downloads) == 1
     assert "Tag1 - Video 1" in downloads[0]["name"]
@@ -58,17 +58,16 @@ def test_bglist_parses_json(monkeypatch):
     assert decoded_json["file"]["id"] == "123"
 
 
-def test_bgcat_parses_json(monkeypatch):
-    """Test that BGCat correctly parses category API data."""
-    mock_cat_data = {
-        "other": [
-            {
-                "tg_name": "Category 1",
-                "tg_slug": "cat1",
-                "thumbs": [{"id": "t1", "crops": [{"id": "c1"}]}],
-            }
-        ]
-    }
+def test_category_parses_json(monkeypatch):
+    """Test that Category correctly parses category API data."""
+    # Upstream change: Category(url) now fetches json and iterates it directly
+    mock_cat_data = [
+        {
+            "tg_name": "Category 1",
+            "tg_slug": "cat1",
+            "thumbs": [{"id": "t1", "crops": [{"id": "c1"}]}],
+        }
+    ]
 
     dirs = []
 
@@ -82,7 +81,7 @@ def test_bgcat_parses_json(monkeypatch):
     monkeypatch.setattr(beeg.site, "add_dir", fake_add_dir)
     monkeypatch.setattr(beeg.utils, "eod", lambda: None)
 
-    beeg.BGCat("other")
+    beeg.Category("https://store.externulls.com/tag/recommends?type=other&slug=index")
 
     assert len(dirs) == 1
     assert dirs[0]["name"] == "Category 1"

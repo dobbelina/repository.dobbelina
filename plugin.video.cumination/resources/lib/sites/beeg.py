@@ -28,23 +28,21 @@ from six.moves import urllib_parse
 
 addon = utils.addon
 site = AdultSite(
-    "beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "beeg.png", "beeg"
+    "beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://store.externulls.com/", "beeg.png", "beeg"
 )
 
 
 @site.register(default_mode=True)
-def BGMain():
-    site.add_dir("[COLOR hotpink]Categories[/COLOR]", "other", "BGCat", site.img_cat)
-    site.add_dir(
-        "[COLOR hotpink]Channels[/COLOR]", "productions", "BGCat", site.img_cat
-    )
-    site.add_dir("[COLOR hotpink]Models[/COLOR]", "human", "BGCat", site.img_cat)
-    BGList("https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0", 1)
+def Main():
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tag/recommends?type=other&slug=index', 'Category', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'tag/recommends?type=brand&slug=index', 'Category', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'tag/recommends?type=person&slug=index', 'Category', site.img_cat)
+    List('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
     utils.eod()
 
 
 @site.register()
-def BGList(url, page=1):
+def List(url, page=1):
     listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
 
@@ -125,7 +123,7 @@ def BGList(url, page=1):
         site.add_download_link(
             name,
             videopage,
-            "BGPlayvid",
+            "Playvid",
             img,
             plot,
             contextm=cm,
@@ -149,7 +147,7 @@ def BGList(url, page=1):
         site.add_dir(
             "Next Page ({})".format(str(page + 1)),
             npage,
-            "BGList",
+            "List",
             site.img_next,
             page=page + 1,
             contextm=cm,
@@ -169,7 +167,7 @@ def GotoPage(url, np):
         contexturl = (
             utils.addon_sys
             + "?mode="
-            + "beeg.BGList&url="
+            + "beeg.List&url="
             + urllib_parse.quote_plus(url)
             + "&page="
             + str(pg)
@@ -185,7 +183,7 @@ def ContextRelated(slug):
     contexturl = (
         utils.addon_sys
         + "?mode="
-        + str("beeg.BGList")
+        + str("beeg.List")
         + "&url="
         + urllib_parse.quote_plus(url)
     )
@@ -193,7 +191,7 @@ def ContextRelated(slug):
 
 
 @site.register()
-def BGPlayvid(url, name, download=None):
+def Playvid(url, name, download=None):
     playall = utils.addon.getSetting("paradisehill") == "true"
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
@@ -206,7 +204,7 @@ def BGPlayvid(url, name, download=None):
             decoded_json = listjson.decode('latin-1', 'ignore')
         jdata = json.loads(decoded_json)
     except Exception as e:
-        utils.kodilog("beeg BGPlayvid: JSON decode error - {}".format(e))
+        utils.kodilog("beeg Playvid: JSON decode error - {}".format(e))
         vp.progress.close()
         utils.notify("Error", "Unable to parse video data")
         return
@@ -242,7 +240,7 @@ def BGPlayvid(url, name, download=None):
                     del videos["multi"]
                 elif maxres.isdigit():
                     videos[maxres] = videos.pop("multi")
-            key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+            key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
                 videourl = (
@@ -267,7 +265,7 @@ def BGPlayvid(url, name, download=None):
                         del videos["multi"]
                     elif maxres.isdigit():
                         videos[maxres] = videos.pop("multi")
-                key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+                key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
                 newname = name + video
                 listitem = xbmcgui.ListItem(newname)
                 listitem.setArt(
@@ -293,40 +291,14 @@ def BGPlayvid(url, name, download=None):
 
 
 @site.register()
-def BGCat(url):
-    listjson = utils.getHtml(
-        "https://store.externulls.com/tag/facts/tags?get_original=true&slug=index",
-        site.url,
-    )
+def Category(url):
+    listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
-    
-    # Handle cases where url is a full URL or contains the site URL
-    key = url
-    if site.url in key:
-        key = key.replace(site.url, "")
-    key = key.strip("/")
-    
-    if key not in jdata:
-        utils.kodilog("beeg: Key '{}' not found in category data. Available keys: {}".format(key, list(jdata.keys())))
-        utils.eod()
-        return
-
-    jdata = jdata[key]
     for cat in sorted(jdata, key=lambda x: x["tg_name"]):
         name = cat["tg_name"]
         slug = cat["tg_slug"]
-        thumbs = random.choice(cat.get("thumbs")) if cat.get("thumbs") else None
-        img = (
-            "https://thumbs.externulls.com/photos/{}/to.webp?crop_id={}&size_new=112x112".format(
-                thumbs["id"], thumbs["crops"][0]["id"]
-            )
-            if thumbs
-            else ""
-        )
-        caturl = (
-            "https://store.externulls.com/facts/tag?slug={}&limit=48&offset=0".format(
-                slug
-            )
-        )
-        site.add_dir(name, caturl, "BGList", img)
+        thumbs = cat.get("thumbs", [])
+        img = 'https://thumbs.externulls.com/photos/{}/to.webp'.format(random.choice(thumbs).get('id', 0)) if thumbs else site.img_cat
+        caturl = 'https://store.externulls.com/facts/tag?slug={}&limit=48&offset=0'.format(slug)
+        site.add_dir(name, caturl, 'List', img)
     utils.eod()
