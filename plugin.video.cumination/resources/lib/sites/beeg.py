@@ -27,20 +27,20 @@ from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
 addon = utils.addon
-site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://beeg.com/", "beeg.png", "beeg")
+site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://store.externulls.com/", "beeg.png", "beeg")
 
 
 @site.register(default_mode=True)
 def BGMain():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', 'other', 'BGCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', 'productions', 'BGCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', 'human', 'BGCat', site.img_cat)
-    BGList('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tag/recommends?type=other&slug=index', 'Category', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'tag/recommends?type=brand&slug=index', 'Category', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'tag/recommends?type=person&slug=index', 'Category', site.img_cat)
+    List('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
     utils.eod()
 
 
 @site.register()
-def BGList(url, page=1):
+def List(url, page=1):
     listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
 
@@ -100,7 +100,7 @@ def BGList(url, page=1):
         else:
             cm = ''
 
-        site.add_download_link(name, videopage, 'BGPlayvid', img, plot, contextm=cm, duration=duration, quality=quality)
+        site.add_download_link(name, videopage, 'Playvid', img, plot, contextm=cm, duration=duration, quality=quality)
     if len(jdata) >= 48:
         if not page:
             page = 1
@@ -108,7 +108,7 @@ def BGList(url, page=1):
         npage = url.split('offset=')[0] + 'offset=' + str(page * 48)
         cm_page = (utils.addon_sys + "?mode=beeg.GotoPage" + "&url=" + urllib_parse.quote_plus(npage) + "&np=" + str(page))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-        site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'BGList', site.img_next, page=page + 1, contextm=cm)
+        site.add_dir('Next Page ({})'.format(str(page + 1)), npage, 'List', site.img_next, page=page + 1, contextm=cm)
     utils.eod()
 
 
@@ -119,7 +119,7 @@ def GotoPage(url, np):
     if pg:
         pg = min(int(pg), 101)
         url = url.replace('offset={}'.format(int(np) * 48), 'offset={}'.format(int(pg) * 48))
-        contexturl = (utils.addon_sys + "?mode=" + "beeg.BGList&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
+        contexturl = (utils.addon_sys + "?mode=" + "beeg.List&url=" + urllib_parse.quote_plus(url) + "&page=" + str(pg))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -127,13 +127,14 @@ def GotoPage(url, np):
 def ContextRelated(slug):
     url = 'https://store.externulls.com/facts/tag?slug={}&get_original=true&limit=48&offset=0'.format(slug)
     contexturl = (utils.addon_sys
-                  + "?mode=" + str('beeg.BGList')
+                  + "?mode=" + str('beeg.List')
                   + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
-def BGPlayvid(url, name, download=None):
+def Playvid(url, name, download=None):
+
     playall = True if utils.addon.getSetting("paradisehill") == "true" else False
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
@@ -173,7 +174,7 @@ def BGPlayvid(url, name, download=None):
                     del videos['multi']
                 elif maxres.isdigit():
                     videos[maxres] = videos.pop('multi')
-            key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+            key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
                 videourl = 'https://video.beeg.com/' + key + '|Referer={}'.format(site.url)
@@ -194,7 +195,7 @@ def BGPlayvid(url, name, download=None):
                         del videos['multi']
                     elif maxres.isdigit():
                         videos[maxres] = videos.pop('multi')
-                key = utils.prefquality(videos, sort_by=lambda x: int(x), reverse=True)
+                key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
                 newname = name + video
                 listitem = xbmcgui.ListItem(newname)
                 listitem.setArt({'thumb': iconimage, 'icon': "DefaultVideo.png", 'poster': iconimage})
@@ -212,15 +213,14 @@ def BGPlayvid(url, name, download=None):
 
 
 @site.register()
-def BGCat(url):
-    listjson = utils.getHtml('https://store.externulls.com/tag/facts/tags?get_original=true&slug=index', site.url)
+def Category(url):
+    listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
-    jdata = jdata[url]
     for cat in sorted(jdata, key=lambda x: x["tg_name"]):
         name = cat["tg_name"]
         slug = cat["tg_slug"]
-        thumbs = random.choice(cat.get("thumbs")) if cat.get("thumbs") else None
-        img = 'https://thumbs.externulls.com/photos/{}/to.webp?crop_id={}&size_new=112x112'.format(thumbs['id'], thumbs['crops'][0]['id']) if thumbs else ''
+        thumbs = cat.get("thumbs", [])
+        img = 'https://thumbs.externulls.com/photos/{}/to.webp'.format(random.choice(thumbs).get('id', 0)) if thumbs else site.img_cat
         caturl = 'https://store.externulls.com/facts/tag?slug={}&limit=48&offset=0'.format(slug)
-        site.add_dir(name, caturl, 'BGList', img)
+        site.add_dir(name, caturl, 'List', img)
     utils.eod()

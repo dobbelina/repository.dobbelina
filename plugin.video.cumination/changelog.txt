@@ -1,9 +1,2 @@
-[B]Version 1.1.173[/B]
-- sxyprn - fix playback (direct links)
-- hqporner - fix thumbnails
-- heroero - fix playback
-- xmoviesforyou - fix page numbers, goto page
-- speedporn - fix listing
-- anybunny - fix listing, playback
-- pornditt - new site
-- pmvhaven - new site
+[B]Version 1.1.174[/B]
+- beeg - fix categories
