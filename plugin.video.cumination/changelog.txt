@@ -1,3 +1,10 @@
+[B]Version 1.1.316[/B]
+- fix lemoncams
+- Misc Fixes
+- lemoncam fix
+- add lemoncams - disable stripchat
+- updates
+
 [B]Version 1.1.315[/B]
 - Misc Fixes
 - lemoncam fix
