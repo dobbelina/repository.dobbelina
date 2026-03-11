@@ -30,7 +30,7 @@ site = AdultSite(
     "pmvhaven",
     "[COLOR hotpink]PMVHaven[/COLOR]",
     "https://pmvhaven.com/",
-    "https://pmvhaven.com/pmvhavenlogo.png",
+    "pmvhaven.png",
     "pmvhaven",
 )
 

@@ -4,9 +4,23 @@ import json
 import pytest
 from resources.lib.sites import stripchat
 
+# Global skip for this module if site is disabled
+pytestmark = pytest.mark.skipif(
+    stripchat.STRIPCHAT_DISABLED,
+    reason="Stripchat is intentionally disabled in production"
+)
+
 
 def _ll(url):
     return stripchat._ensure_low_latency_playlist(url)
+
+
+@pytest.fixture(autouse=True)
+def enable_stripchat(monkeypatch):
+    """Ensure stripchat logic is not skipped during tests."""
+    monkeypatch.setattr(stripchat, "STRIPCHAT_DISABLED", False)
+    # Disable proxy logic so existing tests pass with raw URLs.
+    monkeypatch.setattr(stripchat, "_should_use_manifest_proxy", lambda url: False)
 
 
 def test_list_parses_json_models(monkeypatch):

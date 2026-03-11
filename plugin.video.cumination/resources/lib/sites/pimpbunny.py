@@ -25,7 +25,7 @@ site = AdultSite(
     "pimpbunny",
     "[COLOR hotpink]PimpBunny[/COLOR]",
     "https://pimpbunny.com/",
-    "https://pimpbunny.com/static/images/logo.png",
+    "pimpbunny.png",
     "pimpbunny",
 )
 

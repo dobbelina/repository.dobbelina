@@ -75,7 +75,7 @@ def _parse_model_identifier(value, default_provider=DEFAULT_PROVIDER):
 def _fetch_provider_payload(provider, page):
     params = {
         "page": str(page),
-        "function": "cam",
+        "function": "cams",
         "project": "lemoncams",
         "tsp": str(int(time.time() * 1000)),
     }
@@ -184,7 +184,12 @@ def List(url, page=DEFAULT_PAGE):
         utils.eod()
         return
 
-    cams = _provider_cams(provider, page)
+    payload = _fetch_provider_payload(provider, page)
+    cams = []
+    for cam in payload.get("cams", []):
+        if provider != TOP_CAMS_KEY and cam.get("provider") != provider:
+            continue
+        cams.append(cam)
     if not cams:
         label = "top cams" if provider == TOP_CAMS_KEY else provider
         utils.notify("LemonCams", "No cams found for {}".format(label))
@@ -206,6 +211,16 @@ def List(url, page=DEFAULT_PAGE):
             _image_url(cam),
             _format_plot(cam),
             noDownload=True,
+        )
+
+    max_page = int(payload.get("maxPage") or 0)
+    if max_page and page < max_page:
+        site.add_dir(
+            "Next Page ({}/{})".format(page + 1, max_page),
+            provider,
+            "List",
+            site.img_next,
+            page + 1,
         )
 
     utils.eod()
@@ -257,6 +272,15 @@ def Playvid(url, name):
     provider, username = _parse_model_identifier(url, default_provider=DEFAULT_PROVIDER)
     if not provider or not username:
         utils.notify("LemonCams", "Could not parse model URL")
+        return
+
+    if provider == DEFAULT_PROVIDER:
+        from resources.lib.sites import stripchat
+
+        stripchat.Playvid(
+            "https://stripchat.com/{}".format(username),
+            username,
+        )
         return
 
     playable_url = _find_model_stream(provider, username)

@@ -243,6 +243,7 @@ def _ensure_kodi_stubs():
     class _Session:
         def __init__(self):
             self.headers = {}
+            self.cookies = {}
 
         def get(self, url, **kwargs):
             return _Response(url)
@@ -260,6 +261,19 @@ def _ensure_kodi_stubs():
     websocket_module = types.ModuleType("websocket")
     websocket_module.create_connection = lambda *a, **k: None
     sys.modules["websocket"] = websocket_module
+
+    # inputstreamhelper stub -----------------------------------------------
+    inputstream_module = types.ModuleType("inputstreamhelper")
+
+    class _Helper:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def check_inputstream(self):
+            return True
+
+    inputstream_module.Helper = _Helper
+    sys.modules["inputstreamhelper"] = inputstream_module
 
     # playwright_helper stub -----------------------------------------------
     def _playwright_disabled(*args, **kwargs):

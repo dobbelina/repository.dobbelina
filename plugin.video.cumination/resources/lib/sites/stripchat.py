@@ -47,7 +47,7 @@ STRIPCHAT_STREAM_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
 )
-STRIPCHAT_DISABLED = True
+STRIPCHAT_DISABLED = False
 STRIPCHAT_PROXY_SESSION_HEADERS = {}
 STRIPCHAT_PROXY_SESSION_COOKIES = {}
 
@@ -339,7 +339,7 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
                 mouflon_url = urljoin(base_url, mouflon_url)
             utils.kodilog("Stripchat raw mouflon uri: {!r}".format(mouflon_url))
             pending_mouflon_url = mouflon_url
-            if "_part" in mouflon_url:
+            if "_part" in mouflon_url or "part" in mouflon_url:
                 pending_full_segment_url = None
             else:
                 pending_full_segment_url = mouflon_url
@@ -347,7 +347,7 @@ def _rewrite_mouflon_manifest_for_kodi(manifest_text, base_url=""):
 
         if stripped.startswith("#EXT-X-PART:"):
             duration_match = re.search(r"DURATION=([0-9.]+)", stripped)
-            if duration_match and pending_mouflon_url and "_part" in pending_mouflon_url:
+            if duration_match and pending_mouflon_url and ("_part" in pending_mouflon_url or "part" in pending_mouflon_url):
                 part_url = pending_mouflon_url
                 pending_part_segments.append((duration_match.group(1), part_url))
             pending_mouflon_url = None
