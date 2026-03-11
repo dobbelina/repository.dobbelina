@@ -19,7 +19,9 @@
 import sqlite3
 import datetime
 import os
-
+import shutil
+import json
+import gzip
 import xbmc
 import six
 import re
@@ -34,6 +36,1227 @@ dialog = utils.dialog
 favoritesdb = basics.favoritesdb
 orders = {'random': 'RANDOM()', 'date added': 'ROWID DESC', 'name': 'NAME COLLATE NOCASE', 'site & date': 'MODE, ROWID DESC', 'site & name': 'MODE, DOMAIN, NAME COLLATE NOCASE', 'site & date, in folders': 'MODE, ROWID DESC', 'site & name, in folders': 'MODE, NAME COLLATE NOCASE'}
 
+conn = sqlite3.connect(favoritesdb)
+c = conn.cursor()
+try:
+    c.executescript("CREATE TABLE IF NOT EXISTS favorites (name, url, mode, image, duration, quality);")
+    c.executescript("CREATE TABLE IF NOT EXISTS keywords (keyword);")
+    c.executescript("CREATE TABLE IF NOT EXISTS custom_sites (author, name, title, url, image, about, version, installed_at, enabled, module_file);")
+    c.executescript("CREATE TABLE IF NOT EXISTS custom_lists (name);")
+    c.executescript("CREATE TABLE IF NOT EXISTS custom_listitems (name, url, mode, image, list_id);")
+
+    c.execute('PRAGMA table_info(favorites);')
+    res = c.fetchall()
+    if len(res) == 4:
+        addColumn = "ALTER TABLE favorites ADD COLUMN duration"
+        c.execute(addColumn)
+        addColumn = "ALTER TABLE favorites ADD COLUMN quality"
+        c.execute(addColumn)
+except:
+    pass
+conn.close()
+
+
+@url_dispatcher.register()
+def Refresh_images():
+    utils.clear_cache()
+
+    connfav = sqlite3.connect(favoritesdb)
+    connfav.text_factory = str
+    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    c = connfav.cursor()
+    c.execute('SELECT * FROM favorites')
+    for (name, url, mode, img, duration, quality) in c.fetchall():
+        try:
+            with conn:
+                # Use parameterized queries
+                list = conn.execute("SELECT id, cachedurl FROM texture WHERE url = ?", (img,))
+                for row in list:
+                    conn.execute("DELETE FROM sizes WHERE idtexture LIKE ?", ('%' + row[0] + '%',))
+                    try:
+                        os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
+                    except:
+                        pass
+                conn.execute("DELETE FROM texture WHERE url LIKE ?", ('%' + ".highwebmedia.com" + '%',))
+        except Exception as e:
+            utils.kodilog("Refresh_images error: {}".format(e))
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def List(url=1):
+    page = int(url)
+    items_per_page = utils.addon.getSetting("item.limit")
+    items_per_page = 1000000 if items_per_page == '0' else int(items_per_page)
+    offset = (page - 1) * items_per_page
+
+    favorder = utils.addon.getSetting("favorder") or 'date added'
+    if page == 1:
+        basics.addDir('[COLOR red]Refresh images[/COLOR]', '', 'favorites.Refresh_images', '', Folder=False)
+        basics.addDir('[COLOR violet]Sort by: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(favorder), '', 'favorites.Favorder', '', Folder=False)
+        if utils.addon.getSetting("chaturbate") == "true":
+            for f in AdultSite.clean_functions:
+                f(False)
+
+    adultsites = []
+    for adultsite in AdultSite.get_sites():
+        adultsites.append(adultsite)
+
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    sql = """CREATE VIEW IF NOT EXISTS __favorites AS SELECT rowid, name, url, mode, image, duration, quality,
+CASE WHEN url like 'http%' THEN	CASE mode WHEN 'sxyprn.Playvid' THEN 'sxyprn.com' ELSE substr(substr(url, instr(url, '//') + 2, 100),0,instr(substr(url, instr(url, '//') + 2, 100), '/')) END
+ELSE mode END domain FROM favorites ORDER BY rowid;"""
+    c.executescript(sql)
+
+    try:
+        if 'folders' in favorder:
+            if basics.addon.getSetting('custom_sites') == 'true':
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs " \
+                      "WHERE IFNULL(cs.enabled, 1) != 1) GROUP BY 1 ORDER BY 2, 1"
+            else:
+                sql = "SELECT domain, f.mode, COUNT(*) count FROM __favorites f WHERE mode NOT LIKE 'custom_%' GROUP BY 1 ORDER BY 2, 1"
+            c.execute(sql)
+
+            folders = []
+            for (domain, mode, count) in c.fetchall():
+                site = mode.split('.')[0]
+                img = ''
+                name = get_site_name(site, domain, adultsites)
+                name = '{} [COLOR thistle][{} favorites][/COLOR]'.format(name, count)
+                folders.append('{}@{}@{}@{}'.format(name, mode, domain, img))
+
+            folders.sort(key=lambda x: re.sub(r'\[COLOR[^\]]+\]\s*', '', x).lower())
+            for folder in folders[offset:offset + items_per_page]:
+                (name, mode, domain, img) = folder.split('@')
+                basics.addDir(name, mode + '@' + domain, 'favorites.FavListSite', img)
+
+            pages = (len(folders) - 1) // items_per_page + 1
+            if len(folders) > offset + items_per_page:
+                basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), str(page + 1), 'favorites.List', '')
+
+        else:
+            if basics.addon.getSetting('custom_sites') == 'true':
+                sql = """SELECT domain, name, url, mode, image, duration, quality
+                        FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN
+                        (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1)
+                        ORDER BY {} LIMIT {} OFFSET {}""".format(orders[favorder], items_per_page, offset)
+                count_sql = """SELECT COUNT(*) FROM __favorites f WHERE substr(f.mode, 1, instr(f.mode, '.') - 1) NOT IN
+                           (SELECT 'custom_' || cs.name || '_by_' || cs.author FROM custom_sites cs WHERE IFNULL(cs.enabled, 1) != 1)"""
+            else:
+                sql = """SELECT domain, name, url, mode, image, duration, quality FROM __favorites f
+                        WHERE mode NOT LIKE 'custom_%' ORDER BY {} LIMIT {} OFFSET {}""".format(orders[favorder], items_per_page, offset)
+                count_sql = "SELECT COUNT(*) FROM __favorites f WHERE mode NOT LIKE 'custom_%'"
+
+            c.execute(sql)
+            for (domain, name, url, mode, img, duration, quality) in c.fetchall():
+                duration = '' if duration is None else duration
+                quality = '' if quality is None else quality
+                site = mode.split('.')[0]
+
+                if 'site' in favorder:
+                    sitename = get_site_name(site, domain, adultsites)
+                    name = '[COLOR hotpink][{}][/COLOR] {}'.format(sitename, name)
+
+                basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
+
+            c.execute(count_sql)
+            total_items = c.fetchone()[0]
+            pages = (total_items - 1) // items_per_page + 1
+            if total_items > offset + items_per_page:
+                basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), str(page + 1), 'favorites.List', '')
+
+        conn.close()
+        utils.eod(utils.addon_handle)
+    except Exception as e:
+        conn.close()
+        utils.kodilog("List error: {}".format(e))
+        utils.notify('Error', 'Failed to load favorites')
+        return
+
+
+def get_site_name(site, domain, adultsites):
+    """Helper function to get site name"""
+    for s in adultsites:
+        if domain and domain in s.url:
+            return s.title
+    for s in adultsites:
+        if s.name == site:
+            return s.title
+    return site + ' [COLOR blue](removed)[/COLOR]'
+
+
+@url_dispatcher.register()
+def FavListSite(url, page=1):
+    page = int(page) if page else 1
+    items_per_page = utils.addon.getSetting("item.limit")
+    items_per_page = 1000000 if items_per_page == '0' else int(items_per_page)
+    offset = (page - 1) * items_per_page
+
+    favorder = utils.addon.getSetting("favorder") or 'date added'
+    if utils.addon.getSetting("chaturbate") == "true":
+        for f in AdultSite.clean_functions:
+            f(False)
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        (mode, domain) = url.split('@')
+
+        c.execute("SELECT COUNT(*) FROM __favorites WHERE mode = ? and domain = ?", (mode, domain))
+        total_items = c.fetchone()[0]
+        pages = (total_items - 1) // items_per_page + 1
+
+        c.execute("SELECT name, url, mode, image, duration, quality FROM __favorites WHERE mode = ? and domain = ? ORDER BY {} LIMIT ? OFFSET ?".format(orders[favorder]), (mode, domain, items_per_page, offset))
+
+        for (name, url, mode, img, duration, quality) in c.fetchall():
+            duration = '' if duration is None else duration
+            quality = '' if quality is None else quality
+            basics.addDownLink(name, url, mode, img, desc='', stream='', fav='del', duration=duration, quality=quality)
+
+        if total_items > offset + items_per_page:
+            basics.addDir('[COLOR orange]Next Page ({}/{})[/COLOR]'.format(page + 1, pages), '{}@{}'.format(mode, domain), 'favorites.FavListSite', '', page=page + 1)
+
+        conn.close()
+        utils.eod(utils.addon_handle)
+    except Exception as e:
+        conn.close()
+        utils.kodilog("FavListSite error: {}".format(e))
+        utils.notify('No Favorites', 'No Favorites found')
+        return
+
+
+@url_dispatcher.register()
+def Favorder():
+    input = utils.selector('Select sort order by', orders.keys())
+    if input:
+        favorder = input
+        utils.addon.setSetting('favorder', favorder)
+        xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def Favorites(fav, favmode, name, url, img, duration='', quality=''):
+    try:
+        if fav == "add":
+            existing_favorite = select_favorite(url)
+            if existing_favorite:
+                # Compare fields
+                if (existing_favorite[0] == name and existing_favorite[3] == img and
+                    existing_favorite[2] == favmode and existing_favorite[4] == duration and
+                    existing_favorite[5] == quality):
+                    utils.notify('Favorite already exists', 'Video already in favorites')
+                else:
+                    # Build question
+                    if existing_favorite[2] != favmode:
+                        question = 'its mode'
+                    elif existing_favorite[0] != name and existing_favorite[3] != img:
+                        question = 'its name and picture'
+                    elif existing_favorite[0] != name:
+                        question = 'its name'
+                    elif existing_favorite[3] != img:
+                        question = 'its picture'
+                    else:
+                        question = 'its details'
+                    if utils.dialog.yesno('Video already in favorites',
+                                          'This video is already in the favorites with the title[CR]'
+                                          '{0}[CR]Update {1}?'.format(existing_favorite[0], question)):
+                        update_favorite(favmode, name, url, img, duration, quality)
+                        utils.notify('Favorite updated', 'Video updated')
+            else:
+                addFav(favmode, name, url, img, duration, quality)
+                utils.notify('Favorite added', 'Video added to the favorites')
+        elif fav == "del":
+            delFav(url)
+            utils.notify('Favorite deleted', 'Video removed from the list')
+        elif fav == "move_to_top":
+            move_fav_to_top(url)
+            utils.notify('Favorite moved', 'Video moved to top of the list')
+        elif fav == "move_down":
+            move_fav_down(url)
+            utils.notify('Favorite moved', 'Video moved down')
+        elif fav == "move_up":
+            move_fav_up(url)
+            utils.notify('Favorite moved', 'Video moved up')
+        elif fav == "move_to_bottom":
+            move_fav_to_bottom(url)
+            utils.notify('Favorite moved', 'Video moved to the bottom of the list')
+    except Exception as e:
+        utils.kodilog("Favorites operation error: {}".format(e))
+        utils.notify('Error', 'Operation failed')
+        return
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def select_favorite(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT * FROM favorites WHERE url = ?", (url,))
+    row = c.fetchone()
+    conn.close()
+    return row
+
+
+def update_favorite(mode, name, url, img, duration, quality):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE favorites set name = ?, image = ?, mode = ?, duration = ?, quality = ? where url = ?",
+              (name, img, mode, duration, quality, url))
+    conn.commit()
+    conn.close()
+
+
+def addFav(mode, name, url, img, duration, quality):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("INSERT INTO favorites VALUES (?,?,?,?,?,?)",
+              (name, url, mode, img, duration, quality))
+    conn.commit()
+    conn.close()
+
+
+def delFav(url):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    conn.text_factory = str
+    c.execute("DELETE FROM favorites WHERE url = ?", (url,))
+    conn.commit()
+    conn.close()
+
+
+def delete_duplicates():
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    c.execute("DELETE FROM favorites "
+              + "WHERE rowid NOT IN "
+              + "(SELECT MIN(rowid) as rowid FROM favorites GROUP BY url)")
+    conn.commit()
+    conn.close()
+
+
+def move_fav_to_top(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        # Get max rowid safely
+        c.execute("SELECT MAX(rowid) FROM favorites")
+        max_rowid = c.fetchone()[0] or 0
+        c.execute("UPDATE favorites SET rowid = ? WHERE url = ?", (max_rowid + 1, url))
+        conn.commit()
+    except Exception as e:
+        utils.kodilog("move_fav_to_top error: {}".format(e))
+    finally:
+        conn.close()
+
+
+def move_fav_down(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        # Get rowid of target item
+        c.execute("SELECT rowid FROM favorites WHERE url = ?", (url,))
+        row = c.fetchone()
+        if not row:
+            return
+        current_rowid = row[0]
+
+        # Get previous item's rowid (the one above it in current order)
+        c.execute("SELECT MAX(rowid) FROM favorites WHERE rowid < ?", (current_rowid,))
+        prev_rowid = c.fetchone()[0]
+        if not prev_rowid:
+            return  # Already at top
+
+        # Swap rowids using temporary ids to avoid conflicts
+        temp_rowid = 10**9  # Arbitrary large number not likely to conflict
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (temp_rowid, prev_rowid))
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (prev_rowid, current_rowid))
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (current_rowid, temp_rowid))
+        conn.commit()
+    except Exception as e:
+        utils.kodilog("move_fav_down error: {}".format(e))
+    finally:
+        conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def move_fav_up(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        # Get rowid of target item
+        c.execute("SELECT rowid FROM favorites WHERE url = ?", (url,))
+        row = c.fetchone()
+        if not row:
+            return
+        current_rowid = row[0]
+
+        # Get next item's rowid (the one below it)
+        c.execute("SELECT MIN(rowid) FROM favorites WHERE rowid > ?", (current_rowid,))
+        next_rowid = c.fetchone()[0]
+        if not next_rowid:
+            return  # Already at bottom
+
+        # Swap rowids
+        temp_rowid = 10**9
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (temp_rowid, next_rowid))
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (next_rowid, current_rowid))
+        c.execute("UPDATE favorites SET rowid = ? WHERE rowid = ?", (current_rowid, temp_rowid))
+        conn.commit()
+    except Exception as e:
+        utils.kodilog("move_fav_up error: {}".format(e))
+    finally:
+        conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def move_fav_to_bottom(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    try:
+        c.execute("SELECT MIN(rowid) FROM favorites")
+        min_rowid = c.fetchone()[0] or 0
+        c.execute("UPDATE favorites SET rowid = ? WHERE url = ?", (min_rowid - 1, url))
+        conn.commit()
+    except Exception as e:
+        utils.kodilog("move_fav_to_bottom error: {}".format(e))
+    finally:
+        conn.close()
+
+
+@url_dispatcher.register()
+def clear_fav():
+    if not utils.dialog.yesno('Warning', 'This will delete all your favorites[CR]Continue?',
+                              nolabel='No', yeslabel='Yes'):
+        return
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    c.execute("DELETE FROM favorites")
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("Favorites deleted", "")
+
+
+@url_dispatcher.register()
+def backup_fav():
+    path = utils.xbmcgui.Dialog().browseSingle(0, 'Select directory to place backup', 'myprograms')
+    progress = utils.progress
+    progress.create('Backing up', 'Initializing')
+    if not path:
+        return
+    # Ensure path ends with slash or use os.path.join
+    if not path.endswith('/') and not path.endswith('\\'):
+        path += '/'
+    progress.update(25, "Reading database")
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT * FROM favorites")
+    favorites = [{"name": name, "url": url, "mode": mode, "img": img, "duration": duration, "quality": quality} for (name, url, mode, img, duration, quality) in c.fetchall()]
+    if not favorites:
+        progress.close()
+        utils.notify("Favorites empty", "No favorites to back up")
+        return
+    conn.close()
+    time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_content = {"meta": {"type": "cumination-favorites", "version": 1, "datetime": time}, "data": favorites}
+    if progress.iscanceled():
+        progress.close()
+        return
+    progress.update(75, "Writing backup file")
+    filename = "cumination-favorites_" + time + '.bak'
+    compressbackup = True if utils.addon.getSetting("compressbackup") == "true" else False
+    full_path = os.path.join(path, filename)
+    try:
+        if compressbackup:
+            if utils.PY3:
+                with gzip.open(full_path, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with gzip.open(full_path, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+        else:
+            if utils.PY3:
+                with open(full_path, "wt", encoding="utf-8") as fav_file:
+                    json.dump(backup_content, fav_file)
+            else:
+                with open(full_path, "wb") as fav_file:
+                    json.dump(backup_content, fav_file)
+    except IOError as e:
+        progress.close()
+        utils.kodilog("backup_fav IOError: {}".format(e))
+        utils.notify("Error: invalid path", "Do you have permission to write to the selected folder?")
+        return
+    progress.close()
+    utils.dialog.ok("Backup complete", "Backup file: {}".format(full_path))
+
+
+@url_dispatcher.register()
+def restore_fav():
+    path = utils.dialog.browseSingle(1, 'Select backup file', 'myprograms')
+    if not path:
+        return
+    compressbackup = True if utils.addon.getSetting("compressbackup") == "true" else False
+    try:
+        if compressbackup:
+            if utils.PY3:
+                with gzip.open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with gzip.open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
+        else:
+            if utils.PY3:
+                with open(path, "rt", encoding="utf-8") as fav_file:
+                    backup_content = json.load(fav_file)
+            else:
+                with open(path, "rb") as fav_file:
+                    backup_content = json.load(fav_file)
+    except (ValueError, IOError) as e:
+        utils.kodilog("restore_fav error reading file: {}".format(e))
+        utils.notify("Error", "Invalid backup file")
+        return
+
+    if not backup_content["meta"]["type"] == "cumination-favorites":
+        if backup_content["meta"]["type"] == "uwc-favorites":
+            from resources.lib.convertfav import convertfav
+            backup_content = convertfav(backup_content)
+        else:
+            utils.notify("Error", "Invalid backup file")
+            return
+    favorites = backup_content["data"]
+    if not favorites:
+        utils.notify("Error", "Empty backup")
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("select 'custom_' || name || '_by_' || author from custom_sites")
+    custom_sites = [cs[0] for cs in c.fetchall()]
+    conn.close()
+    added = 0
+    skipped = 0
+    for favorite in favorites:
+        if select_favorite(favorite["url"]):
+            u = favorite["url"] if six.PY3 else favorite["url"].encode('utf8')
+            utils.kodilog('{} is already in favorites, skipping'.format(u))
+            skipped += 1
+        elif favorite["mode"].startswith('custom_') and favorite["mode"].split('.')[0] not in custom_sites:
+            utils.kodilog('{} is not installed, skipping'.format(favorite["mode"].split('.')[0]))
+            skipped += 1
+        else:
+            duration = favorite.get("duration", "")
+            quality = favorite.get("quality", "")
+            addFav(favorite["mode"], favorite["name"], favorite["url"], favorite["img"], duration, quality)
+            added += 1
+    xbmc.executebuiltin('Container.Refresh')
+    utils.dialog.ok("Restore complete",
+                    "Restore skips items that are already present in favorites to avoid duplicates[CR]"
+                    "and favorites from not installed custom sites[CR]"
+                    "Added: {0}[CR]Skipped: {1}".format(added, skipped))
+
+
+@url_dispatcher.register()
+def install_custom_site():
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              'Cumination is not responsible for custom sites. Proceed?'):
+        return
+    path = utils.dialog.browseSingle(1, 'Select Cumination custom site file', 'myprograms')
+    if not path:
+        return
+    success = process_custom_site_zip(path)
+    if not success:
+        utils.notify('Error', 'Installation cancelled or invalid file')
+    else:
+        conn = sqlite3.connect(favoritesdb)
+        conn.text_factory = str
+        c = conn.cursor()
+        c.execute("SELECT title FROM custom_sites ORDER BY ROWID DESC LIMIT 1")
+        title = c.fetchone()[0]
+        conn.close()
+        xbmc.executebuiltin('Container.Refresh')
+        utils.notify("{}".format(title), "Site installed")
+
+
+@url_dispatcher.register()
+def install_custom_sites_from_folder():
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              'Cumination is not responsible for custom sites. Proceed?'):
+        return
+    path = utils.xbmcgui.Dialog().browseSingle(0, 'Select directory containing custom sites', 'myprograms')
+    if not path:
+        return
+    progress = utils.progress
+    progress.create('Installing custom sites', 'Searching for files')
+    zips = sorted([f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.zip')],
+                  key=lambda x: x[0].lower())
+    if not zips:
+        utils.notify('Error', 'No files found')
+        progress.close()
+        return
+    utils.textBox('Files found', '[CR]'.join(zips))
+    if not utils.dialog.yesno('WARNING',
+                              'All custom sites from the list will be installed. Proceed?'):
+        progress.close()
+        return
+    successful = []
+    unsuccessful = []
+    for idx, zip in enumerate(zips):
+        progress.update(int((idx+1) / len(zips) * 100), "[CR]Processing {}".format(zip))
+        success = process_custom_site_zip(os.path.join(path, zip))
+        if success:
+            successful.append(zip)
+        else:
+            unsuccessful.append(zip)
+    progress.close()
+    text = ''
+    if successful:
+        text += 'Successful:[CR]{}[CR]'.format('[CR]'.join(successful))
+    if unsuccessful:
+        text += 'Unsuccessful:[CR]{}'.format('[CR]'.join(unsuccessful))
+    utils.textBox('Installation result', text)
+
+
+def process_custom_site_zip(path):
+    import json
+
+    if basics.KODIVER < 19.0:
+        from resources.lib import zfile as zipfile
+    else:
+        import zipfile
+
+    def safe_move(src, target):
+        """Move file, handling cross-device issues and subdirectories."""
+        # Ensure target directory exists
+        target_dir = os.path.dirname(target)
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+        shutil.move(src, target)
+
+    basics.clean_temp()
+    try:
+        zip = zipfile.ZipFile(path, 'r')
+    except Exception as e:
+        utils.kodilog("process_custom_site_zip: cannot open zip: {}".format(e))
+        return False
+
+    try:
+        with zip.open('meta.json') as metafile:
+            meta_data = json.load(metafile)
+    except Exception as e:
+        utils.kodilog('Invalid meta.json: {}'.format(e))
+        zip.close()
+        return False
+
+    name = meta_data.get('name')
+    original_module = meta_data.get('module_name')
+    author = meta_data.get('author')
+    version = meta_data.get('version')
+    title = meta_data.get('title')
+    url = meta_data.get('url')
+    original_image = meta_data.get('image')
+    original_about = meta_data.get('about')
+
+    # Validation
+    if not all([name, original_module, author, version, title, url]):
+        utils.kodilog('Missing required meta data')
+        zip.close()
+        return False
+
+    if original_about and not original_about.endswith('.txt'):
+        utils.kodilog('About file must have .txt extension')
+        zip.close()
+        return False
+    if original_module and not original_module.endswith('.py'):
+        utils.kodilog('Module file must have .py extension')
+        zip.close()
+        return False
+
+    invalid_chars = ['\\', '/', ':', '<', '>', '|', '"', '?', '*']
+    checkable = [author, name, original_module, original_about, original_image]
+    for item in checkable:
+        if item and any(c in item for c in invalid_chars):
+            utils.kodilog('Invalid character in meta data: {}'.format(item))
+            zip.close()
+            return False
+
+    # Extract files
+    extracted = []
+    try:
+        for f in [original_module, original_about, original_image]:
+            if f:
+                # Handle subdirectories: extract to tempDir preserving structure
+                target_path = os.path.join(basics.tempDir, f)
+                os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                with zip.open(f) as source, open(target_path, 'wb') as target:
+                    shutil.copyfileobj(source, target)
+                extracted.append(f)
+    except Exception as e:
+        utils.kodilog('Extraction error: {}'.format(e))
+        zip.close()
+        basics.clean_temp()
+        return False
+    zip.close()
+
+    if not extracted:
+        basics.clean_temp()
+        return False
+
+    # Check if already installed
+    already_installed = select_custom_sites_attributes((author, name), 'title', 'version')
+    if already_installed:
+        old_title = already_installed[0][0]
+        old_version = already_installed[0][1]
+        utils.textBox('Site already installed', 'Custom site is already installed[CR]Title: {}[CR]Version: {}[CR][CR]'
+                                                'New title: {}[CR]New version: {}[CR]'.format(old_title, old_version,
+                                                                                              title, version))
+        if not utils.dialog.yesno('Site already installed', 'Replace version {} with {}?'.format(old_version, version)):
+            basics.clean_temp()
+            return False
+        keep_favorites = utils.dialog.yesno('Site already installed',
+                                            'Old favorites and custom list items'
+                                            ' could be incompatible with the new version. Keep them?')
+        delete_custom_site(author, name, keep_favorites)
+
+    id = get_new_site_id()
+    new_module = "custom_{}.py".format(id)
+    new_image = "{}_{}_img.{}".format(author, name, original_image.split('.')[-1]) if original_image else None
+    new_about = "{}_{}_about.txt".format(author, name) if original_about else None
+
+    add_custom_site(author, name, title, url, new_image, new_about, version, new_module.split('.')[0])
+
+    # Move files to customSitesDir
+    try:
+        src_module = os.path.join(basics.tempDir, original_module)
+        dst_module = os.path.join(basics.customSitesDir, new_module)
+        safe_move(src_module, dst_module)
+
+        if original_image:
+            src_img = os.path.join(basics.tempDir, original_image)
+            dst_img = os.path.join(basics.customSitesDir, new_image)
+            safe_move(src_img, dst_img)
+
+        if original_about:
+            src_about = os.path.join(basics.tempDir, original_about)
+            dst_about = os.path.join(basics.customSitesDir, new_about)
+            safe_move(src_about, dst_about)
+    except Exception as e:
+        utils.kodilog('Failed to move files: {}'.format(e))
+        basics.clean_temp()
+        return False
+
+    basics.clean_temp()
+    return True
+
+
+@url_dispatcher.register()
+def uninstall_custom_site():
+    sites = select_custom_sites_attributes(None, 'author', 'name', 'title')
+    if not sites:
+        utils.notify('No custom sites installed')
+        return
+    sites = {'{} by {}'.format(title, author): [author, name, title] for author, name, title in sites}
+    chosen = utils.selector("Select site to uninstall", sites, show_on_one=True)
+    if not chosen:
+        return
+    author, name, title = chosen
+    delete_custom_site(author, name)
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("{}".format(title), "Site uninstalled")
+
+
+@url_dispatcher.register()
+def list_custom_sites():
+    def create_text_block(sites):
+        block = ''
+        for site in sites:
+            block += '{}, version {}, created by {}[CR]'.format(site[2], site[3], site[0])
+        return block
+    sites = select_custom_sites_attributes(None, 'author', 'name', 'title', 'version', 'enabled')
+    if not sites:
+        utils.notify('No custom sites installed')
+        return
+    enabled_sites = sorted([site for site in sites if site[4] == 1], key=lambda x: x[2].lower())
+    disabled_sites = sorted([site for site in sites if site[4] == 0], key=lambda x: x[2].lower())
+    text = ''
+    if enabled_sites:
+        text += 'Enabled sites:[CR]'
+        text += create_text_block(enabled_sites) + '[CR]'
+    if disabled_sites:
+        text += 'Disabled sites:[CR]'
+        text += create_text_block(disabled_sites)
+    utils.textBox('Installed custom sites', text.strip())
+
+
+@url_dispatcher.register()
+def enable_custom_site():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT author, name, title FROM custom_sites WHERE enabled = 0")
+    rows = c.fetchall()
+    conn.close()
+    if not rows:
+        utils.notify('No disabled custom sites found')
+        return
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              'Only enable sites from trusted sources. Proceed?'):
+        return
+    sites = {'{} by {}'.format(title, author): [author, name, title] for author, name, title in rows}
+    chosen = utils.selector("Select site to enable", sites, show_on_one=True)
+    if not chosen:
+        return
+    author, name, title = chosen
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              '{} will be enabled.[CR]Continue?'.format(title)):
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE custom_sites SET enabled = 1 WHERE author = ? and name = ?", (author, name))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("{}".format(title), "Site enabled")
+
+
+@url_dispatcher.register()
+def disable_custom_site():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT author, name, title FROM custom_sites WHERE enabled = 1")
+    rows = c.fetchall()
+    conn.close()
+    if not rows:
+        utils.notify('No enabled custom sites found')
+        return
+    sites = {'{} by {}'.format(title, author): [author, name, title] for author, name, title in rows}
+    chosen = utils.selector("Select site to enable", sites, show_on_one=True)
+    if not chosen:
+        return
+    author, name, title = chosen
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE custom_sites SET enabled = 0 WHERE author = ? and name = ?", (author, name))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("{}".format(title), "Site disabled")
+
+
+@url_dispatcher.register()
+def enable_all_custom_sites():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT author, name, title FROM custom_sites WHERE enabled = 0")
+    rows = c.fetchall()
+    conn.close()
+    if not rows:
+        utils.notify('No disabled custom sites found')
+        return
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              'Only enable sites from trusted sources. Proceed?'):
+        return
+    text = ''
+    for author, _, title in rows:
+        text += '{} by {}[CR]'.format(title, author)
+    utils.textBox('Sites to enable', text.strip())
+    if not utils.dialog.yesno('WARNING',
+                              'Custom sites are not verified by Cumination, and could contain malware.[CR]'
+                              'All custom sites will be enabled.[CR]Continue?'):
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE custom_sites SET enabled = 1 WHERE enabled = 0")
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("All custom sites enabled")
+
+
+@url_dispatcher.register()
+def disable_all_custom_sites():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT author, name, title FROM custom_sites WHERE enabled = 1")
+    rows = c.fetchall()
+    conn.close()
+    if not rows:
+        utils.notify('No enabled custom sites found')
+        return
+    text = ''
+    for author, _, title in rows:
+        text += '{} by {}[CR]'.format(title, author)
+    utils.textBox('Sites to disable', text.strip())
+    if not utils.dialog.yesno('WARNING',
+                              'All custom sites will be disabled.[CR]Continue?'):
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE custom_sites SET enabled = 0 WHERE enabled = 1")
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+    utils.notify("All custom sites disabled")
+
+
+def select_custom_sites_attributes(author_and_name, *args):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    if author_and_name:
+        c.execute("SELECT {} FROM custom_sites where author = ? and name = ?".format(", ".join(args)),
+                  (author_and_name[0], author_and_name[1]))
+    else:
+        c.execute("SELECT {} FROM custom_sites".format(", ".join(args)))
+    rows = c.fetchall()
+    conn.close()
+    return rows
+
+
+def delete_custom_site(author, name, keep_favorites=False):
+    site_elements = select_custom_sites_attributes((author, name), 'module_file', 'image', 'about', 'title')[0]
+    module_file = site_elements[0] + '.py' if site_elements[0] else None
+    image_file = site_elements[1]
+    about_file = site_elements[2] + '.txt' if site_elements[2] else None
+    removable = [module_file, site_elements[0] + '.pyo', image_file, about_file]
+    for r in removable:
+        if r:
+            try:
+                os.remove(os.path.join(basics.customSitesDir, r))
+            except OSError:
+                pass
+    mode_name = 'custom_{}_by_{}'.format(name, author)
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("DELETE FROM custom_sites WHERE author = ? and name = ?", (author, name))
+    if not keep_favorites:
+        c.execute("DELETE FROM favorites WHERE substr(mode, 1, instr(mode, '.') - 1) = ?", (mode_name,))
+        c.execute("DELETE FROM custom_listitems WHERE substr(mode, 1, instr(mode, '.') - 1) = ?", (mode_name,))
+    conn.commit()
+    conn.close()
+
+
+def get_new_site_id():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT max(rowid) FROM custom_sites")
+    max_id = c.fetchone()[0]
+    conn.close()
+    max_id = 0 if not max_id else max_id
+    return max_id + 1
+
+
+def add_custom_site(author, name, title, url, image, about, version, module_file):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("INSERT INTO custom_sites VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              (author, name, title, url, image, about, version, datetime.datetime.now(), False, module_file))
+    conn.commit()
+    conn.close()
+
+
+def enabled_custom_sites():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT module_file FROM custom_sites WHERE enabled = ?", (True,))
+    rows = c.fetchall()
+    conn.close()
+    sites = [site[0] for site in rows]
+    return sites
+
+
+def get_custom_data(author, name):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT title, image, about, url FROM custom_sites WHERE author = ? AND name = ?", (author, name))
+    row = c.fetchone()
+    conn.close()
+    return row if row else (None, None, None, None)
+
+
+def disable_custom_site_by_module(module_file):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("UPDATE custom_sites SET enabled = 0 WHERE module_file =  ?", (module_file,))
+    conn.commit()
+    conn.close()
+
+
+def get_custom_site_title_by_module(module_file):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT title FROM custom_sites WHERE module_file = ?", (module_file,))
+    row = c.fetchone()
+    conn.close()
+    return row[0]
+
+
+@url_dispatcher.register()
+def create_custom_list():
+    name = utils._get_keyboard(heading="Input the name for the list")
+    if not name:
+        return
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("INSERT INTO custom_lists VALUES (?)", (name,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+def get_custom_lists():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT rowid, name FROM custom_lists")
+    rows = c.fetchall()
+    conn.close()
+    return rows
+
+
+def get_custom_listitems():
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT name, count(*) count FROM custom_listitems WHERE list_id in (SELECT 'main' union SELECT ROWID from custom_lists) group by name")
+    rows = c.fetchall()
+    conn.close()
+    return rows
+
+
+@url_dispatcher.register()
+def load_custom_list(url):
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    if basics.addon.getSetting('custom_sites') == 'true':
+        c.execute("select cli.rowid, cli.name, cli.url, cli.mode, cli.image from custom_listitems cli "
+                  + "LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' ||"
+                  + " cs.author = substr(cli.mode, 1, instr(cli.mode, '.') - 1)"
+                  + " WHERE ifnull(cs.enabled, 1) = 1 and cli.list_id = ?", (url,))
+    else:
+        c.execute("select cli.rowid, cli.name, cli.url, cli.mode, cli.image from custom_listitems cli"
+                  + " LEFT JOIN custom_sites cs on 'custom_' || cs.name || '_by_' ||"
+                  + " cs.author = substr(cli.mode, 1, instr(cli.mode, '.') - 1)"
+                  + " WHERE cs.name IS NULL and cli.list_id = ?", (url,))
+    for (rowid, name, url, mode, img) in c.fetchall():
+        if not img.startswith('http'):
+            custom = 'custom_sites' in img
+            img = img if img.lower().startswith('http') else img.split('/')[-1].split('\\')[-1]
+            img = basics.cum_image(img, custom)
+        ins = AdultSite.get_site_by_name(mode.split('.')[0])
+        if ins:
+            if ins.default_mode == mode:
+                custom = ins.custom
+                about = ins.about
+            else:
+                name = ins.title + ' - ' + name
+                custom = False
+                about = None
+            basics.addDir(name, url, mode, img, about=about, custom=custom, list_avail=False, listitem_id=rowid)
+    conn.close()
+    if 'main' not in url:
+        utils.eod(utils.addon_handle)
+
+
+@url_dispatcher.register()
+def add_listitem(favmode, name, url, img):
+    name = name.split(' [COLOR pink]')[0]
+    name = name.split(' [COLOR red]*')[0]
+    conn = sqlite3.connect(favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+
+    custom_lists = get_custom_lists()
+    custom_lists = {row[1]: str(row[0]) for row in custom_lists}
+    custom_lists['Main menu'] = 'main'
+    selected_id = utils.selector('Add this item to', custom_lists, sort_by=lambda x: x[1], show_on_one=True)
+    if selected_id:
+        selected_list = next(key for key, value in custom_lists.items() if value == selected_id)
+        c.execute("SELECT count(*) FROM custom_listitems WHERE list_id=? and url=?", (selected_id, url))
+        if c.fetchone()[0] > 0:
+            if utils.dialog.yesno('Item already in list', 'This item is already in the list [COLOR hotpink]{}[/COLOR][CR]Update the name and image?'.format(selected_list)):
+                c.execute("UPDATE custom_listitems set name=?, mode=?, image=? WHERE url=? and list_id=?", (name, favmode, img, url, selected_id))
+        else:
+            c.execute("INSERT INTO custom_listitems VALUES (?,?,?,?,?)", (name, url, favmode, img, selected_id))
+        conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def remove_listitem(listitem_id):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    c.execute("DELETE FROM custom_listitems WHERE rowid = ?", (listitem_id,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def move_listitem(listitem_id):
+    custom_lists = get_custom_lists()
+    custom_lists = {row[1]: str(row[0]) for row in custom_lists}
+    custom_lists['Main menu'] = 'main'
+    selected_id = utils.selector('Move this item to', custom_lists, sort_by=lambda x: x[1], show_on_one=True)
+    if selected_id:
+        conn = sqlite3.connect(favoritesdb)
+        c = conn.cursor()
+        c.execute("UPDATE custom_listitems set list_id = ? WHERE rowid = ?", (selected_id, listitem_id,))
+        conn.commit()
+        conn.close()
+        xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def remove_list(rowid):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    c.execute("DELETE FROM custom_lists WHERE rowid = ?", (int(rowid),))
+    c.execute("DELETE FROM custom_listitems WHERE list_id = ?", (rowid,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def edit_list(rowid):
+    name = utils._get_keyboard(heading="Input the new name for the list")
+    if not name:
+        return
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    c.execute("UPDATE custom_lists set name = ? WHERE rowid = ?", (name, int(rowid),))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def moveup_listitem(listitem_id):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    sql = '''DROP TABLE IF EXISTS tmp;
+CREATE TEMP TABLE tmp AS
+SELECT name,
+(SELECT max(ROWID)+1 from custom_listitems) tmp_id,
+cli.ROWID id,
+coalesce((SELECT max(ROWID) from custom_listitems WHERE list_id = cli.list_id and ROWID<cli.ROWID), cli.ROWID) prev_id,
+coalesce((SELECT min(ROWID) from custom_listitems WHERE list_id = cli.list_id and ROWID>cli.ROWID), cli.ROWID) next_id
+FROM custom_listitems cli
+WHERE cli.ROWID = ?;
+update custom_listitems set ROWID = (SELECT tmp_id FROM tmp) WHERE ROWID = (SELECT prev_id FROM tmp);
+update custom_listitems set ROWID = (SELECT prev_id FROM tmp) WHERE ROWID = (SELECT id FROM tmp);
+update custom_listitems set ROWID = (SELECT id FROM tmp) WHERE ROWID = (SELECT tmp_id FROM tmp);
+DROP TABLE IF EXISTS tmp;'''
+    c.executescript(sql, (listitem_id,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def movedown_listitem(listitem_id):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    sql = '''DROP TABLE IF EXISTS tmp;
+CREATE TEMP TABLE tmp AS
+SELECT name,
+(SELECT max(ROWID)+1 from custom_listitems) tmp_id,
+cli.ROWID id,
+coalesce((SELECT max(ROWID) from custom_listitems WHERE list_id = cli.list_id and ROWID<cli.ROWID), cli.ROWID) prev_id,
+coalesce((SELECT min(ROWID) from custom_listitems WHERE list_id = cli.list_id and ROWID>cli.ROWID), cli.ROWID) next_id
+FROM custom_listitems cli
+WHERE cli.ROWID = ?;
+update custom_listitems set ROWID = (SELECT tmp_id FROM tmp) WHERE ROWID = (SELECT next_id FROM tmp);
+update custom_listitems set ROWID = (SELECT next_id FROM tmp) WHERE ROWID = (SELECT id FROM tmp);
+update custom_listitems set ROWID = (SELECT id FROM tmp) WHERE ROWID = (SELECT tmp_id FROM tmp);
+DROP TABLE IF EXISTS tmp;'''
+    c.executescript(sql, (listitem_id,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def moveup_list(rowid):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    sql = '''DROP TABLE IF EXISTS tmp;
+CREATE TEMP TABLE tmp AS
+SELECT name,
+(SELECT max(ROWID)+1 from custom_lists) tmp_id,
+cli.ROWID id,
+coalesce((SELECT max(ROWID) from custom_lists WHERE ROWID<cli.ROWID), cli.ROWID) prev_id,
+coalesce((SELECT min(ROWID) from custom_lists WHERE ROWID>cli.ROWID), cli.ROWID) next_id
+FROM custom_lists cli
+WHERE cli.ROWID = ?;
+update custom_lists set ROWID = (SELECT tmp_id FROM tmp) WHERE ROWID = (SELECT prev_id FROM tmp);
+update custom_listitems set list_id = cast((SELECT tmp_id FROM tmp) as text) WHERE list_id = cast((SELECT prev_id FROM tmp) as text);
+update custom_lists set ROWID = (SELECT prev_id FROM tmp) WHERE ROWID = (SELECT id FROM tmp);
+update custom_listitems set list_id = cast((SELECT prev_id FROM tmp) as text) WHERE list_id = cast((SELECT id FROM tmp) as text);
+update custom_lists set ROWID = (SELECT id FROM tmp) WHERE ROWID = (SELECT tmp_id FROM tmp);
+update custom_listitems set list_id = cast((SELECT id FROM tmp) as text) WHERE list_id = cast((SELECT tmp_id FROM tmp) as text);
+DROP TABLE IF EXISTS tmp;'''
+    c.executescript(sql, (rowid,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
+
+
+@url_dispatcher.register()
+def movedown_list(rowid):
+    conn = sqlite3.connect(favoritesdb)
+    c = conn.cursor()
+    sql = '''DROP TABLE IF EXISTS tmp;
+CREATE TEMP TABLE tmp AS
+SELECT name,
+(SELECT max(ROWID)+1 from custom_lists) tmp_id,
+cli.ROWID id,
+coalesce((SELECT max(ROWID) from custom_lists WHERE ROWID<cli.ROWID), cli.ROWID) prev_id,
+coalesce((SELECT min(ROWID) from custom_lists WHERE ROWID>cli.ROWID), cli.ROWID) next_id
+FROM custom_lists cli
+WHERE cli.ROWID = ?;
+update custom_lists set ROWID = (SELECT tmp_id FROM tmp) WHERE ROWID = (SELECT next_id FROM tmp);
+update custom_listitems set list_id = cast((SELECT tmp_id FROM tmp) as text) WHERE list_id = cast((SELECT next_id FROM tmp) as text);
+update custom_lists set ROWID = (SELECT next_id FROM tmp) WHERE ROWID = (SELECT id FROM tmp);
+update custom_listitems set list_id = cast((SELECT next_id FROM tmp) as text) WHERE list_id = cast((SELECT id FROM tmp) as text);
+update custom_lists set ROWID = (SELECT id FROM tmp) WHERE ROWID = (SELECT tmp_id FROM tmp);
+update custom_listitems set list_id = cast((SELECT id FROM tmp) as text) WHERE list_id = cast((SELECT tmp_id FROM tmp) as text);
+DROP TABLE IF EXISTS tmp;'''
+    c.executescript(sql, (rowid,))
+    conn.commit()
+    conn.close()
+    xbmc.executebuiltin('Container.Refresh')
 conn = sqlite3.connect(favoritesdb)
 c = conn.cursor()
 try:
@@ -1186,3 +2409,4 @@ DROP TABLE IF EXISTS tmp;'''.format(rowid)
     conn.commit()
     conn.close()
     xbmc.executebuiltin('Container.Refresh')
+
