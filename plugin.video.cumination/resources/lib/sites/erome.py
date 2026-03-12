@@ -1,4 +1,4 @@
- # Cumination – Erome module (public only)
+# Cumination – Erome module (public only)
 # Copyright (C) 2020 Whitecream (updated 2025)
 #
 # UPDATES / FIXES:
@@ -698,7 +698,7 @@ def Search(url, keyword=None):
 def UserSearch(username=None, url=None):
     try:
         if not username:
-            keyboard = utils.xbmc.Keyboard('', 'Enter Erome username')
+            keyboard = xbmc.Keyboard('', 'Enter Erome username')
             keyboard.doModal()
             if keyboard.isConfirmed():
                 username = keyboard.getText().strip()
