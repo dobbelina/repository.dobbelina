@@ -4,6 +4,8 @@ import json
 import pytest
 from resources.lib.sites import stripchat
 
+_REAL_PROXY_CHECK = stripchat._should_use_manifest_proxy
+
 # Global skip for this module if site is disabled
 pytestmark = pytest.mark.skipif(
     stripchat.STRIPCHAT_DISABLED,
@@ -173,7 +175,8 @@ def test_normalize_stream_cdn_url_prefers_net_hosts():
     ) == "https://media-hls.doppiocdn.net/b-hls-1/1/1_480p.m3u8?psch=v2&pkey=abc"
 
 
-def test_should_use_manifest_proxy_for_signed_media_manifest():
+def test_should_use_manifest_proxy_for_signed_media_manifest(monkeypatch):
+    monkeypatch.setattr(stripchat, "_should_use_manifest_proxy", _REAL_PROXY_CHECK)
     assert stripchat._should_use_manifest_proxy(
         "https://media-hls.doppiocdn.com/b-hls-1/1/1_480p.m3u8?playlistType=lowLatency&psch=v2&pkey=abc"
     )
@@ -1118,6 +1121,7 @@ def test_playvid_uses_proxy_for_signed_media_child(monkeypatch):
     sys.modules["inputstreamhelper"] = fake_inputstreamhelper
 
     monkeypatch.setattr(stripchat.utils.addon, "getSetting", lambda key: "true" if key == "stripchat_proxy" else "")
+    monkeypatch.setattr(stripchat, "_should_use_manifest_proxy", _REAL_PROXY_CHECK)
     monkeypatch.setattr(stripchat.utils, "notify", lambda *a, **k: None)
     monkeypatch.setattr(stripchat.utils, "kodilog", lambda x: None)
     monkeypatch.setattr(
