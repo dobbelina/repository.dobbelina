@@ -17,6 +17,8 @@
 '''
 
 import re
+import xbmc
+import xbmcgui
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -28,41 +30,70 @@ site = AdultSite("erome", "[COLOR hotpink]Erome[/COLOR]", "https://www.erome.com
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?o=new&q=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Search user[/COLOR]', site.url, 'Search_user', site.img_search)
     List(site.url + 'explore/new')
 
 
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'''<div[^<]+id="album-.+?data-src="([^"]+).+?right">(.+?)</div.+?title"\s*href="([^"]+)"\s*>([^<]+)''', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for img, content, iurl, name in match:
-        name = utils.cleantext(name)
+    albums = listhtml.split(' id="album-')
+    for album in albums:
+
+        match = re.search(r'''title"\s*href="([^"]+)"\s*>([^<]+)''', album, re.DOTALL | re.IGNORECASE)
+        if match:
+            iurl = match.group(1)
+            name = utils.cleantext(match.group(2))
+        else:
+            continue
+        img = re.search(r'src="([^"]+)', album, re.DOTALL | re.IGNORECASE)
+        img = img.group(1) if img else ''
         img += '|Referer={0}'.format(site.url)
         pics = False
         vids = False
-        if '"album-videos"' in content:
-            items = re.findall(r'class="album-videos"[^\d]+(\d+)', content)[0]
+        if 'class="album-user"' in album:
+            user = re.findall(r'<span class="album-user"\s*>([^<]+)<', album, re.DOTALL | re.IGNORECASE)[0]
+            user = utils.cleantext(user)
+            name = name + ' [by {} - '.format(user)
+        if '"album-videos"' in album:
+            items = re.findall(r'class="album-videos"[^\d]+(\d+)', album)[0]
             name += '[COLOR hotpink][I] {0} vids[/I][/COLOR]'.format(items)
             vids = True
-        if '"album-images"' in content:
-            items = re.findall(r'class="album-images"[^\d]+(\d+)', content)[0]
+        if '"album-images"' in album:
+            items = re.findall(r'class="album-images"[^\d]+(\d+)', album)[0]
             name += '[COLOR orange][I] {0} pics[/I][/COLOR]'.format(items)
             pics = True
+        cm = []
+        if 'class="album-user"' in album:
+            name += ' ]'
+            cm_user = (utils.addon_sys + "?mode=" + str('erome.Related') + "&url=" + urllib_parse.quote_plus(site.url + user + '?t=posts'))
+            cm = [('[COLOR deeppink]Author page [{}][/COLOR]'.format(user), 'RunPlugin(' + cm_user + ')')]
+
         if pics and vids:
-            site.add_dir(name, iurl, 'List2', img, desc=name, section='both')
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='both', contextm=cm)
         elif pics:
-            site.add_dir(name, iurl, 'List2', img, desc=name, section='pics')
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='pics', contextm=cm)
         elif vids:
-            site.add_dir(name, iurl, 'List2', img, desc=name, section='vids')
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='vids', contextm=cm)
 
-    np = re.compile(r'class="pagination.+?href="([^"]+)"\s*rel="next">', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        nurl = urllib_parse.urljoin(url, np.group(1)).replace('&amp;', '&')
-        currpg = re.findall(r'class="pagination.+?"active"[^\d]+(\d+)', listhtml, re.DOTALL)[0]
-        lastpg = re.findall(r'class="pagination.+?(\d+)</a></li>\s*<li><a\s*href="[^"]+"\s*rel="next"', listhtml, re.DOTALL)[0]
-        site.add_dir('Next Page... (Currently in Page {0} of {1})'.format(currpg, lastpg), nurl, 'List', site.img_next)
-
+    re_npurl = r'<li class="active"><span>\d+</span></li>\s+<li><a href="([^"]+)">'
+    re_npnr = r'<li class="active"><span>\d+</span></li>\s+<li><a href="[^"]+">(\d+)<'
+    re_lpnr = r'>(\d+)</a></li>\s+<li><a href="[^"]+"\s+rel="next"'
+    utils.next_page(site, 'erome.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erome.GotoPage', baseurl=url.split('?')[0])
     utils.eod()
+
+
+@site.register()
+def GotoPage(url, np, lp=None):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = re.sub(r'page={}'.format(np), r'page={}'.format(pg), url, re.IGNORECASE)
+        contexturl = (utils.addon_sys + "?mode=" + "erome.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -99,9 +130,15 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
-        url += title
-        List(url)
+        List(url + keyword.replace(' ', '+'))
+
+
+@site.register()
+def Search_user(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search_user')
+    else:
+        List(url + keyword.replace(' ', '+') + '?t=posts')
 
 
 @site.register()
@@ -113,3 +150,9 @@ def Showpic(url, name):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.play_from_direct_link(url)
+
+
+@site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('erome.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
