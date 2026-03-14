@@ -82,6 +82,16 @@ class TestAdultSiteInit:
         assert site.module_name == "testsite"
         assert hasattr(site, "register")
 
+    def test_init_with_testing_true(self):
+        """Test initialization supports testing-only sites"""
+        from resources.lib.adultsite import AdultSite
+
+        site = AdultSite(
+            "testsite", "Test Site", "https://test.com/", testing=True
+        )
+
+        assert site.testing is True
+
 
 class TestGetCleanTitle:
     """Test get_clean_title() method"""
@@ -247,6 +257,60 @@ class TestGetSites:
 
         assert len(sites) == 0
 
+    def test_get_sites_excludes_testing_sites(self):
+        """Test get_sites excludes testing-only sites"""
+        from resources.lib.adultsite import AdultSite
+
+        site1 = AdultSite("site1", "Site 1", "https://site1.com/")
+        site2 = AdultSite("site2", "Site 2", "https://site2.com/", testing=True)
+
+        @site1.register(default_mode=True)
+        def Main1():
+            pass
+
+        @site2.register(default_mode=True)
+        def Main2():
+            pass
+
+        sites = list(AdultSite.get_sites())
+
+        assert site1 in sites
+        assert site2 not in sites
+
+
+class TestGetTestingSites:
+    """Test get_testing_sites() class method"""
+
+    def test_get_testing_sites_returns_only_testing_sites(self):
+        """Test get_testing_sites only returns testing-marked sites"""
+        from resources.lib.adultsite import AdultSite
+
+        site1 = AdultSite("site1", "Site 1", "https://site1.com/")
+        site2 = AdultSite("site2", "Site 2", "https://site2.com/", testing=True)
+
+        @site1.register(default_mode=True)
+        def Main1():
+            pass
+
+        @site2.register(default_mode=True)
+        def Main2():
+            pass
+
+        sites = list(AdultSite.get_testing_sites())
+
+        assert site2 in sites
+        assert site1 not in sites
+
+    def test_get_testing_sites_requires_default_mode(self):
+        """Test get_testing_sites requires default_mode"""
+        from resources.lib.adultsite import AdultSite
+
+        AdultSite("site2", "Site 2", "https://site2.com/", testing=True)
+
+        sites = list(AdultSite.get_testing_sites())
+
+        assert len(sites) == 0
+
 
 class TestGetInternalSites:
     """Test get_internal_sites() class method"""
@@ -285,6 +349,26 @@ class TestGetInternalSites:
         sites = list(AdultSite.get_internal_sites())
 
         assert len(sites) == 0
+
+    def test_get_internal_sites_excludes_testing_sites(self):
+        """Test get_internal_sites excludes testing-only sites"""
+        from resources.lib.adultsite import AdultSite
+
+        site1 = AdultSite("internal", "Internal Site", "https://internal.com/")
+        site2 = AdultSite("testing", "Testing Site", "https://testing.com/", testing=True)
+
+        @site1.register(default_mode=True)
+        def Main1():
+            pass
+
+        @site2.register(default_mode=True)
+        def Main2():
+            pass
+
+        sites = list(AdultSite.get_internal_sites())
+
+        assert site1 in sites
+        assert site2 not in sites
 
 
 class TestGetSiteByName:

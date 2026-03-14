@@ -8,7 +8,16 @@ class AdultSite(URL_Dispatcher):
     instances = WeakSet()
     clean_functions = set()
 
-    def __init__(self, name, title, url, image=None, about=None, webcam=False):
+    def __init__(
+        self,
+        name,
+        title,
+        url,
+        image=None,
+        about=None,
+        webcam=False,
+        testing=False,
+    ):
         self.default_mode = ""
         self.name = name
         self.title = title + "[COLOR white] - webcams[/COLOR]" if webcam else title
@@ -16,6 +25,7 @@ class AdultSite(URL_Dispatcher):
         self.image = basics.cum_image(image) if image else ""
         self.about = about
         self.webcam = webcam
+        self.testing = testing
         self.custom = False
         self.add_to_instances()
 
@@ -46,13 +56,19 @@ class AdultSite(URL_Dispatcher):
     @classmethod
     def get_sites(cls):
         for ins in cls.instances:
-            if ins.default_mode:
+            if ins.default_mode and not ins.testing:
+                yield ins
+
+    @classmethod
+    def get_testing_sites(cls):
+        for ins in cls.instances:
+            if ins.default_mode and ins.testing:
                 yield ins
 
     @classmethod
     def get_internal_sites(cls):
         for ins in cls.instances:
-            if ins.default_mode and not ins.custom:
+            if ins.default_mode and not ins.custom and not ins.testing:
                 yield ins
 
     @classmethod

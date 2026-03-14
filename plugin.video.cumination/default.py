@@ -180,6 +180,15 @@ def INDEX():
         "",
         list_avail=False,
     )
+    if any(AdultSite.get_testing_sites()):
+        url_dispatcher.add_dir(
+            "[COLOR white]Testing Sites[/COLOR]",
+            "",
+            "testing_site_list",
+            basics.cum_image("cum-sites.png"),
+            "",
+            list_avail=False,
+        )
     url_dispatcher.add_dir(
         "[COLOR white]{}[/COLOR]".format(utils.i18n("fav_videos")),
         "1",
@@ -257,6 +266,24 @@ def site_list():
             )
         url_dispatcher.add_dir(
             title, x.url, x.default_mode, x.image, about=x.about, custom=x.custom
+        )
+    utils.eod(basics.addon_handle, False)
+
+
+@url_dispatcher.register()
+def testing_site_list():
+    for x in sorted(
+        AdultSite.get_testing_sites(),
+        key=lambda y: y.get_clean_title().lower(),
+        reverse=False,
+    ):
+        url_dispatcher.add_dir(
+            "[COLOR gold][TEST][/COLOR] {}".format(x.title),
+            x.url,
+            x.default_mode,
+            x.image,
+            about=x.about,
+            custom=x.custom,
         )
     utils.eod(basics.addon_handle, False)
 
