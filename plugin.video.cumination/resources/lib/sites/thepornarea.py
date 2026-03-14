@@ -20,6 +20,7 @@ site = AdultSite(
     "thepornarea",
     "[COLOR hotpink]ThePornArea[/COLOR]",
     "https://thepornarea.com/",
+    "cum-sites.png",
     testing=True,
 )
 
@@ -93,6 +94,10 @@ def Playvid(url, name, download=None):
     html = utils.getHtml(url, site.url)
     if not html:
         vp.play_from_link_to_resolve(url)
+        return
+
+    if "kt_player('kt_player'" in html:
+        vp.play_from_kt_player(html, url)
         return
 
     match = re.search(r"video_url:\s*'([^']+)'", html)

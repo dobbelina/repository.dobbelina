@@ -21,6 +21,7 @@ site = AdultSite(
     "javseen",
     "[COLOR hotpink]JAVSeen[/COLOR]",
     "https://javseen.tv/",
+    "cum-sites.png",
     testing=True,
 )
 
@@ -110,9 +111,30 @@ def Playvid(url, name, download=None):
         embed_url = _absolute_url(embed_match.group(1))
         embed_html = utils.getHtml(embed_url, url)
         if embed_html:
-            play_match = re.search(r"playEmbed\('([^']+)'\)", embed_html)
-            if play_match:
-                vp.play_from_link_to_resolve(play_match.group(1))
+            mirrors = re.findall(r"playEmbed\('([^']+)'\)", embed_html)
+            preferred_hosts = (
+                "cloudwish.xyz",
+                "streamwish",
+                "dood",
+                "streamtape",
+                "turbovid",
+                "mycloudz",
+            )
+            seen = set()
+            ordered_mirrors = []
+            for mirror in mirrors:
+                if mirror not in seen:
+                    seen.add(mirror)
+                    ordered_mirrors.append(mirror)
+
+            for host in preferred_hosts:
+                for mirror in ordered_mirrors:
+                    if host in mirror:
+                        vp.play_from_link_to_resolve(mirror)
+                        return
+
+            if ordered_mirrors:
+                vp.play_from_link_to_resolve(ordered_mirrors[0])
                 return
 
             server_match = re.search(r'data-embed="([^"]+)"', embed_html)
