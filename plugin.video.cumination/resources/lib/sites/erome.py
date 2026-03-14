@@ -15,17 +15,9 @@
 # - Added fallback /confirm endpoint if the regular link is not found.
 
 import re
-import os
-import json
-import traceback
-import sys
 import xbmc
-import xbmcvfs
 import xbmcgui
-import xbmcplugin
-from six.moves import urllib_parse, urllib_request, http_cookiejar
-from urllib.error import HTTPError
-
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -217,56 +209,9 @@ def construct_thumb_from_video(video_url):
 # ----------------------------------------------------------------------
 @site.register(default_mode=True)
 def Main():
-    try:
-        site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?o=new&q=', 'Search', site.img_search)
-        site.add_dir('[COLOR orange]Search User[/COLOR]', site.url + '', 'UserSearch', site.img_search)
-        List(site.url + 'explore/new')
-    except Exception as e:
-        log('CRASH in Main: {}'.format(traceback.format_exc()), xbmc.LOGERROR)
-        utils.notify('Erome Error', str(e))
-
-
-# ----------------------------------------------------------------------
-# Pagination helpers
-# ----------------------------------------------------------------------
-def get_pagination_info(html, current_url):
-    """
-    Extract pagination info from HTML.
-    Returns (base_url, current_page, total_pages) or (None, None, None) if not found.
-    """
-    try:
-        pagination = re.search(r'<ul[^>]+class="[^"]*pagination[^"]*"[^>]*>(.*?)</ul>', html, re.DOTALL | re.IGNORECASE)
-        if not pagination:
-            return None, None, None
-        pag_html = pagination.group(1)
-
-        active_match = re.search(r'<li[^>]+class="[^"]*active[^"]*"[^>]*>.*?<a[^>]*>(\d+)</a>', pag_html, re.DOTALL | re.IGNORECASE)
-        if not active_match:
-            active_match = re.search(r'<li[^>]+class="[^"]*active[^"]*"[^>]*>.*?<span[^>]*>(\d+)</span>', pag_html, re.DOTALL | re.IGNORECASE)
-        current_page = int(active_match.group(1)) if active_match else 1
-
-        page_links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(\d+)</a>', pag_html)
-        page_numbers = [int(num) for _, num in page_links]
-        total_pages = max(page_numbers) if page_numbers else 1
-
-        if page_links:
-            sample_href = page_links[0][0]
-            if '?page=' in sample_href:
-                parsed = urllib_parse.urlparse(current_url)
-                new_query = re.sub(r'&?page=\d+&?', '', parsed.query).strip('&')
-                base = urllib_parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
-            elif '/page/' in sample_href:
-                parsed = urllib_parse.urlparse(current_url)
-                new_path = re.sub(r'/page/\d+', '', parsed.path)
-                base = urllib_parse.urlunparse((parsed.scheme, parsed.netloc, new_path, parsed.params, parsed.query, parsed.fragment))
-            else:
-                base = current_url
-            return base, current_page, total_pages
-        return current_url, current_page, total_pages
-    except Exception as e:
-        log('Error in get_pagination_info: {}'.format(e), xbmc.LOGWARNING)
-        return None, None, None
-
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?o=new&q=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Search user[/COLOR]', site.url, 'Search_user', site.img_search)
+    List(site.url + 'explore/new')
 
 def _add_pagination(html, current_url):
     try:
@@ -309,199 +254,93 @@ def _add_pagination(html, current_url):
 # ----------------------------------------------------------------------
 @site.register()
 def List(url):
-    try:
-        log('List called with URL: {}'.format(url))
-        opener, cj = get_session()
-        html = fetch_url(url, opener, referer=site.url)
-        if html == '404':
-            utils.notify('Erome', 'Page not found')
-            return
-        if not html:
-            utils.notify('Erome', 'Failed to load page')
-            return
+    listhtml = utils.getHtml(url, site.url)
+    albums = listhtml.split(' id="album-')
+    for album in albums:
 
-        html, opener, cj = handle_age_gate(html, url, opener, cj)
-        if not html:
-            return
-
-        albums = []
-        album_pattern = r'<div[^>]+id="album-\d+".*?>(.*?)</div>\s*</div>\s*</div>'
-        album_blocks = re.findall(album_pattern, html, re.DOTALL | re.IGNORECASE)
-        if not album_blocks:
-            album_blocks = re.findall(r'<div[^>]+id="album-\d+".*?>(.*?)</div>', html, re.DOTALL | re.IGNORECASE)
-
-        for block in album_blocks:
-            url_match = re.search(r'<a[^>]+class="album-link"[^>]+href="([^"]+)"', block, re.DOTALL | re.IGNORECASE)
-            if not url_match:
-                continue
-            album_url = urllib_parse.urljoin(site.url, url_match.group(1))
-
-            thumb_match = re.search(r'<img[^>]+data-src="([^"]+)"', block, re.DOTALL | re.IGNORECASE)
-            if not thumb_match:
-                thumb_match = re.search(r'<img[^>]+src="([^"]+)"', block, re.DOTALL | re.IGNORECASE)
-            thumb_url = thumb_match.group(1) if thumb_match else ''
-            img_url = thumb_url + '|Referer={}'.format(site.url) if thumb_url else ''
-
-            title_match = re.search(r'<a[^>]+class="album-title"[^>]*>([^<]+)</a>', block, re.DOTALL | re.IGNORECASE)
-            title = utils.cleantext(title_match.group(1)) if title_match else ''
-
-            author_match = re.search(r'<span[^>]+class="album-user"[^>]*>([^<]+)</span>', block, re.DOTALL | re.IGNORECASE)
-            author = utils.cleantext(author_match.group(1)) if author_match else 'unknown'
-
-            videos_match = re.search(r'<span[^>]+class="album-videos"[^>]*>.*?(\d+)', block, re.DOTALL | re.IGNORECASE)
-            videos = videos_match.group(1) if videos_match else '0'
-
-            images_match = re.search(r'<span[^>]+class="album-images"[^>]*>.*?(\d+)', block, re.DOTALL | re.IGNORECASE)
-            images = images_match.group(1) if images_match else '0'
-
-            display_name = '{} [by {} - [COLOR hotpink]{} videos[/COLOR], [COLOR orange]{} images[/COLOR]]'.format(title, author, videos, images)
-            albums.append((album_url, img_url, display_name, author, title, videos, images))
-
-        if not albums:
-            log('No albums found on this page')
-            utils.notify('Erome', 'No albums found')
-            _add_pagination(html, url)
-            utils.eod()
-            return
-
-        seen = set()
-        for album_url, img_url, display_name, author, title, videos, images in albums:
-            if album_url in seen:
-                continue
-            seen.add(album_url)
-
-            listitem = xbmcgui.ListItem(label=display_name)
-            if img_url:
-                listitem.setArt({'thumb': img_url, 'icon': img_url, 'poster': img_url})
-            listitem.setInfo('video', {
-                'title': title,
-                'plot': 'Author: {}\nVideos: {}\nImages: {}'.format(author, videos, images),
-                'studio': author,
-                'mediatype': 'set'
-            })
-
-            context_menu = []
-            if author and author != 'unknown':
-                author_plugin_url = 'plugin://plugin.video.cumination/?mode=erome.UserSearch&username={}&url={}'.format(
-                    urllib_parse.quote(author), urllib_parse.quote(site.url))
-                context_menu.append(('Go to author page', 'Container.Update({})'.format(author_plugin_url)))
-            if context_menu:
-                listitem.addContextMenuItems(context_menu, replaceItems=False)
-
-            plugin_url = '{}?mode=erome.List2&url={}'.format(sys.argv[0], urllib_parse.quote('{}|section=both'.format(album_url)))
-            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=plugin_url, listitem=listitem, isFolder=True)
-
-        _add_pagination(html, url)
-        utils.eod()
-
-    except Exception as e:
-        log('CRASH in List: {}'.format(traceback.format_exc()), xbmc.LOGERROR)
-        utils.notify('Erome Error', str(e))
-
-
-# ----------------------------------------------------------------------
-# Goto page function
-# ----------------------------------------------------------------------
-@site.register()
-def GotoPage(base=None, current=None, total=None, format='query'):
-    try:
-        if not base:
-            return
-        current = int(current) if current else 1
-        total = int(total) if total else 0
-
-        dialog = xbmcgui.Dialog()
-        page_str = dialog.numeric(0, 'Enter page number (1-{})'.format(total) if total else 'Enter page number')
-        if not page_str:
-            return
-        try:
-            page = int(page_str)
-        except:
-            utils.notify('Erome', 'Invalid page number')
-            return
-
-        if total > 0 and (page < 1 or page > total):
-            utils.notify('Erome', 'Page number out of range')
-            return
-
-        # base is already raw (decoded by Kodi)
-        if format == 'query':
-            if '?' in base:
-                page_url = base + '&page={}'.format(page)
-            else:
-                page_url = base + '?page={}'.format(page)
-        else:  # path
-            if base.endswith('/'):
-                page_url = base + 'page/{}'.format(page)
-            else:
-                page_url = base + '/page/{}'.format(page)
-
-        List(page_url)
-    except Exception as e:
-        log('CRASH in GotoPage: {}'.format(traceback.format_exc()), xbmc.LOGERROR)
-        utils.notify('Erome Error', str(e))
-
-
-# ----------------------------------------------------------------------
-# Album detail listing
-# ----------------------------------------------------------------------
-def extract_video_from_json(html):
-    patterns = [
-        r'window\.__INITIAL_STATE__\s*=\s*({.*?});',
-        r'window\.__DATA__\s*=\s*({.*?});',
-        r'<script[^>]+type="application/json"[^>]*>(.*?)</script>',
-        r'var\s+media\s*=\s*({.*?});'
-    ]
-    for pat in patterns:
-        match = re.search(pat, html, re.DOTALL)
+        match = re.search(r'''title"\s*href="([^"]+)"\s*>([^<]+)''', album, re.DOTALL | re.IGNORECASE)
         if match:
-            try:
-                data = json.loads(match.group(1))
-                videos = []
-                def find_media(obj):
-                    if isinstance(obj, dict):
-                        url = None
-                        thumb = None
-                        for k, v in obj.items():
-                            if k in ('url', 'src', 'video', 'mp4', 'webm') and isinstance(v, str) and v.startswith('http'):
-                                url = v
-                            if k in ('thumb', 'thumbnail', 'poster') and isinstance(v, str) and v.startswith('http'):
-                                thumb = v
-                            elif isinstance(v, (dict, list)):
-                                find_media(v)
-                        if url:
-                            videos.append((url, thumb))
-                    elif isinstance(obj, list):
-                        for item in obj:
-                            find_media(item)
-                find_media(data)
-                return videos
-            except:
-                continue
-    return []
+            iurl = match.group(1)
+            name = utils.cleantext(match.group(2))
+        else:
+            continue
+        img = re.search(r'src="([^"]+)', album, re.DOTALL | re.IGNORECASE)
+        img = img.group(1) if img else ''
+        img += '|Referer={0}'.format(site.url)
+        pics = False
+        vids = False
+        if 'class="album-user"' in album:
+            user = re.findall(r'<span class="album-user"\s*>([^<]+)<', album, re.DOTALL | re.IGNORECASE)[0]
+            user = utils.cleantext(user)
+            name = name + ' [by {} - '.format(user)
+        if '"album-videos"' in album:
+            items = re.findall(r'class="album-videos"[^\d]+(\d+)', album)[0]
+            name += '[COLOR hotpink][I] {0} vids[/I][/COLOR]'.format(items)
+            vids = True
+        if '"album-images"' in album:
+            items = re.findall(r'class="album-images"[^\d]+(\d+)', album)[0]
+            name += '[COLOR orange][I] {0} pics[/I][/COLOR]'.format(items)
+            pics = True
+        cm = []
+        if 'class="album-user"' in album:
+            name += ' ]'
+            cm_user = (utils.addon_sys + "?mode=" + str('erome.Related') + "&url=" + urllib_parse.quote_plus(site.url + user + '?t=posts'))
+            cm = [('[COLOR deeppink]Author page [{}][/COLOR]'.format(user), 'RunPlugin(' + cm_user + ')')]
+
+        if pics and vids:
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='both', contextm=cm)
+        elif pics:
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='pics', contextm=cm)
+        elif vids:
+            site.add_dir(name, iurl, 'List2', img, desc=name, section='vids', contextm=cm)
+
+    re_npurl = r'<li class="active"><span>\d+</span></li>\s+<li><a href="([^"]+)">'
+    re_npnr = r'<li class="active"><span>\d+</span></li>\s+<li><a href="[^"]+">(\d+)<'
+    re_lpnr = r'>(\d+)</a></li>\s+<li><a href="[^"]+"\s+rel="next"'
+    utils.next_page(site, 'erome.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erome.GotoPage', baseurl=url.split('?')[0])
+    utils.eod()
 
 
 @site.register()
-def List2(url):
-    try:
-        if '|section=' in url:
-            base, section = url.split('|section=')
-        else:
-            base = url
-            section = 'both'
+def GotoPage(url, np, lp=None):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        url = re.sub(r'page={}'.format(np), r'page={}'.format(pg), url, re.IGNORECASE)
+        contexturl = (utils.addon_sys + "?mode=" + "erome.List&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
-        opener, cj = get_session()
-        html = fetch_url(base, opener, referer=site.url, dump_debug=True)
-        if html == '404':
-            utils.notify('Erome', 'Album not found')
-            return
-        if not html:
-            utils.notify('Erome', 'Failed to load album')
-            return
 
-        html, opener, cj = handle_age_gate(html, base, opener, cj)
-        if not html:
-            return
+@site.register()
+def List2(url, section):
+    if section == 'both':
+        site.add_dir('Photos', url, 'List2', '', section='pics')
+        site.add_dir('Videos', url, 'List2', '', section='vids')
+    else:
+        listhtml = utils.getHtml(url, site.url)
+        items = listhtml.split('<div class="media-group')
+        if len(items) > 1:
+            items.pop(0)
+            itemcount = 0
+            for item in items:
+                item = item.split('class="clearfix"')[0]
+                if 'class="video"' in item and section == 'vids':
+                    itemcount += 1
+                    img, surl, hd, duration = re.findall(r'''poster="([^"]+).+?source\s*src="([^"]+).+?label='([^']+).+?class="duration"\s*>([^<]+)''', item, re.DOTALL)[0]
+                    img += '|Referer={0}'.format(site.url)
+                    surl += '|Referer={0}'.format(site.url)
+                    site.add_download_link('Video {0}'.format(itemcount), surl, 'Playvid', img, duration=duration, quality=hd)
+                elif 'class="video"' not in item and section == 'pics':
+                    img = re.search(r'class="img-front(?:\s*lasyload)?"\s*(?:data-)?src="([^"]+)', item, re.DOTALL)
+                    if img:
+                        itemcount += 1
+                        img = img.group(1) + '|Referer={0}'.format(site.url)
+                        site.add_img_link('Photo {0}'.format(itemcount), img, 'Showpic')
+
+    utils.eod()
 
         if section == 'both':
             has_vids = 'class="video"' in html
@@ -682,42 +521,18 @@ def List2(url):
 # ----------------------------------------------------------------------
 @site.register()
 def Search(url, keyword=None):
-    try:
-        if not keyword:
-            site.search_dir(url, 'Search')
-        else:
-            query = urllib_parse.quote_plus(keyword)
-            search_url = site.url + 'search?q={}&o=new'.format(query)
-            List(search_url)
-    except Exception as e:
-        log('CRASH in Search: {}'.format(traceback.format_exc()), xbmc.LOGERROR)
-        utils.notify('Erome Error', str(e))
+    if not keyword:
+        site.search_dir(url, 'Search')
+    else:
+        List(url + keyword.replace(' ', '+'))
 
 
 @site.register()
-def UserSearch(username=None, url=None):
-    try:
-        if not username:
-            keyboard = xbmc.Keyboard('', 'Enter Erome username')
-            keyboard.doModal()
-            if keyboard.isConfirmed():
-                username = keyboard.getText().strip()
-            else:
-                return
-        if username:
-            user_url = urllib_parse.urljoin(site.url, username)
-            opener, cj = get_session()
-            html = fetch_url(user_url, opener, referer=site.url)
-            if html == '404':
-                utils.notify('Erome', 'User "{}" not found'.format(username))
-                return
-            if not html:
-                utils.notify('Erome', 'Failed to load user page')
-                return
-            List(user_url)
-    except Exception as e:
-        log('CRASH in UserSearch: {}'.format(traceback.format_exc()), xbmc.LOGERROR)
-        utils.notify('Erome Error', str(e))
+def Search_user(url, keyword=None):
+    if not keyword:
+        site.search_dir(url, 'Search_user')
+    else:
+        List(url + keyword.replace(' ', '+') + '?t=posts')
 
 
 @site.register()
@@ -729,3 +544,9 @@ def Showpic(url, name):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.play_from_direct_link(url)
+
+
+@site.register()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('erome.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')

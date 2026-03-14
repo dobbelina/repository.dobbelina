@@ -19,6 +19,9 @@
 import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import base64
+import json
+
 
 site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.xxx/', "https://hentaidude.xxx/wp-content/uploads/2021/03/Hentai-Dude.png", "hentaidude")
 
@@ -91,11 +94,63 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    match = re.compile(r'itemprop="thumbnailUrl" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
-        id = match[0].split('/')[-2]
-        videourl = 'https://master-lengs.org/api/v3/hh/{}/master.m3u8'.format(id)
-        vp.play_from_direct_link(videourl)
+        iframehtml = utils.getHtml(match[0], site.url)
+        match = re.compile(r'<meta name="x-secure-token" content="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(iframehtml)
+        if match:
+            token = match[0]
+
+            ROT13_TABLE = str.maketrans(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+                "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"
+            )
+
+            def rot13(s: str) -> str:
+                return s.translate(ROT13_TABLE)
+
+            def decode(encoded: str):
+                try:
+                    e = encoded.replace("sha512-", "")
+                    e = rot13(e)
+                    e = base64.b64decode(e).decode("utf-8")
+                    e = rot13(e)
+                    e = base64.b64decode(e).decode("utf-8")
+                    e = rot13(e)
+                    e = base64.b64decode(e).decode("utf-8")
+                    return json.loads(e)
+                except Exception:
+                    return None
+
+            decoded_token = decode(token)
+
+            en = decoded_token.get("en")
+            iv = decoded_token.get("iv")
+            uri = decoded_token.get("uri")
+
+            data = '''------geckoformboundarybfec28fb1c2316e132ff23ab04e3d114
+Content-Disposition: form-data; name="action"
+
+zarat_get_data_player_ajax
+------geckoformboundarybfec28fb1c2316e132ff23ab04e3d114
+Content-Disposition: form-data; name="a"
+
+{}
+------geckoformboundarybfec28fb1c2316e132ff23ab04e3d114
+Content-Disposition: form-data; name="b"
+
+{}
+------geckoformboundarybfec28fb1c2316e132ff23ab04e3d114--
+'''.format(en, iv)
+
+            headers = utils.base_hdrs.copy()
+            headers['Content-Type'] = 'multipart/form-data; boundary=----geckoformboundarybfec28fb1c2316e132ff23ab04e3d114'
+
+            import requests
+            response = requests.post(uri + 'api.php', data=data.encode("utf-8"), headers=headers)
+            jdata = json.loads(response.text)
+
+            video_url = jdata.get("data", {}).get("sources", [])[0].get("src")
+            vp.play_from_direct_link(video_url)
 
 
 @site.register()

@@ -1,2 +1,4 @@
 [B]Version 1.1.174[/B]
 - beeg - fix categories
+- erome - fix listing, + gotopage & author page
+- hentaidude - fix playback
