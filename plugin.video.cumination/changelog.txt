@@ -1,3 +1,11 @@
+[B]Version 1.1.319[/B]
+- Test New Sites
+- freepornvideos, pornkai, realifecam fixes
+- fix: stabilize stripchat manifest proxy tests
+- beeg fixes #1777
+- fix lemoncams
+- Misc Fixes
+
 [B]Version 1.1.318[/B]
 - freepornvideos, pornkai, realifecam fixes
 - fix: stabilize stripchat manifest proxy tests
