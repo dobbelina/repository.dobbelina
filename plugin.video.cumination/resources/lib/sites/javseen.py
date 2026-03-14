@@ -65,6 +65,40 @@ def _extract_direct_stream(html):
     return ""
 
 
+def _extract_mirrors(html):
+    mirrors = re.findall(r"playEmbed\('([^']+)'\)", html)
+    if mirrors:
+        return mirrors
+
+    encoded = re.findall(r'data-embed="([^"]+)"', html)
+    decoded = []
+    for item in encoded:
+        try:
+            decoded.append(base64.b64decode(item).decode("utf-8"))
+        except Exception:
+            pass
+    return decoded
+
+
+def _normalize_mirror(mirror):
+    if not mirror:
+        return ""
+
+    match = re.search(r"https?://[^/]+/e/([0-9A-Za-z]+)", mirror)
+    if match:
+        media_id = match.group(1)
+        if "cloudwish." in mirror:
+            return "https://streamwish.com/e/{}".format(media_id)
+        if any(host in mirror for host in ("streamtape.", "doooood.", "dooood.", "dood.")):
+            return mirror
+
+    match = re.search(r"https?://[^/]+/t/([0-9A-Za-z]+)", mirror)
+    if match and "turbovid." in mirror:
+        return "https://turbovid.eu/embed/{}".format(match.group(1))
+
+    return ""
+
+
 def _order_mirrors(mirrors):
     preferred_hosts = (
         "streamwish",
@@ -155,7 +189,13 @@ def Playvid(url, name, download=None):
         embed_url = _absolute_url(embed_match.group(1))
         embed_html = utils.getHtml(embed_url, url)
         if embed_html:
-            mirrors = re.findall(r"playEmbed\('([^']+)'\)", embed_html)
+            mirrors = _extract_mirrors(embed_html)
+            if not mirrors:
+                nested_iframe = re.search(r'<iframe[^>]+src="([^"]+javseen_play/[^"]+)"', embed_html, re.IGNORECASE)
+                if nested_iframe:
+                    nested_url = _absolute_url(nested_iframe.group(1))
+                    nested_html = utils.getHtml(nested_url, embed_url)
+                    mirrors = _extract_mirrors(nested_html)
             ordered_mirrors = _order_mirrors(mirrors)
 
             for mirror in ordered_mirrors:
@@ -169,8 +209,14 @@ def Playvid(url, name, download=None):
                     )
                     return
 
-            if len(ordered_mirrors) > 1:
-                vp.play_from_link_list(ordered_mirrors)
+            resolver_mirrors = [mirror for mirror in (_normalize_mirror(x) for x in ordered_mirrors) if mirror]
+
+            if len(resolver_mirrors) > 1:
+                vp.play_from_link_list(resolver_mirrors)
+                return
+
+            if resolver_mirrors:
+                vp.play_from_link_to_resolve(resolver_mirrors[0])
                 return
 
             if ordered_mirrors:
