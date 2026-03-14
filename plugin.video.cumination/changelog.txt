@@ -1,3 +1,10 @@
+[B]Version 1.1.323[/B]
+- fix(sites): resolve playback issues for ThePornArea and Javseen
+- new site updates
+- site updates
+- Testing Site Updates
+- Test New Sites
+
 [B]Version 1.1.322[/B]
 - new site updates
 - site updates
