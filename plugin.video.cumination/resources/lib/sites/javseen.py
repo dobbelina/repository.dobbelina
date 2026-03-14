@@ -46,6 +46,50 @@ def _extract_next_page(soup):
     return ""
 
 
+def _extract_direct_stream(html):
+    if not html:
+        return ""
+
+    match = re.search(r"(https?://[^\"'<>\\s]+\\.(?:mp4|m3u8)[^\"'<>\\s]*)", html, re.IGNORECASE)
+    if match:
+        return match.group(1).replace("\\/", "/")
+
+    sources = re.findall(
+        r'file\s*[:=]\s*["\']([^"\']+\.(?:mp4|m3u8)[^"\']*)["\']',
+        html,
+        re.IGNORECASE,
+    )
+    if sources:
+        return sources[0].replace("\\/", "/")
+
+    return ""
+
+
+def _order_mirrors(mirrors):
+    preferred_hosts = (
+        "streamwish",
+        "turbovid",
+        "dood",
+        "streamtape",
+        "cloudwish.xyz",
+        "mycloudz",
+    )
+    seen = set()
+    ordered = []
+    for host in preferred_hosts:
+        for mirror in mirrors:
+            if mirror in seen:
+                continue
+            if host in mirror:
+                seen.add(mirror)
+                ordered.append(mirror)
+    for mirror in mirrors:
+        if mirror not in seen:
+            seen.add(mirror)
+            ordered.append(mirror)
+    return ordered
+
+
 @site.register(default_mode=True)
 def Main():
     site.add_dir("[COLOR hotpink]Recent[/COLOR]", site.url + "recent/", "List", site.img_cat)
@@ -112,26 +156,22 @@ def Playvid(url, name, download=None):
         embed_html = utils.getHtml(embed_url, url)
         if embed_html:
             mirrors = re.findall(r"playEmbed\('([^']+)'\)", embed_html)
-            preferred_hosts = (
-                "cloudwish.xyz",
-                "streamwish",
-                "dood",
-                "streamtape",
-                "turbovid",
-                "mycloudz",
-            )
-            seen = set()
-            ordered_mirrors = []
-            for mirror in mirrors:
-                if mirror not in seen:
-                    seen.add(mirror)
-                    ordered_mirrors.append(mirror)
+            ordered_mirrors = _order_mirrors(mirrors)
 
-            for host in preferred_hosts:
-                for mirror in ordered_mirrors:
-                    if host in mirror:
-                        vp.play_from_link_to_resolve(mirror)
-                        return
+            for mirror in ordered_mirrors:
+                mirror_html = utils.getHtml(mirror, embed_url)
+                direct_stream = _extract_direct_stream(mirror_html)
+                if direct_stream:
+                    vp.play_from_direct_link(
+                        "{}|Referer={}&User-Agent={}".format(
+                            direct_stream, mirror, utils.USER_AGENT
+                        )
+                    )
+                    return
+
+            if len(ordered_mirrors) > 1:
+                vp.play_from_link_list(ordered_mirrors)
+                return
 
             if ordered_mirrors:
                 vp.play_from_link_to_resolve(ordered_mirrors[0])

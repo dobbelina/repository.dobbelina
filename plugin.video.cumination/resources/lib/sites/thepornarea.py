@@ -15,6 +15,7 @@ from six.moves import urllib_parse
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite(
     "thepornarea",
@@ -29,6 +30,29 @@ def _absolute_url(url):
     if not url:
         return ""
     return urllib_parse.urljoin(site.url, url)
+
+
+def _extract_video_id(url):
+    match = re.search(r"/videos/(\d+)/", url)
+    return match.group(1) if match else ""
+
+
+def _play_embed_stream(vp, html, referer):
+    match = re.search(r"video_url:\s*'([^']+)'", html)
+    if not match:
+        return False
+
+    stream_url = match.group(1)
+    if stream_url.startswith("function/0/"):
+        license_match = re.search(r"license_code:\s*'(\$\d+)", html)
+        if not license_match:
+            return False
+        stream_url = kvs_decode(stream_url, license_match.group(1))
+
+    vp.play_from_direct_link(
+        "{}|Referer={}&User-Agent={}".format(stream_url, referer, utils.USER_AGENT)
+    )
+    return True
 
 
 @site.register(default_mode=True)
@@ -91,13 +115,20 @@ def Search(url, keyword=None):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
+    video_id = _extract_video_id(url)
+    if video_id:
+        embed_url = "{}embed/{}".format(site.url, video_id)
+        embed_html = utils.getHtml(embed_url, url)
+        if embed_html:
+            if _play_embed_stream(vp, embed_html, url):
+                return
+            if "kt_player('kt_player'" in embed_html:
+                vp.play_from_kt_player(embed_html, url)
+                return
+
     html = utils.getHtml(url, site.url)
     if not html:
         vp.play_from_link_to_resolve(url)
-        return
-
-    if "kt_player('kt_player'" in html:
-        vp.play_from_kt_player(html, url)
         return
 
     match = re.search(r"video_url:\s*'([^']+)'", html)
