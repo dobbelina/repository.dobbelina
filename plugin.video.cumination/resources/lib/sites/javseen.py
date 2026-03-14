@@ -29,6 +29,8 @@ site = AdultSite(
 def _absolute_url(url):
     if not url:
         return ""
+    if url.startswith("//"):
+        return "https:" + url
     return urllib_parse.urljoin(site.url, url)
 
 
@@ -50,6 +52,11 @@ def _extract_direct_stream(html):
     if not html:
         return ""
 
+    # Look for urlPlay variable or similar (common in turbovid, etc.)
+    match = re.search(r"var\s+urlPlay\s*=\s*['\"]([^'\"]+\.(?:mp4|m3u8)[^'\"]*)['\"]", html, re.IGNORECASE)
+    if match:
+        return match.group(1).replace("\\/", "/")
+
     match = re.search(r"(https?://[^\"'<>\\s]+\\.(?:mp4|m3u8)[^\"'<>\\s]*)", html, re.IGNORECASE)
     if match:
         return match.group(1).replace("\\/", "/")
@@ -66,46 +73,68 @@ def _extract_direct_stream(html):
 
 
 def _extract_mirrors(html):
-    mirrors = re.findall(r"playEmbed\('([^']+)'\)", html)
-    if mirrors:
-        return mirrors
+    if not html:
+        return []
 
+    mirrors = re.findall(r"playEmbed\('([^']+)'\)", html)
+    
     encoded = re.findall(r'data-embed="([^"]+)"', html)
-    decoded = []
     for item in encoded:
         try:
-            decoded.append(base64.b64decode(item).decode("utf-8"))
+            decoded = base64.b64decode(item).decode("utf-8")
+            if decoded.startswith("http"):
+                mirrors.append(decoded)
         except Exception:
             pass
-    return decoded
+            
+    # Also look for common iframe embeds
+    iframe_mirrors = re.findall(r'<iframe[^>]+src="([^"]+)"', html, re.IGNORECASE)
+    for mirror in iframe_mirrors:
+        if any(x in mirror for x in ("streamtape", "turbovid", "streamwish", "dood", "cloudwish", "mycloudz", "javseen_play")):
+            mirrors.append(_absolute_url(mirror))
+            
+    return list(set(mirrors))
 
 
-def _normalize_mirror(mirror):
-    if not mirror:
-        return ""
-
-    match = re.search(r"https?://[^/]+/e/([0-9A-Za-z]+)", mirror)
+def _build_resolver_source(vp, mirror):
+    match = re.search(r"https?://[^/]+/[etv]/([0-9A-Za-z]+)", mirror)
     if match:
         media_id = match.group(1)
-        if "cloudwish." in mirror:
-            return "https://streamwish.com/e/{}".format(media_id)
-        if any(host in mirror for host in ("streamtape.", "doooood.", "dooood.", "dood.")):
-            return mirror
+        if any(x in mirror for x in ("cloudwish.", "streamwish.")):
+            return vp.resolveurl.HostedMediaFile(
+                host="streamwish.com",
+                media_id="{}$${}".format(media_id, site.url),
+                title="StreamWish",
+            )
+        if "streamtape." in mirror:
+            return vp.resolveurl.HostedMediaFile(
+                host="streamtape.net",
+                media_id=media_id,
+                title="StreamTape",
+            )
+        if any(host in mirror for host in ("doooood.", "dooood.", "dood.")):
+            return vp.resolveurl.HostedMediaFile(
+                host="doooood.com",
+                media_id=media_id,
+                title="DoodStream",
+            )
+        if "turbovid." in mirror or "turboviplay." in mirror:
+            return vp.resolveurl.HostedMediaFile(
+                host="turbovid.eu",
+                media_id=media_id,
+                title="TurboVid",
+            )
 
-    match = re.search(r"https?://[^/]+/t/([0-9A-Za-z]+)", mirror)
-    if match and "turbovid." in mirror:
-        return "https://turbovid.eu/embed/{}".format(match.group(1))
-
-    return ""
+    return None
 
 
 def _order_mirrors(mirrors):
     preferred_hosts = (
-        "streamwish",
-        "turbovid",
-        "dood",
         "streamtape",
-        "cloudwish.xyz",
+        "turbovid",
+        "streamwish",
+        "dood",
+        "cloudwish",
         "mycloudz",
     )
     seen = set()
@@ -184,55 +213,71 @@ def Playvid(url, name, download=None):
         vp.play_from_link_to_resolve(url)
         return
 
+    # Try to find embed iframe on the main page
     embed_match = re.search(r'<iframe[^>]+src="([^"]+/embed/\d+/?)"', html, re.IGNORECASE)
-    if embed_match:
+    if not embed_match:
+        # Some videos might have a different ID or path for embed
+        video_id_match = re.search(r'javseen.tv/(\d+)/', url)
+        if video_id_match:
+            embed_url = "https://javseen.tv/embed/{}/".format(video_id_match.group(1))
+        else:
+            embed_url = url
+    else:
         embed_url = _absolute_url(embed_match.group(1))
-        embed_html = utils.getHtml(embed_url, url)
-        if embed_html:
-            mirrors = _extract_mirrors(embed_html)
-            if not mirrors:
-                nested_iframe = re.search(r'<iframe[^>]+src="([^"]+javseen_play/[^"]+)"', embed_html, re.IGNORECASE)
-                if nested_iframe:
-                    nested_url = _absolute_url(nested_iframe.group(1))
-                    nested_html = utils.getHtml(nested_url, embed_url)
-                    mirrors = _extract_mirrors(nested_html)
-            ordered_mirrors = _order_mirrors(mirrors)
 
-            for mirror in ordered_mirrors:
-                mirror_html = utils.getHtml(mirror, embed_url)
-                direct_stream = _extract_direct_stream(mirror_html)
-                if direct_stream:
-                    vp.play_from_direct_link(
-                        "{}|Referer={}&User-Agent={}".format(
-                            direct_stream, mirror, utils.USER_AGENT
-                        )
-                    )
-                    return
+    # Process mirrors recursively
+    def process_url(current_url, referer, depth=0):
+        if depth > 3:
+            return False
+            
+        curr_html = utils.getHtml(current_url, referer)
+        if not curr_html:
+            return False
+            
+        # 1. Try direct stream
+        direct = _extract_direct_stream(curr_html)
+        if direct:
+            vp.play_from_direct_link("{}|Referer={}".format(direct, current_url))
+            return True
+            
+        # 2. Extract mirrors
+        mirrors = _extract_mirrors(curr_html)
+        ordered = _order_mirrors(mirrors)
+        
+        # 3. Try each mirror
+        resolver_sources = []
+        for mirror in ordered:
+            # If it's another javseen internal page, follow it
+            if any(x in mirror for x in ("javseen_play", "/embed/")):
+                if process_url(mirror, current_url, depth + 1):
+                    return True
+            
+            # Check for direct link on mirror (like turbovid.vip)
+            # We fetch HTML for mirrors that are not internal
+            m_html = utils.getHtml(mirror, current_url)
+            if m_html:
+                m_direct = _extract_direct_stream(m_html)
+                if m_direct:
+                    vp.play_from_direct_link("{}|Referer={}".format(m_direct, mirror))
+                    return True
+            
+            # Try to build a resolver source
+            source = _build_resolver_source(vp, mirror)
+            if source:
+                resolver_sources.append(source)
+            elif any(host in mirror for host in ("streamtape", "turbovid", "streamwish", "dood")):
+                # Fallback: if we don't have a specific HostedMediaFile but it looks resolvable
+                vp.play_from_link_to_resolve(mirror)
+                return True
+                
+        if resolver_sources:
+            vp._select_source(resolver_sources)
+            return True
+            
+        return False
 
-            resolver_mirrors = [mirror for mirror in (_normalize_mirror(x) for x in ordered_mirrors) if mirror]
-
-            if len(resolver_mirrors) > 1:
-                vp.play_from_link_list(resolver_mirrors)
-                return
-
-            if resolver_mirrors:
-                vp.play_from_link_to_resolve(resolver_mirrors[0])
-                return
-
-            if ordered_mirrors:
-                vp.play_from_link_to_resolve(ordered_mirrors[0])
-                return
-
-            server_match = re.search(r'data-embed="([^"]+)"', embed_html)
-            if server_match:
-                try:
-                    decoded = base64.b64decode(server_match.group(1)).decode("utf-8")
-                    vp.play_from_link_to_resolve(decoded)
-                    return
-                except Exception:
-                    pass
-
-        vp.play_from_link_to_resolve(embed_url)
+    if process_url(embed_url, url):
         return
 
+    # Ultimate fallback
     vp.play_from_link_to_resolve(url)

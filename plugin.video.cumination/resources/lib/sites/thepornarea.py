@@ -49,18 +49,6 @@ def _play_embed_stream(vp, html, referer):
             return False
         stream_url = kvs_decode(stream_url, license_match.group(1))
 
-    redirect_match = re.search(
-        r"/get_file/\d+/[^/]+/(\d+)/(\d+)/([^/?]+\.mp4)",
-        stream_url,
-        re.IGNORECASE,
-    )
-    if redirect_match:
-        stream_url = "https://www.thepornarea.com/contents/videos/{}/{}/{}".format(
-            redirect_match.group(1),
-            redirect_match.group(2),
-            redirect_match.group(3),
-        )
-
     vp.play_from_direct_link(
         "{}|Referer={}&User-Agent={}".format(stream_url, referer, utils.USER_AGENT)
     )
