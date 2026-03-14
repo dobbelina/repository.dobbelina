@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -166,3 +167,48 @@ def test_list_prefers_video_title_over_duration(monkeypatch):
     pornkai.List("https://pornkai.com/api?query=public&sort=best&page=0&method=search")
 
     assert downloads == ["Actual Video Title"]
+
+
+def test_list_filters_categories_and_cam_entries(monkeypatch):
+    html = """
+    {"html":"<div class=\\"thumbnail\\"><a class=\\"thumbnail_link\\" href=\\"/videos/12345\\"><span class=\\"trigger_pop th_wrap\\">Playable Video</span></a></div>\
+<div class=\\"thumbnail\\"><a class=\\"thumbnail_link\\" href=\\"/videos?q=amateur\\"><span class=\\"trigger_pop th_wrap\\">Amateur</span></a></div>\
+<div class=\\"thumbnail\\"><a class=\\"thumbnail_link\\" href=\\"/cam?model=tester\\"><span class=\\"trigger_pop th_wrap\\">Live Model</span></a></div>","results_remaining":0}
+    """.strip()
+    monkeypatch.setattr(pornkai.utils, "getHtml", lambda url, referer=None: html)
+
+    downloads = []
+    monkeypatch.setattr(
+        pornkai.site,
+        "add_download_link",
+        lambda name, url, *a, **k: downloads.append((name, url)),
+    )
+    monkeypatch.setattr(pornkai.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(pornkai.utils, "eod", lambda: None)
+
+    pornkai.List("https://pornkai.com/videos?q=&sort=new&page=1")
+
+    assert downloads == [("Playable Video", "https://pornkai.com/videos/12345")]
+
+
+def test_playvid_falls_back_to_html_parser(monkeypatch):
+    html = "<html><body><video src='https://cdn.example/video.mp4'></video></body></html>"
+    played = {}
+
+    class MockPlayer:
+        def __init__(self, *args, **kwargs):
+            self.progress = MagicMock()
+
+        def play_from_link_to_resolve(self, url):
+            raise AssertionError("unexpected direct resolve path")
+
+        def play_from_html(self, markup, url=None):
+            played["markup"] = markup
+            played["url"] = url
+
+    monkeypatch.setattr(pornkai.utils, "getHtml", lambda url, referer=None: html)
+    monkeypatch.setattr(pornkai.utils, "VideoPlayer", MockPlayer)
+
+    pornkai.Playvid("https://pornkai.com/videos/12345", "Name")
+
+    assert played == {"markup": html, "url": "https://pornkai.com/videos/12345"}

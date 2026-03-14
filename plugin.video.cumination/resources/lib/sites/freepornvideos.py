@@ -176,7 +176,7 @@ def GotoPage(url, np, lp=0):
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg="Out of range!")
             return
-        url = re.sub(r"/\d+/$", r"/{}/".format(pg), url, re.IGNORECASE)
+        url = re.sub(r"/\d+/$", r"/{}/".format(pg), url, count=0, flags=re.IGNORECASE)
         contexturl = (
             utils.addon_sys
             + "?mode="

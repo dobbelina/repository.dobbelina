@@ -306,6 +306,13 @@ def Playvid(url, name, download=None):
             return
 
         refpage = utils.getHtml(refurl)
+        if isinstance(refpage, (list, tuple, set)):
+            links = [link for link in refpage if isinstance(link, str) and link]
+            if links:
+                vp.play_from_link_list(links)
+                return
+            refpage = ""
+
         if "/playerz/" in refurl:
             videourl = re.compile(
                 r'"src":"\.([^"]+)"', re.DOTALL | re.IGNORECASE

@@ -8,6 +8,7 @@ debugging, set environment variable: CUMINATION_ALLOW_PLAYWRIGHT=1
 
 import os
 import sys
+import warnings
 from typing import Optional, Dict
 
 # Try to import playwright - if it fails, we will use npx playwright as fallback
@@ -94,7 +95,7 @@ def fetch_with_playwright(
             )
 
         page = context.new_page()
-        stealth_sync(page)
+        _apply_stealth(page)
 
         try:
             # Navigate to the URL
@@ -138,7 +139,7 @@ def sniff_video_url(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
         )
         page = context.new_page()
-        stealth_sync(page)
+        _apply_stealth(page)
 
         found_url = [None]
         all_video_urls = []
@@ -219,6 +220,16 @@ def sniff_video_url(
 
         finally:
             browser.close()
+
+
+def _apply_stealth(page) -> None:
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="Stealth has already been applied to this page or context\\. Skipping duplicate application\\.",
+            category=UserWarning,
+        )
+        stealth_sync(page)
 
 
 def sniff_video_url_npx(

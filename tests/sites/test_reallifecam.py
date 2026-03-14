@@ -1,6 +1,7 @@
 """Comprehensive tests for reallifecam.to site implementation."""
 
 from pathlib import Path
+from unittest.mock import MagicMock
 
 from resources.lib.sites import reallifecam
 
@@ -389,3 +390,50 @@ def test_search_with_keyword_calls_list(monkeypatch):
 
     assert len(list_calls) == 1
     assert "test%20query" in list_calls[0]
+
+
+def test_playvid_handles_list_embed_response(monkeypatch):
+    """Playvid should treat list-like embed responses as direct source candidates."""
+    played_links = []
+
+    class MockPlayer:
+        def __init__(self, *args, **kwargs):
+            self.progress = MagicMock()
+            self.resolveurl = MagicMock()
+            self.resolveurl.HostedMediaFile.return_value = False
+
+        def play_from_link_list(self, links):
+            played_links.append(links)
+
+        def play_from_link_to_resolve(self, source):
+            raise AssertionError("unexpected resolve path")
+
+        def play_from_direct_link(self, link):
+            raise AssertionError("unexpected direct link path")
+
+        def play_from_html(self, html, url=None):
+            raise AssertionError("unexpected HTML fallback")
+
+    video_page = """
+    <div class="video-embedded">
+        <iframe src="https://embed.example/video"></iframe>
+    </div>
+    """
+    embed_links = [
+        "https://cdn.example/stream.m3u8",
+        "https://cdn.example/fallback.mp4",
+    ]
+
+    def fake_get_html(url, referer=None):
+        if url == "https://example.com/video/1":
+            return video_page
+        if url == "https://embed.example/video":
+            return embed_links
+        raise AssertionError("unexpected url {}".format(url))
+
+    monkeypatch.setattr(reallifecam.utils, "getHtml", fake_get_html)
+    monkeypatch.setattr(reallifecam.utils, "VideoPlayer", MockPlayer)
+
+    reallifecam.Playvid("https://example.com/video/1", "Name")
+
+    assert played_links == [embed_links]

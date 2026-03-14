@@ -82,6 +82,8 @@ def List(url):
         videopage = utils.safe_get_attr(link, "href")
         if not videopage:
             continue
+        if not _is_video_link(videopage):
+            continue
         videopage = utils.fix_url(videopage, site.url)
 
         # Prefer explicit title container first; generic trigger_pop/th_wrap often
@@ -305,8 +307,26 @@ def Playvid(url, name, download=None):
     if match:
         videolink = match[0]
         if "xh.video" in videolink:
-            videolink = utils.getVideoLink(videolink).split("?")[0]
+            videolink = utils.getVideoLink(videolink, referer=url).split("?")[0]
         vp.play_from_link_to_resolve(videolink)
+        return
+
+    vp.play_from_html(videohtml, url)
+
+
+def _is_video_link(url):
+    if not url:
+        return False
+
+    parsed = urllib_parse.urlparse(url)
+    path = parsed.path or ""
+
+    if path.startswith("/cam"):
+        return False
+    if path.startswith("/videos") and parsed.query:
+        return False
+
+    return path.startswith("/videos/") or path.startswith("/view")
 
 
 def _extract_thumbnail(img_tag):
