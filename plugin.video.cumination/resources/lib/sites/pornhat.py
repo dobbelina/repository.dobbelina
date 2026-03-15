@@ -381,6 +381,7 @@ def Play(url, name, download=None):
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
         vp.play_from_kt_player(vpage, url)
     elif '<source' in vpage:
+        sources = {}
         sources = re.compile(r'<source\s*src="([^"]+)".+?label="([^"]+)', re.DOTALL | re.IGNORECASE).findall(vpage)
         sources = {quality: videourl for videourl, quality in sources if quality.lower() != 'auto'}
         videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x.lower() == '4k' else int(x[:-1]), reverse=True)

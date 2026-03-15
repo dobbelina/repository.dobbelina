@@ -379,7 +379,7 @@ def Play(url, name, download=None):
     sources = []
     videohtml = utils.getHtml(url)
     
-    # Try current JSON-based approach
+    # Try current JSON-based approach with improved reversal logic from upstream
     match = re.compile('iframe_url":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(
         videohtml
     )
@@ -389,32 +389,14 @@ def Play(url, name, download=None):
             vp.progress.update(
                 25 + (i * 5), "[CR]Loading streaming link {0} page[CR]".format(i + 1)
             )
-            try:
-                streamhtml = utils.getHtml(link, url, error="raise")
-                match_stream = re.compile(
-                    r"""var OLID = '([^']+)'.+?src="([^']+)""", re.DOTALL | re.IGNORECASE
-                ).findall(streamhtml)
-                if match_stream:
-                    (olid, vurl) = match_stream[0]
-                    olid = olid[::-1]
-                    src = vurl + olid
-                    src = utils.getVideoLink(src, link)
-                    sources.append('"{}"'.format(src))
-            except Exception:
-                continue
+            # Use the simpler logic from upstream which seems to handle current obfuscation better
+            vlink = link.replace('d=', 'r=').split("=")
+            if len(vlink) > 1:
+                src = vlink[0] + '=' + vlink[1].split("&")[0][::-1]
+                src = utils.getVideoLink(src, link)
+                sources.append('"{}"'.format(src))
 
-    # Try BeautifulSoup iframe detection as fallback
-    if not sources:
-        soup = utils.parse_html(videohtml)
-        if soup:
-            iframes = soup.select('iframe[src*="embed"], iframe[src*="player"]')
-            for iframe in iframes:
-                src = utils.safe_get_attr(iframe, "src")
-                if src:
-                    src = "https:" + src if src.startswith("//") else src
-                    sources.append('"{}"'.format(src))
-
-    # Try window.open patterns
+    # Try window.open patterns as fallback
     match_open = re.compile(r"window\.open\('([^']+)'", re.DOTALL | re.IGNORECASE).findall(
         videohtml
     )

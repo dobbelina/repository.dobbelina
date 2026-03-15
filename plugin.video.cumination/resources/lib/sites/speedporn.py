@@ -20,7 +20,6 @@ import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
 site = AdultSite(
     "speedporn",
@@ -264,7 +263,6 @@ def Tags(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    links = {}
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
@@ -277,52 +275,9 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         return
 
-    videopage = videopage.split(">Watch Online")[-1]
-
-    srcs = re.compile(
-        r'<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE
-    ).findall(videopage)
-    for title, src in srcs:
-        title = utils.cleantext(title)
-        title = title.split(" on ")[-1]
-        src = src.split("?link=")[-1]
-        if "mangovideo" in src:
-            try:
-                html, _ = utils.get_html_with_cloudflare_retry(src, url)
-            except Exception:
-                continue
-            if not html or utils.is_cloudflare_challenge_page(html):
-                continue
-
-            if "=" in src:
-                src = src.split("=")[-1]
-            murl = re.compile(
-                r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE
-            ).findall(html)
-            if murl:
-                if murl[0].startswith("function/"):
-                    license = re.findall(r"license_code:\s*'([^']+)", html)[0]
-                    murl = kvs_decode(murl[0], license)
-            else:
-                murl = re.compile(
-                    r"action=[^=]+=([^\?]+)/\?download", re.DOTALL | re.IGNORECASE
-                ).findall(html)
-                if murl:
-                    murl = murl[0]
-            if murl:
-                links[title] = murl
-        elif vp.resolveurl.HostedMediaFile(src).valid_url():
-            links[title] = src
-    videourl = utils.selector("Select server", links, setting_valid=False)
-    if not videourl:
-        vp.progress.close()
-        return
-
-    vp.progress.update(90, "[CR]Loading video page[CR]")
-    if "mango" in videourl:
-        vp.play_from_direct_link(videourl)
-    else:
-        vp.play_from_link_to_resolve(videourl)
+    if "kt_player('kt_player'" in videopage:
+        vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
+        vp.play_from_kt_player(videopage, url)
 
 
 @site.register()
