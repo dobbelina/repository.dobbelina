@@ -22,21 +22,18 @@ import xbmcplugin
 import xbmc
 import xbmcgui
 import time
+from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 
-<<<<<<< HEAD
 site = AdultSite(
     "camwhoresbay",
-    "[COLOR hotpink]camwhoresbay[/COLOR]",
+    "[COLOR hotpink]CamWhoresBay[/COLOR]",
     "https://www.camwhoresbay.com/",
     "camwhoresbay.png",
     "camwhoresbay",
 )
-=======
-site = AdultSite('camwhoresbay', '[COLOR hotpink]CamWhoresBay[/COLOR]', 'https://www.camwhoresbay.com/', 'camwhoresbay.png', 'camwhoresbay')
->>>>>>> 569ea709 (kt_player, xxthots  new site, fixes #1767)
 
 getinput = utils._get_keyboard
 cblogged = "true" in utils.addon.getSetting("cblogged")
@@ -297,22 +294,14 @@ def GotoPage(url, np, lp=None):
         if lp and lp.isdigit() and int(pg) > int(lp):
             utils.notify(msg="Out of range!")
             return
-<<<<<<< HEAD
-        new_url = re.sub(
-            r"&from([^=]*)=\d+", r"&from\1={}".format(pg), url, flags=re.IGNORECASE
-        )
+        url = re.sub(r"&from([^=]*)=\d+", r"&from\1={}".format(pg), url, re.IGNORECASE)
         contexturl = (
             utils.addon_sys
             + "?mode="
             + "camwhoresbay.List&url="
-            + urllib_parse.quote_plus(new_url)
+            + urllib_parse.quote_plus(url)
         )
         xbmc.executebuiltin("Container.Update(" + contexturl + ")")
-=======
-        url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
-        contexturl = (utils.addon_sys + "?mode=" + "camwhoresbay.List&url=" + urllib_parse.quote_plus(url))
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
->>>>>>> 569ea709 (kt_player, xxthots  new site, fixes #1767)
 
 
 @site.register()
@@ -321,7 +310,7 @@ def Playvid(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
     hdr = dict(utils.base_hdrs)
-    hdr['Cookie'] = get_cookies()
+    hdr["Cookie"] = get_cookies()
     vpage = utils.getHtml(url, site.url, headers=hdr)
     if "kt_player('kt_player'" in vpage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
@@ -383,7 +372,6 @@ def Categories(url):
 @site.register()
 def Playlists(url, page=1):
     cathtml = utils.getHtml(url, site.url)
-<<<<<<< HEAD
     soup = utils.parse_html(cathtml)
 
     seen = set()
@@ -453,24 +441,6 @@ def Playlists(url, page=1):
                     site.img_next,
                     npage,
                 )
-=======
-    img = str(randint(1, 4))
-    match = re.compile(r'class="item\s*".+?href="([^"]+)"\s*title="([^"]+)".+?class="thumb video' + img + '.+?data-original="([^"]+)".+?class="totalplaylist">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, name2 in match:
-        name = utils.cleantext(name) + ' [COLOR cyan][{}][/COLOR]'.format(name2)
-        site.add_dir(name, catpage, 'List', img, 1)
-    if re.search(r'<li\s*class="next"><a', cathtml, re.DOTALL | re.IGNORECASE):
-        lastp = re.compile(r':(\d+)">Last', re.DOTALL | re.IGNORECASE).findall(cathtml)
-        lastp = '/{}'.format(lastp[0]) if lastp else ''
-        if not page:
-            page = 1
-        npage = page + 1
-        if 'from={0:02d}'.format(page) in url:
-            nurl = url.replace('from={0:02d}'.format(page), 'from={0:02d}'.format(npage))
-        else:
-            nurl = url
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'Playlists', site.img_next, npage)
->>>>>>> 569ea709 (kt_player, xxthots  new site, fixes #1767)
     utils.eod()
 
 
