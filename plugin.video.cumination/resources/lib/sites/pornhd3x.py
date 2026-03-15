@@ -32,7 +32,7 @@ from resources.lib.sites.soup_spec import SoupSiteSpec
 site = AdultSite(
     "pornhd3x",
     "[COLOR hotpink]PornHD3x[/COLOR]",
-    "https://www9.pornhd3x.tv/",
+    "https://pornhd3x.tv/",
     "pornhd3x.png",
     "pornhd3x",
 )
@@ -50,11 +50,7 @@ VIDEO_LIST_SPEC = SoupSiteSpec(
         "items": ".ml-item.item",
         "url": {"selector": "a.ml-mask", "attr": "href"},
         "title": {"selector": "h2", "text": True, "clean": True},
-        "thumbnail": {
-            "selector": "img",
-            "attr": "data-original",
-            "fallback_attrs": ["data-src", "src"],
-        },
+        "thumbnail": lambda item, soup: utils.get_thumbnail(item.select_one("img")),
         "quality": {"selector": ".mli-quality", "text": True},
         "pagination": {
             "selector": ".pagination li.active + li a",
@@ -132,6 +128,13 @@ def Playvid(url, name, download=None):
     soup = utils.parse_html(html)
     episode = soup.select_one("a[episode-id]")
     episode_id = utils.safe_get_attr(episode, "episode-id")
+    
+    # Fallback to movie.id JavaScript variable
+    if not episode_id:
+        match = re.search(r'id\s*:\s*["\']([^"\']+)["\']', html)
+        if match:
+            episode_id = match.group(1)
+
     if episode_id:
         seed = "".join(
             random.choice(string.ascii_lowercase + string.digits) for _ in range(6)
