@@ -21,13 +21,15 @@ if sys.platform == "win32":
 # Configuration
 UPSTREAM_REMOTE = "https://github.com/dobbelina/repository.dobbelina.git"
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SYNC_FILE = REPO_ROOT / "UPSTREAM_SYNC.md"
+SYNC_FILE = REPO_ROOT / "docs" / "development" / "UPSTREAM_SYNC.md"
 AUDIT_FILE = REPO_ROOT / "bs4_migration_audit.csv"
 SITES_DIR = REPO_ROOT / "plugin.video.cumination" / "resources" / "lib" / "sites"
 
 
 class SyncManager:
-    def __init__(self):
+    def __init__(self, dry_run=False, skip_changelog=True):
+        self.dry_run = dry_run
+        self.skip_changelog = skip_changelog
         self.bs4_sites = self._load_bs4_sites()
         self.tracked_hashes = self._load_tracked_hashes()
         self.integrated_in_git = self._load_git_history_hashes()
@@ -47,15 +49,19 @@ class SyncManager:
         if not AUDIT_FILE.exists():
             return set()
         bs4_sites = set()
-        with open(AUDIT_FILE, "r", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row.get("BeautifulSoup", "").strip().lower() == "true":
-                    bs4_sites.add(row["Site"].strip().lower())
+        try:
+            with open(AUDIT_FILE, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get("BeautifulSoup", "").strip().lower() == "true":
+                        bs4_sites.add(row["Site"].strip().lower())
+        except Exception as e:
+            print(f"Warning: Could not load audit file: {e}")
         return bs4_sites
 
     def _load_tracked_hashes(self):
         if not SYNC_FILE.exists():
+            print(f"Warning: {SYNC_FILE} not found")
             return set()
         content = SYNC_FILE.read_text(encoding="utf-8")
         # Find all 7-character hex strings in backticks
@@ -92,7 +98,7 @@ class SyncManager:
             ]
         )
         commits = []
-        if not result.stdout.strip():
+        if not result.stdout or not result.stdout.strip():
             return []
         for line in result.stdout.strip().split("\n"):
             if not line:
@@ -111,11 +117,25 @@ class SyncManager:
         result = self._run_git(["show", "--name-only", "--format=", sha])
         files = result.stdout.strip().split("\n")
 
+        # Get full commit message for deeper analysis
+        msg_full = self._run_git(["show", "-s", "--format=%B", sha]).stdout.lower()
+
         sites_affected = set()
+        changelog_affected = False
         for f in files:
             if "plugin.video.cumination/resources/lib/sites/" in f:
                 site_name = Path(f).stem.lower()
                 sites_affected.add(site_name)
+            if "changelog.txt" in f:
+                changelog_affected = True
+
+        playback_keywords = ["playback", "play", "vid", "stream", "decrypt", "kvs"]
+        playback_affected = any(kw in msg_full for kw in playback_keywords)
+        
+        # Check if the code changes themselves mention playback related things
+        if not playback_affected:
+            diff = self._run_git(["show", "--format=", sha]).stdout.lower()
+            playback_affected = any(kw in diff for kw in playback_keywords)
 
         is_bs4_only = False
         if sites_affected:
@@ -125,9 +145,25 @@ class SyncManager:
             "files": files,
             "sites": list(sites_affected),
             "is_bs4_only": is_bs4_only,
+            "changelog_affected": changelog_affected,
+            "playback_affected": playback_affected,
         }
 
+    def preview_commit(self, sha):
+        print(f"\n--- PREVIEW: {sha} ---")
+        result = self._run_git(["show", "--stat", sha])
+        print(result.stdout)
+        print("--------------------------\n")
+
     def update_sync_file(self, sha, msg, fork_sha=None, skip_reason=None):
+        if self.dry_run:
+            print(f"[DRY RUN] Would update {SYNC_FILE} for {sha}")
+            return
+
+        if not SYNC_FILE.exists():
+            print(f"Error: {SYNC_FILE} not found. Cannot update tracking.")
+            return
+
         content = SYNC_FILE.read_text(encoding="utf-8")
         today = datetime.now().strftime("%Y-%m-%d")
 
@@ -204,7 +240,10 @@ class SyncManager:
                 )
                 to_skip.append(c)
             else:
-                print(f"🆕 NEW: {c['sha']} - {c['msg']}")
+                msg_extra = ""
+                if analysis["changelog_affected"]:
+                    msg_extra = " [CHANGELOG]"
+                print(f"🆕 NEW: {c['sha']} - {c['msg']}{msg_extra}")
                 if analysis["sites"]:
                     print(f"   Affected sites: {', '.join(analysis['sites'])}")
                 to_integrate.append(c)
@@ -243,21 +282,60 @@ class SyncManager:
 
         for c in targets:
             sha = c["sha"]
+            analysis = self.analyze_commit(sha)
+            
+            if self.dry_run:
+                print(f"[DRY RUN] Would cherry-pick {sha}")
+                continue
+
             print(f"🍒 Cherry-picking {sha}...")
-            result = self._run_git(["cherry-pick", "-x", sha])
-            if result.returncode == 0:
-                fork_sha = self._run_git(["log", "-1", "--format=%h"]).stdout.strip()
-                self.update_sync_file(sha, c["msg"], fork_sha=fork_sha)
-                print(f"✅ Successfully integrated {sha} as {fork_sha}")
+            
+            # If changelog is affected and we want to skip it, use a cleaner approach
+            if analysis["changelog_affected"] and self.skip_changelog:
+                print(f"   Note: This commit contains changelog changes. Attempting to exclude them...")
+                # Cherry-pick without committing
+                self._run_git(["cherry-pick", "-n", "-x", sha])
+                
+                # Revert any changelog files
+                for f in analysis["files"]:
+                    if "changelog.txt" in f:
+                        self._run_git(["checkout", "HEAD", "--", f])
+                
+                # Try to commit
+                result = self._run_git(["commit", "-m", f"cherry picked from commit {sha} (excluded changelog)"])
+                if result.returncode != 0:
+                    # If commit failed (maybe only changelog was changed?), check if anything is staged
+                    status = self._run_git(["status", "--porcelain"])
+                    if not status.stdout.strip():
+                        print(f"⚠️  Skipping {sha} because it only contained changelog changes after filtering.")
+                        # Still track it as integrated to avoid re-prompting
+                        self.update_sync_file(sha, c["msg"], fork_sha="skipped-changelog-only")
+                        continue
+                    else:
+                        print(f"❌ Failed to commit after excluding changelog for {sha}")
+                        print(result.stderr)
+                        break
             else:
-                print(f"❌ Conflict while cherry-picking {sha}!")
-                print(result.stderr)
-                print(
-                    "\nPlease resolve manually, commit, then update UPSTREAM_SYNC.md."
-                )
-                break
+                # Normal cherry-pick
+                result = self._run_git(["cherry-pick", "-x", sha])
+                if result.returncode != 0:
+                    print(f"❌ Conflict while cherry-picking {sha}!")
+                    print(result.stderr)
+                    print("\nPlease resolve manually, commit, then update UPSTREAM_SYNC.md.")
+                    break
+
+            fork_sha = self._run_git(["log", "-1", "--format=%h"]).stdout.strip()
+            self.update_sync_file(sha, c["msg"], fork_sha=fork_sha)
+            print(f"✅ Successfully integrated {sha} as {fork_sha}")
 
 
 if __name__ == "__main__":
-    manager = SyncManager()
+    import argparse
+    parser = argparse.ArgumentParser(description="Sync Manager for Dobbelina Repository Fork")
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument("--no-skip-changelog", action="store_true", help="Don't skip changelog files during cherry-picking")
+    
+    args = parser.parse_args()
+    
+    manager = SyncManager(dry_run=args.dry_run, skip_changelog=not args.no_skip_changelog)
     manager.run()
