@@ -20,13 +20,12 @@ import re
 import time
 import base64
 import requests
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse, urljoin, quote, unquote
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse, urljoin
 
 from resources.lib import utils
 from resources.lib.http_timeouts import (
     HTTP_TIMEOUT_MANIFEST,
     HTTP_TIMEOUT_MEDIUM,
-    HTTP_TIMEOUT_PREFETCH,
     HTTP_TIMEOUT_SHORT,
 )
 from six.moves import urllib_parse
@@ -621,13 +620,6 @@ def _start_manifest_proxy(selected_url, name):
     )
     
     # Only signing params belong on child manifests / segment URLs.
-    manifest_query_params = parse_qs(parsed.query, keep_blank_values=True)
-    child_manifest_auth_params = {
-        key: values[0]
-        for key, values in manifest_query_params.items()
-        if key in ("psch", "pkey") and values
-    }
-
     fetch_headers = _stripchat_stream_headers(name)
     if isinstance(STRIPCHAT_PROXY_SESSION_HEADERS, dict):
         fetch_headers.update(

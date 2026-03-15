@@ -22,7 +22,6 @@ import xbmcplugin
 import xbmc
 import xbmcgui
 import time
-from random import randint
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
