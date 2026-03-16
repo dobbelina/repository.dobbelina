@@ -105,17 +105,14 @@ def Playvid(url, name, download=None):
                 "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"
             )
 
-            def rot13(s: str) -> str:
-                return s.translate(ROT13_TABLE)
-
-            def decode(encoded: str):
+            def decode(encoded):
                 try:
                     e = encoded.replace("sha512-", "")
-                    e = rot13(e)
+                    e = e.translate(ROT13_TABLE)
                     e = base64.b64decode(e).decode("utf-8")
-                    e = rot13(e)
+                    e = e.translate(ROT13_TABLE)
                     e = base64.b64decode(e).decode("utf-8")
-                    e = rot13(e)
+                    e = e.translate(ROT13_TABLE)
                     e = base64.b64decode(e).decode("utf-8")
                     return json.loads(e)
                 except Exception:
@@ -150,6 +147,7 @@ Content-Disposition: form-data; name="b"
             jdata = json.loads(response.text)
 
             video_url = jdata.get("data", {}).get("sources", [])[0].get("src")
+            utils.kodilog("Video URL: {}".format(video_url))
             vp.play_from_direct_link(video_url)
 
 
