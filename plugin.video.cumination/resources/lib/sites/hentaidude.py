@@ -21,6 +21,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import base64
 import json
+import xbmc
 
 
 site = AdultSite("hentaidude", "[COLOR hotpink]Hentaidude[/COLOR]", 'https://hentaidude.xxx/', "https://hentaidude.xxx/wp-content/uploads/2021/03/Hentai-Dude.png", "hentaidude")
@@ -147,8 +148,35 @@ Content-Disposition: form-data; name="b"
             jdata = json.loads(response.text)
 
             video_url = jdata.get("data", {}).get("sources", [])[0].get("src")
-            utils.kodilog("Video URL: {}".format(video_url))
-            vp.play_from_direct_link(video_url)
+
+            subtitle = []
+            if video_url.endswith('.m3u8'):
+                try:
+                    video_file = utils.getHtml(video_url, url)
+
+                    query = {
+                        "jsonrpc": "2.0",
+                        "method": "Settings.GetSettingValue",
+                        "params": {"setting": "subtitles.languages"},
+                        "id": 1
+                    }
+                    response = xbmc.executeJSONRPC(json.dumps(query))
+                    value = json.loads(response)
+                    langs = value["result"]["value"]
+                    lang_codes = [
+                        xbmc.convertLanguage(name, xbmc.ISO_639_1)
+                        for name in langs
+                    ]
+
+                    match = re.compile(r'URI="([^"]+)",TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="([^"]+)"').findall(video_file)
+                    if match:
+                        for sub_url, lang in match:
+                            if lang in lang_codes:
+                                subtitle.append(video_url.rsplit('/', 1)[0] + '/' + sub_url)
+                except Exception:
+                    pass
+            utils.playvid(video_url, name, subtitle=subtitle)
+            # vp.play_from_direct_link(video_url)
 
 
 @site.register()

@@ -394,7 +394,10 @@ def playvid(videourl, name, download=None, subtitle=None, IA_check='check'):
             videourl, listitem = inputstream_check(videourl, listitem, IA_check)
 
         if subtitle:
-            listitem.setSubtitles([subtitle])
+            if isinstance(subtitle, list):
+                listitem.setSubtitles(subtitle)
+            else:
+                listitem.setSubtitles([subtitle])
 
         if int(sys.argv[1]) == -1:
             xbmc.Player().play(videourl, listitem)
