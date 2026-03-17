@@ -1,3 +1,12 @@
+[B]Version 1.1.327[/B]
+- Fix PMVHaven listing parsing
+- fix(pornhd3x): resolve buggy thumbnails and broken playback logic
+- fix: resolve linting issues and unused code in site modules
+- fix: resolve syntax errors and clean up merge markers in site modules
+- Upstream Commits
+- chore: update sync manager and upstream tracking for 2026-03-14 session
+- cherry picked from commit 569ea709 (excluded changelog, kept BS4 scrapers with playback fixes)
+
 [B]Version 1.1.326[/B]
 - fix(pornhd3x): resolve buggy thumbnails and broken playback logic
 - fix: resolve linting issues and unused code in site modules
