@@ -305,6 +305,7 @@ def Playvid(url, name, download=None):
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
                 # The 'key' itself is often the full URL path from the API
+                # and we should use the 'videos' dict which already has stripped keys
                 path = videos[key]
                 if not path.startswith("http"):
                     videourl = "https://video.beeg.com/" + path + "|Referer={}".format(site.url)
