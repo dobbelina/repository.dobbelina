@@ -1,0 +1,35 @@
+{
+  "name": "playwright-diagnostics",
+  "version": "1.0.0",
+  "description": "Automated Playwright-based testing and debugging for Cumination.",
+  "commands": [
+    {
+      "name": "pw-smoke",
+      "description": "Run a live smoke test for a specific site.",
+      "parameters": [
+        {
+          "name": "site",
+          "description": "The name of the site module (e.g., anybunny)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "pw-sniff",
+      "description": "Sniff the network for the first playable video URL.",
+      "parameters": [
+        {
+          "name": "url",
+          "description": "The URL of the video page",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "playwright-expert",
+      "path": "skills/playwright-expert/SKILL.md"
+    }
+  ]
+}
