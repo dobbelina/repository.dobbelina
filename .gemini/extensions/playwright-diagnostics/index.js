@@ -23,6 +23,28 @@ async function pwSmoke({ site }) {
   }
 }
 
+async function pwSniff({ url }) {
+  try {
+    const videoUrl = await PythonBridge.runScript('scripts/playwright_sniff_bridge.py', [
+      url
+    ]);
+    
+    const cleanedUrl = videoUrl.trim();
+    if (!cleanedUrl || cleanedUrl === 'No video URL found') {
+      return `No video stream found for: ${url}`;
+    }
+    
+    return `**Found Video Stream:**\n\n` + 
+           `\`\`\`\n${cleanedUrl}\n\`\`\`\n\n` +
+           `_Tip: You can use this URL directly in VLC or other players for verification._`;
+  } catch (err) {
+    const errorMsg = err.error ? err.error.message : String(err);
+    const stderr = err.stderr || '';
+    return `Error sniffing URL: ${errorMsg}\n${stderr}`;
+  }
+}
+
 module.exports = {
-  'pw-smoke': pwSmoke
+  'pw-smoke': pwSmoke,
+  'pw-sniff': pwSniff
 };
