@@ -4,7 +4,7 @@ const path = require('path');
 class PythonBridge {
   static runScript(scriptPath, args = [], env = {}) {
     return new Promise((resolve, reject) => {
-      const fullPath = path.resolve(__dirname, '../../../', scriptPath);
+      const fullPath = path.resolve(__dirname, '../../../../', scriptPath);
       const command = `python3 ${fullPath} ${args.join(' ')}`;
       const options = {
         env: { ...process.env, ...env, CUMINATION_ALLOW_PLAYWRIGHT: '1' }

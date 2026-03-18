@@ -195,8 +195,9 @@ class SmokeRunner:
         self.output_dir = ROOT / "results"
         self.output_dir.mkdir(exist_ok=True)
 
-    def run_site_test(self, site_name: str) -> Dict[str, Any]:
-        print(f"\n--- Testing Site: {site_name} ---")
+    def run_site_test(self, site_name: str, quiet: bool = False) -> Dict[str, Any]:
+        if not quiet:
+            print(f"\n--- Testing Site: {site_name} ---")
 
         # 1. Load the site module
         try:
@@ -256,7 +257,8 @@ class SmokeRunner:
 
         # 3. Playwright Fetch (if blocked or failed)
         if result["standard_fetch"] != "OK" or result["cloudflare_detected"]:
-            print(f"  Standard fetch failed for {site_name}, trying Playwright...")
+            if not quiet:
+                print(f"  Standard fetch failed for {site_name}, trying Playwright...")
             try:
                 pw_html = fetch_with_playwright(site_obj.url, timeout=30000)
                 if pw_html and len(pw_html) > 500:
@@ -279,7 +281,8 @@ class SmokeRunner:
         # For simplicity, we'll skip this unless explicitly requested or if we find a link
         # But for now, let's just mark the main page status
 
-        print(f"  Result: {result['status']}")
+        if not quiet:
+            print(f"  Result: {result['status']}")
         return result
 
     def generate_report(self):
@@ -364,13 +367,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--site", help="Test a specific site")
     parser.add_argument("--limit", type=int, help="Limit number of sites to test")
+    parser.add_argument("--json", action="store_true", help="Print result as JSON")
     # Use real_argv excluding the script name for parsing
     args = parser.parse_args(real_argv[1:])
 
     runner = SmokeRunner()
     if args.site:
-        res = runner.run_site_test(args.site)
+        res = runner.run_site_test(args.site, quiet=args.json)
         runner.results.append(res)
-        runner.generate_report()
+        if args.json:
+            print(json.dumps(res))
+        else:
+            runner.generate_report()
     else:
         runner.run_all(limit=args.limit)
