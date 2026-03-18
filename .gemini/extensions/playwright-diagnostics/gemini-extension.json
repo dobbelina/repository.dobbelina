@@ -24,6 +24,10 @@
           "required": true
         }
       ]
+    },
+    {
+      "name": "pw-test-env",
+      "description": "Check the Playwright environment and browser status."
     }
   ],
   "skills": [

@@ -44,7 +44,19 @@ async function pwSniff({ url }) {
   }
 }
 
+async function pwTestEnv() {
+  try {
+    const stdout = await PythonBridge.runScript('scripts/playwright_test_env.py');
+    return stdout;
+  } catch (err) {
+    const errorMsg = err.error ? err.error.message : String(err);
+    const stderr = err.stderr || '';
+    return `Error checking environment: ${errorMsg}\n${stderr}`;
+  }
+}
+
 module.exports = {
   'pw-smoke': pwSmoke,
-  'pw-sniff': pwSniff
+  'pw-sniff': pwSniff,
+  'pw-test-env': pwTestEnv
 };
