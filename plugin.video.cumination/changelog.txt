@@ -1,3 +1,11 @@
+[B]Version 1.1.328[/B]
+- Site Fixes
+- Fix PMVHaven listing parsing
+- fix(pornhd3x): resolve buggy thumbnails and broken playback logic
+- fix: resolve linting issues and unused code in site modules
+- fix: resolve syntax errors and clean up merge markers in site modules
+- Upstream Commits
+
 [B]Version 1.1.327[/B]
 - Fix PMVHaven listing parsing
 - fix(pornhd3x): resolve buggy thumbnails and broken playback logic
