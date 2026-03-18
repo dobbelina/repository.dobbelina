@@ -14,6 +14,7 @@ import argparse
 import importlib
 import inspect
 import json
+import re
 import signal
 import subprocess
 import sys
@@ -261,9 +262,9 @@ def install_kodi_stubs() -> None:
         ResolverError = _ResolverError
 
     class _HostedMediaFile:
-        def __init__(self, url, title=None, include_universal=False):
+        def __init__(self, url="", title=None, include_universal=False, **kwargs):
             self._url = url
-            self._domain = urlparse(url).netloc if "://" in str(url) else ""
+            self._domain = urlparse(url).netloc if url and "://" in str(url) else ""
             self.title = title or self._domain
 
         def resolve(self):
@@ -591,12 +592,27 @@ def run_site_child(
             play_calls.append(str(url))
 
         def play_from_html(self, html, url=None):
+            # Try to extract direct links from HTML
+            for pattern in [
+                r'(https?://[^\s"\'\\,\]]+\.mp4(?:[^\s"\'\\,\]]*)?)',
+                r'(https?://[^\s"\'\\,\]]+\.m3u8(?:[^\s"\'\\,\]]*)?)',
+            ]:
+                match = re.search(pattern, html, re.IGNORECASE)
+                if match:
+                    play_calls.append(match.group(1))
+                    return
             if url:
                 play_calls.append(str(url))
 
         def play_from_link_list(self, links):
             if links:
                 play_calls.append(str(links[0]))
+
+        def play_from_kt_player(self, html, url=None):
+            if url:
+                play_calls.append(str(url))
+            else:
+                play_calls.append("kt_player_detected")
 
         def play_from_link_to_resolve(self, source):
             if hasattr(source, "resolve"):

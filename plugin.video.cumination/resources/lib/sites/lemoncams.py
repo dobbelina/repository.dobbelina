@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
 import time
+import re
+import xbmc
 from six.moves import urllib_parse
 
 from resources.lib import utils
@@ -39,6 +41,9 @@ DEFAULT_PAGE = 1
 TOP_CAMS_KEY = "__top__"
 SUPPORTED_PROVIDERS = {
     "stripchat": "Stripchat",
+    "chaturbate": "Chaturbate",
+    "camsoda": "Camsoda",
+    "cam4": "Cam4",
 }
 
 
@@ -46,30 +51,42 @@ def _api_get(params):
     query = urllib_parse.urlencode(params)
     url = "{}?{}".format(API_URL, query)
     payload = utils._getHtml(url, referer=site.url)
-    return json.loads(payload)
+    try:
+        return json.loads(payload)
+    except Exception as e:
+        utils.kodilog("LemonCams API error: {} - Payload: {}".format(str(e), payload[:200]))
+        return {}
 
 
-def _build_model_page_url(provider, username):
-    return urllib_parse.urljoin(site.url, "{}/{}".format(provider, username))
+def _build_model_page_url(provider, username, stream_url=None):
+    base = urllib_parse.urljoin(site.url, "{}/{}".format(provider, username))
+    if stream_url:
+        return "{}|{}".format(base, stream_url)
+    return base
 
 
 def _parse_model_identifier(value, default_provider=DEFAULT_PROVIDER):
+    # Handle piped stream URL: base_url|stream_url
+    stream_url = None
+    if "|" in value:
+        value, stream_url = value.split("|", 1)
+
     value = (value or "").strip()
     if not value:
-        return None, None
+        return None, None, None
 
     parsed = urllib_parse.urlparse(value)
     if parsed.scheme and parsed.netloc:
         path_parts = [part for part in parsed.path.split("/") if part]
         if len(path_parts) >= 2:
-            return path_parts[0].lower(), path_parts[1]
-        return None, None
+            return path_parts[0].lower(), path_parts[1], stream_url
+        return None, None, stream_url
 
     if ":" in value:
         provider, username = value.split(":", 1)
-        return provider.strip().lower(), username.strip()
+        return provider.strip().lower(), username.strip(), stream_url
 
-    return default_provider, value
+    return default_provider, value, stream_url
 
 
 def _fetch_provider_payload(provider, page):
@@ -85,10 +102,12 @@ def _fetch_provider_payload(provider, page):
 
 
 def _extract_playable_url(cam):
+    # Try embedUrl first
     embed_url = cam.get("embedUrl") or ""
     if any(token in embed_url.lower() for token in [".m3u8", ".mp4", "manifest"]):
         return embed_url
 
+    # Then try previewUrls
     for preview_url in cam.get("previewUrls", []):
         if any(token in preview_url.lower() for token in [".m3u8", ".mp4", "manifest"]):
             return preview_url
@@ -119,12 +138,8 @@ def _image_url(cam):
     )
 
 
-def _find_model_stream(provider, username, max_pages=3):
-    """Search listing pages for a specific model's stream URL.
-
-    The model-specific API endpoint returns empty URLs, so we scan the general
-    listing instead to find the model while they are online.
-    """
+def _find_model_stream(provider, username, max_pages=5):
+    """Search listing pages for a specific model's stream URL."""
     for page in range(1, max_pages + 1):
         payload = _fetch_provider_payload(provider, page)
         for cam in payload.get("cams", []):
@@ -133,16 +148,6 @@ def _find_model_stream(provider, username, max_pages=3):
                 if url:
                     return url
     return ""
-
-
-def _provider_cams(provider, page):
-    payload = _fetch_provider_payload(provider, page)
-    cams = []
-    for cam in payload.get("cams", []):
-        if provider != TOP_CAMS_KEY and cam.get("provider") != provider:
-            continue
-        cams.append(cam)
-    return cams
 
 
 @site.register(default_mode=True)
@@ -154,16 +159,18 @@ def Main():
         "",
         DEFAULT_PAGE,
     )
+    for p_id, p_name in sorted(SUPPORTED_PROVIDERS.items()):
+        site.add_dir(
+            "[COLOR hotpink]{} Cams[/COLOR]".format(p_name),
+            p_id,
+            "List",
+            "",
+            DEFAULT_PAGE,
+        )
+    
     site.add_dir(
-        "[COLOR hotpink]Stripchat Cams[/COLOR]",
-        DEFAULT_PROVIDER,
-        "List",
-        "",
-        DEFAULT_PAGE,
-    )
-    site.add_dir(
-        "[COLOR hotpink]Search Stripchat Model[/COLOR]",
-        DEFAULT_PROVIDER,
+        "[COLOR hotpink]Search Model[/COLOR]",
+        "any",
         "Search",
         site.img_search,
     )
@@ -178,18 +185,16 @@ def Main():
 
 @site.register()
 def List(url, page=DEFAULT_PAGE):
-    provider = (url or DEFAULT_PROVIDER).strip().lower()
-    if provider != TOP_CAMS_KEY and provider not in SUPPORTED_PROVIDERS:
-        utils.notify("LemonCams", "Provider not supported yet: {}".format(provider))
-        utils.eod()
-        return
-
+    provider = (url or TOP_CAMS_KEY).strip().lower()
+    
     payload = _fetch_provider_payload(provider, page)
     cams = []
     for cam in payload.get("cams", []):
-        if provider != TOP_CAMS_KEY and cam.get("provider") != provider:
+        # If we requested a specific provider, filter for it
+        if provider != TOP_CAMS_KEY and cam.get("provider", "").lower() != provider:
             continue
         cams.append(cam)
+        
     if not cams:
         label = "top cams" if provider == TOP_CAMS_KEY else provider
         utils.notify("LemonCams", "No cams found for {}".format(label))
@@ -199,14 +204,18 @@ def List(url, page=DEFAULT_PAGE):
     for cam in cams:
         cam_username = cam.get("username", "unknown")
         cam_provider = cam.get("provider", "")
+        stream_url = _extract_playable_url(cam)
+        
         label = cam_username
         if cam.get("title"):
             label = "{} - {}".format(cam_username, cam["title"][:80])
+        
         if provider == TOP_CAMS_KEY and cam_provider:
-            label = "[{}] {}".format(cam_provider, label)
+            label = "[{}] {}".format(cam_provider.title(), label)
+            
         site.add_download_link(
             label,
-            _build_model_page_url(cam_provider or provider, cam_username),
+            _build_model_page_url(cam_provider or provider, cam_username, stream_url),
             "Playvid",
             _image_url(cam),
             _format_plot(cam),
@@ -235,30 +244,30 @@ def Search(url, keyword=None):
         site.search_dir(url, prompt)
         return
 
-    default_provider = DEFAULT_PROVIDER if url != "url" else DEFAULT_PROVIDER
-    provider, username = _parse_model_identifier(keyword, default_provider=default_provider)
-    if not provider or not username:
-        utils.notify("LemonCams", "Enter a LemonCams URL or exact username")
-        utils.eod()
-        return
+    # Try to parse as URL first if it looks like one
+    if keyword.startswith("http"):
+        provider, username, _ = _parse_model_identifier(keyword)
+    else:
+        # Check if they used provider:username
+        if ":" in keyword:
+            provider, username, _ = _parse_model_identifier(keyword)
+        else:
+            provider, username = DEFAULT_PROVIDER, keyword
 
-    if provider not in SUPPORTED_PROVIDERS:
-        utils.notify(
-            "LemonCams",
-            "Provider not supported yet: {}".format(provider),
-        )
+    if not provider or not username:
+        utils.notify("LemonCams", "Invalid model or URL")
         utils.eod()
         return
 
     playable_url = _find_model_stream(provider, username)
     if not playable_url:
-        utils.notify("LemonCams", "Model offline or no playable stream found for {}".format(username))
+        utils.notify("LemonCams", "Model offline or no stream found")
         utils.eod()
         return
 
     site.add_download_link(
         username,
-        _build_model_page_url(provider, username),
+        _build_model_page_url(provider, username, playable_url),
         "Playvid",
         "",
         "",
@@ -269,25 +278,39 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name):
-    provider, username = _parse_model_identifier(url, default_provider=DEFAULT_PROVIDER)
+    provider, username, stream_url = _parse_model_identifier(url)
     if not provider or not username:
         utils.notify("LemonCams", "Could not parse model URL")
         return
 
-    if provider == DEFAULT_PROVIDER:
-        from resources.lib.sites import stripchat
-
-        stripchat.Playvid(
-            "https://stripchat.com/{}".format(username),
-            username,
-        )
-        return
-
-    playable_url = _find_model_stream(provider, username)
+    # Use cached stream URL if available, otherwise search for a new one
+    playable_url = stream_url
     if not playable_url:
-        utils.notify("LemonCams", "Model offline or no playable stream found")
+        utils.kodilog("LemonCams: No cached URL, searching for stream for {}".format(username))
+        playable_url = _find_model_stream(provider, username)
+
+    if not playable_url:
+        utils.notify("LemonCams", "Model offline or no stream found")
         return
 
+    # Build headers for playback
+    headers = {
+        "User-Agent": utils.USER_AGENT,
+        "Referer": "https://www.lemoncams.com/",
+        "Origin": "https://www.lemoncams.com"
+    }
+    
+    # Append headers to URL
+    header_str = "|User-Agent={}&Referer={}&Origin={}".format(
+        urllib_parse.quote(headers["User-Agent"]),
+        urllib_parse.quote(headers["Referer"]),
+        urllib_parse.quote(headers["Origin"])
+    )
+    
+    final_url = playable_url + header_str
+    
+    utils.kodilog("LemonCams: Playing {}".format(final_url), xbmc.LOGDEBUG)
+    
     vp = utils.VideoPlayer(name)
-    vp.IA_check = "skip"
-    vp.play_from_direct_link(playable_url)
+    vp.IA_check = "IA" # Use inputstream.adaptive for HLS
+    vp.play_from_direct_link(final_url)

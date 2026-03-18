@@ -2,7 +2,10 @@
 
 import json
 import base64
+from unittest.mock import MagicMock
+
 from resources.lib.sites import beeg
+
 
 
 def test_list_parses_json(monkeypatch):
@@ -10,8 +13,9 @@ def test_list_parses_json(monkeypatch):
     mock_data = [
         {
             "fc_facts": [{"fc_thumbs": [1, 2, 3], "fc_start": 0, "fc_end": 600}],
-            "tags": [{"is_owner": True, "tg_name": "Tag1", "tg_slug": "slug1"}],
+            "tags": [{"is_owner": True, "tg_name": "Tag1", "tg_slug": "slug1", "id": "7629"}],
             "file": {
+
                 "id": "123",
                 "data": [
                     {"cd_column": "sf_name", "cd_value": "Video 1"},
@@ -53,9 +57,39 @@ def test_list_parses_json(monkeypatch):
     assert "https://thumbs.externulls.com/videos/123/" in downloads[0]["icon"]
 
     # Verify video data is encoded in URL
-    decoded_url = base64.b64decode(downloads[0]["url"]).decode()
-    decoded_json = json.loads(decoded_url)
-    assert decoded_json["file"]["id"] == "123"
+    assert "id=123" in downloads[0]["url"]
+    assert "tag_id=7629" in downloads[0]["url"]
+
+
+def test_playvid_fresh_fetch(monkeypatch):
+    """Test that Playvid fetches fresh video data."""
+    mock_video_data = {
+        "file": {
+            "id": "123",
+            "hls_resources": {
+                "fl_cdn_1080": "path/to/video.mp4"
+            }
+        }
+    }
+    
+    play_calls = []
+    
+    class MockVP:
+        def __init__(self, name, download=None):
+            self.name = name
+            self.progress = MagicMock()
+        def play_from_direct_link(self, url):
+            play_calls.append(url)
+
+    monkeypatch.setattr(beeg.utils, "getHtml", lambda *a, **k: json.dumps(mock_video_data))
+    monkeypatch.setattr(beeg.utils, "VideoPlayer", MockVP)
+    monkeypatch.setattr(beeg.utils, "prefquality", lambda *a, **k: "1080")
+    
+    beeg.Playvid("id=123&tag_id=7629", "Test Video")
+    
+    assert len(play_calls) == 1
+    assert "path/to/video.mp4" in play_calls[0]
+    assert "Referer=" in play_calls[0]
 
 
 def test_category_parses_json(monkeypatch):

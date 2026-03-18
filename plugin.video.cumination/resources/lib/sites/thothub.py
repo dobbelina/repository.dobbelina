@@ -307,8 +307,8 @@ def _login(force=False):
 
 @site.register(default_mode=True)
 def Main():
-    # Only show public videos to avoid private video issues
-    List(site.url + "public/")
+    # latest-updates/ is more reliable than public/
+    List(site.url + "latest-updates/")
 
 
 def _extract_list_items(html):
@@ -316,8 +316,16 @@ def _extract_list_items(html):
     items = []
     soup = utils.parse_html(html)
 
+    # Try to find the main video container to avoid sidebar/related videos
+    # Common IDs: list_videos_latest_videos_list_items, list_videos_most_recent_videos_items, etc.
+    container = soup.select_one('[id*="videos"][id*="_items"]')
+    if not container:
+        container = soup.select_one('.list-videos, .videos-list')
+    
+    source = container if container else soup
+
     # Find all video links - ThotHub uses <a> tags with href="/videos/ID/slug/"
-    video_links = soup.select('a[href*="/videos/"]')
+    video_links = source.select('a[href*="/videos/"]')
     utils.kodilog(
         "ThotHub found {} video links".format(len(video_links)), xbmc.LOGDEBUG
     )
@@ -381,33 +389,28 @@ def _find_next_page(html, current_url):
     next_link = soup.select_one('a[rel="next"]')
     if next_link:
         url = utils.safe_get_attr(next_link, "href")
-        if url:
-            utils.kodilog("ThotHub found next page: {}".format(url), xbmc.LOGDEBUG)
+        if url and url != "#" and url != "#search":
+            utils.kodilog("ThotHub found next page (rel=next): {}".format(url), xbmc.LOGDEBUG)
             return url
 
-    # Pattern 2: <link rel="next" href="...">
-    next_link = soup.select_one('link[rel="next"]')
-    if next_link:
-        url = utils.safe_get_attr(next_link, "href")
-        if url:
-            utils.kodilog("ThotHub found next page: {}".format(url), xbmc.LOGDEBUG)
-            return url
-
-    # Pattern 3: <a class="...next..." href="...">
-    next_links = soup.select('a[class*="next"]')
-    for next_link in next_links:
-        url = utils.safe_get_attr(next_link, "href")
-        if url:
-            utils.kodilog(
-                "ThotHub found next page via class: {}".format(url), xbmc.LOGDEBUG
-            )
-            return url
-
-    # Pattern 4: <li class="next"><a href="...">
+    # Pattern 2: <li class="next"><a href="...">
+    # Handle #search relative links by looking at data-parameters
     li_next = soup.select_one('li.next a, li[class*="next"] a')
     if li_next:
         url = utils.safe_get_attr(li_next, "href")
-        if url:
+        if url == "#search" or url == "#":
+            params = utils.safe_get_attr(li_next, "data-parameters")
+            if params:
+                # from_videos+from_albums:2 or similar
+                match = re.search(r'from(?:_videos\+from_albums)?:(\d+)', params)
+                if match:
+                    next_page = match.group(1)
+                    if "/search/" in current_url:
+                        # Construct: /search/keyword/2/
+                        base_search = re.sub(r'/\d+/?$', '', current_url.rstrip("/"))
+                        return base_search + "/{}/".format(next_page)
+        
+        if url and url != "#" and url != "#search":
             utils.kodilog(
                 "ThotHub found next page via li.next: {}".format(url), xbmc.LOGDEBUG
             )
@@ -421,11 +424,18 @@ def _find_next_page(html, current_url):
         next_page = current_page + 1
         next_url = re.sub(r"/\d+/?$", "/{}/".format(next_page), current_url)
         # Verify this page number exists in the HTML
-        if "/{}/".format(next_page) in html or "page={}".format(next_page) in html:
+        if "/{}/".format(next_page) in html or 'data-parameters="' in html:
             utils.kodilog(
                 "ThotHub incrementing page to: {}".format(next_url), xbmc.LOGDEBUG
             )
             return next_url
+    else:
+        # Initial page, try to find "2" in pagination
+        if "/2/" in html or 'from:2' in html or 'from_videos+from_albums:2' in html:
+            if current_url.endswith("/"):
+                return current_url + "2/"
+            else:
+                return current_url + "/2/"
 
     return None
 
@@ -806,16 +816,13 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Search(url, keyword=None):
-    # WordPress-like search fallback
-    search_url = url
+    """Search for videos on ThotHub."""
     if not keyword:
-        site.search_dir(search_url, "Search")
+        site.search_dir(url, "Search")
     else:
-        title = keyword.replace(" ", "+")
-        if "?" in search_url:
-            search_url = search_url + title
-        else:
-            search_url = urllib_parse.urljoin(site.url, "?s=" + title)
+        # ThotHub uses /search/keyword/ format
+        keyword_clean = keyword.replace(" ", "-")
+        search_url = urllib_parse.urljoin(site.url, "search/{}/".format(urllib_parse.quote(keyword_clean)))
         List(search_url)
 
 

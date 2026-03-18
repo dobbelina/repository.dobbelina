@@ -293,7 +293,7 @@ def GotoPage(url, np, lp=None):
         if lp and lp.isdigit() and int(pg) > int(lp):
             utils.notify(msg="Out of range!")
             return
-        url = re.sub(r"&from([^=]*)=\d+", r"&from\1={}".format(pg), url, re.IGNORECASE)
+        url = re.sub(r"&from([^=]*)=\d+", r"&from\1={}".format(pg), url, flags=re.IGNORECASE)
         contexturl = (
             utils.addon_sys
             + "?mode="

@@ -71,7 +71,7 @@ def GotoPage(url, np, lp=None):
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
             return
-        url = re.sub(r'/0*{}/'.format(np), r'/{}/'.format(pg), url, re.IGNORECASE)
+        url = re.sub(r'/0*{}/'.format(np), r'/{}/'.format(pg), url, flags=re.IGNORECASE)
         contexturl = (utils.addon_sys + "?mode=" + "pornditt.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 

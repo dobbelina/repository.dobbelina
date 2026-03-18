@@ -103,6 +103,14 @@ def List(url, page=1):
 
         name += parts
 
+        # Get tag ID for fresh fetching in Playvid
+        tag_id = ""
+        for t in video["tags"]:
+            if t["is_owner"]:
+                tag_id = t["id"]
+        if not tag_id and video["tags"]:
+            tag_id = video["tags"][0]["id"]
+
         cm_related = (
             utils.addon_sys
             + "?mode="
@@ -119,6 +127,12 @@ def List(url, page=1):
             ]
         else:
             cm = ""
+
+        # Pass ID and tag_id in the URL for fresh fetching
+        video_id = video["file"]["id"]
+        videopage = "id={}&tag_id={}".format(video_id, tag_id)
+        # Store full video data in cache as fallback
+        utils.cache.set("beeg_video_{}".format(video_id), json.dumps(video))
 
         site.add_download_link(
             name,
@@ -195,67 +209,123 @@ def Playvid(url, name, download=None):
     playall = utils.addon.getSetting("paradisehill") == "true"
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    try:
-        listjson = base64.b64decode(url)
-        # Try different decodings to be safe
+    
+    jdata = None
+    video_id = None
+    
+    # New format: id=123&tag_id=456
+    if "id=" in url and "tag_id=" in url:
         try:
-            decoded_json = listjson.decode('utf-8')
-        except UnicodeDecodeError:
-            decoded_json = listjson.decode('latin-1', 'ignore')
-        jdata = json.loads(decoded_json)
-    except Exception as e:
-        utils.kodilog("beeg Playvid: JSON decode error - {}".format(e))
-        vp.progress.close()
-        utils.notify("Error", "Unable to parse video data")
-        return
+            params = dict(urllib_parse.parse_qsl(url))
+            video_id = params.get("id")
+            tag_id = params.get("tag_id")
+            
+            # Fetch fresh data
+            api_url = "https://store.externulls.com/facts/file/{}?tag={}".format(video_id, tag_id)
+            utils.kodilog("beeg Playvid: Fetching fresh URL from {}".format(api_url), xbmc.LOGDEBUG)
+            fresh_json = utils.getHtml(api_url, site.url)
+            jdata = json.loads(fresh_json)
+        except Exception as e:
+            utils.kodilog("beeg Playvid: Fresh fetch failed - {}".format(e))
+            
+    # Fallback to cache if fresh fetch failed
+    if not jdata and video_id:
+        cached = utils.cache.get("beeg_video_{}".format(video_id))
+        if cached:
+            utils.kodilog("beeg Playvid: Using cached data for {}".format(video_id), xbmc.LOGDEBUG)
+            jdata = json.loads(cached)
 
-    fc_facts = jdata["fc_facts"]
-    if len(fc_facts) == 1:
-        if "hls_resources" in jdata["file"]:
-            videos = jdata["file"]["hls_resources"]
+    # Legacy fallback: base64 encoded data
+    if not jdata:
+        try:
+            listjson = base64.b64decode(url)
+            try:
+                decoded_json = listjson.decode('utf-8')
+            except UnicodeDecodeError:
+                decoded_json = listjson.decode('latin-1', 'ignore')
+            jdata = json.loads(decoded_json)
+        except Exception as e:
+            utils.kodilog("beeg Playvid: JSON decode error - {}".format(e))
+            vp.progress.close()
+            utils.notify("Error", "Unable to parse video data")
+            return
+
+    # Check if we have file data (fresh API returns file directly, List JSON has it under 'file')
+    file_data = jdata.get("file", jdata)
+    fc_facts = jdata.get("fc_facts", [])
+    
+    if not fc_facts and "fc_facts" in file_data:
+        fc_facts = file_data["fc_facts"]
+
+    if len(fc_facts) <= 1:
+        if "hls_resources" in file_data:
+            videos = file_data["hls_resources"]
+        elif fc_facts and "hls_resources" in fc_facts[0]:
+            videos = fc_facts[0]["hls_resources"]
         else:
-            videos = jdata["fc_facts"][0]["hls_resources"]
+            vp.progress.close()
+            utils.notify("Error", "No stream resources found")
+            return
         playall = False
     else:
         links = {}
-        for i, fc_fact in enumerate(sorted(fc_facts, key=lambda x: x["fc_start"])):
-            start = fc_fact["fc_start"]
-            end = fc_fact["fc_end"]
-            m, s = divmod(start, 60)
+        # Filter out facts without start/end times if multiple parts exist
+        valid_facts = [f for f in fc_facts if f.get("fc_start") is not None]
+        if not valid_facts:
+            valid_facts = fc_facts
+            
+        for i, fc_fact in enumerate(sorted(valid_facts, key=lambda x: x.get("fc_start", 0))):
+            start = fc_fact.get("fc_start", 0)
+            end = fc_fact.get("fc_end", 0)
+            m, s = divmod(int(start), 60)
             stxt = "{:d}:{:02d}".format(m, s)
-            m, s = divmod(end, 60)
+            m, s = divmod(int(end), 60)
             etxt = "{:d}:{:02d}".format(m, s)
             part = " part {} ({} - {})".format(str(i + 1), stxt, etxt)
-            links[part] = fc_fact["hls_resources"]
+            links[part] = fc_fact.get("hls_resources", {})
+            
         if len(links) < 2:
             playall = False
-        if not playall:
+            videos = list(links.values())[0] if links else {}
+        elif not playall:
             videos = utils.selector("Select part:", links)
+            
     if not playall:
         if videos:
             videos = {key.replace("fl_cdn_", ""): videos[key] for key in videos.keys()}
+            # Remove AV1 and H265 if they cause issues, but for now just handle multi
             if "multi" in videos.keys():
                 maxres = videos["multi"].split("x")[-1].split(":")[0]
                 if maxres in videos.keys():
                     del videos["multi"]
                 elif maxres.isdigit():
                     videos[maxres] = videos.pop("multi")
+            
             key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
-                videourl = (
-                    "https://video.beeg.com/" + key + "|Referer={}".format(site.url)
-                )
+                # The 'key' itself is often the full URL path from the API
+                path = videos[key]
+                if not path.startswith("http"):
+                    videourl = "https://video.beeg.com/" + path + "|Referer={}".format(site.url)
+                else:
+                    videourl = path + "|Referer={}".format(site.url)
                 vp.play_from_direct_link(videourl)
+            else:
+                vp.progress.close()
+                utils.notify("Error", "No preferred quality found")
+        else:
+            vp.progress.close()
+            utils.notify("Error", "No video sources found")
 
     if playall:
         if links:
             iconimage = xbmc.getInfoImage("ListItem.Thumb")
             pl = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
             pl.clear()
-            for video in links:
+            for part_name in sorted(links.keys()):
                 vp.progress.update(75, "[CR]Adding part to playlist[CR]")
-                videos = links[video]
+                videos = links[part_name]
                 videos = {
                     key.replace("fl_cdn_", ""): videos[key] for key in videos.keys()
                 }
@@ -265,28 +335,32 @@ def Playvid(url, name, download=None):
                         del videos["multi"]
                     elif maxres.isdigit():
                         videos[maxres] = videos.pop("multi")
+                
                 key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
-                newname = name + video
-                listitem = xbmcgui.ListItem(newname)
-                listitem.setArt(
-                    {
-                        "thumb": iconimage,
-                        "icon": "DefaultVideo.png",
-                        "poster": iconimage,
-                    }
-                )
-                if utils.KODIVER > 19.8:
-                    vtag = listitem.getVideoInfoTag()
-                    vtag.setTitle(newname)
-                    vtag.setGenres(["Porn"])
-                else:
-                    listitem.setInfo("video", {"Title": newname, "Genre": "Porn"})
-                listitem.setProperty("IsPlayable", "true")
-                videourl = (
-                    "https://video.beeg.com/" + key + "|Referer={}".format(site.url)
-                )
-                pl.add(videourl, listitem)
-                listitem = ""
+                if key:
+                    newname = name + part_name
+                    listitem = xbmcgui.ListItem(newname)
+                    listitem.setArt(
+                        {
+                            "thumb": iconimage,
+                            "icon": "DefaultVideo.png",
+                            "poster": iconimage,
+                        }
+                    )
+                    if utils.KODIVER > 19.8:
+                        vtag = listitem.getVideoInfoTag()
+                        vtag.setTitle(newname)
+                        vtag.setGenres(["Porn"])
+                    else:
+                        listitem.setInfo("video", {"Title": newname, "Genre": "Porn"})
+                    listitem.setProperty("IsPlayable", "true")
+                    
+                    path = videos[key]
+                    if not path.startswith("http"):
+                        videourl = "https://video.beeg.com/" + path + "|Referer={}".format(site.url)
+                    else:
+                        videourl = path + "|Referer={}".format(site.url)
+                    pl.add(videourl, listitem)
             xbmc.Player().play(pl)
 
 

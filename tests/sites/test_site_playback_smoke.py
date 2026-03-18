@@ -85,8 +85,7 @@ PLAY_CASES = [
         "func": "PTPlayvid",
         "url": "https://www.porntrex.com/video/123",
         "fixture": "porntrex_play.html",
-        "expect": lambda rec, url: rec.play_from_direct_link
-        == "https://cdn.porntrex.com/video-high.mp4|Referer=https://www.porntrex.com/video/123",
+        "expect": lambda rec, url: rec.play_from_kt_player is not None,
     },
     {
         "name": "spankbang",

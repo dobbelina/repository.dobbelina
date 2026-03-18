@@ -116,3 +116,25 @@ def test_list_integration(monkeypatch):
     next_pages = [entry for entry in dirs if "Next Page" in entry["name"]]
     assert len(next_pages) == 1
     assert "/public/2/" in next_pages[0]["url"]
+
+
+def test_find_next_page_search_hash():
+    """Test that _find_next_page handles #search hash links."""
+    html = '<li class="next"><a href="#search" data-parameters="q:anal;from_videos+from_albums:2">Next</a></li>'
+    current_url = "https://thothub.mx/search/anal/"
+    nurl = thothub._find_next_page(html, current_url)
+    assert nurl == "https://thothub.mx/search/anal/2/"
+
+
+def test_search_url_format(monkeypatch):
+    """Test that Search function uses the correct /search/keyword/ format."""
+    searched_url = []
+
+    def fake_list(url):
+        searched_url.append(url)
+
+    monkeypatch.setattr(thothub, "List", fake_list)
+    thothub.Search("https://thothub.mx/search/", "big tits")
+
+    assert len(searched_url) == 1
+    assert searched_url[0] == "https://thothub.mx/search/big-tits/"
