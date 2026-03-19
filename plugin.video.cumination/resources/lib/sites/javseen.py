@@ -57,7 +57,7 @@ def _extract_direct_stream(html):
     if match:
         return match.group(1).replace("\\/", "/")
 
-    match = re.search(r"(https?://[^\"'<>\\s]+\\.(?:mp4|m3u8)[^\"'<>\\s]*)", html, re.IGNORECASE)
+    match = re.search(r"(https?://[^\"'<>\s]+\.(?:mp4|m3u8)[^\"'<>\s]*)", html, re.IGNORECASE)
     if match:
         return match.group(1).replace("\\/", "/")
 
@@ -123,6 +123,12 @@ def _build_resolver_source(vp, mirror):
                 host="turbovid.eu",
                 media_id=media_id,
                 title="TurboVid",
+            )
+        if any(x in mirror for x in ("mycloudz.", "vidhide.")):
+            return vp.resolveurl.HostedMediaFile(
+                host="vidhide.com",
+                media_id=media_id,
+                title="MyCloudz",
             )
 
     return None
@@ -213,11 +219,13 @@ def Playvid(url, name, download=None):
         vp.play_from_link_to_resolve(url)
         return
 
-    # Try to find embed iframe on the main page
+    # Try mirrors embedded directly on the main page (data-embed base64 buttons)
+    main_mirrors = _extract_mirrors(html)
+
+    # Determine embed URL fallback
     embed_match = re.search(r'<iframe[^>]+src="([^"]+/embed/\d+/?)"', html, re.IGNORECASE)
     if not embed_match:
-        # Some videos might have a different ID or path for embed
-        video_id_match = re.search(r'javseen.tv/(\d+)/', url)
+        video_id_match = re.search(r'javseen\.tv/(\d+)/', url)
         if video_id_match:
             embed_url = "https://javseen.tv/embed/{}/".format(video_id_match.group(1))
         else:
@@ -265,7 +273,7 @@ def Playvid(url, name, download=None):
             source = _build_resolver_source(vp, mirror)
             if source:
                 resolver_sources.append(source)
-            elif any(host in mirror for host in ("streamtape", "turbovid", "streamwish", "dood")):
+            elif any(host in mirror for host in ("streamtape", "turbovid", "streamwish", "dood", "mycloudz", "vidhide")):
                 # Fallback: if we don't have a specific HostedMediaFile but it looks resolvable
                 vp.play_from_link_to_resolve(mirror)
                 return True
@@ -275,6 +283,27 @@ def Playvid(url, name, download=None):
             return True
             
         return False
+
+    # Try mirrors from main page first (saves HTTP round-trips through embed chain)
+    if main_mirrors:
+        ordered_main = _order_mirrors(main_mirrors)
+        resolver_sources = []
+        for mirror in ordered_main:
+            m_html = utils.getHtml(mirror, url)
+            if m_html:
+                m_direct = _extract_direct_stream(m_html)
+                if m_direct:
+                    vp.play_from_direct_link("{}|Referer={}".format(m_direct, mirror))
+                    return
+            source = _build_resolver_source(vp, mirror)
+            if source:
+                resolver_sources.append(source)
+            elif any(host in mirror for host in ("streamtape", "turbovid", "streamwish", "dood", "mycloudz", "vidhide")):
+                vp.play_from_link_to_resolve(mirror)
+                return
+        if resolver_sources:
+            vp._select_source(resolver_sources)
+            return
 
     if process_url(embed_url, url):
         return

@@ -58,65 +58,39 @@ def List(url):
         utils.eod()
         return
 
-    # Check if it's JSON (API fallback) or HTML
-    if html.strip().startswith("{") or html.strip().startswith("["):
-        markup, results_remaining = _extract_markup_and_meta(html)
-    else:
-        markup = html
-        results_remaining = 120  # Arbitrary positive value to show next page if HTML pagination exists
-
-    soup = utils.parse_html(markup)
+    soup = utils.parse_html(html)
     video_items = soup.select("div.thumbnail")
-    
-    # If no thumbnails, maybe it's the raw API response or empty results
-    if not video_items and not html.strip().startswith("<"):
-        markup, results_remaining = _extract_markup_and_meta(html)
-        soup = utils.parse_html(markup)
-        video_items = soup.select("div.thumbnail")
 
     for item in video_items:
-        link = item.select_one("a[href]")
-        if not link:
+        link_tag = item.select_one("a.thumbnail_link")
+        if not link_tag:
             continue
 
-        videopage = utils.safe_get_attr(link, "href")
-        if not videopage:
-            continue
-        if not _is_video_link(videopage):
+        videopage = link_tag.get("href")
+        if not videopage or not _is_video_link(videopage):
             continue
         videopage = utils.fix_url(videopage, site.url)
 
-        # Prefer explicit title container first; generic trigger_pop/th_wrap often
-        # points to thumbnail wrappers and can return only duration text.
-        title_tag = item.select_one(
-            ".vidinfo .thumbnail_title .th_wrap, .thumbnail_title .th_wrap, .thumbnail_title, .title, h2, h3, .name"
-        )
-        title = utils.safe_get_text(title_tag)
+        title_tag = item.select_one("a.thumbnail_title")
+        title = title_tag.get_text(strip=True) if title_tag else ''
         if not title:
-            title = utils.safe_get_attr(link, "title")
+            title = link_tag.get('title', '')
         if not title:
-            title = utils.safe_get_text(link)
-        if re.fullmatch(r"\d{1,2}:\d{2}", title or ""):
-            title = ""
-            fallback_title = item.select_one(
-                ".vidinfo .thumbnail_title .th_wrap, .thumbnail_title .th_wrap, .thumbnail_title"
-            )
-            title = utils.safe_get_text(fallback_title)
+            img_tag = item.select_one('img')
+            if img_tag:
+                title = img_tag.get('alt', '')
         title = utils.cleantext(title)
         if not title:
             continue
 
-        img_tag = item.select_one("img")
+        img_tag = item.select_one("img.slideshow")
         img = _extract_thumbnail(img_tag)
         img = utils.fix_url(img, site.url)
 
         duration = ""
-        duration_icon = item.select_one(".fa-clock")
-        if duration_icon and duration_icon.parent:
-            duration = utils.safe_get_text(duration_icon.parent)
-        else:
-            duration_tag = item.select_one(".duration, .thumb_time")
-            duration = utils.safe_get_text(duration_tag)
+        duration_tag = item.select_one(".thumbnail_video_length")
+        if duration_tag:
+            duration = duration_tag.get_text(strip=True)
 
         context_url = (
             utils.addon_sys
@@ -139,7 +113,13 @@ def List(url):
             contextm=context_menu,
         )
 
-    _add_next_page(url, results_remaining)
+    next_page_tag = soup.select_one('a.prev_next_link:-soup-contains("Next")')
+    if next_page_tag:
+        next_url = next_page_tag.get('href')
+        if next_url:
+            next_url = utils.fix_url(next_url, site.url)
+            site.add_dir("Next Page", next_url, "List", site.img_next)
+    
     utils.eod()
 
 
@@ -207,110 +187,27 @@ def Categories(url):
     utils.eod()
 
 
-def _extract_markup_and_meta(html):
-    if not html:
-        return "", None
-
-    results_remaining = None
-    markup = html
-
-    try:
-        data = json.loads(html)
-    except ValueError:
-        data = None
-
-    def coerce_int(value):
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return None
-
-    if isinstance(data, dict):
-        candidates = []
-        stack = [data]
-        seen = set()
-        while stack:
-            node = stack.pop()
-            node_id = id(node)
-            if node_id in seen:
-                continue
-            seen.add(node_id)
-            for key, value in node.items():
-                if (
-                    key in ("results_remaining", "resultsRemaining")
-                    and results_remaining is None
-                ):
-                    results_remaining = coerce_int(value)
-                if isinstance(value, str):
-                    if "<div" in value or "<a" in value:
-                        candidates.append(value)
-                elif isinstance(value, dict):
-                    stack.append(value)
-                elif isinstance(value, list):
-                    for item in value:
-                        if isinstance(item, dict):
-                            stack.append(item)
-        if candidates:
-            markup = candidates[0]
-
-    if isinstance(markup, str):
-        markup = (
-            markup.replace("\\n", "\n")
-            .replace("\\t", "\t")
-            .replace('\\"', '"')
-            .replace("\\/", "/")
-        )
-    else:
-        markup = ""
-
-    return markup, results_remaining
 
 
-def _add_next_page(url, results_remaining):
-    if results_remaining is None or results_remaining <= 0:
-        return
 
-    parsed = urllib_parse.urlsplit(url)
-    query = urllib_parse.parse_qs(parsed.query)
-    try:
-        current_page = int(query.get("page", ["0"])[0])
-    except (TypeError, ValueError):
-        return
 
-    next_page_index = current_page + 1
-    display_index = current_page + 2
-    last_page = current_page + 2 + (results_remaining // 120)
-
-    query["page"] = [str(next_page_index)]
-    encoded_query = urllib_parse.urlencode(query, doseq=True)
-    next_url = urllib_parse.urlunsplit(
-        (parsed.scheme, parsed.netloc, parsed.path, encoded_query, parsed.fragment)
-    )
-
-    site.add_dir(
-        "Next Page ({}/{})".format(display_index, last_page),
-        next_url,
-        "List",
-        site.img_next,
-    )
 
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, regex=r'iframe.+?src="([^"]+)"')
-    vp.progress.update(25, "[CR]Loading video page[CR]")
-
     videohtml = utils.getHtml(url, site.url)
-    match = re.compile(r'iframe.+?src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(
-        videohtml
-    )
-    if match:
-        videolink = match[0]
-        if "xh.video" in videolink:
-            videolink = utils.getVideoLink(videolink, referer=url).split("?")[0]
-        vp.play_from_link_to_resolve(videolink)
-        return
+    soup = utils.parse_html(videohtml)
+    iframe = soup.select_one('.if_cont iframe, #video_container iframe, #player_container iframe')
 
+    vp = utils.VideoPlayer(name, download)
+    if iframe:
+        vid_url = iframe.get('src', '')
+        if vid_url:
+            if 'xvideos.com' in vid_url or 'xh.video' in vid_url:
+                vp.play_from_link_to_resolve(vid_url)
+                return
+
+    # Fallback to the original method if iframe not found or src is not a direct link
     vp.play_from_html(videohtml, url)
 
 
