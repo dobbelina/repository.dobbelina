@@ -1,3 +1,14 @@
+[B]Version 1.1.330[/B]
+- site updates
+- Site Fixes
+- feat(diagnostics): finalize extension with /pw-test-env and validation
+- feat(ext): add playwright-expert skill
+- feat(diagnostics): Implement /pw-sniff command
+- feat(diagnostics): Implement /pw-smoke command and Python bridge
+- feat(ext): scaffold playwright-diagnostics extension
+- chore: ignore .worktrees directory
+- site fixes
+
 [B]Version 1.1.329[/B]
 - site fixes
 - Site Fixes
