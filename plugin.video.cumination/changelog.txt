@@ -1,3 +1,12 @@
+[B]Version 1.1.333[/B]
+- Fixed Issue #119
+- feat(images): update site logos and remove unused files
+- Multiple Site Fixes
+- site updates
+- Site Fixes
+- feat(diagnostics): finalize extension with /pw-test-env and validation
+- feat(ext): add playwright-expert skill
+
 [B]Version 1.1.332[/B]
 - feat(images): update site logos and remove unused files
 - Multiple Site Fixes
