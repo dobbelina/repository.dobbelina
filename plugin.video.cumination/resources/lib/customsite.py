@@ -10,6 +10,7 @@ class CustomSite(AdultSite):
         self.custom_name = name
         self.name = "custom_" + name + "_by_" + author
         self.custom = True
+        self.testing = False
         self.author = author
         self.webcam = webcam
         self.db_loaded = False

@@ -17,6 +17,7 @@ def test_customsite_lazy_loads_and_exposes_fields(monkeypatch):
     monkeypatch.setattr(customsite.basics, "cum_image", fake_cum_image)
 
     site = customsite.CustomSite(author="author1", name="site1", webcam=True)
+    assert site.testing is False
 
     # First property access triggers a single database load
     assert site.title == "My Title[COLOR white] - webcams[/COLOR]"
