@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="script.module.resolveurl" name="ResolveURL" version="5.1.195" provider-name="gujal">
+<addon id="script.module.resolveurl" name="ResolveURL" version="5.1.196" provider-name="gujal">
     <requires>
         
         <import addon="script.module.six" />
