@@ -31,7 +31,12 @@ def test_list_populates_download_links(monkeypatch):
     recorder = _Recorder()
 
     get_html_fn = fixture_mapped_get_html(
-        monkeypatch, anybunny, {"new/?p=1": "sites/anybunny/listing.html"}
+        monkeypatch,
+        anybunny,
+        {
+            "new/?p=1": "sites/anybunny/listing.html",
+            "https://anybunny.org/": "sites/anybunny/listing.html",
+        },
     )
 
     # Mock fetch_with_playwright to raise ImportError
@@ -187,3 +192,20 @@ def test_playvid_uses_iframe_fallback_without_playwright(monkeypatch):
     anybunny.Playvid("http://anybunny.org/videos/video-123", "Example")
 
     assert captured["direct_url"] == "https://stream1.anybunny.org/m4vid/123/video.mp4"
+
+
+def test_main_populates_directories(monkeypatch):
+    recorder = _Recorder()
+    monkeypatch.setattr(anybunny.site, "add_dir", recorder.add_dir)
+    # Mock List since it's now called from Main
+    monkeypatch.setattr(anybunny, "List", lambda *args, **kwargs: None)
+    monkeypatch.setattr(anybunny.utils, "eod", lambda *args, **kwargs: None)
+
+    anybunny.Main()
+
+    # Should have 4 directories (New, Top, Categories, Search)
+    assert len(recorder.dirs) == 4
+    assert any("New videos" in d["name"] for d in recorder.dirs)
+    assert any("Top videos" in d["name"] for d in recorder.dirs)
+    assert any("Categories" in d["name"] for d in recorder.dirs)
+    assert any("Search" in d["name"] for d in recorder.dirs)

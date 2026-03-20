@@ -64,17 +64,13 @@ VIDEO_LIST_SPEC = SoupSiteSpec(
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir("[COLOR hotpink]New videos[/COLOR]", site.url + "new/", "List", site.img_cat)
-    site.add_dir("[COLOR hotpink]Top videos[/COLOR]", site.url + "top/", "List", site.img_cat)
     site.add_dir(
-        "[COLOR hotpink]Categories - images[/COLOR]",
-        site.url,
-        "Categories",
-        site.img_cat,
+        "[COLOR hotpink]New videos[/COLOR]", site.url + "new/", "List", site.img_cat
     )
     site.add_dir(
-        "[COLOR hotpink]Categories - all[/COLOR]", site.url, "Categories2", site.img_cat
+        "[COLOR hotpink]Top videos[/COLOR]", site.url + "top/", "List", site.img_cat
     )
+    site.add_dir("[COLOR hotpink]Categories[/COLOR]", site.url, "Categories2", site.img_cat)
     site.add_dir(
         "[COLOR hotpink]Search[/COLOR]", site.url + "new/", "Search", site.img_search
     )
@@ -83,8 +79,12 @@ def Main():
 
 @site.register()
 def List(url):
+    # Ensure cookies are initialized by visiting root if needed
+    if "/new/" in url or "/top/" in url:
+        utils.getHtml(site.url)
+
     listhtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
-    
+
     if not listhtml:
         utils.kodilog("anybunny List: Failed to fetch page")
         utils.eod()
@@ -93,9 +93,12 @@ def List(url):
     soup = utils.parse_html(listhtml)
 
     items = []
-    for anchor in soup.select('a.nuyrfe[href], a[href*="/view/"], a[href*="/videos/"], a[href*="/too/"]'):
+    # Site uses /too/ for video pages, /view/ or /videos/ are sometimes used too
+    for anchor in soup.select(
+        'a.nuyrfe[href], a[href*="/view/"], a[href*="/videos/"], a[href*="/too/"]'
+    ):
         href = utils.safe_get_attr(anchor, "href")
-        if not href or ("/videos/" not in href and "/view/" not in href and "/too/" not in href):
+        if not href or not any(x in href for x in ["/videos/", "/view/", "/too/"]):
             continue
         video_url = urllib_parse.urljoin(site.url, href)
         img_tag = anchor.find("img")
@@ -111,7 +114,7 @@ def List(url):
             )
         if not title:
             continue
-            
+
         if thumb:
             thumb = urllib_parse.urljoin(site.url, thumb)
         else:
@@ -126,7 +129,9 @@ def List(url):
         )
 
     for item in items:
-        site.add_download_link(item["title"], item["url"], "Playvid", item["thumb"], item["title"])
+        site.add_download_link(
+            item["title"], item["url"], "Playvid", item["thumb"], item["title"]
+        )
 
     next_link = soup.select_one('a[rel="next"], a.next, a.topbtmsel2r')
     if next_link and next_link.has_attr("href"):
@@ -134,7 +139,7 @@ def List(url):
         if not text or "next" in text or text in ("»", ">", "→"):
             next_url = urllib_parse.urljoin(site.url, next_link["href"])
             # Only add pagination if it's NOT a /new/ or /top/ search-like page
-            # These pages (e.g. /new/page/N/) are actually searches for "page" 
+            # These pages (e.g. /new/page/N/) are actually searches for "page"
             # and return identical/stale results.
             if not any(x in url for x in ["/new/", "/top/"]) or "?" in next_link["href"]:
                 site.add_dir("Next Page", next_url, "List")
@@ -281,7 +286,7 @@ def Categories(url):
 @site.register()
 def Categories2(url):
     cathtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
-    
+
     if not cathtml:
         utils.kodilog("anybunny Categories2: Failed to fetch page")
         utils.eod()
@@ -289,21 +294,30 @@ def Categories2(url):
     soup = utils.parse_html(cathtml)
 
     entries = []
+    # Categories are /top/ links with text and usually a count next to them
     for anchor in soup.select("a[href*='/top/']"):
         href = utils.safe_get_attr(anchor, "href")
-        if "/top/" not in href:
+        if not href or "/top/" not in href:
+            continue
+
+        # Skip generic top links
+        if href.rstrip("/").endswith("/top"):
             continue
 
         try:
-            catid = href.split("/top/", 1)[1]
+            catid = href.split("/top/", 1)[1].strip("/")
         except IndexError:
             continue
 
+        if not catid or any(x in catid.lower() for x in ["dmca", "abuse", "2257", "login"]):
+            continue
+
         name = utils.cleantext(utils.safe_get_text(anchor))
-        if not name:
+        if not name or any(x in name.lower() for x in ["all top", "all new"]):
             continue
 
         videos = ""
+        # Find video count in parentheses nearby
         for sibling in anchor.next_siblings:
             if isinstance(sibling, str):
                 text = sibling.strip()
@@ -313,16 +327,19 @@ def Categories2(url):
             if not text:
                 continue
 
-            match = re.search(r"\(([^)]+)\)", text)
+            match = re.search(r"\((\d+)\)", text)
             if match:
                 videos = match.group(1)
+                break
+            # If we hit another tag that isn't a simple string or small span, stop looking
+            if not isinstance(sibling, str) and sibling.name not in ["span", "b", "i"]:
                 break
 
         label = name
         if videos:
             label = f"{name} [COLOR deeppink]({videos})[/COLOR]"
 
-        catpage = urllib_parse.urljoin(site.url, "top/" + catid.lstrip("/"))
+        catpage = urllib_parse.urljoin(site.url, "top/" + catid)
         entries.append((name.lower(), label, catpage))
 
     seen = set()
