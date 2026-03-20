@@ -29,7 +29,7 @@ site = AdultSite(
     "awmnet",
     "[COLOR hotpink]AWM Network[/COLOR] - [COLOR deeppink]49 sites[/COLOR]",
     "https://www.4tube.com/",
-    "awmnet.png",
+    "https://www.4tube.com/templates/4tube/images/logo.png",
     "awmnet",
 )
 

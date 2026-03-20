@@ -25,7 +25,7 @@ site = AdultSite(
     "hornyfap",
     "[COLOR hotpink]HornyFap[/COLOR]",
     "https://hornyfap.tv/",
-    "hornyfap.png",
+    "https://hornyfap.tv/contents/einpmqdvkece/theme/logo.png",
     "hornyfap",
 )
 
