@@ -1,3 +1,13 @@
+[B]Version 1.1.332[/B]
+- feat(images): update site logos and remove unused files
+- Multiple Site Fixes
+- site updates
+- Site Fixes
+- feat(diagnostics): finalize extension with /pw-test-env and validation
+- feat(ext): add playwright-expert skill
+- feat(diagnostics): Implement /pw-sniff command
+- feat(diagnostics): Implement /pw-smoke command and Python bridge
+
 [B]Version 1.1.331[/B]
 - Multiple Site Fixes
 - site updates
