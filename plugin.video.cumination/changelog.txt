@@ -1,3 +1,11 @@
+[B]Version 1.1.334[/B]
+- feat: update image paths and enhance video quality selection logic
+- Fixed Issue #119
+- feat(images): update site logos and remove unused files
+- Multiple Site Fixes
+- site updates
+- Site Fixes
+
 [B]Version 1.1.333[/B]
 - Fixed Issue #119
 - feat(images): update site logos and remove unused files
