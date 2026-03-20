@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
 import time
-import re
 import xbmc
 from six.moves import urllib_parse
 

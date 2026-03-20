@@ -81,7 +81,7 @@ def Main():
 def List(url):
     # Ensure cookies are initialized by visiting root if needed
     if "/new/" in url or "/top/" in url:
-        utils.getHtml(site.url)
+        utils.get_html_with_cloudflare_retry(site.url)
 
     listhtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
 

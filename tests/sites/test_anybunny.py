@@ -52,7 +52,9 @@ def test_list_populates_download_links(monkeypatch):
 
     # Also mock get_html_with_cloudflare_retry to return the fixture
     def mock_cloudflare_html(url, *args, **kwargs):
-        return get_html_fn(url), None
+        if url == anybunny.site.url:
+            return "<html>root</html>", False
+        return get_html_fn(url), False
 
     monkeypatch.setattr(anybunny.utils, "get_html_with_cloudflare_retry", mock_cloudflare_html)
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)
@@ -105,7 +107,9 @@ def test_search_results_have_no_pagination(monkeypatch):
 
     # Also mock get_html_with_cloudflare_retry to return the fixture
     def mock_cloudflare_html(url, *args, **kwargs):
-        return get_html_fn(url), None
+        if url == anybunny.site.url:
+            return "<html>root</html>", False
+        return get_html_fn(url), False
 
     monkeypatch.setattr(anybunny.utils, "get_html_with_cloudflare_retry", mock_cloudflare_html)
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)

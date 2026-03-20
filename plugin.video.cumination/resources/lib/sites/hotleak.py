@@ -19,12 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import base64
 import json
-import os
-import time
-import requests
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.http_timeouts import HTTP_TIMEOUT_MEDIUM
 from six.moves import urllib_parse
 
 site = AdultSite(
