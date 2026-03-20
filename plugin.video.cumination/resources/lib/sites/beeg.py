@@ -73,8 +73,8 @@ def List(url, page=1):
         else:
             duration = ""
 
-        h = video["file"]["fl_height"]
-        quality = str(h) + "p" if "fl_height" in video["file"] else ""
+        h = video["file"].get("fl_height")
+        quality = str(h) + "p" if h else ""
         plot = tag + " - " + name + "[CR]" + story
 
         thumb = str(random.choice(fc_facts[0]["fc_thumbs"]))
@@ -274,9 +274,9 @@ def Playvid(url, name, download=None):
         if not valid_facts:
             valid_facts = fc_facts
             
-        for i, fc_fact in enumerate(sorted(valid_facts, key=lambda x: x.get("fc_start", 0))):
-            start = fc_fact.get("fc_start", 0)
-            end = fc_fact.get("fc_end", 0)
+        for i, fc_fact in enumerate(sorted(valid_facts, key=lambda x: x.get("fc_start") if x.get("fc_start") is not None else 0)):
+            start = fc_fact.get("fc_start") if fc_fact.get("fc_start") is not None else 0
+            end = fc_fact.get("fc_end") if fc_fact.get("fc_end") is not None else 0
             m, s = divmod(int(start), 60)
             stxt = "{:d}:{:02d}".format(m, s)
             m, s = divmod(int(end), 60)
@@ -304,9 +304,7 @@ def Playvid(url, name, download=None):
             key = utils.prefquality(videos, sort_by=lambda x: int(x) if x.isdigit() else -1, reverse=True)
             if key:
                 vp.progress.update(75, "[CR]Loading video page[CR]")
-                # The 'key' itself is often the full URL path from the API
-                # and we should use the 'videos' dict which already has stripped keys
-                path = videos[key]
+                path = key
                 if not path.startswith("http"):
                     videourl = "https://video.beeg.com/" + path + "|Referer={}".format(site.url)
                 else:
@@ -356,7 +354,7 @@ def Playvid(url, name, download=None):
                         listitem.setInfo("video", {"Title": newname, "Genre": "Porn"})
                     listitem.setProperty("IsPlayable", "true")
                     
-                    path = videos[key]
+                    path = key
                     if not path.startswith("http"):
                         videourl = "https://video.beeg.com/" + path + "|Referer={}".format(site.url)
                     else:
@@ -369,7 +367,9 @@ def Playvid(url, name, download=None):
 def Category(url):
     listjson = utils.getHtml(url, site.url)
     jdata = json.loads(listjson)
-    for cat in sorted(jdata, key=lambda x: x["tg_name"]):
+    # Filter out items that are not categories (missing tg_name)
+    categories = [cat for cat in jdata if "tg_name" in cat]
+    for cat in sorted(categories, key=lambda x: x["tg_name"]):
         name = cat["tg_name"]
         slug = cat["tg_slug"]
         thumbs = cat.get("thumbs", [])

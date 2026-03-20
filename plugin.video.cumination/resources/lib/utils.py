@@ -2529,13 +2529,14 @@ def prefquality(video_list, sort_by=None, reverse=False):
                     video_list["2160"] = video_list[key]
                     video_list.pop(key)
 
-        video_list = [
-            (int("".join([y for y in key if y.isdigit()])), value)
-            for key, value in list(video_list.items())
-        ]
-        video_list = sorted(video_list, reverse=True)
+        parsed_video_list = []
+        for key, value in list(video_list.items()):
+            digits = "".join([y for y in key if y.isdigit()])
+            parsed_video_list.append((int(digits) if digits else -1, value))
+        
+        parsed_video_list = sorted(parsed_video_list, reverse=True)
 
-        for video in video_list:
+        for video in parsed_video_list:
             if quality >= video[0]:
                 vidurl = video[1]
                 break
@@ -2543,8 +2544,8 @@ def prefquality(video_list, sort_by=None, reverse=False):
                 if str(quality) in str(video[0]):
                     vidurl = video[1]
                     break
-        if not vidurl:
-            vidurl = video_list[-1][1]
+        if not vidurl and parsed_video_list:
+            vidurl = parsed_video_list[-1][1]
     else:
         keys = sorted(video_list, key=sort_by, reverse=reverse)
         if not keys:

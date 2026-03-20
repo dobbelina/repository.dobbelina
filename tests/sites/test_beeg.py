@@ -83,10 +83,9 @@ def test_playvid_fresh_fetch(monkeypatch):
 
     monkeypatch.setattr(beeg.utils, "getHtml", lambda *a, **k: json.dumps(mock_video_data))
     monkeypatch.setattr(beeg.utils, "VideoPlayer", MockVP)
-    monkeypatch.setattr(beeg.utils, "prefquality", lambda *a, **k: "1080")
-    
-    beeg.Playvid("id=123&tag_id=7629", "Test Video")
-    
+    monkeypatch.setattr(beeg.utils, "prefquality", lambda *a, **k: "path/to/video.mp4")
+
+    beeg.Playvid("id=123&tag_id=7629", "Test Video")    
     assert len(play_calls) == 1
     assert "path/to/video.mp4" in play_calls[0]
     assert "Referer=" in play_calls[0]

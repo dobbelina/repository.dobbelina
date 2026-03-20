@@ -54,10 +54,11 @@ def test_playvid(site_spec_fixture):
         mock_vp_instance = mock_vp_class.return_value
         site_spec.Playvid("https://hornyfap.tv/video/14023/", "Test Video")
         
-        assert mock_vp_instance.play_from_direct_link.called
-        call_url = mock_vp_instance.play_from_direct_link.call_args[0][0]
-        # Should have selected the 1080p URL (video_alt_url2)
-        assert "14023_1080p.mp4" in call_url
+        # Now uses play_from_kt_player
+        assert mock_vp_instance.play_from_kt_player.called
+        args = mock_vp_instance.play_from_kt_player.call_args[0]
+        assert args[0] == mock_get_html.return_value
+        assert args[1] == "https://hornyfap.tv/video/14023/"
 
 def setup_module():
     utils.addon = MagicMock()

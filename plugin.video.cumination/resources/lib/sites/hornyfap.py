@@ -48,7 +48,11 @@ def List(url, page=1):
         return
 
     soup = utils.parse_html(html)
-    items = soup.select("div.item")
+    # Refine to video items in the main list, avoiding sidebar
+    items = soup.select("div.list-videos div.item")
+    if not items:
+        # Fallback for models or other pages that might have different structure
+        items = soup.select("div.item")
 
     for item in items:
         link_tag = item.select_one("a[href*='/video/']")
@@ -65,12 +69,12 @@ def List(url, page=1):
         
         title = utils.cleantext(title)
 
-        img_tag = item.select_one("img.thumb")
-        img = utils.safe_get_attr(img_tag, "src", ["data-src", "data-webp"])
+        img_tag = item.select_one("img.thumb, img.lazy-load")
+        img = utils.safe_get_attr(img_tag, "src", ["data-src", "data-original", "data-webp"])
         if img:
             img = urllib_parse.urljoin(site.url, img)
 
-        duration = item.select_one("div.duration")
+        duration = item.select_one("div.duration, span.duration")
         duration = utils.safe_get_text(duration)
 
         site.add_download_link(
@@ -83,7 +87,7 @@ def List(url, page=1):
         )
 
     # Pagination
-    next_page = soup.select_one("li.next a")
+    next_page = soup.select_one("li.next a, a.next")
     if next_page:
         next_url = next_page.get("href")
         if next_url:
@@ -107,53 +111,8 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         return
 
-    # Try to find embedUrl in JSON-LD
-    embed_match = re.search(r'"embedUrl":\s*"([^"]+)"', html)
-    if embed_match:
-        embed_url = embed_match.group(1)
-        if embed_url.startswith("http"):
-            # The embed URL should be resolvable by play_from_html or direct link
-            # Let's try to load the embed page to get the direct file
-            embed_html = utils.getHtml(embed_url, url)
-            if embed_html:
-                # Look for video src in embed page
-                video_match = re.search(r'<video[^>]+src="([^"]+)"', embed_html)
-                if not video_match:
-                    # Alternative player pattern
-                    video_match = re.search(r"video_url:\s*'([^']+)'", embed_html)
-                
-                if video_match:
-                    video_url = video_match.group(1)
-                    if video_url.startswith("function/0/"):
-                        video_url = video_url[len("function/0/") :]
-                    if video_url.startswith("http"):
-                        vp.play_from_direct_link(video_url)
-                        return
-
-    # Fallback: Look for video URLs in JS object in main page
-    match = re.search(r"video_url:\s*'([^']+)'", html)
-    if match:
-        video_url = match.group(1)
-        if video_url.startswith("function/0/"):
-            video_url = video_url[len("function/0/") :]
-        
-        alt_match = re.search(r"video_alt_url2:\s*'([^']+)'", html)
-        if not alt_match:
-            alt_match = re.search(r"video_alt_url:\s*'([^']+)'", html)
-        
-        if alt_match:
-            alt_url = alt_match.group(1)
-            if alt_url.startswith("function/0/"):
-                alt_url = alt_url[len("function/0/") :]
-            if alt_url.startswith("http"):
-                video_url = alt_url
-
-        if video_url.startswith("http"):
-            vp.play_from_direct_link(video_url)
-            return
-
-    # Final fallback to play_from_html
-    vp.play_from_html(html, url)
+    # Use the shared play_from_kt_player which handles kvs_decode and rnd parameter
+    vp.play_from_kt_player(html, url)
 
 
 @site.register()
@@ -164,9 +123,8 @@ def Categories(url):
         return
 
     soup = utils.parse_html(html)
-    # The categories are usually in a list or grid
-    # In hornyfap.tv/categories/ they seem to be in div.item or similar
-    items = soup.select("div.item, a[href*='/categories/']")
+    # The categories are usually in div.list-categories or similar
+    items = soup.select("div.list-categories div.item, div.item a[href*='/categories/']")
     
     seen = set()
     for item in items:
@@ -205,7 +163,8 @@ def Models(url):
         return
 
     soup = utils.parse_html(html)
-    items = soup.select("div.item, a[href*='/models/']")
+    # The models are usually in div.list-models or similar
+    items = soup.select("div.list-models div.item, div.item a[href*='/models/']")
     
     seen = set()
     for item in items:
