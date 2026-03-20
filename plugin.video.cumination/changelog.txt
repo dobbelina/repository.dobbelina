@@ -1,3 +1,11 @@
+[B]Version 1.1.337[/B]
+- Refactor Anybunny site integration to use updated HTML fetching method and enhance test coverage for pagination and download links
+- Add Playwright scripts for checking Anybunny structure and comparing responses
+- Merge pull request #120 from rpeters1430/imgbot
+- [ImgBot] Optimize images
+- feat: update image paths and enhance video quality selection logic
+- Fixed Issue #119
+
 [B]Version 1.1.336[/B]
 - Add Playwright scripts for checking Anybunny structure and comparing responses
 - Merge pull request #120 from rpeters1430/imgbot
