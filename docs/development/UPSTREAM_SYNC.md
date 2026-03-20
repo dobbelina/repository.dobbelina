@@ -22,6 +22,13 @@
 
 These upstream commits have been integrated into the fork:
 
+### 2026-03-20 Porting Session
+
+| Upstream Hash | Message | Fork Hash | Date Integrated | Notes |
+|---------------|---------|-----------|-----------------|-------|
+| `ffeace1e` | hentaidude - fix subtitles #1783 | `manual` | 2026-03-20 | Ported manually to BS4 scraper and utils |
+| `18951eab` | fix Kodi 18 crash | `manual` | 2026-03-20 | Ported manually to BS4 scraper |
+
 ### 2026-03-14 Cherry-Pick Session
 
 | Upstream Hash | Message | Fork Hash | Date Integrated | Notes |

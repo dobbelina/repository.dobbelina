@@ -60,9 +60,4 @@ def test_playvid(site_spec_fixture):
         # We need to find if it was called
         mock_vp_instance.play_from_link_to_resolve.assert_called_once_with('https://www.xvideos.com/embedframe/hbdvopo7d13')
 
-def setup_module():
-    # Mock Kodi environment for tests
-    utils.addon = MagicMock()
-    utils.addon.getAddonInfo.return_value = 'plugin.video.cumination'
-    utils.addon_sys = 'plugin://plugin.video.cumination/'
-    utils.addon_id = 'plugin.video.cumination'
+

@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
+import base64
+import xbmc
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from resources.lib.sites.soup_spec import SoupSiteSpec
@@ -268,27 +271,99 @@ def Playvid(url, name, download=None):
     listhtml = utils.getHtml(url, site.url)
     soup = utils.parse_html(listhtml)
 
-    thumb_meta = soup.select_one('meta[itemprop="thumbnailUrl"]')
-    if thumb_meta:
-        thumb_url = utils.safe_get_attr(thumb_meta, "content", default="")
-        thumb_parts = thumb_url.rstrip("/").split("/")
-        if len(thumb_parts) >= 2:
-            stream_id = thumb_parts[-2]
-            if not stream_id:
-                vp.progress.close()
-                utils.notify("Oh Oh", "No Videos found")
-                return
-            videourl = f"https://master-lengs.org/api/v3/hh/{stream_id}/master.m3u8"
-            vp.play_from_direct_link(videourl)
-            return
-
     iframe = soup.select_one("iframe[src]")
-    if iframe:
-        vp.play_from_link_to_resolve(utils.safe_get_attr(iframe, "src", default=""))
+    if not iframe:
+        vp.progress.close()
+        utils.notify("Oh Oh", "No Videos found")
         return
 
-    vp.progress.close()
-    utils.notify("Oh Oh", "No Videos found")
+    iframe_url = utils.safe_get_attr(iframe, "src", default="")
+    iframe_html = utils.getHtml(iframe_url, site.url)
+    
+    token_meta = utils.parse_html(iframe_html).select_one('meta[name="x-secure-token"]')
+    if token_meta:
+        token = utils.safe_get_attr(token_meta, "content", default="")
+        
+        ROT13_TABLE = str.maketrans(
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+            "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"
+        )
+
+        def decode(encoded):
+            try:
+                e = encoded.replace("sha512-", "")
+                e = e.translate(ROT13_TABLE)
+                e = base64.b64decode(e).decode("utf-8")
+                e = e.translate(ROT13_TABLE)
+                e = base64.b64decode(e).decode("utf-8")
+                e = e.translate(ROT13_TABLE)
+                e = base64.b64decode(e).decode("utf-8")
+                return json.loads(e)
+            except Exception:
+                return None
+
+        decoded_token = decode(token)
+        if decoded_token:
+            en = decoded_token.get("en")
+            iv = decoded_token.get("iv")
+            uri = decoded_token.get("uri")
+
+            boundary = "----geckoformboundarybfec28fb1c2316e132ff23ab04e3d114"
+            data = (
+                "--{0}\r\n"
+                'Content-Disposition: form-data; name="action"\r\n\r\n'
+                "zarat_get_data_player_ajax\r\n"
+                "--{0}\r\n"
+                'Content-Disposition: form-data; name="a"\r\n\r\n'
+                "{1}\r\n"
+                "--{0}\r\n"
+                'Content-Disposition: form-data; name="b"\r\n\r\n'
+                "{2}\r\n"
+                "--{0}--\r\n"
+            ).format(boundary, en, iv)
+
+            headers = utils.base_hdrs.copy()
+            headers['Content-Type'] = 'multipart/form-data; boundary=' + boundary
+
+            import requests
+            response = requests.post(uri + 'api.php', data=data.encode("utf-8"), headers=headers)
+            jdata = response.json()
+
+            video_url = jdata.get("data", {}).get("sources", [])[0].get("src")
+
+            subtitle = []
+            if video_url and video_url.endswith('.m3u8'):
+                try:
+                    video_file = utils.getHtml(video_url, url)
+
+                    query = {
+                        "jsonrpc": "2.0",
+                        "method": "Settings.GetSettingValue",
+                        "params": {"setting": "subtitles.languages"},
+                        "id": 1
+                    }
+                    rpc_response = xbmc.executeJSONRPC(json.dumps(query))
+                    value = json.loads(rpc_response)
+                    langs = value.get("result", {}).get("value", [])
+                    lang_codes = [
+                        xbmc.convertLanguage(name, xbmc.ISO_639_1)
+                        for name in langs
+                    ]
+
+                    match = re.compile(r'URI="([^"]+)",TYPE=SUBTITLES,GROUP-ID="subs",LANGUAGE="([^"]+)"').findall(video_file)
+                    if match:
+                        for sub_url, lang in match:
+                            if lang in lang_codes:
+                                subtitle.append(video_url.rsplit('/', 1)[0] + '/' + sub_url)
+                except Exception:
+                    pass
+            
+            if video_url:
+                utils.playvid(video_url, name, download=download, subtitle=subtitle)
+                return
+
+    # Fallback to direct resolution if token logic fails
+    vp.play_from_link_to_resolve(iframe_url)
 
 
 @site.register()

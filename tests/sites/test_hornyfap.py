@@ -60,8 +60,4 @@ def test_playvid(site_spec_fixture):
         assert args[0] == mock_get_html.return_value
         assert args[1] == "https://hornyfap.tv/video/14023/"
 
-def setup_module():
-    utils.addon = MagicMock()
-    utils.addon.getAddonInfo.return_value = 'plugin.video.cumination'
-    utils.addon_sys = 'plugin://plugin.video.cumination/'
-    utils.addon_id = 'plugin.video.cumination'
+

@@ -74,9 +74,4 @@ def test_playvid(site_spec_fixture):
         assert "|User-Agent=" in call_args
         assert "Referer=https%3A//hotleak.vip/" in call_args
 
-def setup_module():
-    # Mock Kodi environment for tests
-    utils.addon = MagicMock()
-    utils.addon.getAddonInfo.return_value = 'plugin.video.cumination'
-    utils.addon_sys = 'plugin://plugin.video.cumination/'
-    utils.addon_id = 'plugin.video.cumination'
+

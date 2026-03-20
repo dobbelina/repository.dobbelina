@@ -6,7 +6,7 @@ Get logo dimensions using just struct parsing (no PIL required)
 import os
 import struct
 
-IMAGES_DIR = r"C:\Users\James\Desktop\repository.dobbelina\plugin.video.cumination\resources\images"
+IMAGES_DIR = os.path.join(os.path.dirname(__file__), "plugin.video.cumination", "resources", "images")
 
 
 def get_png_dimensions(filepath):

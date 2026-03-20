@@ -170,6 +170,7 @@ def _ensure_kodi_stubs():
     xbmcvfs.translatePath = _translate_path
     xbmcvfs.exists = lambda path: Path(path).exists()
     xbmcvfs.mkdirs = lambda path: Path(path).mkdir(parents=True, exist_ok=True)
+    xbmcvfs.makeLegalFilename = lambda path: path
 
     # Assemble kodi_six package --------------------------------------------
     kodi_six = types.ModuleType("kodi_six")

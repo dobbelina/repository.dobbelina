@@ -24,7 +24,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 
-site = AdultSite('pornditt', '[COLOR hotpink]Pornditt[/COLOR]', 'https://v.pornditt.com/', 'https://v.pornditt.com/images/logo.png', 'pornditt')
+site = AdultSite('pornditt', '[COLOR hotpink]Pornditt[/COLOR]', 'https://v.pornditt.com/', 'pornditt.png', 'pornditt')
 
 
 @site.register(default_mode=True)

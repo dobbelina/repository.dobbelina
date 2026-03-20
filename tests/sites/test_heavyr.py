@@ -1,17 +1,6 @@
 from resources.lib.sites import heavyr
 import pytest
-import sys
 from unittest.mock import MagicMock, patch
-
-# Mock kodi-specific imports and others causing issues
-sys.modules["xbmc"] = MagicMock()
-sys.modules["xbmcgui"] = MagicMock()
-sys.modules["xbmcplugin"] = MagicMock()
-sys.modules["xbmcvfs"] = MagicMock()
-sys.modules["xbmcaddon"] = MagicMock()
-sys.modules["StorageServer"] = MagicMock()
-sys.modules["kodi_six"] = MagicMock()
-sys.modules["resources.lib.brotlidecpy"] = MagicMock()
 
 @pytest.fixture
 def mock_site():
