@@ -1,3 +1,11 @@
+[B]Version 1.1.339[/B]
+- fix: restore PornKai video listings and Categories
+- Sync script.module.resolveurl.xxx from ResolveURL upstream
+- Sync script.module.resolveurl from ResolveURL upstream
+- Refactor tests for AnyBunny and PornXpert sites
+- Refactor Anybunny site integration to use updated HTML fetching method and enhance test coverage for pagination and download links
+- Add Playwright scripts for checking Anybunny structure and comparing responses
+
 [B]Version 1.1.338[/B]
 - Refactor tests for AnyBunny and PornXpert sites
 - Refactor Anybunny site integration to use updated HTML fetching method and enhance test coverage for pagination and download links
