@@ -43,9 +43,6 @@ site2 = AdultSite(
     "okporn.png",
     "okporn",
 )
-site3 = AdultSite(
-    "okxxx", "[COLOR hotpink]OK XXX[/COLOR]", "https://ok.xxx/", "okxxx.png", "okxxx"
-)
 site4 = AdultSite(
     "pornstarstube",
     "[COLOR hotpink]Pornstars Tube[/COLOR]",
@@ -83,8 +80,6 @@ def getSite(url):
         ret = site1
     elif "ok.porn" in url:
         ret = site2
-    elif "ok.xxx" in url:
-        ret = site3
     elif "pornstars.tube" in url:
         ret = site4
     elif "max.porn" in url:
@@ -99,7 +94,6 @@ def getSite(url):
 @site.register(default_mode=True)
 @site1.register(default_mode=True)
 @site2.register(default_mode=True)
-@site3.register(default_mode=True)
 @site4.register(default_mode=True)
 @site5.register(default_mode=True)
 @site6.register(default_mode=True)

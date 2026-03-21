@@ -51,8 +51,9 @@ Kodi calls `plugin://plugin.video.cumination/?mode=sitename.Function&url=...` �
 - **`sites/__init__.py`** - `__all__` list controls which site modules are loaded. New sites must be added here.
 - **`sites/soup_spec.py`** - `SoupSiteSpec` dataclass for declarative selector-based video listing.
 - **`favorites.py`** - SQLite-backed favorites and custom site management.
+- **`http_timeouts.py`** - Named timeout constants (`HTTP_TIMEOUT_SHORT`, `HTTP_TIMEOUT_MEDIUM`, `HTTP_TIMEOUT_LONG`). Use these instead of magic numbers in site modules.
 - **`decrypters/`** / **`jscrypto/`** - Custom video player decryption (KVS, Uppod, etc.)
-- **`playwright_helper.py`** (in lib/) - Dev/debug tool only; same restriction as Playwright — never use in site modules.
+- **`playwright_helper.py`** (in lib/) - Dev/debug tool only; same restriction as Playwright — never use in site modules. For test-time Playwright use `tests/utils/playwright_helper.py` instead.
 
 ### Site Module Pattern
 
@@ -127,7 +128,7 @@ comm -23 <(grep -l "parse_html" plugin.video.cumination/resources/lib/sites/*.py
 
 - Branch: `master`
 - Commit prefixes: `feat:`, `fix:`, `chore:`
-- Cherry-picks from upstream: always use `-x` flag, update `UPSTREAM_SYNC.md`
+- Cherry-picks from upstream: always use `-x` flag, update `docs/development/UPSTREAM_SYNC.md`
 
 ## Custom Agents
 

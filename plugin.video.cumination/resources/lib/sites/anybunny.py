@@ -21,7 +21,6 @@ from six.moves import urllib_parse
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.sites.soup_spec import SoupSiteSpec
 
 site = AdultSite(
     "anybunny",
@@ -31,120 +30,14 @@ site = AdultSite(
     "anybunny",
 )
 
-VIDEO_LIST_SPEC = SoupSiteSpec(
-    selectors={
-        "items": ["a.nuyrfe", 'a[href*="/videos/"]'],
-        "url": {"attr": "href"},
-        "title": {
-            "selector": "img",
-            "attr": "alt",
-            "text": True,
-            "clean": True,
-            "fallback_selectors": [None],
-        },
-        "thumbnail": {
-            "selector": "img",
-            "attr": "src",
-            "fallback_attrs": ["data-src", "data-lazy", "data-original"],
-        },
-        "pagination": {
-            "selectors": [
-                {"query": 'a[rel="next"]', "scope": "soup"},
-                {"query": "a.next", "scope": "soup"},
-            ],
-            "text_matches": ["next"],
-            "attr": "href",
-            "label": "Next Page",
-            "mode": "List",
-        },
-    },
-    description="",  # Site rarely exposes meaningful descriptions
-)
-
-
-@site.register(default_mode=True)
-def Main():
-    site.add_dir(
-        "[COLOR hotpink]New videos[/COLOR]", site.url + "new/", "List", site.img_cat
-    )
-    site.add_dir(
-        "[COLOR hotpink]Top videos[/COLOR]", site.url + "top/", "List", site.img_cat
-    )
-    site.add_dir("[COLOR hotpink]Categories[/COLOR]", site.url, "Categories2", site.img_cat)
-    site.add_dir(
-        "[COLOR hotpink]Search[/COLOR]", site.url + "new/", "Search", site.img_search
-    )
-    utils.eod()
-
-
-@site.register()
-def List(url):
-    # Ensure cookies are initialized by visiting root if needed
-    if "/new/" in url or "/top/" in url:
-        utils.get_html_with_cloudflare_retry(site.url)
-
-    listhtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
-
-    if not listhtml:
-        utils.kodilog("anybunny List: Failed to fetch page")
-        utils.eod()
-        return
-
-    soup = utils.parse_html(listhtml)
-
-    items = []
-    # Site uses /too/ for video pages, /view/ or /videos/ are sometimes used too
-    for anchor in soup.select(
-        'a.nuyrfe[href], a[href*="/view/"], a[href*="/videos/"], a[href*="/too/"]'
-    ):
-        href = utils.safe_get_attr(anchor, "href")
-        if not href or not any(x in href for x in ["/videos/", "/view/", "/too/"]):
-            continue
-        video_url = urllib_parse.urljoin(site.url, href)
-        img_tag = anchor.find("img")
-        thumb = utils.get_thumbnail(img_tag)
-        title = utils.cleantext(utils.safe_get_attr(img_tag, "alt"))
-        if not title:
-            parent = anchor.find_parent("li")
-            if parent:
-                title = utils.cleantext(utils.safe_get_text(parent.select_one("p.clip")))
-        if not title:
-            title = utils.cleantext(
-                utils.safe_get_attr(anchor, "title") or utils.safe_get_text(anchor)
-            )
-        if not title:
-            continue
-
-        if thumb:
-            thumb = urllib_parse.urljoin(site.url, thumb)
-        else:
-            thumb = site.image
-
-        items.append(
-            {
-                "title": title,
-                "url": video_url,
-                "thumb": thumb,
-            }
-        )
-
-    for item in items:
-        site.add_download_link(
-            item["title"], item["url"], "Playvid", item["thumb"], item["title"]
-        )
-
-    next_link = soup.select_one('a[rel="next"], a.next, a.topbtmsel2r')
-    if next_link and next_link.has_attr("href"):
-        text = next_link.get_text().strip().lower()
-        if not text or "next" in text or text in ("»", ">", "→"):
-            next_url = urllib_parse.urljoin(site.url, next_link["href"])
-            # Only add pagination if it's NOT a /new/ or /top/ search-like page
-            # These pages (e.g. /new/page/N/) are actually searches for "page"
-            # and return identical/stale results.
-            if not any(x in url for x in ["/new/", "/top/"]) or "?" in next_link["href"]:
-                site.add_dir("Next Page", next_url, "List")
-
-    utils.eod()
+# Site structure (as of 2026-03):
+# - /new/ and /top/ are 404 for plain HTTP; only category pages (/top/{Name})
+#   and individual video pages (/too/{id}-{slug}) work with getHtml().
+# - Root page / contains 100 category links as a.nuyrfe with /top/{Name} hrefs.
+# - Category pages /top/{Name} contain ~119 video links as a.nuyrfe with
+#   absolute https://anybunny.org/too/{id}-{slug} hrefs.
+# - Pagination on category pages uses <a class='topbtmsel2r' href='...?p=N'>Next</a>.
+# - Video pages use Playerjs with file:"<m3u8_url>:cast:<m3u8_url> or <mp4_url>:cast:<mp4_url>"
 
 
 def _extract_playerjs_best_url(html_content):
@@ -191,6 +84,60 @@ def _extract_playerjs_best_url(html_content):
     return None
 
 
+@site.register(default_mode=True)
+def Main():
+    site.add_dir(
+        "[COLOR hotpink]Categories[/COLOR]", site.url, "Categories2", site.img_cat
+    )
+    site.add_dir(
+        "[COLOR hotpink]Search[/COLOR]", site.url + "top/", "Search", site.img_search
+    )
+    utils.eod()
+
+
+@site.register()
+def List(url):
+    listhtml = utils.getHtml(url, site.url)
+
+    if not listhtml:
+        utils.kodilog("anybunny List: Failed to fetch page")
+        utils.eod()
+        return
+
+    soup = utils.parse_html(listhtml)
+
+    # Video items: a.nuyrfe with absolute /too/ hrefs
+    for anchor in soup.select("a.nuyrfe[href*='/too/']"):
+        href = utils.safe_get_attr(anchor, "href")
+        if not href:
+            continue
+        video_url = urllib_parse.urljoin(site.url, href)
+        img_tag = anchor.find("img")
+        thumb = utils.get_thumbnail(img_tag)
+        title = utils.cleantext(utils.safe_get_attr(img_tag, "alt"))
+        if not title:
+            title = utils.cleantext(utils.safe_get_attr(anchor, "title") or "")
+        if not title:
+            continue
+
+        if thumb:
+            thumb = urllib_parse.urljoin(site.url, thumb)
+        else:
+            thumb = site.image
+
+        site.add_download_link(title, video_url, "Playvid", thumb, title)
+
+    # Pagination: a.topbtmsel2r with href and text "Next"
+    next_link = soup.select_one("a.topbtmsel2r")
+    if next_link and next_link.has_attr("href"):
+        text = next_link.get_text().strip().lower()
+        if not text or "next" in text or text in ("»", ">", "→"):
+            next_url = urllib_parse.urljoin(site.url, next_link["href"])
+            site.add_dir("Next Page", next_url, "List")
+
+    utils.eod()
+
+
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
@@ -202,14 +149,14 @@ def Playvid(url, name, download=None):
         utils.kodilog("anybunny Playvid: Failed to fetch page")
         return
 
-    # /too/ pages embed the Playerjs file parameter directly in the page HTML
+    # Video pages embed Playerjs with file: parameter containing m3u8/mp4 URLs
     video_url = _extract_playerjs_best_url(pagehtml)
     if video_url:
         utils.kodilog(f"anybunny Playvid: Found video URL in page: {video_url[:100]}")
         vp.play_from_direct_link(video_url)
         return
 
-    # /view/ pages use an iframe containing the Playerjs player
+    # Fallback: look for an iframe containing the player
     iframe_match = re.search(r'<iframe[^>]+src=["\']([^"\']+)["\']', pagehtml, re.IGNORECASE)
     if not iframe_match:
         utils.kodilog("anybunny Playvid: No iframe or video found")
@@ -239,53 +186,8 @@ def Playvid(url, name, download=None):
 
 
 @site.register()
-def Categories(url):
-    cathtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
-    
-    if not cathtml:
-        utils.kodilog("anybunny Categories: Failed to fetch page")
-        utils.eod()
-        return
-    soup = utils.parse_html(cathtml)
-
-    categories = []
-    for anchor in soup.select("a[href*='/top/']"):
-        img_tag = anchor.select_one("img")
-        if not img_tag:
-            continue
-
-        href = utils.safe_get_attr(anchor, "href")
-        if "/top/" not in href:
-            continue
-
-        try:
-            catid = href.split("/top/", 1)[1]
-        except IndexError:
-            continue
-
-        name = utils.safe_get_attr(img_tag, "alt")
-        if not name:
-            name = utils.safe_get_text(anchor)
-        name = utils.cleantext(name)
-        if not name:
-            continue
-
-        img = utils.get_thumbnail(img_tag)
-        catpage = urllib_parse.urljoin(site.url, "top/" + catid.lstrip("/"))
-        categories.append((name.lower(), name, catpage, img))
-
-    seen = set()
-    for _, display_name, catpage, img in sorted(categories):
-        if catpage in seen:
-            continue
-        seen.add(catpage)
-        site.add_dir(display_name, catpage, "List", img)
-    utils.eod()
-
-
-@site.register()
 def Categories2(url):
-    cathtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
+    cathtml = utils.getHtml(url, site.url)
 
     if not cathtml:
         utils.kodilog("anybunny Categories2: Failed to fetch page")
@@ -294,14 +196,16 @@ def Categories2(url):
     soup = utils.parse_html(cathtml)
 
     entries = []
-    # Categories are /top/ links with text and usually a count next to them
-    for anchor in soup.select("a[href*='/top/']"):
-        href = utils.safe_get_attr(anchor, "href")
-        if not href or "/top/" not in href:
+    # Root page has category links as a.nuyrfe pointing to /top/{Name}
+    # (distinguished from video items which point to /too/{id}-{slug})
+    for anchor in soup.select("a.nuyrfe"):
+        href = utils.safe_get_attr(anchor, "href") or ""
+        if "/top/" not in href or "/too/" in href:
             continue
 
-        # Skip generic top links
-        if href.rstrip("/").endswith("/top"):
+        # Skip the bare /top/ index link
+        stripped = href.rstrip("/")
+        if stripped.endswith("/top"):
             continue
 
         try:
@@ -312,51 +216,37 @@ def Categories2(url):
         if not catid or any(x in catid.lower() for x in ["dmca", "abuse", "2257", "login"]):
             continue
 
-        name = utils.cleantext(utils.safe_get_text(anchor))
-        if not name or any(x in name.lower() for x in ["all top", "all new"]):
+        img_tag = anchor.find("img")
+        name = utils.cleantext(utils.safe_get_attr(img_tag, "alt") if img_tag else "")
+        if not name:
+            name = utils.cleantext(utils.safe_get_text(anchor))
+        if not name:
+            # Derive a human-readable name from the URL slug
+            name = utils.cleantext(catid.replace("_", " ").title())
+        if not name:
             continue
 
-        videos = ""
-        # Find video count in parentheses nearby
-        for sibling in anchor.next_siblings:
-            if isinstance(sibling, str):
-                text = sibling.strip()
-            else:
-                text = utils.safe_get_text(sibling)
-
-            if not text:
-                continue
-
-            match = re.search(r"\((\d+)\)", text)
-            if match:
-                videos = match.group(1)
-                break
-            # If we hit another tag that isn't a simple string or small span, stop looking
-            if not isinstance(sibling, str) and sibling.name not in ["span", "b", "i"]:
-                break
-
-        label = name
-        if videos:
-            label = f"{name} [COLOR deeppink]({videos})[/COLOR]"
-
+        img = utils.get_thumbnail(img_tag) if img_tag else ""
+        if img:
+            img = urllib_parse.urljoin(site.url, img)
         catpage = urllib_parse.urljoin(site.url, "top/" + catid)
-        entries.append((name.lower(), label, catpage))
+        entries.append((name.lower(), name, catpage, img))
 
     seen = set()
-    for _, label, catpage in sorted(entries):
+    for _, display_name, catpage, img in sorted(entries):
         if catpage in seen:
             continue
         seen.add(catpage)
-        site.add_dir(label, catpage, "List", "")
+        site.add_dir(display_name, catpage, "List", img)
     utils.eod()
 
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, "Search")
     else:
+        # Search works by navigating to /top/{keyword}
         title = keyword.replace(" ", "_")
-        searchUrl = searchUrl + title
+        searchUrl = urllib_parse.urljoin(site.url, "top/" + title)
         List(searchUrl)
