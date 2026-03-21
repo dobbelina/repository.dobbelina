@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
+import re
 import xbmc
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -45,7 +47,8 @@ def Main():
         site.img_search,
     )
     # The API is currently returning 500/504 errors; use the HTML list instead.
-    List(site.url + "videos?q=&sort=new&page=1")
+    # Empty query now returns categories; use 'porn' as a broad default to show videos.
+    List(site.url + "videos?q=porn&sort=new&page=1")
     utils.eod()
 
 
@@ -56,8 +59,21 @@ def List(url):
         utils.eod()
         return
 
-    soup = utils.parse_html(html)
+    # Check if it's JSON (API fallback) or HTML
+    if html.strip().startswith("{") or html.strip().startswith("["):
+        markup, results_remaining = _extract_markup_and_meta(html)
+    else:
+        markup = html
+        results_remaining = 120  # Arbitrary positive value to show next page if HTML pagination exists
+
+    soup = utils.parse_html(markup)
     video_items = soup.select("div.thumbnail")
+
+    # If no thumbnails, maybe it's the raw API response or empty results
+    if not video_items and not html.strip().startswith("<"):
+        markup, results_remaining = _extract_markup_and_meta(html)
+        soup = utils.parse_html(markup)
+        video_items = soup.select("div.thumbnail")
 
     for item in video_items:
         link_tag = item.select_one("a.thumbnail_link")
@@ -70,18 +86,18 @@ def List(url):
         videopage = utils.fix_url(videopage, site.url)
 
         title_tag = item.select_one("a.thumbnail_title")
-        title = title_tag.get_text(strip=True) if title_tag else ''
+        title = title_tag.get_text(strip=True) if title_tag else ""
         if not title:
-            title = link_tag.get('title', '')
+            title = link_tag.get("title", "")
         if not title:
-            img_tag = item.select_one('img')
+            img_tag = item.select_one("img")
             if img_tag:
-                title = img_tag.get('alt', '')
+                title = img_tag.get("alt", "")
         title = utils.cleantext(title)
         if not title:
             continue
 
-        img_tag = item.select_one("img.slideshow")
+        img_tag = item.select_one("img.vid_thumbnail, img.slideshow, img")
         img = _extract_thumbnail(img_tag)
         img = utils.fix_url(img, site.url)
 
@@ -113,12 +129,102 @@ def List(url):
 
     next_page_tag = soup.select_one('a.prev_next_link:-soup-contains("Next")')
     if next_page_tag:
-        next_url = next_page_tag.get('href')
+        next_url = next_page_tag.get("href")
         if next_url:
             next_url = utils.fix_url(next_url, site.url)
             site.add_dir("Next Page", next_url, "List", site.img_next)
-    
+    else:
+        _add_next_page(url, results_remaining)
+
     utils.eod()
+
+
+def _extract_markup_and_meta(html):
+    if not html:
+        return "", None
+
+    results_remaining = None
+    markup = html
+
+    try:
+        data = json.loads(html)
+    except ValueError:
+        data = None
+
+    def coerce_int(value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    if isinstance(data, dict):
+        candidates = []
+        stack = [data]
+        seen = set()
+        while stack:
+            node = stack.pop()
+            node_id = id(node)
+            if node_id in seen:
+                continue
+            seen.add(node_id)
+            for key, value in node.items():
+                if (
+                    key in ("results_remaining", "resultsRemaining")
+                    and results_remaining is None
+                ):
+                    results_remaining = coerce_int(value)
+                if isinstance(value, str):
+                    if "<div" in value or "<a" in value:
+                        candidates.append(value)
+                elif isinstance(value, dict):
+                    stack.append(value)
+                elif isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, dict):
+                            stack.append(item)
+        if candidates:
+            markup = candidates[0]
+
+    if isinstance(markup, str):
+        markup = (
+            markup.replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace('\\"', '"')
+            .replace("\\/", "/")
+        )
+    else:
+        markup = ""
+
+    return markup, results_remaining
+
+
+def _add_next_page(url, results_remaining):
+    if results_remaining is None or results_remaining <= 0:
+        return
+
+    parsed = urllib_parse.urlsplit(url)
+    query = urllib_parse.parse_qs(parsed.query)
+    try:
+        current_page = int(query.get("page", ["0"])[0])
+    except (TypeError, ValueError):
+        return
+
+    next_page_index = current_page + 1
+    display_index = current_page + 2
+    last_page = current_page + 2 + (results_remaining // 120)
+
+    query["page"] = [str(next_page_index)]
+    encoded_query = urllib_parse.urlencode(query, doseq=True)
+    next_url = urllib_parse.urlunsplit(
+        (parsed.scheme, parsed.netloc, parsed.path, encoded_query, parsed.fragment)
+    )
+
+    site.add_dir(
+        "Next Page ({}/{})".format(display_index, last_page),
+        next_url,
+        "List",
+        site.img_next,
+    )
 
 
 @site.register()
@@ -174,10 +280,10 @@ def Categories(url):
         query = ""
         if "?q=" in caturl:
             query = caturl.split("?q=")[-1]
+        
+        # API is currently 504ing, use HTML search instead
         if query:
-            catpage = site.url + "api?query={}&sort=best&page=0&method=search".format(
-                query
-            )
+            catpage = site.url + "videos?q={}&sort=best&page=1".format(query)
         else:
             catpage = utils.fix_url(caturl, site.url)
 
