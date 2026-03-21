@@ -1,25 +1,19 @@
-Version 5.1.193 (Feb 23, 2026)
+Version 5.1.194 (Mar 16, 2026)
 - Code Base Changes:
     - None
 
 - Resolvers Added:
-    - bunnycdn
-    - filekeeper
+    - virstream
 
 - Resolvers Fixed/Updated:
     - byse
-    - embedojo
+    - cocoleech
     - hdvid
     - kinoger
-    - mixdrop
-    - savefiles
-    - streamembed
-    - streamix
-    - streamwish
-    - uqload
+    - playhd
+    - torbox
     - videa
-    - vidnest
-    - voe
+    - waaw
 
 - Resolvers Removed
     - None

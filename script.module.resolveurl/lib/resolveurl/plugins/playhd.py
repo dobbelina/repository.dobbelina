@@ -55,13 +55,14 @@ class PlayHDResolver(ResolveUrl):
             if s:
                 headers.update({'Referer': 'https://{}/'.format(host)})
                 aurl = s.group(1).replace('\\', '')
-                jd = json.loads(self.net.http_GET(aurl, headers=headers).content)
+                resp = self.net.http_GET(aurl, headers=headers).content
+                jd = json.loads(resp.replace('\\u00a0', '%C2%A0'))
                 src = jd.get('sources')[0]
                 if src:
                     url = src.get('file')
                     if url.startswith('//'):
                         url = 'https:' + url
-                    urllib_parse.quote(url, safe=':/?&=')
+                    urllib_parse.quote(url, safe=':/?&%=')
                     headers.update({'verifypeer': 'false'})
                     return url + helpers.append_headers(headers)
 

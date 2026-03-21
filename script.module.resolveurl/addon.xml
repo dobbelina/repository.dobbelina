@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
-<addon id="script.module.resolveurl" name="ResolveURL" version="5.1.196" provider-name="gujal">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.module.resolveurl" name="ResolveURL" version="5.1.194" provider-name="gujal">
     <requires>
-        
+        <!-- <import addon="xbmc.python" version="3.0.0" /> -->
         <import addon="script.module.six" />
         <import addon="script.module.kodi-six" />
         <import addon="plugin.video.youtube" optional="true" />

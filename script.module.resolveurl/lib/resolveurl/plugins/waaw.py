@@ -30,14 +30,17 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 
 class WaawResolver(ResolveUrl):
     name = 'Waaw'
-    domains = ['waaw.ac', 'netu.ac', 'hqq.ac',
-               'waaw.tv', 'netu.tv', 'hqq.tv',
-               'waaw.to', 'netu.to', 'hqq.to',
-               'doplay.store', 'younetu.com', 'stbnetu.xyz', 'brightmindwave.com',
-               'ncdn22.xyz', 'oyohd.one', 'player.sorozatok.me', 'vidmoly.cam']
+    domains = [
+        'waaw.ac', 'netu.ac', 'hqq.ac',
+        'waaw.tv', 'netu.tv', 'hqq.tv',
+        'waaw.to', 'netu.to', 'hqq.to',
+        'doplay.store', 'younetu.com', 'stbnetu.xyz', 'brightmindwave.com',
+        'ncdn22.xyz', 'oyohd.one', 'player.sorozatok.me', 'vidmoly.cam',
+        '0gomovies.beer'
+    ]
     pattern = r'(?://|\.)((?:you|stb)?(?:waaw|netu|hqq|doplay|brightmindwave|ncdn22|oyohd|' \
-              r'player\.sorozatok|vidmoly)' \
-              r'\.(?:ac|tv|to|store|c[ao]m|xyz|one|me))/' \
+              r'player\.sorozatok|vidmoly|0gomovies)' \
+              r'\.(?:ac|tv|to|store|c[ao]m|xyz|one|me|beer))/' \
               r'(?:(?:watch_video|embed_player)\.php\?v=|.+?\?vid=|e/|f/)([a-zA-Z0-9]+)'
 
     def get_media_url(self, host, media_id, subs=False):

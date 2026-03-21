@@ -24,8 +24,9 @@ from resolveurl.resolver import ResolveUrl, ResolverError
 class HDvidResolver(ResolveUrl):
     name = 'HDvid'
     domains = ['hdvid.tv', 'hdvid.fun', 'vidhdthe.online', 'hdvid.website', 'hdthevid.online',
-               'hdthevid.xyz', 'bestvidhd.site', 'tovidhd5.space']
-    pattern = r'(?://|\.)((?:hdvid|vidhdthe|hdthevid|bestvidhd|tovidhd5)\.(?:tv|fun|online|website|xyz|site|space))/' \
+               'hdthevid.xyz', 'bestvidhd.site', 'tovidhd5.space', 'tohidvrd.space']
+    pattern = r'(?://|\.)((?:hdvid|vidhdthe|hdthevid|bestvidhd|tovidhd5|tohidvrd)\.' \
+              r'(?:tv|fun|online|website|xyz|site|space))/' \
               r'(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):

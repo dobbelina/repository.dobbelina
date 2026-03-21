@@ -17,7 +17,7 @@
 """
 
 import re
-from six.moves import urllib_parse
+from six.moves import urllib_parse, urllib_error
 import json
 from resolveurl import common
 from resolveurl.common import i18n
@@ -95,7 +95,16 @@ class CocoLeechResolver(ResolveUrl):
             logger.log_error('CocoLeech resolve: [{0}]'.format(e))
 
         if js_result.get('download'):
-            return js_result.get('download')
+            surl = js_result.get('download')
+            available = False
+            while not available:
+                try:
+                    _ = self.net.http_HEAD(surl, headers=self.headers)
+                    available = True
+                except urllib_error.HTTPError:
+                    common.kodi.sleep(5000)
+                    pass
+            return surl
 
         raise ResolverError('CocoLeech: {0}'.format(i18n('no_stream')))
 

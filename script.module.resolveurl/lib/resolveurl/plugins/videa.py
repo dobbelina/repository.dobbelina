@@ -94,7 +94,7 @@ class VideaResolver(ResolveUrl):
             player_page = response.content
             cookie = response.get_headers(as_dict=True).get('Set-Cookie', '')
         match = re.search(r'\bsl=([^;]+)', cookie)
-        if match:
+        if match and match.group(1) != "deleted":
             self.cookie = match.group(0)
         nonce = re.search(r'_xt\s*=\s*"([^"]+)"', player_page).group(1)
         lo = nonce[:32]
