@@ -1,3 +1,11 @@
+[B]Version 1.1.340[/B]
+- feat: Enhance site modules with improved error handling and JSON parsing
+- Merge pull request #121 from rpeters1430/imgbot
+- fix: restore PornKai video listings and Categories
+- [ImgBot] Optimize images
+- Sync script.module.resolveurl.xxx from ResolveURL upstream
+- Sync script.module.resolveurl from ResolveURL upstream
+
 [B]Version 1.1.339[/B]
 - fix: restore PornKai video listings and Categories
 - Sync script.module.resolveurl.xxx from ResolveURL upstream
