@@ -138,3 +138,24 @@ def test_search_url_format(monkeypatch):
 
     assert len(searched_url) == 1
     assert searched_url[0] == "https://thothub.mx/search/big-tits/"
+
+
+def test_main_exposes_navigation(monkeypatch):
+    dirs = []
+
+    monkeypatch.setattr(thothub, "List", lambda url: None)
+    monkeypatch.setattr(
+        thothub.site,
+        "add_dir",
+        lambda name, url, mode, iconimage=None, *args, **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+    monkeypatch.setattr(thothub.utils, "eod", lambda: None)
+
+    thothub.Main()
+
+    assert len(dirs) == 3
+    assert dirs[0]["url"] == "https://thothub.mx/latest-updates/"
+    assert dirs[1]["url"] == "https://thothub.mx/public/"
+    assert dirs[2]["mode"] == "Search"

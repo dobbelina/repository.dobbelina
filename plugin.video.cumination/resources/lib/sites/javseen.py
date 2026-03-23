@@ -22,7 +22,6 @@ site = AdultSite(
     "[COLOR hotpink]JAVSeen[/COLOR]",
     "https://javseen.tv/",
     "cum-sites.png",
-    testing=True,
 )
 
 
@@ -189,7 +188,7 @@ def List(url):
             utils.safe_get_attr(link, "title", default="")
             or utils.safe_get_text(item.select_one(".video-title"))
         )
-        thumb = utils.safe_get_attr(item.select_one("img"), "src")
+        thumb = utils.get_thumbnail(item.select_one("img"))
         duration = utils.safe_get_text(item.select_one(".video-overlay.badge.transparent"))
         duration_match = re.search(r"(\d{1,2}:\d{2}(?::\d{2})?)", duration)
         duration = duration_match.group(1) if duration_match else ""

@@ -61,3 +61,33 @@ def test_list_parses_items(monkeypatch):
     )
 
     assert any(d["name"] == "Next Page (2)" for d in dirs)
+
+
+def test_playvid_passes_page_url_to_html_fallback(monkeypatch):
+    html = "<html><div>No explicit sources yet</div></html>"
+    captured = {}
+
+    class FakeVideoPlayer:
+        def __init__(self, name, download=None):
+            self.progress = type(
+                "p",
+                (),
+                {
+                    "update": lambda *args, **kwargs: None,
+                    "close": lambda *args, **kwargs: None,
+                },
+            )()
+
+        def play_from_html(self, page_html, page_url=None):
+            captured["html"] = page_html
+            captured["url"] = page_url
+
+    monkeypatch.setattr(noodlemagazine.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(noodlemagazine.utils, "VideoPlayer", FakeVideoPlayer)
+
+    noodlemagazine.Playvid(
+        "https://noodlemagazine.com/video/fallback-test/", "Fallback Test"
+    )
+
+    assert captured["html"] == html
+    assert captured["url"] == "https://noodlemagazine.com/video/fallback-test/"

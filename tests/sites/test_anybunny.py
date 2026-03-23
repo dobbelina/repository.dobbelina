@@ -31,13 +31,11 @@ def test_list_populates_download_links(monkeypatch):
     """List() extracts video items and pagination from a category page."""
     recorder = _Recorder()
 
-    fixture_mapped_get_html(
-        monkeypatch,
-        anybunny,
-        {
-            "https://anybunny.org/top/Indian": "sites/anybunny/listing.html",
-        },
-    )
+    def fake_cf_get_html(url, *args, **kwargs):
+        assert url == "https://anybunny.org/top/Indian"
+        return read_fixture("sites/anybunny/listing.html"), False
+
+    monkeypatch.setattr(anybunny.utils, "get_html_with_cloudflare_retry", fake_cf_get_html)
 
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)
     monkeypatch.setattr(anybunny.site, "add_dir", recorder.add_dir)
@@ -73,12 +71,10 @@ def test_list_filters_out_category_links(monkeypatch):
     """List() skips a.nuyrfe items pointing to /top/ (categories, not videos)."""
     recorder = _Recorder()
 
-    fixture_mapped_get_html(
-        monkeypatch,
-        anybunny,
-        {
-            "https://anybunny.org/top/Indian": "sites/anybunny/listing.html",
-        },
+    monkeypatch.setattr(
+        anybunny.utils,
+        "get_html_with_cloudflare_retry",
+        lambda url, *args, **kwargs: (read_fixture("sites/anybunny/listing.html"), False),
     )
 
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)
@@ -96,12 +92,10 @@ def test_search_results_list_videos(monkeypatch):
     """Search results page produces video downloads with no pagination."""
     recorder = _Recorder()
 
-    fixture_mapped_get_html(
-        monkeypatch,
-        anybunny,
-        {
-            "https://anybunny.org/top/blonde": "sites/anybunny/search.html",
-        },
+    monkeypatch.setattr(
+        anybunny.utils,
+        "get_html_with_cloudflare_retry",
+        lambda url, *args, **kwargs: (read_fixture("sites/anybunny/search.html"), False),
     )
 
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)
@@ -122,12 +116,10 @@ def test_categories2_extracts_category_links(monkeypatch):
     """Categories2() lists categories from the root page (a.nuyrfe -> /top/)."""
     recorder = _Recorder()
 
-    fixture_mapped_get_html(
-        monkeypatch,
-        anybunny,
-        {
-            "https://anybunny.org/": "sites/anybunny/categories.html",
-        },
+    monkeypatch.setattr(
+        anybunny.utils,
+        "get_html_with_cloudflare_retry",
+        lambda url, *args, **kwargs: (read_fixture("sites/anybunny/categories.html"), False),
     )
 
     monkeypatch.setattr(anybunny.site, "add_download_link", recorder.add_download)

@@ -147,7 +147,7 @@ def Playvid(url, name, download=None):
 
     if not license_match:
         # Fallback to general html scanner if KVS pattern not found
-        vp.play_from_html(html)
+        vp.play_from_html(html, url)
         return
 
     vp.play_from_kt_player(html, url)

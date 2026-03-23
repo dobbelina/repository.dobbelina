@@ -1,5 +1,6 @@
 
 import pytest
+import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 from resources.lib.sites import pornkai
@@ -60,4 +61,40 @@ def test_playvid(site_spec_fixture):
         # We need to find if it was called
         mock_vp_instance.play_from_link_to_resolve.assert_called_once_with('https://www.xvideos.com/embedframe/hbdvopo7d13')
 
+
+def test_list_parses_json_listing_and_adds_next_page(monkeypatch):
+    payload = (
+        Path(__file__).parent.parent / "fixtures" / "pornkai" / "list_response.json"
+    ).read_text(encoding="utf-8")
+    downloads = []
+    dirs = []
+
+    monkeypatch.setattr(pornkai.utils, "getHtml", lambda url, referer=None: payload)
+    monkeypatch.setattr(
+        pornkai.site,
+        "add_download_link",
+        lambda name, url, mode, iconimage, *args, **kwargs: downloads.append(
+            {"name": name, "url": url, "icon": iconimage, "duration": kwargs.get("duration", "")}
+        ),
+    )
+    monkeypatch.setattr(
+        pornkai.site,
+        "add_dir",
+        lambda name, url, mode, *args, **kwargs: dirs.append({"name": name, "url": url}),
+    )
+    monkeypatch.setattr(pornkai.utils, "eod", lambda *args, **kwargs: None)
+
+    pornkai.List("https://pornkai.com/videos?sort=new&page=2")
+
+    assert len(downloads) == 2
+    assert downloads[0]["name"] == "Video One"
+    assert downloads[0]["duration"] == "12:34"
+    assert downloads[1]["name"] == "Video Two"
+    assert downloads[1]["icon"] == "https://cdn.example.com/thumb2.jpg"
+    assert dirs == [
+        {
+            "name": "Next Page (4/5)",
+            "url": "https://pornkai.com/videos?sort=new&page=3",
+        }
+    ]
 

@@ -80,3 +80,20 @@ def test_list_skips_entries_without_title_or_stream(monkeypatch):
     pmvhaven.List("https://pmvhaven.com/api/videos?page=1")
 
     assert downloads == []
+
+
+def test_list_handles_invalid_json_payload(monkeypatch):
+    """Search/list responses that are not JSON should not raise."""
+    downloads = []
+
+    monkeypatch.setattr(pmvhaven.utils, "getHtml", lambda url, referer=None: "<html>blocked</html>")
+    monkeypatch.setattr(pmvhaven.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        pmvhaven.site,
+        "add_download_link",
+        lambda *args, **kwargs: downloads.append((args, kwargs)),
+    )
+
+    pmvhaven.List("https://pmvhaven.com/api/videos/search?limit=32&page=1&q=test")
+
+    assert downloads == []

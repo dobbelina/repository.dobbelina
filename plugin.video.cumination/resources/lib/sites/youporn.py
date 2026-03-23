@@ -32,6 +32,45 @@ site = AdultSite(
 cookiehdr = {"Cookie": "age_verified=1"}
 
 
+def _normalize_thumb(url):
+    if not url:
+        return ""
+    if url.startswith("//"):
+        return "https:" + url
+    return url
+
+
+def _get_listing_thumbnail(item, link):
+    img_tag = item.select_one("img.thumb-image, img")
+    if img_tag:
+        poster = utils.safe_get_attr(
+            img_tag,
+            "data-poster",
+            ["poster", "data-preview", "data-thumb_url", "data-thumb-url"],
+        )
+        if poster:
+            return _normalize_thumb(poster)
+
+    img = utils.get_thumbnail(img_tag)
+    if img:
+        return _normalize_thumb(img)
+
+    img = utils.safe_get_attr(
+        item,
+        "data-thumbnail",
+        ["data-poster", "poster", "data-src", "data-original", "thumb", "data-thumb"],
+    )
+    if img:
+        return _normalize_thumb(img)
+
+    img = utils.safe_get_attr(
+        link,
+        "data-thumbnail",
+        ["data-poster", "poster", "data-src", "data-original", "thumb", "data-thumb"],
+    )
+    return _normalize_thumb(img)
+
+
 @site.register(default_mode=True)
 def Main():
     site.add_dir(
@@ -99,22 +138,7 @@ def List(url):
                 title = utils.safe_get_attr(img_tag, "alt") if img_tag else "Video"
 
             # Extract thumbnail image
-            img_tag = item.select_one("img.thumb-image, img")
-            img = utils.get_thumbnail(img_tag)
-            if not img:
-                img = utils.safe_get_attr(
-                    item,
-                    "data-thumbnail",
-                    ["data-src", "data-original", "thumb", "data-thumb"],
-                )
-            if not img:
-                img = utils.safe_get_attr(
-                    link,
-                    "data-thumbnail",
-                    ["data-src", "data-original", "thumb", "data-thumb"],
-                )
-            if img and img.startswith("//"):
-                img = "https:" + img
+            img = _get_listing_thumbnail(item, link)
 
             # Extract duration
             duration_tag = item.select_one(

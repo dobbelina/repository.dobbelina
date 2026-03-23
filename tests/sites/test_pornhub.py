@@ -299,6 +299,82 @@ def test_list_parses_search_results(monkeypatch):
     assert downloads[1]["name"] == "Test Query Video Two"
 
 
+def test_list_parses_all_search_result_wrappers(monkeypatch):
+    """Test that List aggregates results across multiple search wrappers."""
+    html = """
+    <html>
+    <body>
+    <h1 class="searchPageTitle">Search results for: "test query"</h1>
+    <div id="videoSearchWrapper">
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phfeatured1" title="Featured Video One">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/featured1.jpg" alt="Featured Video One">
+                <div class="duration">10:15</div>
+            </a>
+        </div>
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phfeatured2" title="Featured Video Two">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/featured2.jpg" alt="Featured Video Two">
+                <div class="duration">11:00</div>
+            </a>
+        </div>
+    </div>
+    <div id="searchPageVideoList">
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phresult1" title="Result Video One">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/result1.jpg" alt="Result Video One">
+                <div class="duration">12:00</div>
+            </a>
+        </div>
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phresult2" title="Result Video Two">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/result2.jpg" alt="Result Video Two">
+                <div class="duration">13:00</div>
+            </a>
+        </div>
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phresult3" title="Result Video Three">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/result3.jpg" alt="Result Video Three">
+                <div class="duration">14:00</div>
+            </a>
+        </div>
+        <div class="pcVideoListItem">
+            <a href="/view_video.php?viewkey=phresult4" title="Result Video Four">
+                <img data-mediumthumb="https://ci.phncdn.com/videos/search/result4.jpg" alt="Result Video Four">
+                <div class="duration">15:00</div>
+            </a>
+        </div>
+    </div>
+    </body>
+    </html>
+    """
+
+    downloads = []
+
+    def fake_get_html(url, referer=None, headers=None):
+        return html
+
+    def fake_add_download_link(name, url, mode, iconimage, desc="", **kwargs):
+        downloads.append({"name": name, "url": url})
+
+    monkeypatch.setattr(pornhub.utils, "getHtml", fake_get_html)
+    monkeypatch.setattr(pornhub.site, "add_download_link", fake_add_download_link)
+    monkeypatch.setattr(pornhub.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(pornhub.utils, "eod", lambda: None)
+
+    pornhub.List("https://www.pornhub.com/video/search?search=test+query")
+
+    assert len(downloads) == 6
+    assert [item["name"] for item in downloads] == [
+        "Featured Video One",
+        "Featured Video Two",
+        "Result Video One",
+        "Result Video Two",
+        "Result Video Three",
+        "Result Video Four",
+    ]
+
+
 def test_playvid_calls_video_player(monkeypatch):
     """Test that Playvid initializes VideoPlayer and calls resolve."""
     video_player_calls = []

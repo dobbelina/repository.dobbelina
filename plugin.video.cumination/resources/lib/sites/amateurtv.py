@@ -32,6 +32,21 @@ site = AdultSite(
 )
 
 
+def _load_json_payload(raw_payload):
+    if not raw_payload:
+        return {}
+    if isinstance(raw_payload, bytes):
+        raw_payload = raw_payload.decode("utf-8", "ignore")
+    if not isinstance(raw_payload, str):
+        return {}
+    try:
+        payload = json.loads(raw_payload)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("amateurtv: invalid JSON payload - {}".format(exc))
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 @site.register(default_mode=True)
 def Main():
     female = utils.addon.getSetting("chatfemale") == "true"
@@ -90,8 +105,9 @@ def List(url, page=1):
         site.url, url, page
     )
     listhtml = utils._getHtml(cam_url, site.url)
-    cams = json.loads(listhtml).get("cams", {})
-    for cam in cams.get("nodes"):
+    cams = _load_json_payload(listhtml).get("cams", {})
+    nodes = cams.get("nodes") or []
+    for cam in nodes:
         if cam.get("online"):
             model = cam.get("user")
             name = model.get("username")
@@ -137,7 +153,7 @@ def List(url, page=1):
                 quality=hd,
             )
 
-    if cams.get("totalCount") > (page * 150):
+    if (cams.get("totalCount") or 0) > (page * 150):
         page += 1
         site.add_dir("Next Page...", url, "List", site.img_next, page=page)
 
@@ -150,7 +166,7 @@ def Playvid(url, name):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     url = "{0}v3/readmodel/show/{1}/en".format(site.url, url)
     listhtml = utils._getHtml(url, site.url)
-    vurls = json.loads(listhtml).get("videoTechnologies")
+    vurls = _load_json_payload(listhtml).get("videoTechnologies")
     if vurls:
         # Try multiple possible keys for HLS streams
         vurl = vurls.get("fmp4-hls") or vurls.get("hls") or vurls.get("hls-fmp4")

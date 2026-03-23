@@ -73,6 +73,32 @@ def List(url):
             wrapped.append(parent if parent is not None else anchor)
         return wrapped
 
+    def dedupe_video_items(items):
+        deduped = []
+        seen_urls = set()
+        for item in items:
+            link = item.select_one('a[href*="/view_video.php?viewkey="]')
+            href = utils.safe_get_attr(link, "href") if link else ""
+            if not href or href in seen_urls:
+                continue
+            seen_urls.add(href)
+            deduped.append(item)
+        return deduped
+
+    def collect_search_video_items(soup_obj):
+        search_scopes = soup_obj.select(
+            "#searchPageVideoList, #videoSearchResult, #videoSearchWrapper, "
+            "#videoBoxesSearch, .videoBoxesSearch, .search-video-thumbs, "
+            "[class*='search-video-thumbs']"
+        )
+        scoped_items = []
+        for scope in search_scopes:
+            scoped_items.extend(collect_video_items(scope))
+        scoped_items = dedupe_video_items(scoped_items)
+        if scoped_items:
+            return scoped_items
+        return dedupe_video_items(collect_video_items(soup_obj))
+
     def add_img_headers(img_url):
         if not img_url:
             return img_url
@@ -169,22 +195,10 @@ def List(url):
 
     # Extract video items
     # PornHub uses class="pcVideoListItem" for video cards
-    # For search pages, also require "videoBoxesSearch" class to exclude recommended videos
     if "search?" in url:
-        search_container = soup.select_one(
-            "#videoSearchWrapper, #videoBoxesSearch, .videoBoxesSearch"
-        )
-        if search_container:
-            video_items = collect_video_items(search_container)
-        else:
-            # Fallback to main content area if search container not found
-            main_content = soup.select_one("#searchPageVideoList, #videoSearchResult")
-            if main_content:
-                video_items = collect_video_items(main_content)
-            else:
-                video_items = collect_video_items(soup)
+        video_items = collect_search_video_items(soup)
     else:
-        video_items = collect_video_items(soup)
+        video_items = dedupe_video_items(collect_video_items(soup))
 
     for item in video_items:
         try:

@@ -96,3 +96,19 @@ def test_ptsearch_with_keyword(monkeypatch):
 
     assert len(list_calls) == 1
     assert "test" in list_calls[0] or "query" in list_calls[0]
+
+
+def test_ptcat_handles_missing_block(monkeypatch):
+    dirs = []
+
+    monkeypatch.setattr(
+        porntrex.utils, "getHtml", lambda *a, **k: "<html>no category block</html>"
+    )
+    monkeypatch.setattr(
+        porntrex.site, "add_dir", lambda *a, **k: dirs.append(a[0])
+    )
+    monkeypatch.setattr(porntrex.utils, "eod", lambda: None)
+
+    porntrex.PTCat("https://www.porntrex.com/categories/")
+
+    assert dirs == []

@@ -278,6 +278,16 @@ def Playvid(url, name, download=None):
     if "kt_player('kt_player'" in videopage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
         vp.play_from_kt_player(videopage, url)
+        return
+
+    source_match = re.search(
+        r'<source\s+[^>]*src=["\']([^"\']+)["\']', videopage, re.IGNORECASE
+    )
+    if source_match:
+        vp.play_from_direct_link(source_match.group(1))
+        return
+
+    vp.play_from_html(videopage, url)
 
 
 @site.register()

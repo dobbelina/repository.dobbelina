@@ -67,13 +67,13 @@ def List(url):
         results_remaining = 120  # Arbitrary positive value to show next page if HTML pagination exists
 
     soup = utils.parse_html(markup)
-    video_items = soup.select("div.thumbnail")
+    video_items = soup.select("div.thumbnail, article.thumbnail")
 
     # If no thumbnails, maybe it's the raw API response or empty results
     if not video_items and not html.strip().startswith("<"):
         markup, results_remaining = _extract_markup_and_meta(html)
         soup = utils.parse_html(markup)
-        video_items = soup.select("div.thumbnail")
+        video_items = soup.select("div.thumbnail, article.thumbnail")
 
     for item in video_items:
         link_tag = item.select_one("a.thumbnail_link")
@@ -86,7 +86,9 @@ def List(url):
         videopage = utils.fix_url(videopage, site.url)
 
         title_tag = item.select_one("a.thumbnail_title")
-        title = title_tag.get_text(strip=True) if title_tag else ""
+        title = utils.safe_get_text(title_tag).strip() if title_tag else ""
+        if not title:
+            title = utils.safe_get_text(link_tag).strip()
         if not title:
             title = link_tag.get("title", "")
         if not title:
@@ -102,9 +104,9 @@ def List(url):
         img = utils.fix_url(img, site.url)
 
         duration = ""
-        duration_tag = item.select_one(".thumbnail_video_length")
+        duration_tag = item.select_one(".thumbnail_video_length, .meta")
         if duration_tag:
-            duration = duration_tag.get_text(strip=True)
+            duration = duration_tag.get_text(" ", strip=True)
 
         context_url = (
             utils.addon_sys

@@ -41,6 +41,16 @@ addon = utils.addon
 headers = {"User-Agent": utils.USER_AGENT, "X-Requested-With": "XMLHttpRequest"}
 
 
+def _normalize_section(section):
+    try:
+        return int(section)
+    except (TypeError, ValueError):
+        utils.kodilog(
+            "porndig List: Invalid section {!r}, defaulting to videos".format(section)
+        )
+        return 0
+
+
 @site.register(default_mode=True)
 @site2.register(default_mode=True)
 def Main(name):
@@ -319,6 +329,8 @@ def Studios(url, page=1):
 
 @site.register()
 def List(channel, section, page=0):
+    section = _normalize_section(section)
+
     if section == 0:
         data = VideoListData(page, channel)
         maxresult = 36
@@ -331,6 +343,9 @@ def List(channel, section, page=0):
     elif section == 3:
         data = CatListData(page, channel)
         maxresult = 100
+    else:
+        data = VideoListData(page, channel)
+        maxresult = 36
 
     urldata = utils.getHtml(
         site.url + "posts/load_more_posts", site.url, headers, data=data
@@ -471,5 +486,37 @@ def Playvid(url, name, download=None):
 
 
 def ParseJson(urldata):
-    urldata = json.loads(urldata)
-    return urldata["data"]["content"]
+    if not urldata:
+        return ""
+
+    if isinstance(urldata, bytes):
+        urldata = urldata.decode("utf-8", "ignore")
+
+    if isinstance(urldata, str):
+        stripped = urldata.strip()
+        if stripped.startswith("<"):
+            return urldata
+    else:
+        utils.kodilog("porndig ParseJson: Unsupported response type")
+        return ""
+
+    try:
+        parsed = json.loads(urldata)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("porndig ParseJson: Invalid JSON - {}".format(exc))
+        return ""
+
+    if not isinstance(parsed, dict):
+        utils.kodilog("porndig ParseJson: Expected dict response")
+        return ""
+
+    content = (
+        parsed.get("data", {}).get("content")
+        or parsed.get("content")
+        or parsed.get("html")
+        or ""
+    )
+    if not isinstance(content, str):
+        utils.kodilog("porndig ParseJson: Missing content payload")
+        return ""
+    return content

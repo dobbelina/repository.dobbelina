@@ -307,6 +307,18 @@ def _login(force=False):
 
 @site.register(default_mode=True)
 def Main():
+    site.add_dir(
+        "[COLOR hotpink]Latest Updates[/COLOR]",
+        site.url + "latest-updates/",
+        "List",
+        site.img_next,
+    )
+    site.add_dir(
+        "[COLOR hotpink]Public[/COLOR]", site.url + "public/", "List", site.img_next
+    )
+    site.add_dir(
+        "[COLOR hotpink]Search[/COLOR]", site.url + "search/", "Search", site.img_search
+    )
     # latest-updates/ is more reliable than public/
     List(site.url + "latest-updates/")
 

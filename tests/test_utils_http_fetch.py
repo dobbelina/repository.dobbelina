@@ -2,6 +2,7 @@
 
 import gzip
 import io
+import ssl
 
 import pytest
 
@@ -86,3 +87,44 @@ def test_getvideolink_uses_redirect_location(monkeypatch):
 
     result = utils.getVideoLink("https://example.com/video")
     assert result == "https://cdn.example.com"
+
+
+def test_ssl_defaults_remain_verified():
+    assert ssl._create_default_https_context is not ssl._create_unverified_context
+
+
+def test_create_ssl_context_is_verified_by_default():
+    context = utils._create_ssl_context()
+
+    assert context.verify_mode == ssl.CERT_REQUIRED
+    assert context.check_hostname is True
+    if hasattr(context, "minimum_version") and hasattr(ssl, "TLSVersion"):
+        assert context.minimum_version >= ssl.TLSVersion.TLSv1_2
+
+
+def test_gethtml_only_uses_unverified_context_when_requested(monkeypatch):
+    calls = []
+
+    class ContextAwareResponse(FakeResponse):
+        pass
+
+    def fake_urlopen(req, timeout=30, context=None):
+        calls.append(context)
+        return ContextAwareResponse(
+            b"<html>ok</html>",
+            headers={"content-type": "text/html; charset=utf-8"},
+        )
+
+    monkeypatch.setattr(utils, "urlopen", fake_urlopen)
+
+    result = utils._getHtml("https://example.com")
+    assert result == "<html>ok</html>"
+    assert calls[-1] is None
+
+    result = utils._getHtml(
+        "https://example.com", ignoreCertificateErrors=True
+    )
+    assert result == "<html>ok</html>"
+    assert calls[-1] is not None
+    assert calls[-1].verify_mode == ssl.CERT_NONE
+    assert calls[-1].check_hostname is False

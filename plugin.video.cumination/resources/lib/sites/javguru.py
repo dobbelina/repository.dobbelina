@@ -378,6 +378,16 @@ def Play(url, name, download=None):
     vp.progress.update(25, "[CR]Loading video page[CR]")
     sources = []
     videohtml = utils.getHtml(url)
+
+    # Direct media links sometimes appear on the page without the older iframe JSON.
+    direct_match = re.search(
+        r'(https?://[^\s"\']+\.(?:mp4|m3u8)(?:[^\s"\']*)?)',
+        videohtml,
+        re.IGNORECASE,
+    )
+    if direct_match:
+        vp.play_from_direct_link(direct_match.group(1))
+        return
     
     # Try current JSON-based approach with improved reversal logic from upstream
     match = re.compile('iframe_url":"([^"]+)"', re.DOTALL | re.IGNORECASE).findall(
@@ -415,12 +425,24 @@ def Play(url, name, download=None):
             except Exception:
                 continue
 
+    # Fallback to embedded players when the JSON/window.open paths are absent.
+    if not sources:
+        soup = utils.parse_html(videohtml)
+        iframe = soup.select_one("iframe[src]")
+        if iframe:
+            iframe_url = utils.safe_get_attr(iframe, "src", default="")
+            iframe_url = urllib_parse.urljoin(url, iframe_url)
+            if iframe_url:
+                vp.play_from_link_to_resolve(iframe_url)
+                return
+
     if sources:
         vp.progress.update(75, "[CR]Loading video page[CR]")
-        vp.play_from_html(", ".join(sources))
+        vp.play_from_html(", ".join(sources), url)
     else:
-        vp.progress.close()
-        utils.notify("Oh oh", "Couldn't find any playable sources")
+        # Last resort: let the player helper inspect the page with the page URL
+        # as context before surfacing a failure to the user.
+        vp.play_from_html(videohtml, url)
 
 
 @site.register()

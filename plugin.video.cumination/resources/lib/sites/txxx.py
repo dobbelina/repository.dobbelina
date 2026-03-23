@@ -102,6 +102,21 @@ site15 = AdultSite(
 )
 
 
+def _load_json_payload(raw_payload):
+    if not raw_payload:
+        return {}
+    if isinstance(raw_payload, bytes):
+        raw_payload = raw_payload.decode("utf-8", "ignore")
+    if not isinstance(raw_payload, str):
+        return {}
+    try:
+        payload = json.loads(raw_payload)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("txxx: invalid JSON payload - {}".format(exc))
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 def getBaselink(url):
     if "txxx.com" in url:
         siteurl = site.url
@@ -215,7 +230,7 @@ def List(url, page=1):
         aurl = aurl.replace("json/videos/", "json/videos2/")
         aurl = aurl.replace("api/videos.", "api/videos2.")
         aurl = aurl.replace(".day.", "..")
-    jdata = json.loads(utils.getHtml(aurl, siteurl))
+    jdata = _load_json_payload(utils.getHtml(aurl, siteurl))
 
     if not jdata.get("videos"):
         utils.eod()
@@ -277,8 +292,8 @@ def Categories(url):
     siteurl, url = url.rsplit("/", 1)
     siteurl += "/"
     aurl = "{0}api/json/{1}/14400/str.all.en.json".format(siteurl, url)
-    jdata = json.loads(utils.getHtml(aurl, siteurl))
-    for item in sorted(jdata.get(url), key=lambda x: x.get("title")):
+    jdata = _load_json_payload(utils.getHtml(aurl, siteurl))
+    for item in sorted(jdata.get(url) or [], key=lambda x: x.get("title")):
         catpage = "{0}.{1}".format(url, item.get("dir"))
         name = item.get("title") if utils.PY3 else item.get("title").encode("utf-8")
         videos = " [COLOR deeppink](" + item.get("total_videos") + " videos)[/COLOR]"
@@ -300,7 +315,7 @@ def Channels(url, page=1):
     aurl = "{0}api/json/{1}/14400/str/alphabetaz/80/..{2}.json".format(
         siteurl, url, page
     )
-    jdata = json.loads(utils.getHtml(aurl, siteurl))
+    jdata = _load_json_payload(utils.getHtml(aurl, siteurl))
     for item in jdata.get(url, []):
         catpage = "{0}.{1}".format(url[:-1], item.get("dir"))
         name = item.get("title") if utils.PY3 else item.get("title").encode("utf-8")
@@ -350,7 +365,7 @@ def Models(url, page=1):
     aurl = "{0}api/json/models/86400/{1}/filt.{2}........./most-popular/{3}/{4}.json".format(
         siteurl, gender, letter, pagesize, page
     )
-    jdata = json.loads(utils.getHtml(aurl, siteurl))
+    jdata = _load_json_payload(utils.getHtml(aurl, siteurl))
     if url == "models":
         site.add_dir(
             "[COLOR violet]Alphabet[/COLOR]", siteurl, "Letters", site.img_next, page=1

@@ -137,7 +137,6 @@ def test_get_site_returns_correct_site():
     assert pornhat.getSite("https://www.pornhat.com/") == pornhat.site
     assert pornhat.getSite("https://hello.porn/") == pornhat.site1
     assert pornhat.getSite("https://ok.porn/") == pornhat.site2
-    assert pornhat.getSite("https://ok.xxx/") == pornhat.site3
     assert pornhat.getSite("https://pornstars.tube/") == pornhat.site4
     assert pornhat.getSite("https://max.porn/") == pornhat.site5
     assert pornhat.getSite("https://homo.xxx/") == pornhat.site6

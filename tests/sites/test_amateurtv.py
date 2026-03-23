@@ -83,3 +83,19 @@ def test_playvid_parses_json(monkeypatch):
 
     assert len(play_calls) == 1
     assert "playlist.m3u8" in play_calls[0]
+
+
+def test_list_handles_invalid_json_payload(monkeypatch):
+    downloads = []
+
+    monkeypatch.setattr(amateurtv.utils, "_getHtml", lambda *a, **k: "<html>down</html>")
+    monkeypatch.setattr(
+        amateurtv.site, "add_download_link", lambda *a, **k: downloads.append(a[0])
+    )
+    monkeypatch.setattr(amateurtv.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(amateurtv.utils, "eod", lambda: None)
+    monkeypatch.setattr(amateurtv.utils.addon, "getSetting", lambda x: "false")
+
+    amateurtv.List("w", page=1)
+
+    assert downloads == []

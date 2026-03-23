@@ -69,3 +69,20 @@ def test_playvid_parses_json(monkeypatch):
 
     assert len(play_calls) == 1
     assert "playlist.m3u8" in play_calls[0]
+
+
+def test_list_handles_invalid_json_payload(monkeypatch):
+    downloads = []
+
+    monkeypatch.setattr(cam4.utils, "_getHtml", lambda *a, **k: "<html>blocked</html>")
+    monkeypatch.setattr(
+        cam4.site, "add_download_link", lambda *a, **k: downloads.append(a[0])
+    )
+    monkeypatch.setattr(cam4.utils, "eod", lambda: None)
+    monkeypatch.setattr(cam4.utils.addon, "getSetting", lambda x: "false")
+    monkeypatch.setattr(cam4.utils, "get_country", lambda x: "Spain")
+    monkeypatch.setattr(cam4.utils, "get_language", lambda x: x)
+
+    cam4.List("gender=female", page=1)
+
+    assert downloads == []

@@ -165,3 +165,37 @@ def test_search_with_keyword(monkeypatch):
 
     assert len(list_calls) == 1
     assert "test+query" in list_calls[0] or "test%20query" in list_calls[0]
+
+
+def test_list_handles_missing_initials_json(monkeypatch):
+    """Search pages without embedded initials JSON should fail closed."""
+    downloads = []
+    notifications = []
+
+    class FakeThumbnails:
+        def __init__(self, site_name):
+            pass
+
+        def get(self, urls):
+            return urls[0] if urls else ""
+
+    monkeypatch.setattr(
+        xhamster.utils, "getHtml", lambda *a, **k: "<html><title>Search</title></html>"
+    )
+    monkeypatch.setattr(
+        xhamster.site, "add_download_link", lambda *a, **k: downloads.append(a[0])
+    )
+    monkeypatch.setattr(xhamster.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(xhamster.utils, "eod", lambda: None)
+    monkeypatch.setattr(
+        xhamster.utils, "notify", lambda title, msg: notifications.append((title, msg))
+    )
+    monkeypatch.setattr(xhamster.utils.addon, "getSetting", lambda x: "all")
+    monkeypatch.setattr(xhamster, "update_url", lambda url: url)
+    monkeypatch.setattr(xhamster, "get_setting", lambda x: "All")
+    monkeypatch.setattr(xhamster.utils, "Thumbnails", FakeThumbnails)
+
+    xhamster.List("https://xhamster.com/search/test?orientations=straight")
+
+    assert downloads == []
+    assert notifications == [("Oh Oh", "No video found.")]

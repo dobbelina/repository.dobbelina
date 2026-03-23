@@ -89,3 +89,28 @@ def test_list_joins_relative_video_urls_and_strips_timer_from_name(monkeypatch):
     assert downloads[0]["url"] == "https://foxnxx.com/xxx/sample-video-123.html"
     assert downloads[0]["icon"] == "https://foxnxx.com/avatar/sample.jpg"
     assert downloads[0]["name"] == "Sample Relative Title"
+
+
+def test_playvid_passes_embed_url_to_player_helper(monkeypatch):
+    captured = {}
+
+    class _DummyVP:
+        def __init__(self, name, download=False, **kwargs):
+            self.progress = type("P", (), {"update": lambda *a, **k: None})()
+
+        def play_from_html(self, html, url=None):
+            captured["html"] = html
+            captured["url"] = url
+
+    def fake_get_html(url, referer=None):
+        if "embed-player" in url:
+            return "<html>embedded host page</html>"
+        return '<html><iframe class="embed-responsive-item" src="/embed-player/123"></iframe></html>'
+
+    monkeypatch.setattr(foxnxx.utils, "VideoPlayer", _DummyVP)
+    monkeypatch.setattr(foxnxx.utils, "getHtml", fake_get_html)
+
+    foxnxx.Playvid("https://foxnxx.com/xxx/sample-video-123.html", "Sample")
+
+    assert captured["html"] == "<html>embedded host page</html>"
+    assert captured["url"] == "https://foxnxx.com/embed-player/123"

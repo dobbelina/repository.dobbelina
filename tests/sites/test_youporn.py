@@ -181,3 +181,47 @@ def test_list_skips_short_videos_and_uses_thumbnail_fallback(monkeypatch):
     assert downloads[0]["name"] == "Keep this one"
     assert downloads[0]["url"] == "https://www.youporn.com/watch/222/"
     assert downloads[0]["icon"] == "https://cdn.example.com/thumb-222.jpg"
+
+
+def test_list_prefers_poster_thumbnail_over_preview_video(monkeypatch):
+    html_data = """
+    <html>
+      <body>
+        <article class="video-box pc js_video-box js-pop">
+          <a href="/watch/333/" class="video-box-image">
+            <div class="thumb-image-container">
+              <img
+                class="thumb-image js_lazy js-mediabook js-videoThumbWebm js-videoPreview"
+                data-src="https://cdn.example.com/preview-333.mp4"
+                data-poster="https://cdn.example.com/poster-333.jpg"
+                alt="Poster wins"
+                src="data:image/gif;base64,placeholder"
+              />
+            </div>
+            <div class="video-duration"><span>12:34</span></div>
+          </a>
+          <div class="video-title-wrapper">
+            <a class="video-title-text"><span>Poster wins</span></a>
+          </div>
+        </article>
+      </body>
+    </html>
+    """
+
+    downloads = []
+
+    def fake_get_html(url, referer=None, headers=None):
+        return html_data
+
+    def fake_add_download_link(name, url, mode, iconimage, desc="", **kwargs):
+        downloads.append({"name": name, "url": url, "icon": iconimage})
+
+    monkeypatch.setattr(youporn.utils, "getHtml", fake_get_html)
+    monkeypatch.setattr(youporn.site, "add_download_link", fake_add_download_link)
+    monkeypatch.setattr(youporn.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(youporn.utils, "eod", lambda: None)
+
+    youporn.List("https://www.youporn.com/browse/time/")
+
+    assert len(downloads) == 1
+    assert downloads[0]["icon"] == "https://cdn.example.com/poster-333.jpg"

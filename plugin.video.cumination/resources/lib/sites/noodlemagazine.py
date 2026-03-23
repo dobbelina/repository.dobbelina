@@ -172,7 +172,7 @@ def Playvid(url, name, download=None):
             
             # If still nothing, try the VideoPlayer's built-in html scanner
             if not sources:
-                vp.play_from_html(html)
+                vp.play_from_html(html, url)
                 return
 
     if sources:

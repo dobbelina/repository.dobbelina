@@ -54,6 +54,35 @@ VIDEO_LIST_SPEC = SoupSiteSpec(
 )
 
 
+def _extract_best_video_url(html):
+    candidates = []
+
+    for match in re.finditer(
+        r"""<source[^>]+src=["']([^"']+)["'][^>]*(?:label|title)=["']([^"']+)["']""",
+        html,
+        re.IGNORECASE,
+    ):
+        source_url = match.group(1)
+        quality = match.group(2)
+        score_match = re.search(r"(\d+)", quality or "")
+        score = int(score_match.group(1)) if score_match else 0
+        candidates.append((score, source_url))
+
+    if candidates:
+        return max(candidates, key=lambda item: item[0])[1]
+
+    for pattern in (
+        r"""video_url:\s*["']([^"']+)["']""",
+        r"""videoUrl\s*=\s*["']([^"']+)["']""",
+        r"""let\s+url\s*=\s*["']([^"']+)["']""",
+    ):
+        match = re.search(pattern, html)
+        if match:
+            return match.group(1)
+
+    return None
+
+
 @site.register(default_mode=True)
 def Main():
     site.add_dir(
@@ -61,7 +90,7 @@ def Main():
     )
     site.add_dir(
         "[COLOR hotpink]Newest[/COLOR]",
-        site.url + "latest-updates/",
+        site.url,
         "List",
         site.img_cat,
     )
@@ -86,7 +115,7 @@ def Main():
     site.add_dir(
         "[COLOR hotpink]Search[/COLOR]", site.url + "search/", "Search", site.img_search
     )
-    List(site.url + "trending/")
+    List(site.url)
     utils.eod()
 
 
@@ -158,10 +187,9 @@ def Playvid(url, name, download=None):
         vp.play_from_link_to_resolve(url)
         return
 
-    # KVS Player logic
-    match = re.search(r"video_url:\s*[\"']([^\"']+)[\"']", html)
-    if match:
-        vp.play_from_direct_link(match.group(1) + "|Referer=" + url)
+    video_url = _extract_best_video_url(html)
+    if video_url:
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
         return
 
     vp.play_from_link_to_resolve(url)

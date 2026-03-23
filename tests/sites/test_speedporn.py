@@ -41,3 +41,39 @@ def test_list_parses_items(monkeypatch):
     assert downloads[0]["duration"] == "10m"
     assert downloads[1]["url"].endswith("/video/second")
     assert any("Next Page" in d["name"] for d in dirs)
+
+
+def test_playvid_falls_back_to_html_with_context(monkeypatch):
+    html = "<html><div>no kt player marker here</div></html>"
+    captured = {}
+
+    class FakeVideoPlayer:
+        def __init__(self, name, download=None):
+            self.progress = type(
+                "p",
+                (),
+                {
+                    "update": lambda *args, **kwargs: None,
+                    "close": lambda *args, **kwargs: None,
+                },
+            )()
+
+        def play_from_html(self, page_html, page_url=None):
+            captured["html"] = page_html
+            captured["url"] = page_url
+
+        def play_from_direct_link(self, url):
+            captured["direct"] = url
+
+        def play_from_kt_player(self, page_html, page_url=None):
+            captured["kt"] = (page_html, page_url)
+
+    monkeypatch.setattr(
+        speedporn.utils, "get_html_with_cloudflare_retry", lambda *a, **k: (html, False)
+    )
+    monkeypatch.setattr(speedporn.utils, "VideoPlayer", FakeVideoPlayer)
+
+    speedporn.Playvid("https://speedporn.net/video/fallback", "Fallback")
+
+    assert captured["html"] == html
+    assert captured["url"] == "https://speedporn.net/video/fallback"

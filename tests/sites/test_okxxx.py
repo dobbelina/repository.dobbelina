@@ -2,11 +2,24 @@ from resources.lib.sites import okxxx
 import pytest
 from unittest.mock import MagicMock, patch
 
+
 @pytest.fixture
 def mock_site():
     with patch("resources.lib.sites.okxxx.site") as mock:
         mock.url = "https://ok.xxx/"
         yield mock
+
+
+def test_main_uses_root_for_newest(mock_site):
+    with (
+        patch("resources.lib.sites.okxxx.List") as mock_list,
+        patch("resources.lib.utils.eod"),
+    ):
+        okxxx.Main()
+
+    newest_call = mock_site.add_dir.call_args_list[1]
+    assert newest_call.args[1] == "https://ok.xxx/"
+    mock_list.assert_called_once_with("https://ok.xxx/")
 
 
 def test_list_videos(mock_site):
@@ -39,8 +52,8 @@ def test_playvid(mock_site):
     ):
         okxxx.Playvid("https://ok.xxx/video/691478/", "Test Video")
 
-        # Verify attempt to play
-        assert (
-            mock_vp.play_from_direct_link.called
-            or mock_vp.play_from_link_to_resolve.called
-        )
+        mock_vp.play_from_direct_link.assert_called_once()
+        playback_url = mock_vp.play_from_direct_link.call_args.args[0]
+        assert "691478_720p.mp4" in playback_url
+        assert playback_url.endswith("|Referer=https://ok.xxx/video/691478/")
+        mock_vp.play_from_link_to_resolve.assert_not_called()

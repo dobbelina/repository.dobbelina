@@ -186,3 +186,28 @@ def test_list_handles_empty_results(monkeypatch):
 
     # Should have no videos
     assert len(downloads) == 0
+
+
+def test_list_defaults_invalid_section_to_video_listing(monkeypatch):
+    """Invalid sections should not crash List()."""
+    html = load_fixture("listing.html")
+    json_response = json.dumps({"data": {"content": html}})
+    downloads = []
+
+    monkeypatch.setattr(
+        porndig.utils, "getHtml", lambda url, referer=None, headers=None, data=None: json_response
+    )
+    monkeypatch.setattr(
+        porndig.site, "add_download_link", lambda *args, **kwargs: downloads.append(args[0])
+    )
+    monkeypatch.setattr(porndig.site, "add_dir", lambda *args, **kwargs: None)
+    monkeypatch.setattr(porndig.utils, "eod", lambda: None)
+
+    porndig.List(0, "not-a-section", 0)
+
+    assert downloads
+
+
+def test_parse_json_returns_empty_string_on_invalid_payload():
+    """Malformed JSON should fail closed instead of raising."""
+    assert porndig.ParseJson("not json") == ""

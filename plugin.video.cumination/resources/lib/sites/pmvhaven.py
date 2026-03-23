@@ -35,6 +35,21 @@ site = AdultSite(
 )
 
 
+def _load_json_payload(raw_payload):
+    if not raw_payload:
+        return {}
+    if isinstance(raw_payload, bytes):
+        raw_payload = raw_payload.decode("utf-8", "ignore")
+    if not isinstance(raw_payload, str):
+        return {}
+    try:
+        payload = json.loads(raw_payload)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("pmvhaven: invalid JSON payload - {}".format(exc))
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 def _format_duration(video):
     duration = video.get("duration")
     if duration:
@@ -74,9 +89,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    jdata = json.loads(listhtml)
-    if not isinstance(jdata, dict):
-        jdata = {}
+    jdata = _load_json_payload(listhtml)
 
     for video in jdata.get("videos", []):
         name = video.get("title", "")

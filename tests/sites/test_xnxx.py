@@ -142,6 +142,20 @@ def test_categories_parsing(monkeypatch):
     assert any("Amateur" in name for name in category_names)
 
 
+def test_categories_handles_missing_embedded_payload(monkeypatch):
+    dirs = []
+
+    monkeypatch.setattr(
+        xnxx.utils, "getHtml", lambda url, referer=None: "<html><body>No categories payload</body></html>"
+    )
+    monkeypatch.setattr(xnxx.site, "add_dir", lambda *a, **k: dirs.append(a[0]))
+    monkeypatch.setattr(xnxx.utils, "eod", lambda: None)
+
+    xnxx.Categories("https://www.xnxx.com/")
+
+    assert dirs == []
+
+
 def test_search_without_keyword(monkeypatch):
     """Test that Search without keyword shows search dialog."""
     search_called = []

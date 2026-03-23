@@ -216,11 +216,11 @@ def Playvid(url, name, download=None):
         if embedurl:
             embedurl = urllib_parse.urljoin(site.url, embedurl)
             embedhtml = utils.getHtml(embedurl, url)
-            vp.play_from_html(embedhtml)
+            vp.play_from_html(embedhtml, embedurl)
             return
             
     # Fallback to html searching
-    vp.play_from_html(videohtml)
+    vp.play_from_html(videohtml, url)
 
 
 @site.register()

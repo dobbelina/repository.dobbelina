@@ -35,6 +35,21 @@ IOS_UA = {
 }
 
 
+def _load_json_payload(raw_payload):
+    if not raw_payload:
+        return {}
+    if isinstance(raw_payload, bytes):
+        raw_payload = raw_payload.decode("utf-8", "ignore")
+    if not isinstance(raw_payload, str):
+        return {}
+    try:
+        payload = json.loads(raw_payload)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("cam4: invalid JSON payload - {}".format(exc))
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
 @site.register(default_mode=True)
 def Main():
     female = utils.addon.getSetting("chatfemale") == "true"
@@ -107,7 +122,7 @@ def List(url, page=1):
         site.url, url, page
     )
     listhtml = utils._getHtml(listurl, headers=IOS_UA)
-    cams = json.loads(listhtml).get("users", {})
+    cams = _load_json_payload(listhtml).get("users", {})
     for cam in cams:
         name = cam.get("username")
         age = cam.get("age")
@@ -176,5 +191,8 @@ def List(url, page=1):
 def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     html = utils._getHtml(url)
-    video = json.loads(html).get("cdnURL")
+    video = _load_json_payload(html).get("cdnURL")
+    if not video:
+        utils.notify("Oh Oh", "No Video found")
+        return
     vp.play_from_direct_link(video)

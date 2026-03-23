@@ -21,7 +21,6 @@ site = AdultSite(
     "[COLOR hotpink]SomePorn[/COLOR]",
     "https://some.porn/",
     "cum-sites.png",
-    testing=True,
 )
 
 
@@ -34,7 +33,9 @@ def _absolute_url(url):
 @site.register(default_mode=True)
 def Main():
     site.add_dir("[COLOR hotpink]Latest[/COLOR]", site.url, "List", site.img_cat)
-    site.add_dir("[COLOR hotpink]Search[/COLOR]", site.url + "?q=", "Search", site.img_search)
+    site.add_dir(
+        "[COLOR hotpink]Search[/COLOR]", site.url + "?search=", "Search", site.img_search
+    )
     List(site.url)
 
 
@@ -56,7 +57,7 @@ def List(url):
             utils.safe_get_attr(link.select_one("img"), "alt", default="")
             or utils.safe_get_text(link)
         )
-        thumb = utils.get_thumbnail(item.select_one("picture img"))
+        thumb = utils.get_thumbnail(item.select_one("picture img, img"))
         duration = utils.safe_get_text(item.select_one(".absolute.bottom-2.right-2 span"))
         if thumb.startswith("//"):
             thumb = "https:" + thumb
@@ -77,7 +78,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, "Search")
         return
-    List(url + urllib_parse.quote_plus(keyword))
+    List(site.url + "?search=" + urllib_parse.quote_plus(keyword))
 
 
 @site.register()

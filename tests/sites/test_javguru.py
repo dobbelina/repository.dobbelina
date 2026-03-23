@@ -128,3 +128,72 @@ def test_search_with_keyword(monkeypatch):
 
     assert len(list_calls) == 1
     assert "test+query" in list_calls[0]
+
+
+def test_play_uses_iframe_fallback_when_json_sources_are_missing(monkeypatch):
+    captured = {}
+
+    class _DummyVP:
+        def __init__(self, name, download=False, **kwargs):
+            self.progress = type(
+                "P",
+                (),
+                {
+                    "update": lambda *a, **k: None,
+                    "close": lambda *a, **k: None,
+                },
+            )()
+
+        def play_from_link_to_resolve(self, source):
+            captured["resolved"] = source
+
+        def play_from_html(self, html, url=None):
+            captured["html"] = html
+            captured["url"] = url
+
+        def play_from_direct_link(self, url):
+            captured["direct"] = url
+
+    monkeypatch.setattr(javguru.utils, "VideoPlayer", _DummyVP)
+    monkeypatch.setattr(
+        javguru.utils,
+        "getHtml",
+        lambda url, referer=None, headers=None: '<html><iframe src="/player/abc123"></iframe></html>',
+    )
+
+    javguru.Play("https://jav.guru/jav-video-1234/", "Example")
+
+    assert captured["resolved"] == "https://jav.guru/player/abc123"
+
+
+def test_play_falls_back_to_page_html_with_context(monkeypatch):
+    captured = {}
+
+    class _DummyVP:
+        def __init__(self, name, download=False, **kwargs):
+            self.progress = type(
+                "P",
+                (),
+                {
+                    "update": lambda *a, **k: None,
+                    "close": lambda *a, **k: None,
+                },
+            )()
+
+        def play_from_html(self, html, url=None):
+            captured["html"] = html
+            captured["url"] = url
+
+        def play_from_link_to_resolve(self, source):
+            captured["resolved"] = source
+
+        def play_from_direct_link(self, url):
+            captured["direct"] = url
+
+    monkeypatch.setattr(javguru.utils, "VideoPlayer", _DummyVP)
+    monkeypatch.setattr(javguru.utils, "getHtml", lambda url, referer=None, headers=None: "<html>No sources</html>")
+
+    javguru.Play("https://jav.guru/jav-video-5678/", "Example")
+
+    assert captured["html"] == "<html>No sources</html>"
+    assert captured["url"] == "https://jav.guru/jav-video-5678/"

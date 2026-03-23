@@ -32,6 +32,7 @@ from urllib.parse import parse_qs, urlparse, urljoin
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_PATH = ROOT / "plugin.video.cumination"
 SITES_DIR = PLUGIN_PATH / "resources" / "lib" / "sites"
+SITE_PROFILES_PATH = ROOT / "config" / "site_profiles.json"
 
 
 def install_kodi_stubs() -> None:
@@ -423,6 +424,28 @@ def discover_site_names() -> list[str]:
     return names
 
 
+def load_site_profiles() -> dict[str, Any]:
+    if not SITE_PROFILES_PATH.exists():
+        return {"default": {}, "sites": {}}
+    return json.loads(SITE_PROFILES_PATH.read_text(encoding="utf-8"))
+
+
+SITE_PROFILES = load_site_profiles()
+
+
+def get_site_profile(site_name: str) -> dict[str, Any]:
+    profile = dict(SITE_PROFILES.get("default", {}))
+    site_specific = SITE_PROFILES.get("sites", {}).get(site_name, {})
+    for key, value in site_specific.items():
+        if isinstance(value, dict) and isinstance(profile.get(key), dict):
+            merged = dict(profile[key])
+            merged.update(value)
+            profile[key] = merged
+        else:
+            profile[key] = value
+    return profile
+
+
 def get_mode_param_mode(plugin_url: str) -> str:
     try:
         qs = parse_qs(urlparse(plugin_url).query)
@@ -501,6 +524,19 @@ def run_site_child(
             "error": "No AdultSite/default_mode exported",
             "steps": {},
         }
+
+    site_profile = get_site_profile(site.name)
+    profile_supports = site_profile.get("supports", {})
+    harness_profile = site_profile.get("harness", {})
+
+    def supports_step(step_name: str) -> bool:
+        return profile_supports.get(step_name, True)
+
+    def content_type() -> str:
+        return site_profile.get("content_type", "video")
+
+    def requires_flaresolverr() -> bool:
+        return bool(site_profile.get("requires_flaresolverr", False))
 
     # Capture emitted UI items.
     captured_dirs: list[dict[str, Any]] = []
@@ -722,8 +758,42 @@ def run_site_child(
         except Exception as exc:
             msg = f"{type(exc).__name__}: {exc}"
             res = StepResult("FAIL", msg)
+        res = normalize_step_result(step_name, res)
         res.elapsed = round(time.time() - start, 2)
         step_results[step_name] = asdict(res)
+
+    def normalize_step_result(step_name: str, res: StepResult) -> StepResult:
+        if res.status != "FAIL":
+            return res
+
+        msg = res.message or ""
+        lowered = msg.lower()
+
+        network_markers = (
+            "temporary failure in name resolution",
+            "failed to resolve",
+            "name or service not known",
+            "network is unreachable",
+            "nodename nor servname provided",
+            "failed to establish a new connection: [errno 1] operation not permitted",
+        )
+        if any(marker in lowered for marker in network_markers):
+            return StepResult(
+                "SKIP",
+                "Network/DNS failure in harness",
+                sample_url=res.sample_url,
+                play_url=res.play_url,
+            )
+
+        if requires_flaresolverr() and "flaresolverr" in lowered:
+            return StepResult(
+                "SKIP",
+                "FlareSolverr required but unavailable in harness",
+                sample_url=res.sample_url,
+                play_url=res.play_url,
+            )
+
+        return res
 
     def find_mode_candidate(
         mode_suffixes: tuple[str, ...], dirs: list[dict[str, Any]]
@@ -746,6 +816,8 @@ def run_site_child(
         return {}
 
     def step_main() -> StepResult:
+        if not supports_step("main"):
+            return StepResult("SKIP", "Main disabled by site profile")
         nonlocal main_video_count, list_candidate_from_main
         captured_dirs.clear()
         captured_downloads.clear()
@@ -839,6 +911,8 @@ def run_site_child(
         )
 
     def step_list() -> StepResult:
+        if not supports_step("list"):
+            return StepResult("SKIP", "List disabled by site profile")
         mode = list_candidate.get("mode") or f"{site.name}.List"
         if not mode_exists(mode):
             fallback_mode = pick_registered_mode(
@@ -991,6 +1065,8 @@ def run_site_child(
         return StepResult("FAIL", "List returned no videos", sample_url=url)
 
     def step_categories() -> StepResult:
+        if not supports_step("categories"):
+            return StepResult("SKIP", "Categories disabled by site profile")
         captured_dirs.clear()
         captured_downloads.clear()
         mode = cat_candidate.get("mode")
@@ -1019,10 +1095,16 @@ def run_site_child(
         )
         count = len(captured_dirs)
         if count <= 0:
+            if harness_profile.get("categories_optional"):
+                return StepResult(
+                    "SKIP", "Categories optional for this site profile", sample_url=url
+                )
             return StepResult("SKIP", "Categories returned no items", sample_url=url)
         return StepResult("PASS", f"{count} categories", items=count, sample_url=url)
 
     def step_search() -> StepResult:
+        if not supports_step("search"):
+            return StepResult("SKIP", "Search disabled by site profile")
         captured_dirs.clear()
         captured_downloads.clear()
         mode = f"{site.name}.Search"
@@ -1043,6 +1125,12 @@ def run_site_child(
         call_mode(mode, query)
         videos = len(captured_downloads)
         if videos <= 0:
+            if harness_profile.get("search_results_optional"):
+                return StepResult(
+                    "SKIP",
+                    "Search results optional for this site profile",
+                    sample_url=site.url,
+                )
             return StepResult("SKIP", "Search returned no videos", sample_url=site.url)
         if not first_video and captured_downloads:
             first_video.update(captured_downloads[0])
@@ -1078,7 +1166,12 @@ def run_site_child(
         combined = " ".join(notify_msgs).lower()
 
         # Webcam / live sites — can't play without a real browser session
-        if site.name in WEBCAM_SITES or getattr(site, "webcam", False):
+        if (
+            site.name in WEBCAM_SITES
+            or getattr(site, "webcam", False)
+            or content_type() == "cam"
+            or harness_profile.get("playback_not_testable")
+        ):
             return StepResult(
                 "SKIP",
                 "Webcam/live site — no playback in harness",
@@ -1146,6 +1239,8 @@ def run_site_child(
         )
 
     def step_play() -> StepResult:
+        if not supports_step("play"):
+            return StepResult("SKIP", "Play disabled by site profile")
         play_calls.clear()
         if not first_video:
             return StepResult("SKIP", "No video item available from list/search")
@@ -1242,6 +1337,7 @@ def run_site_child(
         "overall": overall,
         "steps": step_results,
         "notifications": notify_calls[-3:],
+        "profile": site_profile,
     }
 
 

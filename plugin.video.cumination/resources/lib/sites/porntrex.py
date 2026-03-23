@@ -319,14 +319,14 @@ def PTPlayvid(url, name, download=None):
 @site.register()
 def PTCat(url):
     cathtml = utils.getHtml(url, "")
-    cat_block = (
-        re.compile(
-            '<span class="icon type-video">(.*?)<div class="footer-margin">',
-            re.DOTALL | re.IGNORECASE,
-        )
-        .search(cathtml)
-        .group(1)
-    )
+    match_block = re.compile(
+        '<span class="icon type-video">(.*?)<div class="footer-margin">',
+        re.DOTALL | re.IGNORECASE,
+    ).search(cathtml)
+    if not match_block:
+        utils.eod()
+        return
+    cat_block = match_block.group(1)
     match = re.compile(
         '<a class="item" href="([^"]+)" title="([^"]+)".*?src="([^"]+)".+?class="videos">([^<]+)<',
         re.DOTALL | re.IGNORECASE,

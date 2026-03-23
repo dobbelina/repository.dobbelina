@@ -97,7 +97,11 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url, site.url)
+    try:
+        listhtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
+    except Exception as exc:
+        utils.kodilog("anybunny List: Fetch failed - {}".format(exc))
+        listhtml = ""
 
     if not listhtml:
         utils.kodilog("anybunny List: Failed to fetch page")
@@ -187,7 +191,11 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories2(url):
-    cathtml = utils.getHtml(url, site.url)
+    try:
+        cathtml, _ = utils.get_html_with_cloudflare_retry(url, referer=site.url)
+    except Exception as exc:
+        utils.kodilog("anybunny Categories2: Fetch failed - {}".format(exc))
+        cathtml = ""
 
     if not cathtml:
         utils.kodilog("anybunny Categories2: Failed to fetch page")

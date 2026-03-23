@@ -1,0 +1,128 @@
+name: Site Health
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements-test.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+
+      - name: Run live smoke
+        run: |
+          python scripts/live_smoke_test.py --out results || true
+
+      - name: Prepare previous baseline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          mkdir -p /tmp/site-health
+          if git ls-remote --exit-code --heads origin site-health >/dev/null 2>&1; then
+            git clone --depth 1 --branch site-health "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/site-health
+          else
+            git -C /tmp/site-health init
+            git -C /tmp/site-health checkout --orphan site-health
+            git -C /tmp/site-health remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+
+      - name: Build site health diff
+        run: |
+          set -eu
+          CURRENT_JSON="$(ls -1t results/live_smoke_*.json | head -n 1)"
+          CURRENT_MD="${CURRENT_JSON%.json}.md"
+          PREVIOUS_JSON=""
+          if [ -f /tmp/site-health/live_smoke_latest.json ]; then
+            PREVIOUS_JSON="/tmp/site-health/live_smoke_latest.json"
+          fi
+
+          if [ -n "${PREVIOUS_JSON}" ]; then
+            python scripts/smoke_report_diff.py \
+              --current "${CURRENT_JSON}" \
+              --previous "${PREVIOUS_JSON}" \
+              --json-out results/site_health_diff_latest.json \
+              --md-out results/site_health_diff_latest.md
+          else
+            python scripts/smoke_report_diff.py \
+              --current "${CURRENT_JSON}" \
+              --json-out results/site_health_diff_latest.json \
+              --md-out results/site_health_diff_latest.md
+          fi
+
+          cp "${CURRENT_JSON}" results/site_health_latest.json
+          cp "${CURRENT_MD}" results/site_health_latest.md
+
+      - name: Build site profile audit
+        run: |
+          CURRENT_JSON="$(ls -1t results/live_smoke_*.json | head -n 1)"
+          python scripts/site_profile_audit.py \
+            --smoke-report "${CURRENT_JSON}" \
+            --json-out results/site_profile_audit_latest.json \
+            --md-out results/site_profile_audit_latest.md
+
+      - name: Publish job summary
+        run: |
+          cat results/site_health_diff_latest.md >> "${GITHUB_STEP_SUMMARY}"
+          printf '\n\n' >> "${GITHUB_STEP_SUMMARY}"
+          cat results/site_profile_audit_latest.md >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload site health artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-health
+          path: |
+            results/site_health_latest.json
+            results/site_health_latest.md
+            results/site_health_diff_latest.json
+            results/site_health_diff_latest.md
+            results/site_profile_audit_latest.json
+            results/site_profile_audit_latest.md
+            results/live_smoke_*.json
+            results/live_smoke_*.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Persist latest baseline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          cp results/site_health_latest.json /tmp/site-health/live_smoke_latest.json
+          cp results/site_health_latest.md /tmp/site-health/live_smoke_latest.md
+          cp results/site_health_diff_latest.json /tmp/site-health/site_health_diff_latest.json
+          cp results/site_health_diff_latest.md /tmp/site-health/site_health_diff_latest.md
+          cp results/site_profile_audit_latest.json /tmp/site-health/site_profile_audit_latest.json
+          cp results/site_profile_audit_latest.md /tmp/site-health/site_profile_audit_latest.md
+
+          git -C /tmp/site-health config user.name "github-actions[bot]"
+          git -C /tmp/site-health config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C /tmp/site-health add live_smoke_latest.json live_smoke_latest.md site_health_diff_latest.json site_health_diff_latest.md site_profile_audit_latest.json site_profile_audit_latest.md
+          if git -C /tmp/site-health diff --cached --quiet; then
+            echo "No site health changes to persist."
+            exit 0
+          fi
+          git -C /tmp/site-health commit -m "chore: update site health baseline"
+          git -C /tmp/site-health branch -M site-health
+          git -C /tmp/site-health push origin site-health

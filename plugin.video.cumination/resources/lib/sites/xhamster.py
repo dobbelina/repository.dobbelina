@@ -118,8 +118,7 @@ def List(url):
     if match:
         pagetitle = match.group(1)
 
-    listjson = response.split("window.initials=")[-1].split(";</script>")[0]
-    jdata = json.loads(listjson)
+    jdata = _load_initials_json(response)
 
     if "layoutPage" in jdata:
         videos = jdata["layoutPage"]["videoListProps"]["videoThumbProps"]

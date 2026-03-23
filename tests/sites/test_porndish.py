@@ -63,3 +63,23 @@ def test_playvid_implementation(monkeypatch):
         "source_url": "https://www.porndish.com/video-one/",
         "page_url": "https://www.porndish.com/video-one/",
     }
+
+
+def test_main_exposes_latest_directory(monkeypatch):
+    dirs = []
+
+    monkeypatch.setattr(porndish, "List", lambda url: None)
+    monkeypatch.setattr(
+        porndish.site, "add_dir", lambda name, url, mode, iconimage=None, **kwargs: dirs.append({"name": name, "url": url, "mode": mode})
+    )
+    monkeypatch.setattr(porndish.utils, "eod", lambda: None)
+
+    porndish.Main()
+
+    assert dirs == [
+        {
+            "name": "[COLOR hotpink]Latest[/COLOR]",
+            "url": "https://www.porndish.com/page/1/",
+            "mode": "List",
+        }
+    ]

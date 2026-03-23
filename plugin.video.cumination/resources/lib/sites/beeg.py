@@ -32,6 +32,21 @@ site = AdultSite(
 )
 
 
+def _load_json_payload(raw_payload, default):
+    if not raw_payload:
+        return default
+    if isinstance(raw_payload, bytes):
+        raw_payload = raw_payload.decode("utf-8", "ignore")
+    if not isinstance(raw_payload, str):
+        return default
+    try:
+        payload = json.loads(raw_payload)
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("beeg: invalid JSON payload - {}".format(exc))
+        return default
+    return payload
+
+
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tag/recommends?type=other&slug=index', 'Category', site.img_cat)
@@ -44,7 +59,9 @@ def Main():
 @site.register()
 def List(url, page=1):
     listjson = utils.getHtml(url, site.url)
-    jdata = json.loads(listjson)
+    jdata = _load_json_payload(listjson, [])
+    if not isinstance(jdata, list):
+        jdata = []
 
     for video in jdata:
         tag = ""
@@ -366,7 +383,9 @@ def Playvid(url, name, download=None):
 @site.register()
 def Category(url):
     listjson = utils.getHtml(url, site.url)
-    jdata = json.loads(listjson)
+    jdata = _load_json_payload(listjson, [])
+    if not isinstance(jdata, list):
+        jdata = []
     # Filter out items that are not categories (missing tg_name)
     categories = [cat for cat in jdata if "tg_name" in cat]
     for cat in sorted(categories, key=lambda x: x["tg_name"]):

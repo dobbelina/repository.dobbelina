@@ -237,10 +237,18 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    items = re.compile(r"cats.write_thumb_block_list\(([^]]+])", re.DOTALL).findall(
-        cathtml
-    )[0]
-    items = json.loads(items)
+    matches = re.compile(
+        r"cats.write_thumb_block_list\(([^]]+])", re.DOTALL
+    ).findall(cathtml)
+    if not matches:
+        utils.eod()
+        return
+    try:
+        items = json.loads(matches[0])
+    except (TypeError, ValueError) as exc:
+        utils.kodilog("xnxx Categories: invalid category payload - {}".format(exc))
+        utils.eod()
+        return
     for item in items:
         name = item.get("tf") if utils.PY3 else item.get("tf").encode("utf-8")
         img = item.get("i")

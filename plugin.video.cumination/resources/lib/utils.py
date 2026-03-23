@@ -91,15 +91,31 @@ urlopen = urllib_request.urlopen
 cj = http_cookiejar.LWPCookieJar(TRANSLATEPATH(cookiePath))
 Request = urllib_request.Request
 
-handlers = [
-    urllib_request.HTTPBasicAuthHandler(),
-    urllib_request.HTTPHandler(),
-    urllib_request.HTTPSHandler(),
-]
-ssl_context = ssl._create_unverified_context()
-ssl_context.check_hostname = True
-ssl._create_default_https_context = ssl._create_unverified_context
-handlers.append(urllib_request.HTTPSHandler(context=ssl_context))
+handlers = [urllib_request.HTTPBasicAuthHandler(), urllib_request.HTTPHandler()]
+
+
+def _set_minimum_tls_version(context):
+    """Prefer modern TLS without capping newer protocol support."""
+    tls_version = getattr(ssl, "TLSVersion", None)
+    if tls_version and hasattr(context, "minimum_version"):
+        context.minimum_version = tls_version.TLSv1_2
+
+
+def _create_ssl_context(verify=True):
+    """Create the most secure client context we can, unless explicitly told not to."""
+    if verify:
+        context = ssl.create_default_context()
+        _set_minimum_tls_version(context)
+        return context
+
+    context = ssl.create_default_context()
+    _set_minimum_tls_version(context)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+handlers.append(urllib_request.HTTPSHandler(context=_create_ssl_context()))
 
 
 def kodilog(logvar, level=LOGINFO):
@@ -1056,10 +1072,7 @@ def _getHtml(
     response = None
     try:
         if ignoreCertificateErrors:
-            ctx = ssl.create_default_context()
-            ctx.check_hostname = False
-            ctx.verify_mode = ssl.CERT_NONE
-            response = urlopen(req, timeout=timeout, context=ctx)
+            response = urlopen(req, timeout=timeout, context=_create_ssl_context(False))
         else:
             response = urlopen(req, timeout=timeout)
     except urllib_error.HTTPError as e:
@@ -1081,8 +1094,8 @@ def _getHtml(
             )
             if "cloudflare" in e.info().get("Server", "").lower():
                 if e.code == 403 and not e.info().get("cf-mitigated", False):
-                    # Drop to TLS1.2 and try again
-                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+                    # Retry with an explicit modern TLS context for problematic servers.
+                    ctx = _create_ssl_context()
                     handle = [urllib_request.HTTPSHandler(context=ctx)]
                     opener = urllib_request.build_opener(*handle)
                     try:
@@ -1100,20 +1113,10 @@ def _getHtml(
                             if PY3
                             else result.encode("utf-8")
                         )
-                        if e.code == 403 and not e.info().get("Set-Cookie", False):
-                            # Drop to TLS1.1 and try again
-                            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
-                            handle = [urllib_request.HTTPSHandler(context=ctx)]
-                            opener = urllib_request.build_opener(*handle)
-                            try:
-                                response = opener.open(req, timeout=timeout)
-                            except Exception:
-                                notify(i18n("oh_oh"), i18n("site_down"))
-                                if "return" in error:
-                                    # Give up
-                                    return ""
-                                else:
-                                    raise
+                        notify(i18n("oh_oh"), i18n("site_down"))
+                        if "return" in error:
+                            return ""
+                        raise
                 elif any(x == e.code for x in [403, 429, 503]) and any(
                     x in result
                     for x in [
@@ -1544,8 +1547,8 @@ def _postHtml(
         if e.code == 503 and "cf-browser-verification" in result:
             result = cloudflare.solve(url, cj, USER_AGENT)
         elif e.code == 403 and "cf-alert-error" in result:
-            # Drop to TLS1.2 and try again
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+            # Retry with an explicit modern TLS context for problematic servers.
+            ctx = _create_ssl_context()
             handle = [urllib_request.HTTPSHandler(context=ctx)]
             opener = urllib_request.build_opener(*handle)
             try:
@@ -1564,15 +1567,8 @@ def _postHtml(
                     else result.encode("utf-8")
                 )
                 if e.code == 403 and "cf-alert-error" in result:
-                    # Drop to TLS1.1 and try again
-                    ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
-                    handle = [urllib_request.HTTPSHandler(context=ctx)]
-                    opener = urllib_request.build_opener(*handle)
-                    try:
-                        response = opener.open(req, timeout=HTTP_TIMEOUT_DEFAULT)
-                    except Exception:
-                        notify(i18n("oh_oh"), i18n("site_down"))
-                        raise
+                    notify(i18n("oh_oh"), i18n("site_down"))
+                    raise
         elif 400 < e.code < 500:
             if not e.code == 403:
                 notify(i18n("oh_oh"), i18n("not_exist"))

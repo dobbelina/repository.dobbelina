@@ -145,3 +145,31 @@ def test_playvid_uses_kt_helper_for_kvs_pages(monkeypatch):
     porntn.Playvid("https://porntn.com/video/test", "Test Video")
 
     assert calls == [(html, "https://porntn.com/video/test")]
+
+
+def test_playvid_passes_url_to_html_fallback_without_license(monkeypatch):
+    html = "<html><div>fallback player markup</div></html>"
+    calls = []
+
+    class FakeVideoPlayer:
+        def __init__(self, name, download=None):
+            self.progress = type(
+                "p",
+                (),
+                {
+                    "update": lambda *args, **kwargs: None,
+                    "close": lambda *args, **kwargs: None,
+                },
+            )()
+
+        def play_from_html(self, page_html, page_url=None):
+            calls.append((page_html, page_url))
+
+    monkeypatch.setattr(
+        porntn.utils, "get_html_with_cloudflare_retry", lambda *a, **k: (html, False)
+    )
+    monkeypatch.setattr(porntn.utils, "VideoPlayer", FakeVideoPlayer)
+
+    porntn.Playvid("https://porntn.com/video/fallback", "Fallback")
+
+    assert calls == [(html, "https://porntn.com/video/fallback")]

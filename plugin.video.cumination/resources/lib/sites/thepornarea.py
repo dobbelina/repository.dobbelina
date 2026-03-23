@@ -22,7 +22,6 @@ site = AdultSite(
     "[COLOR hotpink]ThePornArea[/COLOR]",
     "https://thepornarea.com/",
     "cum-sites.png",
-    testing=True,
 )
 
 
@@ -38,21 +37,33 @@ def _extract_video_id(url):
 
 
 def _play_embed_stream(vp, html, referer):
-    match = re.search(r"video_url:\s*'([^']+)'", html)
-    if not match:
+    stream_url = _extract_player_stream(html)
+    if not stream_url:
         return False
-
-    stream_url = match.group(1)
-    if stream_url.startswith("function/0/"):
-        license_match = re.search(r"license_code:\s*'(\$\d+)", html)
-        if not license_match:
-            return False
-        stream_url = kvs_decode(stream_url, license_match.group(1))
 
     vp.play_from_direct_link(
         "{}|Referer={}&User-Agent={}".format(stream_url, referer, utils.USER_AGENT)
     )
     return True
+
+
+def _extract_player_stream(html):
+    if not html:
+        return ""
+
+    match = re.search(r"video_url:\s*'([^']+)'", html)
+    if not match:
+        return ""
+
+    stream_url = match.group(1)
+    if not stream_url.startswith("function/0/"):
+        return stream_url
+
+    license_match = re.search(r"license_code:\s*'(\$\d+)", html)
+    if not license_match:
+        return ""
+
+    return kvs_decode(stream_url, license_match.group(1))
 
 
 @site.register(default_mode=True)
@@ -131,11 +142,8 @@ def Playvid(url, name, download=None):
         vp.play_from_link_to_resolve(url)
         return
 
-    match = re.search(r"video_url:\s*'([^']+)'", html)
-    if match:
-        play_url = match.group(1)
-        if play_url.startswith("function/0/"):
-            play_url = play_url.split("function/0/", 1)[1]
+    play_url = _extract_player_stream(html)
+    if play_url:
         vp.play_from_direct_link("{}|Referer={}".format(play_url, url))
         return
 

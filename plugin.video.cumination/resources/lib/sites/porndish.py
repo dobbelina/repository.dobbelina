@@ -31,6 +31,7 @@ site = AdultSite(
 
 @site.register(default_mode=True)
 def Main():
+    site.add_dir("[COLOR hotpink]Latest[/COLOR]", site.url + "page/1/", "List", site.img_next)
     List(site.url + "page/1/")
     utils.eod()
 

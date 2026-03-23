@@ -119,3 +119,30 @@ def test_category_parses_json(monkeypatch):
     assert len(dirs) == 1
     assert dirs[0]["name"] == "Category 1"
     assert "slug=cat1" in dirs[0]["url"]
+
+
+def test_list_handles_invalid_json_payload(monkeypatch):
+    downloads = []
+
+    monkeypatch.setattr(beeg.utils, "getHtml", lambda *a, **k: "<html>blocked</html>")
+    monkeypatch.setattr(
+        beeg.site, "add_download_link", lambda *a, **k: downloads.append(a[0])
+    )
+    monkeypatch.setattr(beeg.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(beeg.utils, "eod", lambda: None)
+
+    beeg.List("https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0")
+
+    assert downloads == []
+
+
+def test_category_handles_invalid_json_payload(monkeypatch):
+    dirs = []
+
+    monkeypatch.setattr(beeg.utils, "getHtml", lambda *a, **k: "<html>blocked</html>")
+    monkeypatch.setattr(beeg.site, "add_dir", lambda *a, **k: dirs.append(a[0]))
+    monkeypatch.setattr(beeg.utils, "eod", lambda: None)
+
+    beeg.Category("https://store.externulls.com/tag/recommends?type=other&slug=index")
+
+    assert dirs == []

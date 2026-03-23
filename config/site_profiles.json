@@ -1,0 +1,245 @@
+{
+  "default": {
+    "supports": {
+      "main": true,
+      "list": true,
+      "categories": true,
+      "search": true,
+      "play": true
+    },
+    "content_type": "video",
+    "requires_flaresolverr": false,
+    "harness": {
+      "playback_not_testable": false,
+      "search_results_optional": false,
+      "categories_optional": false
+    }
+  },
+  "sites": {
+    "pornhub": {
+      "tier": 1
+    },
+    "xvideos": {
+      "tier": 1
+    },
+    "xnxx": {
+      "tier": 1
+    },
+    "spankbang": {
+      "tier": 1
+    },
+    "youporn": {
+      "tier": 1
+    },
+    "pornkai": {
+      "tier": 1
+    },
+    "porndig": {
+      "tier": 1
+    },
+    "anybunny": {
+      "tier": 1
+    },
+    "missav": {
+      "tier": 1,
+      "requires_flaresolverr": true
+    },
+    "ask4porn": {
+      "tier": 1,
+      "requires_flaresolverr": true
+    },
+    "kissjav": {
+      "tier": 2,
+      "requires_flaresolverr": true
+    },
+    "luxuretv": {
+      "tier": 1,
+      "requires_flaresolverr": true
+    },
+    "javseen": {
+      "tier": 2,
+      "supports": {
+        "categories": false
+      }
+    },
+    "thepornarea": {
+      "tier": 2,
+      "supports": {
+        "categories": false
+      }
+    },
+    "someporn": {
+      "tier": 2,
+      "supports": {
+        "categories": false
+      }
+    },
+    "stripchat": {
+      "tier": 1,
+      "content_type": "cam",
+      "supports": {
+        "list": false,
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "chaturbate": {
+      "tier": 1,
+      "content_type": "cam",
+      "supports": {
+        "list": false,
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "camsoda": {
+      "tier": 1,
+      "content_type": "cam",
+      "supports": {
+        "list": false,
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "cam4": {
+      "tier": 1,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "streamate": {
+      "tier": 1,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "bongacams": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "naked": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "list": false,
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "myfreecams": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "livecamrips": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "categories": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "categories_optional": true
+      }
+    },
+    "lemoncams": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "categories_optional": true
+      }
+    },
+    "reallifecam": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true
+      }
+    },
+    "amateurtv": {
+      "tier": 2,
+      "content_type": "cam",
+      "supports": {
+        "categories": false,
+        "search": false,
+        "play": false
+      },
+      "harness": {
+        "playback_not_testable": true,
+        "search_results_optional": true,
+        "categories_optional": true
+      }
+    },
+    "supjav": {
+      "tier": 2,
+      "requires_flaresolverr": true
+    }
+  }
+}

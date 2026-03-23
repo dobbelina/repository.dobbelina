@@ -101,3 +101,47 @@ def test_mlist_parses_movies_and_next(monkeypatch):
     assert (
         dirs[0]["url"] == "https://www.viralvideosporno.com/peliculas/peliculas_3.html"
     )
+
+
+def test_playvid_passes_context_to_html_fallback(monkeypatch):
+    html = "<html><div>player wrapper without direct source</div></html>"
+    captured = {}
+
+    class _HostedMediaFile:
+        def __init__(self, url):
+            self.url = url
+
+        def valid_url(self):
+            return False
+
+    class FakeVideoPlayer:
+        def __init__(self, name, download=None, **kwargs):
+            self.progress = type(
+                "p",
+                (),
+                {
+                    "update": lambda *args, **kwargs: None,
+                    "close": lambda *args, **kwargs: None,
+                },
+            )()
+            self.resolveurl = type("R", (), {"HostedMediaFile": _HostedMediaFile})()
+
+        def play_from_html(self, page_html, page_url=None):
+            captured["html"] = page_html
+            captured["url"] = page_url
+
+        def play_from_direct_link(self, url):
+            captured["direct"] = url
+
+        def play_from_link_to_resolve(self, source):
+            captured["resolved"] = source
+
+    monkeypatch.setattr(viralvideosporno.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(viralvideosporno.utils, "VideoPlayer", FakeVideoPlayer)
+
+    viralvideosporno.Playvid(
+        "https://www.viralvideosporno.com/watch/fallback", "Fallback"
+    )
+
+    assert captured["html"] == html
+    assert captured["url"] == "https://www.viralvideosporno.com/watch/fallback"
