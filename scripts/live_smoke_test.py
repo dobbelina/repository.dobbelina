@@ -242,7 +242,17 @@ def install_kodi_stubs() -> None:
 
     class _StorageServer:
         def __init__(self, *args, **kwargs):
-            pass
+            self._data = {}
+
+        def set(self, key, value):
+            self._data[key] = value
+
+        def get(self, key):
+            return self._data.get(key)
+
+        def delete(self, key):
+            if key in self._data:
+                del self._data[key]
 
         def cacheDelete(self, *args, **kwargs):
             pass

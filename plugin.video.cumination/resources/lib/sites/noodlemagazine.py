@@ -47,7 +47,7 @@ data = {
 
 @site.register(default_mode=True)
 def Main(url):
-    site.add_download_link(getFilterLabels(), site.url, "setFilters", "")
+    site.add_dir(getFilterLabels(), site.url, "setFilters", "")
     site.add_dir(
         "[COLOR hotpink]Newest[/COLOR]", site.url + "video/" + getFilters(1), "List", ""
     )

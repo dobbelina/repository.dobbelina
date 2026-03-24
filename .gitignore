@@ -32,3 +32,5 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 .worktrees/
+results/
+scripts/results/
