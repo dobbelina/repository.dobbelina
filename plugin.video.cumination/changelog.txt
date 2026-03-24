@@ -1,3 +1,11 @@
+[B]Version 1.1.341[/B]
+- fix: improve smoke test environment and site module reliability
+- feat: Enhance site modules with improved error handling and JSON parsing
+- Merge pull request #121 from rpeters1430/imgbot
+- fix: restore PornKai video listings and Categories
+- [ImgBot] Optimize images
+- Sync script.module.resolveurl.xxx from ResolveURL upstream
+
 [B]Version 1.1.340[/B]
 - feat: Enhance site modules with improved error handling and JSON parsing
 - Merge pull request #121 from rpeters1430/imgbot
