@@ -18,7 +18,6 @@ from conftest import *  # This sets up all Kodi mocks
 # Now import our analysis modules
 import json
 import re
-from pathlib import Path
 
 SITES_DIR = ROOT / "plugin.video.cumination" / "resources" / "lib" / "sites"
 

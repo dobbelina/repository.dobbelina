@@ -17,12 +17,7 @@ MODIFIED BY shani to make it work with F4mProxy
 import urlparse, urlparse, urllib2, os, traceback, cookielib, re
 import struct
 import sys
-import os
 import xbmc
-import urllib2
-import traceback
-import urlparse
-import cookielib
 import array, random, string
 import requests
 
@@ -384,7 +379,6 @@ def handle_basic_m3u(url):
     global key
     global USEDec
     global gauth
-    import urlparse
 
     global callbackDRM
     seq = 1
@@ -442,7 +436,7 @@ def handle_basic_m3u(url):
                                     and callbackDRM == None
                                 ):
                                     print("callback", codeurlpath)
-                                    import importlib, os
+                                    import importlib
 
                                     foldername = os.path.sep.join(
                                         codeurlpath.split(os.path.sep)[:-1]
@@ -463,8 +457,6 @@ def handle_basic_m3u(url):
 
                         # key = download_file(codeurl)
                         elif not codeurl.startswith("http"):
-                            import urlparse
-
                             codeurl = urlparse.urljoin(url, codeurl)
 
                         # assert len(key) == 16, 'EXT-X-KEY: downloaded key file has bad length'

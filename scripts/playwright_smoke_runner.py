@@ -15,9 +15,6 @@ It uses a two-stage approach:
 
 Reports are saved to results/playwright_smoke_[timestamp].md
 """
-
-import os
-import sys
 import time
 import json
 import importlib

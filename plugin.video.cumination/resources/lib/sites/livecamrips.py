@@ -119,7 +119,6 @@ def List(url, page=1):
 
             # Extract views
             views_text = parent.get_text()
-            import re
 
             views_match = re.search(r"(\d+)\s+views?", views_text, re.IGNORECASE)
             if views_match:
