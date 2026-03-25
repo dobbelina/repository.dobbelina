@@ -133,18 +133,24 @@ def List(url):
         if "trendingVideoListComponent" in jdata:
             videos = jdata["trendingVideoListComponent"].get("videoThumbProps")
         elif "trendingVideoSectionComponent" in jdata:
-            videos = jdata["trendingVideoSectionComponent"].get("videoListProps", {}).get(
-                "videoThumbProps"
+            videos = (
+                jdata["trendingVideoSectionComponent"]
+                .get("videoListProps", {})
+                .get("videoThumbProps")
             )
         elif "searchResult" in jdata:
             videos = jdata["searchResult"].get("videoThumbProps")
         elif "pagesNewestComponent" in jdata:
-            videos = jdata["pagesNewestComponent"].get("videoListProps", {}).get(
-                "videoThumbProps"
+            videos = (
+                jdata["pagesNewestComponent"]
+                .get("videoListProps", {})
+                .get("videoThumbProps")
             )
         elif "pagesCategoryComponent" in jdata:
-            videos = jdata["pagesCategoryComponent"].get("trendingVideoListProps", {}).get(
-                "videoThumbProps"
+            videos = (
+                jdata["pagesCategoryComponent"]
+                .get("trendingVideoListProps", {})
+                .get("videoThumbProps")
             )
     if not videos:
         utils.notify("Oh Oh", "No video found.")

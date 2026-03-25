@@ -112,7 +112,9 @@ def List(url):
         duration = utils.safe_get_attr(item, "data-duration")
 
         if title and video_url:
-            site.add_download_link(title, video_url, "Playvid", thumb, title, duration=duration)
+            site.add_download_link(
+                title, video_url, "Playvid", thumb, title, duration=duration
+            )
 
     next_link = soup.select_one('link[rel="next"], a[rel="next"], a.pager-item[href]')
     if next_link:

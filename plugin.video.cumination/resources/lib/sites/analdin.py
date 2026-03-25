@@ -73,10 +73,9 @@ def List(url):
         video_url = _absolute_url(utils.safe_get_attr(link, "href"))
         title = utils.cleantext(utils.safe_get_text(item.select_one(".title")))
         img_tag = item.select_one("img")
-        thumb = (
-            utils.safe_get_attr(img_tag, "data-original", ["src"])
-            or utils.safe_get_attr(link, "thumb")
-        )
+        thumb = utils.safe_get_attr(
+            img_tag, "data-original", ["src"]
+        ) or utils.safe_get_attr(link, "thumb")
 
         if title and video_url:
             site.add_download_link(title, video_url, "Playvid", thumb, title)

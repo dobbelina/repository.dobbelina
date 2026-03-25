@@ -99,4 +99,7 @@ def test_analdin_playvid_prefers_alt_url(monkeypatch):
 
     args, _ = mock_vp_class.return_value.play_from_direct_link.call_args
     assert "798032hd.mp4" in args[0]
-    assert "Referer=https://www.analdin.com/videos/798032/big-titted-scout-nicole-titfucked-before-oral-sex/" in args[0]
+    assert (
+        "Referer=https://www.analdin.com/videos/798032/big-titted-scout-nicole-titfucked-before-oral-sex/"
+        in args[0]
+    )
