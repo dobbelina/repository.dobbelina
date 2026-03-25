@@ -167,6 +167,66 @@ def test_search_with_keyword(monkeypatch):
     assert "test+query" in list_calls[0] or "test%20query" in list_calls[0]
 
 
+def test_list_handles_layout_page_missing_video_list_props(monkeypatch):
+    """Test that List does not crash when layoutPage lacks videoListProps (KeyError regression)."""
+    videos_data = [
+        {
+            "title": "Newest Video",
+            "pageURL": "/videos/newest-123",
+            "thumbURL": "https://thumb.xhamster.com/newest.jpg",
+            "duration": 300,
+            "isBlockedByGeo": False,
+        }
+    ]
+    # layoutPage exists but has no videoListProps; pagesNewestComponent has the videos
+    json_data = {
+        "layoutPage": {
+            "categoryInfoProps": {"pageTitle": "Newest"},
+        },
+        "pagesNewestComponent": {
+            "videoListProps": {"videoThumbProps": videos_data},
+            "paginationProps": {
+                "currentPageNumber": 1,
+                "lastPageNumber": 2,
+                "pageLinkTemplate": "https://xhamster.com/newest/{#}",
+            },
+        },
+    }
+
+    html = f"""<html><title>Newest</title>
+    <script>window.initials={json.dumps(json_data)};</script>
+    </html>"""
+
+    downloads = []
+
+    class FakeThumbnails:
+        def __init__(self, site_name):
+            pass
+
+        def get(self, urls):
+            return urls[0] if urls else ""
+
+    monkeypatch.setattr(xhamster.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(
+        xhamster.site,
+        "add_download_link",
+        lambda name, url, mode, iconimage, desc, **kwargs: downloads.append(
+            {"name": name, "url": url}
+        ),
+    )
+    monkeypatch.setattr(xhamster.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(xhamster.utils, "eod", lambda: None)
+    monkeypatch.setattr(xhamster.utils.addon, "getSetting", lambda x: "all")
+    monkeypatch.setattr(xhamster, "update_url", lambda url: url)
+    monkeypatch.setattr(xhamster, "get_setting", lambda x: "All")
+    monkeypatch.setattr(xhamster.utils, "Thumbnails", FakeThumbnails)
+
+    xhamster.List("https://xhamster.com/newest")
+
+    assert len(downloads) == 1
+    assert downloads[0]["name"] == "Newest Video"
+
+
 def test_list_handles_missing_initials_json(monkeypatch):
     """Search pages without embedded initials JSON should fail closed."""
     downloads = []

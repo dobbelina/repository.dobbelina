@@ -44,7 +44,7 @@ def _extract_next_page(soup):
 def Main():
     site.add_dir(
         "[COLOR hotpink]Latest[/COLOR]",
-        site.url + "latest-updates/",
+        site.url + "videos/",
         "List",
         site.img_cat,
     )
@@ -54,7 +54,7 @@ def Main():
         "Search",
         site.img_search,
     )
-    List(site.url + "latest-updates/")
+    List(site.url + "videos/")
 
 
 @site.register()
@@ -66,17 +66,16 @@ def List(url):
 
     soup = utils.parse_html(html)
     for item in soup.select(".list-videos .item"):
-        link = item.select_one("a.popup-video-link[href]")
+        link = item.select_one("a.popup-video-link[href]") or item.select_one("a[href]")
         if not link:
             continue
 
         video_url = _absolute_url(utils.safe_get_attr(link, "href"))
         title = utils.cleantext(utils.safe_get_text(item.select_one(".title")))
         img_tag = item.select_one("img")
-        thumb = (
-            utils.safe_get_attr(img_tag, "data-original", ["src"])
-            or utils.safe_get_attr(link, "thumb")
-        )
+        thumb = utils.safe_get_attr(
+            img_tag, "data-original", ["src"]
+        ) or utils.safe_get_attr(link, "thumb")
 
         if title and video_url:
             site.add_download_link(title, video_url, "Playvid", thumb, title)

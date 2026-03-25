@@ -61,7 +61,7 @@ def List(url):
         utils.kodilog("@@@@Cumination: failure in eporner: " + str(e))
         return None
     soup = utils.parse_html(listhtml)
-    video_items = soup.select("div.mb[data-vp]")
+    video_items = soup.select("[data-vp]")
     for item in video_items:
         link = item.select_one(".mbcontent a")
         if not link:

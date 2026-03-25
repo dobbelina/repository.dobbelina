@@ -120,25 +120,39 @@ def List(url):
 
     jdata = _load_initials_json(response)
 
+    videos = None
     if "layoutPage" in jdata:
-        videos = jdata["layoutPage"]["videoListProps"]["videoThumbProps"]
-        if "categoryInfoProps" in jdata["layoutPage"]:
-            pagetitle = jdata["layoutPage"]["categoryInfoProps"].get("pageTitle", "")
-    elif "trendingVideoListComponent" in jdata:
-        videos = jdata["trendingVideoListComponent"]["videoThumbProps"]
-    elif "trendingVideoSectionComponent" in jdata:
-        videos = jdata["trendingVideoSectionComponent"]["videoListProps"][
+        layout_page = jdata["layoutPage"]
+        video_list_props = layout_page.get("videoListProps", {})
+        videos = video_list_props.get("videoThumbProps") or layout_page.get(
             "videoThumbProps"
-        ]
-    elif "searchResult" in jdata:
-        videos = jdata["searchResult"]["videoThumbProps"]
-    elif "pagesNewestComponent" in jdata:
-        videos = jdata["pagesNewestComponent"]["videoListProps"]["videoThumbProps"]
-    elif "pagesCategoryComponent" in jdata:
-        videos = jdata["pagesCategoryComponent"]["trendingVideoListProps"][
-            "videoThumbProps"
-        ]
-    else:
+        )
+        if "categoryInfoProps" in layout_page:
+            pagetitle = layout_page["categoryInfoProps"].get("pageTitle", "")
+    if not videos:
+        if "trendingVideoListComponent" in jdata:
+            videos = jdata["trendingVideoListComponent"].get("videoThumbProps")
+        elif "trendingVideoSectionComponent" in jdata:
+            videos = (
+                jdata["trendingVideoSectionComponent"]
+                .get("videoListProps", {})
+                .get("videoThumbProps")
+            )
+        elif "searchResult" in jdata:
+            videos = jdata["searchResult"].get("videoThumbProps")
+        elif "pagesNewestComponent" in jdata:
+            videos = (
+                jdata["pagesNewestComponent"]
+                .get("videoListProps", {})
+                .get("videoThumbProps")
+            )
+        elif "pagesCategoryComponent" in jdata:
+            videos = (
+                jdata["pagesCategoryComponent"]
+                .get("trendingVideoListProps", {})
+                .get("videoThumbProps")
+            )
+    if not videos:
         utils.notify("Oh Oh", "No video found.")
         return
 

@@ -32,13 +32,19 @@ def _absolute_url(url):
 
 
 def _extract_thumb(item):
-    thumb = utils.safe_get_attr(item.select_one(".video-item-svg"), "data-src")
-    if thumb:
-        return thumb
-
-    style = utils.safe_get_attr(item.select_one(".video-item-svg"), "style", default="")
-    match = re.search(r'background-image:\s*url\((?:"|\')?([^"\')]+)', style)
-    return match.group(1) if match else ""
+    svg_el = item.select_one(".video-item-svg")
+    if svg_el:
+        thumb = utils.safe_get_attr(svg_el, "data-src")
+        if thumb:
+            return thumb
+        style = utils.safe_get_attr(svg_el, "style", default="")
+        match = re.search(r'background-image:\s*url\((?:"|\')?([^"\')]+)', style)
+        if match:
+            return match.group(1)
+    img = item.find("img")
+    if img:
+        return utils.safe_get_attr(img, "data-src", ["src"])
+    return ""
 
 
 def _extract_direct_stream(html):
@@ -85,7 +91,11 @@ def List(url):
 
     soup = utils.parse_html(html)
     for item in soup.select(".video-item[data-video-item], .video-item"):
-        link = item.select_one("a.video-item-link[href]")
+        link = (
+            item.select_one("a.video-item-link[href]")
+            or item.select_one(".video-item-block a[href]")
+            or item.select_one(".video-item-thumb a[href]")
+        )
         if not link:
             continue
 
@@ -98,7 +108,9 @@ def List(url):
         duration = utils.safe_get_attr(item, "data-duration")
 
         if title and video_url:
-            site.add_download_link(title, video_url, "Playvid", thumb, title, duration=duration)
+            site.add_download_link(
+                title, video_url, "Playvid", thumb, title, duration=duration
+            )
 
     next_link = soup.select_one('link[rel="next"], a[rel="next"], a.pager-item[href]')
     if next_link:

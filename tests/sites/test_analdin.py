@@ -65,6 +65,26 @@ def test_analdin_search_uses_live_path(monkeypatch):
     assert called_urls == ["https://www.analdin.com/search/big%20tits/"]
 
 
+def test_analdin_main_uses_videos_url(monkeypatch):
+    dirs = []
+    called_urls = []
+
+    monkeypatch.setattr(
+        analdin.site,
+        "add_dir",
+        lambda name, url, mode, iconimage="", **kwargs: dirs.append(
+            {"name": name, "url": url, "mode": mode}
+        ),
+    )
+    monkeypatch.setattr(analdin, "List", lambda url: called_urls.append(url))
+    monkeypatch.setattr(analdin.utils, "eod", lambda: None)
+
+    analdin.Main()
+
+    assert any("videos/" in d["url"] for d in dirs if d.get("mode") == "List")
+    assert called_urls and "videos/" in called_urls[0]
+
+
 def test_analdin_playvid_prefers_alt_url(monkeypatch):
     html = _load_fixture("analdin_video.html")
 
@@ -79,4 +99,7 @@ def test_analdin_playvid_prefers_alt_url(monkeypatch):
 
     args, _ = mock_vp_class.return_value.play_from_direct_link.call_args
     assert "798032hd.mp4" in args[0]
-    assert "Referer=https://www.analdin.com/videos/798032/big-titted-scout-nicole-titfucked-before-oral-sex/" in args[0]
+    assert (
+        "Referer=https://www.analdin.com/videos/798032/big-titted-scout-nicole-titfucked-before-oral-sex/"
+        in args[0]
+    )
