@@ -12,6 +12,14 @@ jobs:
     permissions:
       contents: write
 
+    services:
+      flaresolverr:
+        image: flaresolverr/flaresolverr:latest
+        ports:
+          - 8191:8191
+        env:
+          LOG_LEVEL: info
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

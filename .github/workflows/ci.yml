@@ -34,6 +34,11 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     needs: lint
+    services:
+      flaresolverr:
+        image: flaresolverr/flaresolverr:latest
+        ports:
+          - 8191:8191
     strategy:
         matrix:
           python-version: ["3.10", "3.11", "3.12"]
