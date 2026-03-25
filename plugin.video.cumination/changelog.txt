@@ -1,3 +1,13 @@
+[B]Version 1.1.342[/B]
+- Merge pull request #123 from rpeters1430/copilot/fix-site-breaking-issues
+- style: format code with Ruff Formatter
+- refactor: address code review - simplify xhamster video fallback chain and porndoe thumb extraction
+- style: format code with Ruff Formatter
+- fix: resolve new site failures - xhamster KeyError, analdin 404, eporner/porndoe selectors
+- Initial plan
+- ci: add FlareSolverr service to site-health and tests workflows
+- fix: improve smoke test environment and site module reliability
+
 [B]Version 1.1.341[/B]
 - fix: improve smoke test environment and site module reliability
 - feat: Enhance site modules with improved error handling and JSON parsing
