@@ -124,7 +124,9 @@ def List(url):
     if "layoutPage" in jdata:
         layout_page = jdata["layoutPage"]
         video_list_props = layout_page.get("videoListProps", {})
-        videos = video_list_props.get("videoThumbProps") or layout_page.get("videoThumbProps")
+        videos = video_list_props.get("videoThumbProps") or layout_page.get(
+            "videoThumbProps"
+        )
         if "categoryInfoProps" in layout_page:
             pagetitle = layout_page["categoryInfoProps"].get("pageTitle", "")
     if not videos:
