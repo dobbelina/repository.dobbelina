@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<addon id="script.video.F4mProxy" name="F4mProxy" version="2.8.11" provider-name="Shani">
+<addon id="script.video.F4mProxy" name="F4mProxy" version="2.8.12" provider-name="Shani">
     <requires>
         <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.requests" />

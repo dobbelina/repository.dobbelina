@@ -1,3 +1,14 @@
+[B]Version 1.1.343[/B]
+- Merge pull request #124 from rpeters1430/deepsource-autofix-bd4d6111
+- style: format code with Ruff Formatter
+- Merge pull request #123 from rpeters1430/copilot/fix-site-breaking-issues
+- refactor: remove reimported module
+- style: format code with Ruff Formatter
+- refactor: address code review - simplify xhamster video fallback chain and porndoe thumb extraction
+- style: format code with Ruff Formatter
+- fix: resolve new site failures - xhamster KeyError, analdin 404, eporner/porndoe selectors
+- Initial plan
+
 [B]Version 1.1.342[/B]
 - Merge pull request #123 from rpeters1430/copilot/fix-site-breaking-issues
 - style: format code with Ruff Formatter
