@@ -43,11 +43,7 @@ def _extract_thumb(item):
             return match.group(1)
     img = item.find("img")
     if img:
-        return (
-            utils.safe_get_attr(img, "data-src")
-            or utils.safe_get_attr(img, "src")
-            or ""
-        )
+        return utils.safe_get_attr(img, "data-src", ["src"])
     return ""
 
 
