@@ -76,7 +76,9 @@ class FlareSolverrManager:
             # Get session list
             session_list_request = {"cmd": "sessions.list"}
             session_list_response = requests.post(
-                self.flaresolverr_url, json=session_list_request, timeout=HTTP_TIMEOUT_SHORT
+                self.flaresolverr_url,
+                json=session_list_request,
+                timeout=HTTP_TIMEOUT_SHORT,
             )
 
             sessions = session_list_response.json().get("sessions", [])
@@ -99,7 +101,6 @@ class FlareSolverrManager:
                                 timeout=HTTP_TIMEOUT_SHORT,
                             )
         except Exception as e:
-
             xbmc.log(
                 "@@@@Cumination: Error clearing FlareSolverr sessions: " + str(e),
                 xbmc.LOGDEBUG,

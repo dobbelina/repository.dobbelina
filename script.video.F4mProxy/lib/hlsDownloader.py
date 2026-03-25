@@ -457,7 +457,6 @@ def handle_basic_m3u(url):
 
                         # key = download_file(codeurl)
                         elif not codeurl.startswith("http"):
-
                             codeurl = urlparse.urljoin(url, codeurl)
 
                         # assert len(key) == 16, 'EXT-X-KEY: downloaded key file has bad length'
