@@ -479,7 +479,6 @@ def xor_string(encurl, key):
     Code adapted from https://github.com/vb6rocod/utils/
     Copyright (C) 2019 vb6rocod
     """
-    import base64
     strurl = base64.b64decode(encurl).decode('utf-8')
     surl = ''
     for i in range(len(strurl)):
@@ -489,7 +488,6 @@ def xor_string(encurl, key):
 
 def tear_decode(data_file, data_seed):
     from ctypes import c_int32 as i32
-    import re
 
     def replacer(match):
         chars = {
@@ -809,7 +807,6 @@ def base164(e):
 
 
 def Tdecode(vidurl):
-    import base64
     replacemap = {'M': r'\u041c', 'A': r'\u0410', 'B': r'\u0412', 'C': r'\u0421', 'E': r'\u0415', '=': '~', '+': '.', '/': ','}
 
     for key in replacemap:

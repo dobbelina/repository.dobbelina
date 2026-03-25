@@ -172,8 +172,6 @@ def NLPLAYVID(url, name, download=None):
     )
     videourl = utils.safe_get_attr(meta, "content") if meta else None
     if not videourl:
-        # fallback to legacy regex if needed
-        import re
 
         matches = re.findall(
             r'contentURL"\s*content="([^"]+)"', videopage, re.IGNORECASE

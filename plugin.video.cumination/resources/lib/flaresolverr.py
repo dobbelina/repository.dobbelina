@@ -99,7 +99,6 @@ class FlareSolverrManager:
                                 timeout=HTTP_TIMEOUT_SHORT,
                             )
         except Exception as e:
-            from kodi_six import xbmc
 
             xbmc.log(
                 "@@@@Cumination: Error clearing FlareSolverr sessions: " + str(e),
