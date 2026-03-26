@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.gay/', 'aagmaal.png', 'aagmaal')
+site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.bz/', 'aagmaal.png', 'aagmaal')
 
 
 @site.register(default_mode=True)
@@ -34,33 +34,19 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="recent-item".+?src="([^"]+).+?href="([^"]+)[^>]+>(.+?)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<article.+?src="([^"]+).+?href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
-        if '</span>' in name:
-            name = re.sub(r'\s*<span.+/span>\s*', ' ', name)
+        if '\n' in name:
+            name = re.sub(r'\n\s*', ' ', name)
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    url = re.compile(r'''class="pagination.+?class="current.+?href=['"]?([^\s'"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
+    url = re.compile(r'class="vp-pagination".+?href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:
-        pgtxt = 'Currently in {0}'.format(re.findall(r'class="pages">([^<]+)', listhtml)[0])
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), url.group(1), 'List', site.img_next)
-    utils.eod()
-
-
-@site.register()
-def List2(url):
-    listhtml = utils.getHtml(url, site.url)
-    items = re.compile(r'<article.+?/article>', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for item in items:
-        iurl, name, img = re.compile(r'title">\s*<a\s*href="([^"]+)">([^<]+).+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(item)[0]
-        name = utils.cleantext(name)
-        site.add_download_link(name, iurl, 'Playvid', img, name)
-
-    purl = re.compile(r'''class="pagination.+?class="current.+?href="([^"]+)''', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if purl:
-        pgtxt = 'Currently in {0}'.format(re.findall(r'class="pages">([^<]+)', listhtml)[0])
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] {0}'.format(pgtxt), purl.group(1), 'List2', site.img_next)
+        curr_pg = re.compile(r'class="vp-pagination".+?current">([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+        last_pg = re.compile(r'class="vp-pagination".+?hellip.+?href.+?>([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+        pgtxt = 'Currently in Page {0} of {1}'.format(curr_pg.group(1), last_pg.group(1))
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), url.group(1), 'List', site.img_next)
     utils.eod()
 
 
@@ -91,11 +77,13 @@ def Playvid(url, name, download=None):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'href="([^"]+)"\s*class="tag.+?label="([^"]+)').findall(cathtml)
-    for catpage, name in match:
-        name = utils.cleantext(name)
-        site.add_dir(name, catpage, 'List2')
-    utils.eod()
+    cats = re.compile(r'title">Categories</h3>(.+?)</div>', re.DOTALL | re.IGNORECASE).search(cathtml)
+    if cats:
+        match = re.compile(r'<li><a\s*href="([^"]+)">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cats.group(1))
+        for catpage, name in match:
+            name = utils.cleantext(name)
+            site.add_dir(name, catpage, 'List')
+        utils.eod()
 
 
 @site.register()
@@ -106,4 +94,4 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl + title
-        List2(searchUrl)
+        List(searchUrl)
