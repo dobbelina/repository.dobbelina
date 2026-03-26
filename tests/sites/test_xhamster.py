@@ -259,3 +259,75 @@ def test_list_handles_missing_initials_json(monkeypatch):
 
     assert downloads == []
     assert notifications == [("Oh Oh", "No video found.")]
+
+
+def test_list_finds_nested_video_list_props_and_pagination(monkeypatch):
+    videos_data = [
+        {
+            "title": "Nested Video",
+            "pageURL": "/videos/nested-123",
+            "thumbURL": "https://thumb.xhamster.com/nested.jpg",
+            "duration": 120,
+            "isBlockedByGeo": False,
+        }
+    ]
+
+    json_data = {
+        "layoutPage": {"categoryInfoProps": {"pageTitle": "Nested"}},
+        "newestPage": {
+            "sections": {
+                "primary": {
+                    "videoListProps": {"videoThumbProps": videos_data},
+                    "paginationProps": {
+                        "currentPageNumber": 1,
+                        "lastPageNumber": 3,
+                        "pageLinkTemplate": "https://xhamster.com/newest/{#}",
+                    },
+                }
+            }
+        },
+    }
+
+    html = f"""<html><title>Nested</title>
+    <script id="initials-script">window.initials={json.dumps(json_data)};</script>
+    </html>"""
+
+    downloads = []
+    dirs = []
+
+    class FakeThumbnails:
+        def __init__(self, site_name):
+            pass
+
+        def get(self, urls):
+            return urls[0] if urls else ""
+
+        def fix_img(self, url):
+            return url
+
+    monkeypatch.setattr(xhamster.utils, "getHtml", lambda *a, **k: html)
+    monkeypatch.setattr(
+        xhamster.site,
+        "add_download_link",
+        lambda name, url, mode, iconimage, desc, **kwargs: downloads.append(
+            {"name": name, "url": url}
+        ),
+    )
+    monkeypatch.setattr(
+        xhamster.site,
+        "add_dir",
+        lambda name, url, mode, iconimage=None, **kwargs: dirs.append(
+            {"name": name, "url": url}
+        ),
+    )
+    monkeypatch.setattr(xhamster.utils, "eod", lambda: None)
+    monkeypatch.setattr(xhamster.utils.addon, "getSetting", lambda x: "all")
+    monkeypatch.setattr(xhamster, "update_url", lambda url: url)
+    monkeypatch.setattr(xhamster, "get_setting", lambda x: "All")
+    monkeypatch.setattr(xhamster.utils, "Thumbnails", FakeThumbnails)
+
+    xhamster.List("https://xhamster.com/newest")
+
+    assert downloads == [{"name": "Nested Video", "url": "/videos/nested-123"}]
+    assert dirs
+    assert dirs[0]["url"] == "https://xhamster.com/newest/2"

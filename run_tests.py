@@ -39,6 +39,20 @@ def safe_print(text):
         print(text.encode("ascii", "replace").decode("ascii"))
 
 
+def is_runnable_python(python_path):
+    """Return True when the candidate interpreter can actually start."""
+    try:
+        result = subprocess.run(
+            [str(python_path), "--version"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        return result.returncode == 0
+    except OSError:
+        return False
+
+
 def find_python_executable():
     """Find the appropriate Python executable in the virtual environment."""
     platform_type = get_platform_info()
@@ -61,11 +75,16 @@ def find_python_executable():
 
     # Check which Python executable exists
     for python_path in python_paths:
-        if python_path.exists():
+        if python_path.exists() and is_runnable_python(python_path):
             return str(python_path)
 
+        if python_path.exists():
+            safe_print(
+                f"WARNING: Ignoring unusable virtual environment Python: {python_path}"
+            )
+
     # Fallback to system Python
-    safe_print("WARNING: Virtual environment not found, using system Python")
+    safe_print("WARNING: No usable virtual environment found, using system Python")
     return sys.executable
 
 
@@ -106,7 +125,7 @@ def build_pytest_command(args):
 
 
 def check_venv_exists():
-    """Check if virtual environment exists and provide setup instructions if not."""
+    """Check if a usable virtual environment exists and print setup instructions."""
     platform_type = get_platform_info()
     repo_root = Path(__file__).parent
 
@@ -116,13 +135,18 @@ def check_venv_exists():
             repo_root / ".venv" / "Scripts" / "python.exe",
             repo_root / ".venv-win" / "Scripts" / "python.exe",
         ]
-        venv_exists = any(path.exists() for path in venv_paths)
+        existing_paths = [path for path in venv_paths if path.exists()]
     else:
         venv_path = repo_root / ".venv" / "bin" / "python3"
-        venv_exists = venv_path.exists()
+        existing_paths = [venv_path] if venv_path.exists() else []
 
-    if not venv_exists:
-        safe_print("WARNING: Virtual environment not detected!")
+    usable_paths = [path for path in existing_paths if is_runnable_python(path)]
+
+    if not usable_paths:
+        if existing_paths:
+            safe_print("WARNING: Virtual environment exists but is not usable here!")
+        else:
+            safe_print("WARNING: Virtual environment not detected!")
         safe_print("\nSetup instructions:")
         safe_print("=" * 60)
 

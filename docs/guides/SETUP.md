@@ -26,10 +26,16 @@ Open an **Administrator** PowerShell session in the repository root and run:
 powershell -ExecutionPolicy Bypass -File ./setup_windows.ps1
 ```
 
-The script installs Git, Python 3, ImageMagick, and attempts to install pngquant (skipped with a warning if unavailable). It also creates `.venv` and installs Python test dependencies. Reactivate later with:
+The script installs Git, Python 3, ImageMagick, and attempts to install pngquant (skipped with a warning if unavailable). It creates `.venv` when that environment is usable on Windows, or `.venv-win` when the repository already contains a non-Windows `.venv`. Reactivate later with:
 
 ```powershell
 . .\.venv\Scripts\Activate.ps1
+```
+
+If the setup script created `.venv-win`, reactivate with:
+
+```powershell
+. .\.venv-win\Scripts\Activate.ps1
 ```
 
 ## Running Tests

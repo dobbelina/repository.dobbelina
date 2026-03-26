@@ -31,6 +31,14 @@ def _absolute_url(url):
     return urllib_parse.urljoin(site.url, url)
 
 
+def _normalize_listing_url(url):
+    if not url:
+        return site.url + "latest-updates/"
+    if url.rstrip("/") == site.url.rstrip("/") + "/videos":
+        return site.url + "latest-updates/"
+    return url
+
+
 def _extract_next_page(soup):
     next_link = soup.select_one(".pagination li.next a[href], .pagination li a[href]")
     if next_link:
@@ -44,7 +52,7 @@ def _extract_next_page(soup):
 def Main():
     site.add_dir(
         "[COLOR hotpink]Latest[/COLOR]",
-        site.url + "videos/",
+        site.url + "latest-updates/",
         "List",
         site.img_cat,
     )
@@ -54,11 +62,12 @@ def Main():
         "Search",
         site.img_search,
     )
-    List(site.url + "videos/")
+    List(site.url + "latest-updates/")
 
 
 @site.register()
 def List(url):
+    url = _normalize_listing_url(url)
     html = utils.getHtml(url, site.url)
     if not html:
         utils.eod()

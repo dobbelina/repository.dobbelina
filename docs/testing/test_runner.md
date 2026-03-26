@@ -7,7 +7,7 @@ The `run_tests.py` script is a cross-platform test runner that automatically det
 ## Features
 
 - **Platform Detection**: Automatically detects Windows, Linux, or macOS
-- **Virtual Environment Support**: Uses the project's `.venv` if available, falls back to system Python
+- **Virtual Environment Support**: Uses a runnable `.venv` or `.venv-win` on Windows, and falls back to system Python only when no usable venv is available
 - **Multiple Test Options**: Run all tests, specific sites, or custom test files
 - **Coverage Reports**: Generate HTML and terminal coverage reports
 - **Verbose Output**: Optional detailed test output
@@ -32,7 +32,7 @@ python -m venv .venv-win
 pip install -r requirements-test.txt
 ```
 
-> **Note**: The test runner automatically detects both `.venv` and `.venv-win` directories on Windows.
+> **Note**: The test runner automatically detects both `.venv` and `.venv-win` directories on Windows, and skips broken interpreters such as a Linux-created `.venv`.
 
 ### Linux/Mac
 ```bash
@@ -127,12 +127,13 @@ Running command: C:\...\python.exe -m pytest -v tests/sites/test_85po.py
 
 ### Virtual Environment Not Found
 
-If you see the warning:
+If you see either warning:
 ```
 WARNING: Virtual environment not detected!
+WARNING: Virtual environment exists but is not usable here!
 ```
 
-Follow the setup instructions displayed by the script to create and activate your virtual environment.
+Follow the setup instructions displayed by the script to create and activate a usable virtual environment for your platform.
 
 ### Test File Not Found
 

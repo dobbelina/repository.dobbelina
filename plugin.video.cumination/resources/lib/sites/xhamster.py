@@ -120,38 +120,9 @@ def List(url):
 
     jdata = _load_initials_json(response)
 
-    videos = None
-    if "layoutPage" in jdata:
-        layout_page = jdata["layoutPage"]
-        video_list_props = layout_page.get("videoListProps", {})
-        videos = video_list_props.get("videoThumbProps") or layout_page.get(
-            "videoThumbProps"
-        )
-        if "categoryInfoProps" in layout_page:
-            pagetitle = layout_page["categoryInfoProps"].get("pageTitle", "")
-    if not videos:
-        if "trendingVideoListComponent" in jdata:
-            videos = jdata["trendingVideoListComponent"].get("videoThumbProps")
-        elif "trendingVideoSectionComponent" in jdata:
-            videos = (
-                jdata["trendingVideoSectionComponent"]
-                .get("videoListProps", {})
-                .get("videoThumbProps")
-            )
-        elif "searchResult" in jdata:
-            videos = jdata["searchResult"].get("videoThumbProps")
-        elif "pagesNewestComponent" in jdata:
-            videos = (
-                jdata["pagesNewestComponent"]
-                .get("videoListProps", {})
-                .get("videoThumbProps")
-            )
-        elif "pagesCategoryComponent" in jdata:
-            videos = (
-                jdata["pagesCategoryComponent"]
-                .get("trendingVideoListProps", {})
-                .get("videoThumbProps")
-            )
+    videos, pagination_props, discovered_title = _extract_videos_and_pagination(jdata)
+    if discovered_title:
+        pagetitle = discovered_title
     if not videos:
         utils.notify("Oh Oh", "No video found.")
         return
@@ -194,15 +165,15 @@ def List(url):
         )
 
     npurl = None
-    if "paginationProps" in jdata.get("layoutPage", ""):
-        np = jdata["layoutPage"]["paginationProps"]["currentPageNumber"] + 1
-        lp = jdata["layoutPage"]["paginationProps"]["lastPageNumber"]
-        if lp >= np:
-            npurl = (
-                jdata["layoutPage"]["paginationProps"]["pageLinkTemplate"]
-                .replace(r"\/", "/")
-                .replace("{#}", "{}".format(np))
-            )
+    if isinstance(pagination_props, dict):
+        current_page = pagination_props.get("currentPageNumber")
+        last_page = pagination_props.get("lastPageNumber")
+        template = pagination_props.get("pageLinkTemplate")
+        if current_page is not None and template:
+            np = current_page + 1
+            lp = last_page
+            if not lp or lp >= np:
+                npurl = template.replace(r"\/", "/").replace("{#}", "{}".format(np))
     elif "pagesNewestComponent" in jdata:
         if "paginationProps" in jdata["pagesNewestComponent"]:
             np = (
@@ -629,6 +600,85 @@ def _has_class_prefix(element, prefix):
     if not classes:
         return False
     return any(cls.startswith(prefix) for cls in classes)
+
+
+def _find_nested_value(data, key):
+    if isinstance(data, dict):
+        if key in data:
+            return data[key]
+        for value in data.values():
+            found = _find_nested_value(value, key)
+            if found is not None:
+                return found
+    elif isinstance(data, list):
+        for item in data:
+            found = _find_nested_value(item, key)
+            if found is not None:
+                return found
+    return None
+
+
+def _extract_videos_and_pagination(jdata):
+    layout_page = jdata.get("layoutPage", {})
+    pagetitle = ""
+    videos = None
+    pagination = None
+
+    if isinstance(layout_page, dict):
+        category_info = layout_page.get("categoryInfoProps", {})
+        if isinstance(category_info, dict):
+            pagetitle = category_info.get("pageTitle", "")
+
+        video_list_props = layout_page.get("videoListProps", {})
+        if isinstance(video_list_props, dict):
+            videos = video_list_props.get("videoThumbProps")
+        if not videos:
+            videos = layout_page.get("videoThumbProps")
+        if isinstance(layout_page.get("paginationProps"), dict):
+            pagination = layout_page.get("paginationProps")
+
+    if not videos:
+        component_video_paths = (
+            ("trendingVideoListComponent", "videoThumbProps"),
+            ("trendingVideoSectionComponent", "videoListProps", "videoThumbProps"),
+            ("searchResult", "videoThumbProps"),
+            ("pagesNewestComponent", "videoListProps", "videoThumbProps"),
+            ("pagesCategoryComponent", "trendingVideoListProps", "videoThumbProps"),
+        )
+        for path in component_video_paths:
+            node = jdata
+            for part in path:
+                if not isinstance(node, dict):
+                    node = None
+                    break
+                node = node.get(part)
+            if node:
+                videos = node
+                break
+
+    if not videos:
+        video_list_props = _find_nested_value(jdata, "videoListProps")
+        if isinstance(video_list_props, dict):
+            videos = video_list_props.get("videoThumbProps")
+
+    if not videos:
+        nested_videos = _find_nested_value(jdata, "videoThumbProps")
+        if isinstance(nested_videos, list):
+            videos = nested_videos
+
+    if not pagination:
+        nested_pagination = _find_nested_value(jdata, "paginationProps")
+        if isinstance(nested_pagination, dict):
+            pagination = nested_pagination
+
+    if not pagination:
+        pagination_component = jdata.get("paginationComponent")
+        if isinstance(pagination_component, dict):
+            pagination = pagination_component
+        elif isinstance(jdata.get("pagination"), dict):
+            pagination = jdata.get("pagination")
+
+    return videos, pagination, pagetitle
 
 
 def _load_initials_json(html, soup=None):

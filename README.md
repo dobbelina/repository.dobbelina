@@ -67,6 +67,15 @@ pip install -r requirements-test.txt
 pytest
 ```
 
+On Windows, if the repository already contains a Linux-created `.venv`, create a Windows environment in `.venv-win` instead:
+
+```powershell
+python -m venv .venv-win
+.\.venv-win\Scripts\activate
+python -m pip install -r requirements-test.txt
+python run_tests.py
+```
+
 ---
 
 ## 📜 Credits & Disclaimer

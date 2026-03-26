@@ -9,7 +9,9 @@
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$venvPath = Join-Path $repoRoot '.venv'
+$primaryVenvPath = Join-Path $repoRoot '.venv'
+$windowsVenvPath = Join-Path $repoRoot '.venv-win'
+$venvPath = $primaryVenvPath
 
 function Require-Admin {
     $currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -72,7 +74,32 @@ function Ensure-Tool {
     }
 }
 
+function Test-PythonExecutable {
+    param(
+        [Parameter(Mandatory = $true)][string]$PythonPath
+    )
+
+    if (-not (Test-Path $PythonPath)) {
+        return $false
+    }
+
+    try {
+        & $PythonPath --version *> $null
+        return $LASTEXITCODE -eq 0
+    } catch {
+        return $false
+    }
+}
+
 function Ensure-PythonEnv {
+    $global:venvPath = $primaryVenvPath
+
+    $primaryPython = Join-Path $primaryVenvPath 'Scripts\python.exe'
+    if ((Test-Path $primaryPython) -and -not (Test-PythonExecutable -PythonPath $primaryPython)) {
+        Write-Warning ".venv exists but is not usable on this Windows machine. Creating a Windows-specific environment in .venv-win instead."
+        $global:venvPath = $windowsVenvPath
+    }
+
     if (-not (Test-Path $venvPath)) {
         Write-Host "Creating virtual environment at $venvPath" -ForegroundColor Cyan
         python -m venv $venvPath
