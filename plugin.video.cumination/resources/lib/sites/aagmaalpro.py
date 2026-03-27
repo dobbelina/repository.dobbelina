@@ -17,15 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import re
-import pickle
-import binascii
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite(
     "aagmaalpro",
     "[COLOR hotpink]Aag Maal Pro[/COLOR]",
-    "https://aagmaal.delhi.in/",
+    "https://aagmaal.farm/",
     "aagmaalpro.png",
     "aagmaalpro",
 )
@@ -35,7 +33,7 @@ site = AdultSite(
 def Main():
     site.add_dir(
         "[COLOR hotpink]Categories[/COLOR]",
-        site.url + "categories/",
+        site.url,
         "Categories",
         site.img_cat,
     )
@@ -51,11 +49,11 @@ def List(url):
     listhtml = utils.getHtml(url, site.url)
     soup = utils.parse_html(listhtml)
 
-    # Find all article items
-    items = soup.select("article")
-
-    for item in items:
-        link = item.select_one("a")
+    for item in soup.select("div.recent-item"):
+        thumb_div = item.select_one(".post-thumbnail")
+        link = thumb_div.select_one("a[href]") if thumb_div else None
+        if not link:
+            link = item.select_one("a[href]")
         if not link:
             continue
 
@@ -66,76 +64,27 @@ def List(url):
         img_tag = item.select_one("img")
         img = utils.safe_get_attr(img_tag, "src", ["data-src", "data-original"])
 
-        # Duration
-        duration_tag = item.select_one("span.duration, div.duration, time.duration")
-        duration = utils.safe_get_text(duration_tag, "")
-        # Remove icon if present
-        if duration:
-            duration = re.sub(r"<i.+?/i>", "", duration).strip()
-
-        # Name from header span
-        header = item.select_one('header, div.header, div[class*="header"]')
-        if header:
-            name_tag = header.select_one("span")
-            if name_tag:
-                name = utils.safe_get_text(name_tag)
-            else:
-                name = utils.safe_get_text(header)
-        else:
-            name = utils.safe_get_attr(link, "title", ["aria-label"])
-
+        title_tag = item.select_one("h3.post-box-title a") or item.select_one("h3 a")
+        name = utils.safe_get_text(title_tag) or utils.safe_get_attr(img_tag, "title", ["alt"])
         if not name:
-            continue
-
+            name = "Video"
         name = utils.cleantext(name)
-        site.add_download_link(name, videopage, "Playvid", img, name, duration=duration)
+
+        site.add_download_link(name, videopage, "Playvid", img, name)
 
     # Pagination
     pagination = soup.select_one("div.pagination, nav.pagination")
     if pagination:
         current = pagination.select_one("span.current, a.current")
         if current:
-            # Look for Next link
-            next_link = None
-            for link in pagination.select("a"):
-                if "Next" in utils.safe_get_text(link):
-                    next_link = link
-                    break
-
+            next_link = current.find_next_sibling("a")
             if next_link:
                 np_url = utils.safe_get_attr(next_link, "href")
-                currpg = utils.safe_get_text(current)
-
-                # Find Last link
-                last_link = None
-                for link in pagination.select("a"):
-                    if "Last" in utils.safe_get_text(link):
-                        last_link = link
-                        break
-
-                if last_link:
-                    last_url = utils.safe_get_attr(last_link, "href")
-                    if last_url:
-                        lastpg = last_url.rstrip("/").split("/")[-1]
-                        pgtxt = "Currently in Page {0} of {1}".format(currpg, lastpg)
-                    else:
-                        pgtxt = "Currently in {0}".format(currpg)
-                else:
-                    pgtxt = "Currently in {0}".format(currpg)
-
-                site.add_dir(
-                    "[COLOR hotpink]Next Page...[/COLOR] ({0})".format(pgtxt),
-                    np_url,
-                    "List",
-                    site.img_next,
-                )
-            else:
-                # Look for inactive next link
-                inactive_link = current.find_next_sibling("a", class_="inactive")
-                if inactive_link:
-                    np_url = utils.safe_get_attr(inactive_link, "href")
-                    currpg = utils.safe_get_text(current)
-                    pgtxt = "Currently in {0}".format(currpg)
+                if np_url:
+                    pages_tag = pagination.select_one("span.pages")
+                    pgtxt = "Currently in {0}".format(
+                        utils.safe_get_text(pages_tag, "")
+                    )
                     site.add_dir(
                         "[COLOR hotpink]Next Page...[/COLOR] ({0})".format(pgtxt),
                         np_url,
@@ -151,10 +100,7 @@ def List2(url):
     listhtml = utils.getHtml(url, site.url)
     soup = utils.parse_html(listhtml)
 
-    # Find all article items
-    items = soup.select("article")
-
-    for item in items:
+    for item in soup.select("article"):
         title_div = item.select_one('div.title, h2.title, div[class*="title"]')
         if not title_div:
             continue
@@ -203,38 +149,27 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videourl = ""
-    links = []
 
-    if url.startswith("http"):
-        videopage = utils.getHtml(url, site.url)
-        vidsec = re.search(
-            r'class="video-description">(.+?)<div id="video-author">',
-            videopage,
-            re.DOTALL,
-        )
-        if vidsec:
-            links = re.compile(
-                r"""title="[^\d]+(\d+)"\s*href="(https?://([^.]+)[^"]+)""",
-                re.DOTALL | re.IGNORECASE,
-            ).findall(vidsec.group(1))
-    else:
-        links = pickle.loads(binascii.unhexlify(url))
+    videopage = utils.getHtml(url, site.url)
+    soup = utils.parse_html(videopage)
+
+    # Find links with title, href, and target attributes
+    links = {}
+    for a in soup.select("a[title][href][target]"):
+        link_url = utils.safe_get_attr(a, "href")
+        link_title = utils.safe_get_attr(a, "title")
+        if link_url and link_title and vp.resolveurl.HostedMediaFile(link_url):
+            links[link_title] = link_url
 
     if links:
-        links = {
-            host + " " + no: link
-            for no, link, host in links
-            if vp.resolveurl.HostedMediaFile(link)
-        }
         videourl = utils.selector("Select link", links)
-    else:
+
+    if not videourl:
         r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
+        if not r:
+            r = re.search(r'<iframe.+?src="(http[^"]+)', videopage)
         if r:
             videourl = r.group(1)
-        else:
-            r = re.search(r'<iframe.+?src="(http[^"]+)', videopage)
-            if r:
-                videourl = r.group(1)
 
     if not videourl:
         utils.notify("Oh Oh", "No Videos found")
@@ -246,60 +181,17 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories(url):
-    categories = []
+    cathtml = utils.getHtml(url, site.url)
+    soup = utils.parse_html(cathtml)
 
-    while url:
-        cathtml = utils.getHtml(url, site.url)
-        soup = utils.parse_html(cathtml)
-
-        # Find all article items
-        items = soup.select("article")
-
-        for item in items:
-            link = item.select_one("a")
-            if not link:
-                continue
-
-            catpage = utils.safe_get_attr(link, "href")
-            if not catpage:
-                continue
-
-            img_tag = item.select_one("img")
-            img = utils.safe_get_attr(img_tag, "src", ["data-src", "data-original"])
-
-            # Get title/name
-            title_tag = item.select_one(
-                'div.title, h2.title, span.title, div[class*="title"]'
-            )
-            if title_tag:
-                name = utils.safe_get_text(title_tag)
-            else:
-                name = utils.safe_get_attr(link, "title", ["aria-label"])
-
-            if not name:
-                continue
-
-            categories.append((catpage, img, name))
-
-        # Check for next page
-        pagination = soup.select_one("div.pagination, nav.pagination")
-        if pagination:
-            current = pagination.select_one("span.current, a.current")
-            if current:
-                inactive_link = current.find_next_sibling("a", class_="inactive")
-                if inactive_link:
-                    url = utils.safe_get_attr(inactive_link, "href")
-                else:
-                    url = False
-            else:
-                url = False
-        else:
-            url = False
-
-    # Sort and display categories
-    for catpage, img, name in sorted(categories, key=lambda item: item[2].lower()):
-        name = utils.cleantext(name)
-        site.add_dir(name, catpage, "List", img)
+    for li in soup.select("li.cat-item"):
+        link = li.select_one("a[href]")
+        if not link:
+            continue
+        catpage = utils.safe_get_attr(link, "href")
+        name = utils.cleantext(utils.safe_get_text(link))
+        if catpage and name:
+            site.add_dir(name, catpage, "List2")
 
     utils.eod()
 
@@ -312,4 +204,4 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(" ", "+")
         searchUrl = searchUrl + title
-        List(searchUrl)
+        List2(searchUrl)

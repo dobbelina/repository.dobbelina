@@ -2,8 +2,8 @@
 
 **Purpose**: Track which commits from upstream (dobbelina/repository.dobbelina) have been integrated into this fork.
 
-**Last Updated**: 2026-03-14
-**Last Sync**: 2026-03-14 - Cherry-picked commit 569ea70 (kt_player, xxthots new site, fixes #1767)
+**Last Updated**: 2026-03-26
+**Last Sync**: 2026-03-26 - Ported commit 034f9e42 (Fix aagmaal, aagmaal pro)
 
 ---
 
@@ -21,6 +21,12 @@
 ## Already Integrated Commits
 
 These upstream commits have been integrated into the fork:
+
+### 2026-03-26 Porting Session
+
+| Upstream Hash | Message | Fork Hash | Date Integrated | Notes |
+|---------------|---------|-----------|-----------------|-------|
+| `034f9e42` | Fix aagmaal, aagmaal pro | `manual` | 2026-03-26 | Ported manually to BS4; updated domains (.gay→.bz, .delhi.in→.farm), selectors, Playvid; added script.trakt.exclude to utils |
 
 ### 2026-03-20 Porting Session
 

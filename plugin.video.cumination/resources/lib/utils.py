@@ -957,6 +957,8 @@ def playvid(videourl, name, download=None, subtitle=None, IA_check="check"):
             else:
                 listitem.setSubtitles([subtitle])
 
+        listitem.setProperty("script.trakt.exclude", "1")
+
         if int(sys.argv[1]) == -1:
             xbmc.Player().play(videourl, listitem)
         else:
