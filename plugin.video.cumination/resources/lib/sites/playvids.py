@@ -28,6 +28,55 @@ site = AdultSite(
 )
 
 
+def _extract_video_card(item):
+    """Parse legacy and current PlayVids card markup."""
+    img_tag = item.select_one("img")
+    img = utils.get_thumbnail(img_tag)
+
+    info_section = item.select_one(".info, .card-body")
+    if not info_section:
+        return None
+
+    duration_tag = item.select_one(".duration")
+    duration = utils.safe_get_text(duration_tag, "")
+
+    title_tag = info_section.select_one(".title, .card-title")
+    link = title_tag.select_one("a[href]") if title_tag else None
+    if not link:
+        return None
+
+    videopage = utils.safe_get_attr(link, "href")
+    if not videopage:
+        return None
+
+    name = utils.safe_get_text(link, "").strip()
+    if not name:
+        name = utils.safe_get_attr(link, "title")
+    if not name and img_tag:
+        name = utils.safe_get_attr(img_tag, "alt")
+    name = utils.cleantext(name)
+    if not name:
+        return None
+
+    hd = (
+        "HD"
+        if item.select_one('.badge:-soup-contains("HD")')
+        or ">HD<" in str(item)
+        else ""
+    )
+
+    if videopage.startswith("/"):
+        videopage = site.url[:-1] + videopage
+
+    return {
+        "name": name,
+        "videopage": videopage,
+        "img": img,
+        "duration": duration,
+        "quality": hd,
+    }
+
+
 @site.register(default_mode=True)
 def Main():
     site.add_dir(
@@ -77,50 +126,19 @@ def List(url):
     items = soup.select(".card.thumbs, .card")
     for item in items:
         try:
-            img_tag = item.select_one("img")
-            img = utils.get_thumbnail(img_tag)
-
-            info_section = item.select_one(".info")
-            if not info_section:
+            video = _extract_video_card(item)
+            if not video:
                 continue
-
-            duration_tag = info_section.select_one(".duration")
-            duration = utils.safe_get_text(duration_tag, "")
-
-            title_tag = info_section.select_one(".title")
-            link = title_tag.select_one("a") if title_tag else None
-            if not link:
-                continue
-
-            videopage = utils.safe_get_attr(link, "href")
-            if not videopage:
-                continue
-
-            name = utils.safe_get_text(link, "").strip()
-            if not name:
-                name = utils.safe_get_attr(link, "title")
-            name = utils.cleantext(name)
-
-            # Check for HD badge
-            hd = (
-                "HD"
-                if info_section.select_one('.badge:-soup-contains("HD")')
-                or ">HD<" in str(info_section)
-                else ""
-            )
-
-            if videopage.startswith("/"):
-                videopage = site.url[:-1] + videopage
 
             site.add_download_link(
-                name,
-                videopage,
+                video["name"],
+                video["videopage"],
                 "Playvid",
-                img,
-                name,
+                video["img"],
+                video["name"],
                 noDownload=True,
-                duration=duration,
-                quality=hd,
+                duration=video["duration"],
+                quality=video["quality"],
             )
         except Exception as e:
             utils.kodilog("playvids List: Error processing item - {}".format(e))
@@ -153,50 +171,19 @@ def PList(url):
     items = soup.select(".card.thumbs, .card")
     for item in items:
         try:
-            img_tag = item.select_one("img")
-            img = utils.get_thumbnail(img_tag)
-
-            info_section = item.select_one(".info")
-            if not info_section:
+            video = _extract_video_card(item)
+            if not video:
                 continue
-
-            duration_tag = info_section.select_one(".duration")
-            duration = utils.safe_get_text(duration_tag, "")
-
-            title_tag = info_section.select_one(".title")
-            link = title_tag.select_one("a") if title_tag else None
-            if not link:
-                continue
-
-            videopage = utils.safe_get_attr(link, "href")
-            if not videopage:
-                continue
-
-            name = utils.safe_get_text(link, "").strip()
-            if not name:
-                name = utils.safe_get_attr(link, "title")
-            name = utils.cleantext(name)
-
-            # Check for HD badge
-            hd = (
-                "HD"
-                if info_section.select_one('.badge:-soup-contains("HD")')
-                or ">HD<" in str(info_section)
-                else ""
-            )
-
-            if videopage.startswith("/"):
-                videopage = site.url[:-1] + videopage
 
             site.add_download_link(
-                name,
-                videopage,
+                video["name"],
+                video["videopage"],
                 "Playvid",
-                img,
-                name,
+                video["img"],
+                video["name"],
                 noDownload=True,
-                duration=duration,
-                quality=hd,
+                duration=video["duration"],
+                quality=video["quality"],
             )
         except Exception as e:
             utils.kodilog("playvids PList: Error processing item - {}".format(e))
@@ -225,50 +212,19 @@ def CList(url, page=1):
     items = soup.select('[id^="row_item"]')
     for item in items:
         try:
-            img_tag = item.select_one("img")
-            img = utils.get_thumbnail(img_tag)
-
-            info_section = item.select_one(".info")
-            if not info_section:
+            video = _extract_video_card(item)
+            if not video:
                 continue
-
-            duration_tag = info_section.select_one(".duration")
-            duration = utils.safe_get_text(duration_tag, "")
-
-            title_tag = info_section.select_one(".title")
-            link = title_tag.select_one("a") if title_tag else None
-            if not link:
-                continue
-
-            videopage = utils.safe_get_attr(link, "href")
-            if not videopage:
-                continue
-
-            name = utils.safe_get_text(link, "").strip()
-            if not name:
-                name = utils.safe_get_attr(link, "title")
-            name = utils.cleantext(name)
-
-            # Check for HD badge
-            hd = (
-                "HD"
-                if info_section.select_one('.badge:-soup-contains("HD")')
-                or ">HD<" in str(info_section)
-                else ""
-            )
-
-            if videopage.startswith("/"):
-                videopage = site.url[:-1] + videopage
 
             site.add_download_link(
-                name,
-                videopage,
+                video["name"],
+                video["videopage"],
                 "Playvid",
-                img,
-                name,
+                video["img"],
+                video["name"],
                 noDownload=True,
-                duration=duration,
-                quality=hd,
+                duration=video["duration"],
+                quality=video["quality"],
             )
         except Exception as e:
             utils.kodilog("playvids CList: Error processing item - {}".format(e))
@@ -424,9 +380,11 @@ def Pornstars(url):
 @site.register()
 def Search(url, keyword=None):
     if not keyword:
-        site.search_dir(url, "Search")
+        search_url = url if "q=" in url else site.url + "videos?q="
+        site.search_dir(search_url, "Search")
     else:
-        url = "{0}{1}".format(url, keyword.replace(" ", "+"))
+        base_url = url if "q=" in url else site.url + "videos?q="
+        url = "{0}{1}".format(base_url, keyword.replace(" ", "+"))
         List(url)
 
 

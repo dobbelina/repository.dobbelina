@@ -52,3 +52,18 @@ def test_search_with_keyword(monkeypatch):
     tubxporn.Search("https://tubxporn.com/search/", keyword="test query")
 
     assert len(list_calls) == 1
+
+
+def test_search_with_keyword_uses_default_search_endpoint_for_base_url(monkeypatch):
+    """Test that Search builds the search endpoint when given the site base URL."""
+    list_calls = []
+
+    def fake_list(url):
+        list_calls.append(url)
+
+    monkeypatch.setattr(tubxporn, "List", fake_list)
+
+    tubxporn.Search("https://web.tubxporn.com/", keyword="test query")
+
+    assert len(list_calls) == 1
+    assert list_calls[0] == "https://web.tubxporn.com/search/?q=test%20query"

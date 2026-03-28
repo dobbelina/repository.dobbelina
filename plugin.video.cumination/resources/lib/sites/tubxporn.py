@@ -178,9 +178,11 @@ def Related(url):
 @site.register()
 def Search(url, keyword=None):
     if not keyword:
-        site.search_dir(url, "Search")
+        search_url = url if "q=" in url else site.url + "search/?q="
+        site.search_dir(search_url, "Search")
     else:
-        url = "{0}{1}".format(url, keyword.replace(" ", "%20"))
+        base_url = url if "q=" in url else site.url + "search/?q="
+        url = "{0}{1}".format(base_url, keyword.replace(" ", "%20"))
         List(url)
 
 

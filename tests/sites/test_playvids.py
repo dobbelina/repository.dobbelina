@@ -148,6 +148,21 @@ def test_search_with_keyword_calls_list(monkeypatch):
     assert "test+query" in list_calls[0]
 
 
+def test_search_with_keyword_uses_default_search_endpoint_for_base_url(monkeypatch):
+    """Test that Search builds the search endpoint when given the site base URL."""
+    list_calls = []
+
+    def fake_list(url):
+        list_calls.append(url)
+
+    monkeypatch.setattr(playvids, "List", fake_list)
+
+    playvids.Search("https://www.playvids.com/", keyword="test query")
+
+    assert len(list_calls) == 1
+    assert list_calls[0] == "https://www.playvids.com/videos?q=test+query"
+
+
 def test_list_handles_missing_info_section(monkeypatch):
     """Test that List handles missing info sections gracefully."""
     html = """
@@ -176,3 +191,64 @@ def test_list_handles_missing_info_section(monkeypatch):
 
     # Should skip items without info section
     assert len(downloads) == 0
+
+
+def test_list_parses_current_live_card_markup(monkeypatch):
+    """Test that List supports the current PlayVids card-body markup."""
+    html = """
+    <html>
+    <body>
+    <div class="card thumbs_rotate itemVideo v0259e8458">
+        <div class="card-img">
+            <a href="/VW5NrXhVQzG/example-video">
+                <img
+                    class="card-img-top"
+                    src="https://cdn-img1.playvids.com/thumbs/example.jpg"
+                    alt="Example Video Title"
+                />
+            </a>
+            <div class="video-info">
+                <span class="duration">27:28</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="/VW5NrXhVQzG/example-video">Example Video Title</a>
+            </h5>
+            <div class="card-info">
+                <span class="autor"><a href="/u/example">example</a></span>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+    """
+
+    downloads = []
+
+    def fake_get_html(url, referer=None):
+        return html
+
+    def fake_add_download_link(name, url, mode, iconimage, desc, **kwargs):
+        downloads.append(
+            {
+                "name": name,
+                "url": url,
+                "mode": mode,
+                "icon": iconimage,
+                "duration": kwargs.get("duration", ""),
+            }
+        )
+
+    monkeypatch.setattr(playvids.utils, "getHtml", fake_get_html)
+    monkeypatch.setattr(playvids.site, "add_download_link", fake_add_download_link)
+    monkeypatch.setattr(playvids.site, "add_dir", lambda *a, **k: None)
+    monkeypatch.setattr(playvids.utils, "eod", lambda: None)
+
+    playvids.List("https://www.playvids.com/videos?q=test")
+
+    assert len(downloads) == 1
+    assert downloads[0]["name"] == "Example Video Title"
+    assert downloads[0]["url"] == "https://www.playvids.com/VW5NrXhVQzG/example-video"
+    assert downloads[0]["icon"] == "https://cdn-img1.playvids.com/thumbs/example.jpg"
+    assert downloads[0]["duration"] == "27:28"
