@@ -1,3 +1,11 @@
+[B]Version 1.1.346[/B]
+- feat: enhance video extraction and playback logic across multiple sites
+- Site Fixes
+- feat: port upstream 034f9e42 - fix aagmaal and aagmaalpro domains and scrapers
+- feat: enhance site functionality and improve test coverage for analdin and xhamster
+- Merge pull request #124 from rpeters1430/deepsource-autofix-bd4d6111
+- style: format code with Ruff Formatter
+
 [B]Version 1.1.345[/B]
 - Site Fixes
 - feat: port upstream 034f9e42 - fix aagmaal and aagmaalpro domains and scrapers
