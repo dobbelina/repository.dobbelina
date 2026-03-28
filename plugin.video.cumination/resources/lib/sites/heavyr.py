@@ -138,14 +138,28 @@ def Playvid(url, name, download=None):
     # Check for direct sources in script
     # var video_url = "..."
     match = re.search(r"video_url\s*[:=]\s*[\"']([^\"']+)[\"']", html)
+    if not match:
+        match = re.search(r"['\"]file['\"]\s*[:=]\s*['\"]([^'\"]+)['\"]", html)
+    
     if match:
-        vp.play_from_direct_link(match.group(1) + "|Referer=" + url)
+        video_url = match.group(1).replace("\\/", "/")
+        if not video_url.startswith("http"):
+            video_url = urllib_parse.urljoin(site.url, video_url)
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
         return
 
-    # Look for fluidplayer or similar
+    # Look for fluidplayer or similar sources array
     match = re.search(r"src\s*:\s*[\"']([^\"']+\.mp4[^\"']*)[\"']", html)
     if match:
-        vp.play_from_direct_link(match.group(1) + "|Referer=" + url)
+        video_url = match.group(1).replace("\\/", "/")
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
+        return
+
+    # Check for quality sources
+    match = re.search(r"['\"](?:720|480|360|240)['\"]\s*:\s*['\"]([^'\"]+)['\"]", html)
+    if match:
+        video_url = match.group(1).replace("\\/", "/")
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
         return
 
     vp.play_from_link_to_resolve(url)

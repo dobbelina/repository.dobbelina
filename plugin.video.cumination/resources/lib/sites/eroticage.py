@@ -158,50 +158,53 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(
-        name, download, regex='<iframe data-src="([^"]+)"', direct_regex=None
-    )
+    vp = utils.VideoPlayer(name, download)
     videohtml = utils.getHtml(url)
-    match = re.compile(
-        r'<iframe data-src="([^"]+)"', re.IGNORECASE | re.DOTALL
-    ).findall(videohtml)
-    if match:
-        videourl = match[0]
-        if "xhamster" in videourl:
-            from resources.lib.sites.xhamster import Playvid as xhamsterPlayvid
+    if not videohtml:
+        vp.play_from_link_to_resolve(url)
+        return
 
+    # Try standard iframe data-src first
+    match = re.search(r'<iframe[^>]+data-src="([^"]+)"', videohtml, re.IGNORECASE)
+    if not match:
+        match = re.search(r'<iframe[^>]+src="([^"]+)"', videohtml, re.IGNORECASE)
+
+    if match:
+        videourl = match.group(1)
+        if "xhamster" in videourl.lower():
+            from resources.lib.sites.xhamster import Playvid as xhamsterPlayvid
             xhamsterPlayvid(videourl, name, download)
             return
         if vp.resolveurl.HostedMediaFile(videourl):
             vp.play_from_link_to_resolve(videourl)
             return
-    else:
-        match = re.compile(
-            r'itemprop="embedURL" content="([^"]+)"', re.IGNORECASE | re.DOTALL
-        ).findall(videohtml)
-        if match:
-            iframehtml = utils.getHtml(match[0])
-            match = re.compile(
-                r"iframeElement.src\s*=\s*'([^']+)'", re.IGNORECASE | re.DOTALL
-            ).findall(iframehtml)
+
+    # Check for script-based direct links (common in newer players)
+    match = re.search(r'["\']file["\']\s*:\s*["\']([^"\']+\.mp4[^"\']*)["\']', videohtml, re.IGNORECASE)
+    if not match:
+        match = re.search(r'["\']contentProviderUrl["\']\s*:\s*["\']([^"\']+)["\']', videohtml, re.IGNORECASE)
+
+    if match:
+        video_url = match.group(1).replace("\\/", "/")
+        if not video_url.startswith("http"):
+            video_url = urllib_parse.urljoin(site.url, video_url)
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
+        return
+
+    # Original metadata-based extraction
+    match = re.findall(r'itemprop="embedURL" content="([^"]+)"', videohtml, re.IGNORECASE)
+    if match:
+        iframehtml = utils.getHtml(match[0])
+        if iframehtml:
+            match = re.findall(r"iframeElement\.src\s*=\s*['\"]([^'\"]+)['\"]", iframehtml, re.IGNORECASE)
             if match:
-                playerurl = (
-                    "https:" + match[0] if match[0].startswith("//") else match[0]
-                )
+                playerurl = "https:" + match[0] if match[0].startswith("//") else match[0]
                 playerhtml = utils.getHtml(playerurl)
-                match = re.compile(
-                    r'"contentProviderUrl":"([^"]+)"', re.IGNORECASE | re.DOTALL
-                ).findall(playerhtml)
-                if match:
-                    contenturl = match[0].replace(r"\/", "/")
-                    headers = {
-                        "User-Agent": utils.USER_AGENT,
-                        "X-Requested-With": "XMLHttpRequest",
-                    }
-                    contenthtml = utils.getHtml(contenturl, playerurl, headers)
-                    jsondata = json.loads(contenthtml)
-                    videourl = jsondata["data"]["contentUrl"]
-                    if videourl.startswith("//"):
-                        videourl = "https:" + videourl
-                    vp.progress.update(75, "[CR]Loading video page[CR]")
-                    vp.play_from_direct_link(videourl)
+                if playerhtml:
+                    match = re.findall(r'"contentProviderUrl":"([^"]+)"', playerhtml, re.IGNORECASE)
+                    if match:
+                        contenturl = match[0].replace(r"\/", "/")
+                        vp.play_from_direct_link(contenturl + "|Referer=" + playerurl)
+                        return
+
+    vp.play_from_link_to_resolve(url)

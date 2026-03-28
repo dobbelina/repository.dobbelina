@@ -129,6 +129,8 @@ def List(url):
 
     thumbnails = utils.Thumbnails(site.name)
     for video in videos:
+        if not video:
+            continue
         if video.get("isBlockedByGeo", False):
             continue
         name = video["title"] if utils.PY3 else video["title"].encode("utf8")

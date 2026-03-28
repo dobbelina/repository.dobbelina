@@ -317,6 +317,18 @@ def Main():
         "[COLOR hotpink]Public[/COLOR]", site.url + "public/", "List", site.img_next
     )
     site.add_dir(
+        "[COLOR hotpink]Categories[/COLOR]",
+        site.url + "categories/",
+        "Categories",
+        site.img_cat,
+    )
+    site.add_dir(
+        "[COLOR hotpink]Models[/COLOR]",
+        site.url + "models/",
+        "Models",
+        site.img_cat,
+    )
+    site.add_dir(
         "[COLOR hotpink]Search[/COLOR]", site.url + "search/", "Search", site.img_search
     )
     # latest-updates/ is more reliable than public/
@@ -332,17 +344,31 @@ def _extract_list_items(html):
     # Common IDs: list_videos_latest_videos_list_items, list_videos_most_recent_videos_items, etc.
     container = soup.select_one('[id*="videos"][id*="_items"]')
     if not container:
-        container = soup.select_one('.list-videos, .videos-list')
-    
+        container = soup.select_one(".list-videos, .videos-list")
+
     source = container if container else soup
 
-    # Find all video links - ThotHub uses <a> tags with href="/videos/ID/slug/"
-    video_links = source.select('a[href*="/videos/"]')
-    utils.kodilog(
-        "ThotHub found {} video links".format(len(video_links)), xbmc.LOGDEBUG
-    )
+    # Find all items
+    for item in source.select(".item"):
+        # Check if it's a private video
+        classes = item.get("class", [])
+        if "private" in classes:
+            utils.kodilog(
+                "ThotHub: Skipping private video (class=private)", xbmc.LOGDEBUG
+            )
+            continue
 
-    for link in video_links:
+        # Also check for .line-private span as a safety measure
+        if item.select_one(".line-private, .ico-private"):
+            utils.kodilog(
+                "ThotHub: Skipping private video (found .line-private)", xbmc.LOGDEBUG
+            )
+            continue
+
+        link = item.select_one('a[href*="/videos/"]')
+        if not link:
+            continue
+
         url = utils.safe_get_attr(link, "href")
         if not url or "/videos/" not in url:
             continue
@@ -370,9 +396,8 @@ def _extract_list_items(html):
         name = utils.cleantext(title)
 
         # ThotHub screenshot pattern: /contents/videos_screenshots/ID000/ID/preview.jpg
-        # Example: /contents/videos_screenshots/1416000/1416571/preview.jpg
         video_id_int = int(video_id)
-        base_id = (video_id_int // 1000) * 1000  # Round down to nearest 1000
+        base_id = (video_id_int // 1000) * 1000
         screenshot = urllib_parse.urljoin(
             site.url,
             "contents/videos_screenshots/{}/{}/preview.jpg".format(base_id, video_id),
@@ -390,6 +415,70 @@ def _extract_list_items(html):
 
     utils.kodilog("ThotHub extracted {} unique items".format(len(uniq)), xbmc.LOGDEBUG)
     return uniq
+
+
+@site.register()
+def Categories(url):
+    """List video categories from ThotHub."""
+    html = utils.getHtml(url, site.url)
+    soup = utils.parse_html(html)
+    container = soup.select_one(".list-categories")
+    source = container if container else soup
+
+    for item in source.select("a.item"):
+        cat_url = utils.safe_get_attr(item, "href")
+        title_el = item.select_one(".title")
+        title = utils.safe_get_text(title_el)
+        count_el = item.select_one(".videos")
+        count = utils.safe_get_text(count_el)
+
+        if title and cat_url:
+            display_name = title
+            if count:
+                display_name += " [COLOR yellow]({})[/COLOR]".format(count)
+            site.add_dir(display_name, cat_url, "List", site.img_cat)
+
+    nurl = _find_next_page(html, url)
+    if nurl:
+        if nurl.startswith("/"):
+            nurl = urllib_parse.urljoin(site.url, nurl)
+        site.add_dir(
+            "[COLOR hotpink]Next Page...[/COLOR]", nurl, "Categories", site.img_next
+        )
+    utils.eod()
+
+
+@site.register()
+def Models(url):
+    """List models from ThotHub."""
+    html = utils.getHtml(url, site.url)
+    soup = utils.parse_html(html)
+    container = soup.select_one(".list-models")
+    source = container if container else soup
+
+    for item in source.select("a.item"):
+        model_url = utils.safe_get_attr(item, "href")
+        title_el = item.select_one(".title")
+        title = utils.safe_get_text(title_el)
+        count_el = item.select_one(".videos")
+        count = utils.safe_get_text(count_el)
+        img_el = item.select_one("img")
+        img = utils.safe_get_attr(img_el, "src")
+
+        if title and model_url:
+            display_name = title
+            if count:
+                display_name += " [COLOR yellow]({})[/COLOR]".format(count)
+            site.add_dir(display_name, model_url, "List", img or site.img_cat)
+
+    nurl = _find_next_page(html, url)
+    if nurl:
+        if nurl.startswith("/"):
+            nurl = urllib_parse.urljoin(site.url, nurl)
+        site.add_dir(
+            "[COLOR hotpink]Next Page...[/COLOR]", nurl, "Models", site.img_next
+        )
+    utils.eod()
 
 
 def _find_next_page(html, current_url):

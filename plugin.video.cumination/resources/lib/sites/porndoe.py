@@ -90,7 +90,7 @@ def List(url):
         return
 
     soup = utils.parse_html(html)
-    for item in soup.select(".video-item[data-video-item], .video-item"):
+    for item in soup.select(".video-item"):
         link = (
             item.select_one("a.video-item-link[href]")
             or item.select_one(".video-item-block a[href]")

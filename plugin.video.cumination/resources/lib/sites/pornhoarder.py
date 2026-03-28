@@ -302,23 +302,39 @@ def List(url, page=1, section=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download=download)
     html = utils.getHtml(url, site.url)
+    if not html:
+        vp.play_from_link_to_resolve(url)
+        return
+
+    # Check for direct video links in the page first
+    match = re.search(r'["\']file["\']\s*:\s*["\']([^"\']+\.mp4[^"\']*)["\']', html, re.IGNORECASE)
+    if match:
+        video_url = match.group(1).replace("\\/", "/")
+        vp.play_from_direct_link(video_url + "|Referer=" + url)
+        return
 
     watch_soup = utils.parse_html(html)
     # Prefer current iframe source (player_t.php) over embedUrl metadata.
     embed_url = utils.safe_get_attr(
-        watch_soup.select_one("iframe[src]"), "src", default=""
+        watch_soup.select_one("iframe[src*='player']"), "src", default=""
     )
     if not embed_url:
         embed_url = "".join(re.findall(r'"embedUrl":\s*"([^"]+)"', html))
 
     if not embed_url:
-        # Try to find any player.php link
-        embed_url = "".join(
-            re.findall(r'https?://pornhoarder\.net/player\.php\?video=[^"\'\s>]+', html)
-        )
+        # Try to find any player.php or player_t.php link
+        embed_match = re.search(r'https?://pornhoarder\.net/player(?:_t)?\.php\?video=[^"\'\s>]+', html)
+        if embed_match:
+            embed_url = embed_match.group(0)
 
     if not embed_url:
-        vp.progress.close()
+        # Fallback to metadata
+        meta_embed = watch_soup.find("meta", {"itemprop": "embedURL"})
+        if meta_embed:
+            embed_url = utils.safe_get_attr(meta_embed, "content")
+
+    if not embed_url:
+        vp.play_from_link_to_resolve(url)
         return
 
     embed_url = embed_url.replace("/player.php?", "/player_t.php?")
@@ -335,23 +351,33 @@ def Playvid(url, name, download=None):
         if not player_html:
             player_html = utils.getHtml(embed_url, url)
 
-        iframe_match = re.findall(
-            r"""<iframe.+?src\s*=\s*["']([^'"]+)""",
-            player_html,
-            re.DOTALL | re.IGNORECASE,
-        )
-        if iframe_match:
-            embed_url = iframe_match[0]
-            if embed_url.startswith("//"):
-                embed_url = "https:" + embed_url
-            elif embed_url.startswith("/"):
-                embed_url = urllib_parse.urljoin(site.url, embed_url)
+        if player_html:
+            # Check for direct file in player HTML
+            file_match = re.search(r'["\']file["\']\s*:\s*["\']([^"\']+\.mp4[^"\']*)["\']', player_html, re.IGNORECASE)
+            if file_match:
+                video_url = file_match.group(1).replace("\\/", "/")
+                vp.play_from_direct_link(video_url + "|Referer=" + embed_url)
+                return
 
-    if not embed_url:
-        vp.progress.close()
-        return
+            iframe_match = re.findall(
+                r"""<iframe.+?src\s*=\s*["']([^'"]+)""",
+                player_html,
+                re.DOTALL | re.IGNORECASE,
+            )
+            if iframe_match:
+                embed_url = iframe_match[0]
+                if embed_url.startswith("//"):
+                    embed_url = "https:" + embed_url
+                elif embed_url.startswith("/"):
+                    embed_url = urllib_parse.urljoin(site.url, embed_url)
 
-    vp.play_from_link_to_resolve(embed_url)
+    if embed_url:
+        if vp.resolveurl.HostedMediaFile(embed_url):
+            vp.play_from_link_to_resolve(embed_url)
+        else:
+            vp.play_from_direct_link(embed_url + "|Referer=" + url)
+    else:
+        vp.play_from_link_to_resolve(url)
 
 
 @site.register()

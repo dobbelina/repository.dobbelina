@@ -52,13 +52,14 @@ def Main():
 
 @site.register()
 def List(url):
+    headers = {"User-Agent": utils.USER_AGENT, "Referer": site.url}
     try:
-        html = utils.getHtml(url, site.url)
+        html = utils.getHtml(url, site.url, headers=headers)
     except Exception as e:
         utils.kodilog("@@@@Cumination: failure in tubxporn: " + str(e))
-        html = utils._getHtml(
-            str(url) + "?label_W9dmamG9w9zZg45g93FnLAVbSyd0bBDv=1", site.url
-        )
+        # Fallback with a potential bypass parameter
+        fallback_url = url + ("?" if "?" not in url else "&") + "label_W9dmamG9w9zZg45g93FnLAVbSyd0bBDv=1"
+        html = utils.getHtml(fallback_url, site.url, headers=headers)
     if "There are no videos in the list" in html:
         utils.notify(msg="Nothing found")
         utils.eod()
