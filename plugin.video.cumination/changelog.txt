@@ -1,4 +1,4 @@
-[B]Version 1.1.175[/B]
+[B]Version 1.1.176[/B]
 - hentaidude - fix subtitles
 - aagmaal - fix listing
 - aagmaalpro - fix listing
