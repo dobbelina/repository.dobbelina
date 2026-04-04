@@ -17,7 +17,6 @@
 """
 
 import re
-import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -41,9 +40,7 @@ def List(url):
         name = utils.cleantext(name)
 
         contextmenu = []
-        contexturl = (utils.addon_sys
-                          + "?mode=" + str('freeomovie.Lookupinfo')
-                          + "&url=" + urllib_parse.quote_plus(videopage))
+        contexturl = (utils.addon_sys + "?mode=freeomovie.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
@@ -86,9 +83,9 @@ def Lookupinfo(url):
 
     lookupinfo = utils.LookupInfo(site.url, url, 'freeomovie.List', lookup_list)
     lookupinfo.getinfo()
-    
+
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download, regex=r'href="([^"]+)"\s*target="myIframe"', direct_regex=None)
+    vp = utils.VideoPlayer(name, download=download, regex=r'data-embed-url="([^"]+)"', direct_regex=None)
     vp.play_from_site_link(url, url)

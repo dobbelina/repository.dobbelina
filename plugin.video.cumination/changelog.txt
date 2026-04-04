@@ -1,5 +1,10 @@
-[B]Version 1.1.176[/B]
-- hentaidude - fix subtitles
-- aagmaal - fix listing
-- aagmaalpro - fix listing
-
+[B]Version 1.1.177[/B]
+- xhamster - fix pornstars/celebrities, playback
+- porno365 - fix playback
+- pornxp - fix thumbnails
+- watchporn - fix listing
+- xxdbx - fix thumbnails
+- longvideos - site removed
+- wowxxx - new site
+- freeomovie - fix playback
+- premiumporn - fix playback

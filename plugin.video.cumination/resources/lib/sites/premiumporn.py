@@ -132,16 +132,14 @@ def Play(url, name, download=None):
         embed_url = match[0][0]
         id = match[0][1]
         details_url = 'https://bysewihe.com/api/videos/{}/embed/details'.format(id)
-        details_data = utils.getHtml(details_url, url)
-        details_json = json.loads(details_data)
-        embed = details_json.get('embed_frame_url', '')
-
-        api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
         hdr = utils.base_hdrs.copy()
         hdr['X-Embed-Origin'] = 'premiumporn.org'
         hdr['X-Embed-Parent'] = embed_url
         hdr['X-Embed-Referer'] = site.url
-
+        details_data = utils.getHtml(details_url, embed_url, headers=hdr)
+        details_json = json.loads(details_data)
+        embed = details_json.get('embed_frame_url', '')
+        api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
         api_data = utils.getHtml(api_url, embed, headers=hdr)
         encrypted_data = json.loads(api_data)
 

@@ -115,7 +115,12 @@ def Models(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex='meta property="og:video" content="([^"]+)">')
+    vp = utils.VideoPlayer(name, download, direct_regex='play-video".+?href="([^"]+)">')
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url, site.url, headers=porn365_headers)
-    vp.play_from_html(videohtml)
+    match = re.compile(r'\{\s+file:\s+"([^"]+)",\s+label:\s+"(\S+)', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    if match:
+        sources = {label: file for file, label in match}
+        videourl = utils.prefquality(sources, sort_by=lambda x: int(re.sub(r'\D', '', x)), reverse=True)
+        if videourl:
+            vp.play_from_direct_link(videourl)

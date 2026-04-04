@@ -44,7 +44,7 @@ def List(url):
     delimiter = '<div class="v">'
     re_videopage = '<a href="([^"]+)">'
     re_name = 'class="v_title">([^<]+)<'
-    re_img = 'src="(//[^"]+)"'
+    re_img = 'data-src="([^"]+)"'
     re_duration = r'class="v_dur">([^<]+)<'
 
     cm = []

@@ -24,7 +24,7 @@ import xbmc
 import xbmcgui
 
 
-site = AdultSite('longvideos', '[COLOR hotpink]LongVideos.xxx[/COLOR]', 'https://www.longvideos.xxx/', 'longvideos.png', 'longvideos')
+site = AdultSite('wowxxx', '[COLOR hotpink]WOW.xxx[/COLOR]', 'https://www.wow.xxx/', 'wowxxx.png', 'wowxxx')
 
 
 @site.register(default_mode=True)
@@ -51,17 +51,17 @@ def List(url):
     re_quality = '<div class="(FHD)">'
 
     cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('longvideos.Lookupinfo') + "&url=")
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('wowxxx.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
-    cm_related = (utils.addon_sys + "?mode=" + str('longvideos.Related') + "&url=")
+    cm_related = (utils.addon_sys + "?mode=" + str('wowxxx.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'longvideos.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    utils.videos_list(site, 'wowxxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
 
     re_npurl = 'aria-label="Next" href="([^"]+)"'
     re_npnr = r'aria-label="Next" href="[^"]+/(\d+)/"'
     re_lpnr = r'/(\d+)/">[^<]+</a></li>\s*<li class="next"'
-    utils.next_page(site, 'longvideos.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='longvideos.GotoPage')
+    utils.next_page(site, 'wowxxx.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='wowxxx.GotoPage')
     utils.eod()
 
 
@@ -74,7 +74,7 @@ def GotoPage(url, np, lp=0):
             utils.notify(msg='Out of range!')
             return
         url = url.replace('/{}/'.format(np), '/{}/'.format(pg))
-        contexturl = (utils.addon_sys + "?mode=" + "longvideos.List&url=" + urllib_parse.quote_plus(url))
+        contexturl = (utils.addon_sys + "?mode=" + "wowxxx.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -113,16 +113,16 @@ def Playvid(url, name, download=None):
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Channel", r'href="https://www.longvideos.xxx/(sites[^"]+)">([^<]+)<', ''),
-        # ("Network", r'href="https://www.longvideos.xxx/(networks[^"]+)">([^<]+)<', ''),
-        # ("Categories", r'href="https://www.longvideos.xxx/(categories[^"]+)">([^<]+)<', ''),
-        ("Models", r'href="https://www.longvideos.xxx/(models[^"]+)">([^<]+)<', '')
+        ("Channel", r'href="{}(sites[^"]+)">([^<]+)<'.format(site.url), ''),
+        # ("Network", r'href="{}(networks[^"]+)">([^<]+)<'.format(site.url), ''),
+        # ("Categories", r'href="{}(categories[^"]+)">([^<]+)<'.format(site.url), ''),
+        ("Models", r'href="{}(models[^"]+)">([^<]+)<'.format(site.url), '')
     ]
-    lookupinfo = utils.LookupInfo(site.url, url, 'longvideos.List', lookup_list)
+    lookupinfo = utils.LookupInfo(site.url, url, 'wowxxx.List', lookup_list)
     lookupinfo.getinfo()
 
 
 @site.register()
 def Related(url):
-    contexturl = (utils.addon_sys + "?mode=" + str('longvideos.List') + "&url=" + urllib_parse.quote_plus(url))
+    contexturl = (utils.addon_sys + "?mode=" + str('wowxxx.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')

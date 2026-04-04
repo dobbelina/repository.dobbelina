@@ -151,60 +151,66 @@ def List(url):
 
 @site.register()
 def Playvid(url, name, download=None):
+    url = url.replace('/embed/', '/videos/')
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url, error=True)
-    if 'This video was deleted' in videopage:
+    if 'This video was deleted' in videopage or 'Video is not available' in videopage:
         utils.notify('Oh Oh', 'This video was deleted.')
         return
+    videourl = ''
     match = re.compile(r'<link rel="preload" href="([^"]+m3u8)"', re.DOTALL).search(videopage)
     if match:
         videourl = match.group(1)
         videourl = videourl.replace('.av1.', '.h264.')
-        utils.kodilog('xHamster direct m3u8 URL found: {}'.format(videourl))
     else:
-        jsondata = videopage.split('>window.initials=')[-1].split(';</script>')[0]
-        jdata = json.loads(jsondata)
-        data = jdata.get('xplayerSettings', {})
-        data2 = jdata.get('xplayerSettings2', {})
-        sources = data.get('sources', {})
-        sources2 = data2.get('sources', {})
-
-        if 'hls' in sources:
-            h264src = sources['hls'].get('h264', '')
-            h265src = sources['hls'].get('h265', '')
-            av1src = sources['hls'].get('av1', '')
-            if h264src:
-                hexurl = h264src['url']
-            elif h265src:
-                hexurl = h265src['url']
-            elif av1src:
-                hexurl = av1src['url']
-            else:
-                utils.notify('Oh Oh', 'No playable video found.')
-                return
-
-        if hexurl:
-            from resources.lib.decrypters import xhamster_decrypt
-            try:
-                if not hexurl.startswith('http'):
-                    videourl = xhamster_decrypt.deobfuscate_url(hexurl)
-                else:
-                    enc_string = hexurl.split('/')[3]
-                    dec_string = xhamster_decrypt.deobfuscate_url(enc_string)
-                    videourl = hexurl.replace(enc_string, dec_string)
-            except Exception as e:
-                utils.notify('Oh Oh', 'Failed to deobfuscate video URL - {}'.format(e))
-                return
+        match = re.compile(r'<video class="player-container.+?src="(http[^"]+)"', re.DOTALL | re.IGNORECASE).search(videopage)
+        if match:
+            videourl = match.group(1)
         else:
-            if 'standard' in sources2:
-                src = sources2['standard'].get('h264', '')
-                srcs = {}
-                for s in src:
-                    srcs[s['quality']] = s['url']
-                videourl = utils.prefquality(srcs, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
-                if not videourl:
+            jsondata = videopage.split('>window.initials=')[-1].split(';</script>')[0]
+            jdata = json.loads(jsondata)
+            data = jdata.get('xplayerSettings', {})
+            data2 = jdata.get('xplayerSettings2', {})
+            sources = data.get('sources', {})
+            sources2 = data2.get('sources', {})
+
+            hexurl = ''
+            if 'hls' in sources:
+                h264src = sources['hls'].get('h264', '')
+                h265src = sources['hls'].get('h265', '')
+                av1src = sources['hls'].get('av1', '')
+                if h264src:
+                    hexurl = h264src['url']
+                elif h265src:
+                    hexurl = h265src['url']
+                elif av1src:
+                    hexurl = av1src['url']
+                else:
+                    utils.notify('Oh Oh', 'No playable video found.')
                     return
+
+            if hexurl:
+                from resources.lib.decrypters import xhamster_decrypt
+                try:
+                    if not hexurl.startswith('http'):
+                        videourl = xhamster_decrypt.deobfuscate_url(hexurl)
+                    else:
+                        enc_string = hexurl.split('/')[3]
+                        dec_string = xhamster_decrypt.deobfuscate_url(enc_string)
+                        videourl = hexurl.replace(enc_string, dec_string)
+                except Exception as e:
+                    utils.notify('Oh Oh', 'Failed to deobfuscate video URL - {}'.format(e))
+                    return
+            else:
+                if 'standard' in sources2:
+                    src = sources2['standard'].get('h264', '')
+                    srcs = {}
+                    for s in src:
+                        srcs[s['quality']] = s['url']
+                    videourl = utils.prefquality(srcs, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
+                    if not videourl:
+                        return
 
     if videourl.startswith('http'):
         vp.progress.update(75, "[CR]Playing video[CR]")
@@ -256,8 +262,8 @@ def Pornstars(url):
     elif cat == 'shemale':
         url = url.replace('/pornstars', '/shemale/pornstars')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, image, url, name, videos in match:
+    match = re.compile(r'class="root-4fca8 desktop-4fca8" data-name="([^"]+)"[^"]+="([^"]+)".+?Rating"\D+(\d+).+?src="([^"]+)".+?metricIcon-4fca8"\D+(\d+)', re.DOTALL).findall(cathtml)
+    for name, url, rank, image, videos in match:
         # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(5), name, videos)
         title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
         site.add_dir(title, url + '/newest', 'List', image)
@@ -278,9 +284,10 @@ def Celebrities(url):
     elif cat == 'shemale':
         url = url.replace('/celebrities', '/shemale/celebrities')
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="root-4fc.+?ing">#([^<]+).+?src="([^"]+).+?href="([^"]+).+?>([^<]+).+?videos.+?</i>\s*([^<]+)', re.DOTALL).findall(cathtml)
-    for rank, image, url, name, videos in match:
+    match = re.compile(r'class="root-4fca8 desktop-4fca8" data-name="([^"]+)"[^"]+="([^"]+)".+?Rating"\D+(\d+).+?src="([^"]+)".+?metricIcon-4fca8"\D+(\d+)', re.DOTALL).findall(cathtml)
+    for name, url, rank, image, videos in match:
         # title = '[COLOR hotpink]{0}[/COLOR] {1} [COLOR yellow]({2} videos)[/COLOR]'.format(rank.rjust(4), name, videos)
+
         title = '{0} [COLOR yellow]({1})[/COLOR]'.format(name, videos)
         site.add_dir(title, url + '/newest', 'List', image)
     npurl = re.compile(r'next"\s*href="([^"]+).+?>Next').search(cathtml)

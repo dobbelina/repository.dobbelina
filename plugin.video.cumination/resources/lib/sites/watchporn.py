@@ -43,7 +43,7 @@ def List(url):
         url = url + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&_=' + str(tm)
     listhtml = utils.getHtml(url)
 
-    delimiter = '<div class="item  ">'
+    delimiter = '<div class="thumb item'
     re_videopage = '<a href="([^"]+)"'
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
