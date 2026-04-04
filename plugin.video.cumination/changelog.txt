@@ -8,3 +8,4 @@
 - wowxxx - new site
 - freeomovie - fix playback
 - premiumporn - fix playback
+- allclassic - fix thumbnails

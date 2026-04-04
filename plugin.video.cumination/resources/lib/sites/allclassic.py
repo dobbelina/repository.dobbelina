@@ -59,7 +59,7 @@ def List(url):
     cm_related = (utils.addon_sys + "?mode=" + str('allclassic.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'allclassic.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip, contextm=cm)
+    utils.videos_list(site, 'allclassic.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip, contextm=cm, thumbnails='cache')
 
     re_npurl = 'class="active">.+?href="/([^"]+)"'
     re_npnr = r'class="active">.+?href="[^"]+">0*(\d+)<'
