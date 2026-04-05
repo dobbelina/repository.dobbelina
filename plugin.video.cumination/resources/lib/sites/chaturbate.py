@@ -248,7 +248,7 @@ def Playvid(url, name):
         data = False
 
     if data:
-        m3u8stream = data['hls_source']
+        m3u8stream = data.get('hls_source')
     else:
         m3u8stream = False
 
@@ -256,7 +256,9 @@ def Playvid(url, name):
 
     if playmode == 0:
         if m3u8stream:
-            videourl = "{0}|{1}".format(m3u8stream, urllib_parse.urlencode(HTTP_HEADERS_IPAD))
+            headers = HTTP_HEADERS_IPAD.copy()
+            headers['Referer'] = url
+            videourl = "{0}|{1}".format(m3u8stream, urllib_parse.urlencode(headers))
         else:
             utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
             return
@@ -277,7 +279,7 @@ def Playvid(url, name):
             return
 
     vp = utils.VideoPlayer(name)
-    # vp.IA_check = 'IA'
+    vp.IA_check = 'IA'
     vp.play_from_direct_link(videourl)
 
 
