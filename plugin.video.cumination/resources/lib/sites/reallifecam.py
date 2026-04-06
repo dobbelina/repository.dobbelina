@@ -24,8 +24,8 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('rlc', '[COLOR hotpink]Reallifecam.to[/COLOR]', 'https://reallifecam.to/', 'https://reallifecam.to/images/logo/logo.png', 'rlc')
 # site1 = AdultSite('vh', '[COLOR hotpink]Voyeur-house.to[/COLOR]', 'https://voyeur-house.to/', 'https://voyeur-house.to/images/logo/logo.png', 'vh')
-site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house.cc[/COLOR]', 'https://www.voyeur-house.cc/', 'https://www.voyeur-house.cc/images/logo/logo.png', 'vhlife')
-site3 = AdultSite('vhlife1', '[COLOR hotpink]Reallifecams.in[/COLOR]', 'https://www.reallifecams.in/', 'https://www.reallifecams.in/images/logo/logo.png', 'vhlife1')
+site2 = AdultSite('vhlife', '[COLOR hotpink]Voyeur-house[/COLOR]', 'https://www.voyeur-house.me/', 'https://www.voyeur-house.me/images/logo/logo.png', 'vhlife')
+site3 = AdultSite('vhlife1', '[COLOR hotpink]Reallifecams.us[/COLOR]', 'https://reallifecams.us/', 'https://reallifecams.us/images/logo/logo.png', 'vhlife1')
 site4 = AdultSite('camcaps', '[COLOR hotpink]Camcaps[/COLOR]', 'https://camcaps.tv/', 'https://camcaps.tv/images/logo/logo.png', 'camcaps')
 
 
@@ -34,9 +34,9 @@ def getBaselink(url):
         siteurl = site.url
     # elif 'voyeur-house.to' in url:
     #     siteurl = site1.url
-    elif 'voyeur-house.cc' in url:
+    elif 'voyeur-house' in url:
         siteurl = site2.url
-    elif 'reallifecams.in' in url:
+    elif 'reallifecams' in url:
         siteurl = site3.url
     elif 'camcaps.tv' in url:
         siteurl = site4.url
@@ -51,7 +51,7 @@ def getBaselink(url):
 def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
-    if 'camcaps.com' in url:
+    if 'camcaps' in url:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos/', 'Search', site.img_search)
     else:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/videos?search_query=', 'Search', site.img_search)
@@ -95,7 +95,7 @@ def Search(url, keyword=None):
 def Categories(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, '')
-    if 'reallifecam.to' in url or 'voyeur-house.to' in url:
+    if 'reallifecam.to' in url:
         match = re.compile('div class="col-sm.+?a href="([^"]+)"(>).+?title-truncate">([^<]+)<.+?class="badge">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     else:
         match = re.compile(r'col-sm.+?a href="([^"]+)">.+?img src="([^"]+)"\s*title="([^"]+)".+?"float-right">\s*(\d+)\s*<', re.DOTALL | re.IGNORECASE).findall(cathtml)

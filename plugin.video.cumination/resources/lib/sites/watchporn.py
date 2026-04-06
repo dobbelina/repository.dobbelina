@@ -123,9 +123,9 @@ def Playvid(url, name, download=None):
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Category", r'<a href="https://watchporn.to/(categories[^"]+)">([^<]+)<', ''),
-        ("Tag", r'<a href="https://watchporn.to/(tags[^"]+)">([^<]+)<', ''),
-        ("Model", r'<a href="https://watchporn.to/(models[^"]+)">([^<]+)<', '')
+        ("Category", r'href="https://watchporn.to/(categories[^"]+)"\s*>([^<]+)<', ''),
+        ("Tag", r'href="https://watchporn.to/(tags[^"]+)"\s*>([^<]+)<', ''),
+        ("Model", r'href="https://watchporn.to/(models[^"]+)"\s*>([^<]+)<', '')
     ]
     lookupinfo = utils.LookupInfo(site.url, url, 'watchporn.List', lookup_list)
     lookupinfo.getinfo()
