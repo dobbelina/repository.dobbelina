@@ -26,6 +26,7 @@ import random
 import time
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import xbmc
 
 bu = 'https://chaturbate.com/'
 rapi = 'https://chaturbate.com/api/ts/roomlist/room-list/'
@@ -184,6 +185,8 @@ def List(url, page=1):
         contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
         contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
         contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if not follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
+        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(id))
+        contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(id), 'RunPlugin(' + contextrecord + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
 
@@ -449,3 +452,11 @@ def get_cookie():
         if cookie.domain == domain and cookie.name == 'sessionid':
             cookiestr = cookie.value
     return cookiestr
+
+
+@site.register()
+def Record(id):
+    url = 'https://www.cloudbate.com/search/{0}/'
+    contexturl = (utils.addon_sys + "?mode=cloudbate.Search&url={}&keyword={}".format(urllib_parse.quote_plus(url), id))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    utils.eod()
