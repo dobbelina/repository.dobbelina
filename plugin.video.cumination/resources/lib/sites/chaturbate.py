@@ -393,6 +393,7 @@ def Playvid(url, name):
                             km = re.search(r'(chunklist_\d+_\w+)', req_url)
                             type_key = km.group(1) if km else None
                             cdn_url = _proxy_state['url_map'].get(type_key, req_url) if type_key else req_url
+                            _proxy_state['last_request'] = time.time()
 
                             def _fetch_and_absolutize(u):
                                 """Fetch chunklist and absolutize relative URIs so ISA resolves them against CDN."""
@@ -437,6 +438,21 @@ def Playvid(url, name):
                                 if not _proxy_state.get('reconnecting'):
                                     _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
                                     _proxy_state['reconnecting'] = True
+
+                                    def _force_stop(reason):
+                                        _proxy_state['stopping'] = True
+                                        _dbg('FORCE STOP: {}'.format(reason))
+                                        try:
+                                            xbmc.executebuiltin('PlayerControl(Stop)')
+                                            _dbg('PlayerControl(Stop) sent')
+                                        except Exception as ex2:
+                                            _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                                        try:
+                                            _cb_proxy.shutdown()
+                                            _dbg('Proxy server shutdown')
+                                        except Exception:
+                                            pass
+
                                     def _bg_reconnect():
                                         try:
                                             for _attempt in range(15):
@@ -444,18 +460,20 @@ def Playvid(url, name):
                                                 if _refresh_session():
                                                     _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
                                                     _proxy_state['reconnecting'] = False
+                                                    _dbg('WATCHDOG waiting 5s to check ISA')
+                                                    time.sleep(5)
+                                                    gap = time.time() - _proxy_state.get('last_request', 0)
+                                                    _dbg('WATCHDOG gap={:.1f}s'.format(gap))
+                                                    if gap > 4:
+                                                        _force_stop('ISA went silent {:.0f}s after reconnect'.format(gap))
+                                                    else:
+                                                        _dbg('WATCHDOG OK — ISA still active')
                                                     return
                                                 time.sleep(2)
                                             _dbg('GIVING UP after 15 attempts')
                                         except Exception as ex:
                                             _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
-                                        _proxy_state['stopping'] = True
-                                        _dbg('Sending PlayerControl(Stop)')
-                                        try:
-                                            xbmc.executebuiltin('PlayerControl(Stop)')
-                                            _dbg('PlayerControl(Stop) sent')
-                                        except Exception as ex2:
-                                            _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                                        _force_stop('reconnect exhausted')
                                     t2 = threading.Thread(target=_bg_reconnect)
                                     t2.daemon = True
                                     t2.start()
