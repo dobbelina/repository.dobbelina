@@ -315,6 +315,7 @@ def Playvid(url, name):
                     'url_map': {},
                     'last_refresh': 0,
                     'lock': threading.Lock(),
+                    'chunklist_cache': {},
                 }
 
                 # Populate initial chunklist URL map (type_key -> cdn_url)
@@ -413,6 +414,8 @@ def Playvid(url, name):
 
                             try:
                                 data = _fetch_and_absolutize(cdn_url)
+                                if type_key:
+                                    _proxy_state['chunklist_cache'][type_key] = data
                                 self.send_response(200)
                                 self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
                                 self.send_header('Content-Length', str(len(data)))
@@ -494,13 +497,22 @@ def Playvid(url, name):
                                         except Exception:
                                             pass
 
-                                # Return empty playlist — ISA retries quickly
-                                endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
-                                self.send_response(200)
-                                self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                                self.send_header('Content-Length', str(len(endlist)))
-                                self.end_headers()
-                                self.wfile.write(endlist)
+                                # Serve cached playlist to keep ISA alive during reconnect
+                                cached = _proxy_state['chunklist_cache'].get(type_key) if type_key else None
+                                if cached:
+                                    _dbg('SERVING CACHED playlist type={}'.format(type_key))
+                                    self.send_response(200)
+                                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                    self.send_header('Content-Length', str(len(cached)))
+                                    self.end_headers()
+                                    self.wfile.write(cached)
+                                else:
+                                    endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
+                                    self.send_response(200)
+                                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                    self.send_header('Content-Length', str(len(endlist)))
+                                    self.end_headers()
+                                    self.wfile.write(endlist)
                         else:
                             self.send_response(200)
                             self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
