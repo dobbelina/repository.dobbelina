@@ -38,19 +38,17 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, '')
-    match = re.compile('class="post-author">(.*?)post-content.*?<a href="([^"]+)"><img.*?src="([^"]+)".*?title="([^"]+)".*?<strong>([^<]+)<.*?<em>([^<]+)<.*?<p>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'<div id="post-(.*?)>\s+<a href="([^"]+)".*?title="([^"]+)".*?<img.*?src="([^"]+)".*?<strong>([^<]+)<.*?<em>([^<]+)<.*?<p>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
-    for tags, videopage, img, name, title, release, plot in match:
+    for tags, videopage, name, img, title, release, plot in match:
         name = utils.cleantext(name)
         plot = "{}\n{}\n{}".format(utils.cleantext(title), utils.cleantext(release), utils.cleantext(plot))
         if any(tag in tags for tag in ['siterip', 'onlyfans-leak']):
             continue
 
         contextmenu = []
-        contexturl = (utils.addon_sys
-                      + "?mode=naughtyblog.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
+        contexturl = (utils.addon_sys + "?mode=naughtyblog.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
         contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
 
         site.add_download_link(name, videopage, 'Playvid', img, plot, contextm=contextmenu)
