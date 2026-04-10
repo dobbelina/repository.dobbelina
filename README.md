@@ -1,11 +1,12 @@
-# Cumination
-
-<p align="center">
+<div align="center">
   <img height="300" src="https://user-images.githubusercontent.com/46063764/103461711-a9eb6280-4d20-11eb-983b-516b022cbbf5.png">
 </p>
 
+# Cumination
+</div>
+
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&pause=1000&color=FF8FE3&center=true&vCenter=true&width=600&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination++Add-on)](https://git.io/typing-svg)
----
+
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12 & camilt
 
 
