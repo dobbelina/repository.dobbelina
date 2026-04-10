@@ -450,6 +450,8 @@ def Playvid(url, name):
                                             _dbg('PlayerControl(Stop) sent')
                                         except Exception as ex2:
                                             _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                                        # give PlayerControl(Stop) time to work before killing proxy
+                                        time.sleep(3)
                                         try:
                                             _cb_proxy.shutdown()
                                             _dbg('Proxy server shutdown')
