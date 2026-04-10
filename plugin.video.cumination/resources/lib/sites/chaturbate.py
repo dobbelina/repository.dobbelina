@@ -34,6 +34,7 @@ tapi = 'https://chaturbate.com/api/ts/hashtags/tag-table-data/'
 site = AdultSite('chaturbate', '[COLOR hotpink]Chaturbate[/COLOR]', bu, 'chaturbate.png', 'chaturbate', True)
 
 addon = utils.addon
+_cb_proxy = None
 HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4'}
 
 
@@ -259,9 +260,69 @@ def Playvid(url, name):
 
     if playmode == 0:
         if m3u8stream:
-            headers = HTTP_HEADERS_IPAD.copy()
-            headers['Referer'] = url
-            videourl = "{0}|{1}".format(m3u8stream, urllib_parse.urlencode(headers))
+            import socket, threading
+            from http.server import BaseHTTPRequestHandler
+            from socketserver import TCPServer, ThreadingMixIn
+            from six.moves.urllib.request import Request as _Req, urlopen as _uopen
+            from six.moves.urllib.parse import urljoin as _urljoin
+
+            try:
+                global _cb_proxy
+
+                if _cb_proxy is not None:
+                    try:
+                        _cb_proxy.shutdown()
+                    except Exception:
+                        pass
+                    _cb_proxy = None
+
+                headers = HTTP_HEADERS_IPAD.copy()
+                headers['Referer'] = url
+                req = _Req(m3u8stream, headers=headers)
+                master_raw = _uopen(req, timeout=10).read().decode('utf-8', 'replace')
+                base = m3u8stream.rsplit('/', 1)[0] + '/'
+
+                master_fixed = re.sub(
+                    r'^(?!https?://)(?!#)(.+)$',
+                    lambda m: _urljoin(base, m.group(1)),
+                    master_raw, flags=re.MULTILINE)
+                master_fixed = re.sub(
+                    r'URI="(?!https?://)(.*?)"',
+                    lambda m: 'URI="' + _urljoin(base, m.group(1)) + '"',
+                    master_fixed, flags=re.IGNORECASE)
+                master_bytes = master_fixed.encode('utf-8')
+
+                class _H(BaseHTTPRequestHandler):
+                    def do_GET(self):
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                        self.send_header('Content-Length', str(len(master_bytes)))
+                        self.end_headers()
+                        self.wfile.write(master_bytes)
+                    def do_HEAD(self):
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                        self.end_headers()
+                    def log_message(self, *a):
+                        pass
+
+                class _S(ThreadingMixIn, TCPServer):
+                    daemon_threads = True
+                    allow_reuse_address = True
+
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.bind(('127.0.0.1', 0))
+                port = sock.getsockname()[1]
+                sock.close()
+                srv = _S(('127.0.0.1', port), _H)
+                _cb_proxy = srv
+                t = threading.Thread(target=srv.serve_forever)
+                t.daemon = True
+                t.start()
+
+                videourl = 'http://127.0.0.1:{}/master.m3u8'.format(port)
+            except Exception:
+                videourl = "{0}|{1}".format(m3u8stream, urllib_parse.urlencode(HTTP_HEADERS_IPAD))
         else:
             utils.notify('Oh oh', 'Couldn\'t find a playable webcam link')
             return
@@ -284,6 +345,7 @@ def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.IA_check = 'IA'
     vp.play_from_direct_link(videourl)
+    vp.progress.close()
 
 
 @site.register()
