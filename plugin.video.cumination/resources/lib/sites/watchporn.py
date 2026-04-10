@@ -102,10 +102,13 @@ def Categories(url):
     url = url + str(tm)
     cathtml = utils.getHtml(url)
 
-    match = re.compile(r'class="item"\shref="([^"]+)"\stitle="([^"]+)".+?((?:src="[^"]+jpg|>no image<)).+?class="videos">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name, img, videos in match:
+    match = re.compile(r'class="item thumb"\shref="([^"]+)"\stitle="([^"]+)"(.+?)<div class="thumb__title"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for catpage, name, info in match:
+        img = re.search(r'src="([^"]+jpg)', info, re.IGNORECASE | re.DOTALL)
+        img = img.group(1) if img else ''
+        videos = re.search(r'class="videos">([^<]+)<', info, re.IGNORECASE | re.DOTALL)
+        videos = videos.group(1) if videos else ''
         name = utils.cleantext(name) + " [COLOR deeppink]" + videos + "[/COLOR]"
-        img = None if '>no image<' in img else img.split('src="')[1]
         site.add_dir(name, catpage, 'List', img)
     utils.eod()
 
