@@ -403,21 +403,34 @@ def Playvid(url, name):
                                 self.end_headers()
                                 self.wfile.write(data)
                             except Exception:
-                                # CDN session died — try to get a fresh one
-                                if type_key and _refresh_session():
-                                    new_url = _proxy_state['url_map'].get(type_key)
-                                    if new_url and new_url != cdn_url:
+                                # CDN session died — retry reconnect for up to 30s
+                                # (covers stream switches where new origin takes a moment)
+                                reconnected = False
+                                if type_key:
+                                    for _attempt in range(6):
+                                        time.sleep(5)
+                                        if _refresh_session():
+                                            new_url = _proxy_state['url_map'].get(type_key)
+                                            if new_url:
+                                                try:
+                                                    data = _fetch_and_absolutize(new_url)
+                                                    self.send_response(200)
+                                                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                                    self.send_header('Content-Length', str(len(data)))
+                                                    self.end_headers()
+                                                    self.wfile.write(data)
+                                                    reconnected = True
+                                                    break
+                                                except Exception:
+                                                    pass
+                                if not reconnected:
+                                    # All retries exhausted — force stop playback
+                                    if not _proxy_state.get('stopping'):
+                                        _proxy_state['stopping'] = True
                                         try:
-                                            data = _fetch_and_absolutize(new_url)
-                                            self.send_response(200)
-                                            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                                            self.send_header('Content-Length', str(len(data)))
-                                            self.end_headers()
-                                            self.wfile.write(data)
-                                            return
+                                            xbmc.executebuiltin('PlayerControl(Stop)')
                                         except Exception:
                                             pass
-                                # Reconnect failed — end stream gracefully
                                 endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
                                 self.send_response(200)
                                 self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
