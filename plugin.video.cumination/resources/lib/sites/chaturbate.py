@@ -346,7 +346,7 @@ def Playvid(url, name):
                     """Re-fetch master playlist to get fresh session tokens."""
                     now = time.time()
                     with _proxy_state['lock']:
-                        if now - _proxy_state['last_refresh'] < 5:
+                        if now - _proxy_state['last_refresh'] < 2:
                             return False
                         _proxy_state['last_refresh'] = now
                     try:
@@ -418,36 +418,65 @@ def Playvid(url, name):
                                 self.end_headers()
                                 self.wfile.write(data)
                             except Exception as e:
-                                # CDN session died — retry reconnect for up to 30s
-                                _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
-                                reconnected = False
-                                if type_key:
-                                    for _attempt in range(6):
-                                        _dbg('RECONNECT attempt={}/6 type={}'.format(_attempt + 1, type_key))
-                                        time.sleep(5)
-                                        if _refresh_session():
-                                            new_url = _proxy_state['url_map'].get(type_key)
-                                            if new_url:
-                                                try:
-                                                    data = _fetch_and_absolutize(new_url)
-                                                    self.send_response(200)
-                                                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                                                    self.send_header('Content-Length', str(len(data)))
-                                                    self.end_headers()
-                                                    self.wfile.write(data)
-                                                    reconnected = True
-                                                    _dbg('RECONNECT OK attempt={} type={}'.format(_attempt + 1, type_key))
-                                                    break
-                                                except Exception as e2:
-                                                    _dbg('RECONNECT FETCH FAIL attempt={} err={}'.format(_attempt + 1, e2))
-                                if not reconnected:
-                                    _dbg('GIVING UP type={} — stopping playback'.format(type_key))
-                                    if not _proxy_state.get('stopping'):
+                                # If we already gave up, keep hammering stop
+                                if _proxy_state.get('stopping'):
+                                    _dbg('STOP REINFORCED (ISA still retrying)')
+                                    try:
+                                        xbmc.executebuiltin('PlayerControl(Stop)')
+                                    except Exception:
+                                        pass
+                                    endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
+                                    self.send_response(200)
+                                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                    self.send_header('Content-Length', str(len(endlist)))
+                                    self.end_headers()
+                                    self.wfile.write(endlist)
+                                    return
+
+                                # CDN session died — kick off background reconnect
+                                if not _proxy_state.get('reconnecting'):
+                                    _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
+                                    _proxy_state['reconnecting'] = True
+                                    def _bg_reconnect():
+                                        try:
+                                            for _attempt in range(15):
+                                                _dbg('RECONNECT attempt={}/15'.format(_attempt + 1))
+                                                if _refresh_session():
+                                                    _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
+                                                    _proxy_state['reconnecting'] = False
+                                                    return
+                                                time.sleep(2)
+                                            _dbg('GIVING UP after 15 attempts')
+                                        except Exception as ex:
+                                            _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
                                         _proxy_state['stopping'] = True
+                                        _dbg('Sending PlayerControl(Stop)')
                                         try:
                                             xbmc.executebuiltin('PlayerControl(Stop)')
+                                            _dbg('PlayerControl(Stop) sent')
+                                        except Exception as ex2:
+                                            _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                                    t2 = threading.Thread(target=_bg_reconnect)
+                                    t2.daemon = True
+                                    t2.start()
+
+                                # While reconnecting, try serving from refreshed URLs
+                                if type_key and not _proxy_state.get('stopping'):
+                                    new_url = _proxy_state['url_map'].get(type_key)
+                                    if new_url and new_url != cdn_url:
+                                        try:
+                                            data = _fetch_and_absolutize(new_url)
+                                            self.send_response(200)
+                                            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                            self.send_header('Content-Length', str(len(data)))
+                                            self.end_headers()
+                                            self.wfile.write(data)
+                                            _dbg('SERVED from refreshed URL type={}'.format(type_key))
+                                            return
                                         except Exception:
                                             pass
+
+                                # Return empty playlist — ISA retries quickly
                                 endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
                                 self.send_response(200)
                                 self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
