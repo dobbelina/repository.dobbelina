@@ -290,15 +290,146 @@ def Playvid(url, name):
                     r'URI="(?!https?://)(.*?)"',
                     lambda m: 'URI="' + _urljoin(base, m.group(1)) + '"',
                     master_fixed, flags=re.IGNORECASE)
+                # Bind proxy port first so we can rewrite chunklist URLs
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.bind(('127.0.0.1', 0))
+                port = sock.getsockname()[1]
+                sock.close()
+
+                # State for session reconnection
+                _proxy_state = {
+                    'stream_url': m3u8stream,
+                    'headers': headers,
+                    'url_map': {},
+                    'last_refresh': 0,
+                    'lock': threading.Lock(),
+                }
+
+                # Populate initial chunklist URL map (type_key -> cdn_url)
+                for _line in master_fixed.splitlines():
+                    _line = _line.strip()
+                    if _line and not _line.startswith('#') and 'chunklist_' in _line:
+                        _km = re.search(r'(chunklist_\d+_\w+)', _line)
+                        if _km:
+                            _proxy_state['url_map'][_km.group(1)] = _line
+                for _mi in re.finditer(r'URI="(https?://[^"]*chunklist_[^"]*)"', master_fixed, re.IGNORECASE):
+                    _km = re.search(r'(chunklist_\d+_\w+)', _mi.group(1))
+                    if _km:
+                        _proxy_state['url_map'][_km.group(1)] = _mi.group(1)
+
+                # Rewrite only .m3u8 chunklist URLs to go through our proxy
+                # (leave init segments / .m4s files as direct CDN URLs)
+                master_fixed = re.sub(
+                    r'^(https?://[^\s]+\.m3u8[^\s]*)$',
+                    lambda m: 'http://127.0.0.1:{}/chunklist?url={}'.format(port, urllib_parse.quote(m.group(1), safe='')),
+                    master_fixed, flags=re.MULTILINE)
+                master_fixed = re.sub(
+                    r'URI="(https?://[^"]+\.m3u8[^"]*)"',
+                    lambda m: 'URI="http://127.0.0.1:{}/chunklist?url={}"'.format(port, urllib_parse.quote(m.group(1), safe='')),
+                    master_fixed, flags=re.IGNORECASE)
                 master_bytes = master_fixed.encode('utf-8')
 
+                def _refresh_session():
+                    """Re-fetch master playlist to get fresh session tokens."""
+                    now = time.time()
+                    with _proxy_state['lock']:
+                        if now - _proxy_state['last_refresh'] < 5:
+                            return False
+                        _proxy_state['last_refresh'] = now
+                    try:
+                        rq = _Req(_proxy_state['stream_url'], headers=_proxy_state['headers'])
+                        raw = _uopen(rq, timeout=10).read().decode('utf-8', 'replace')
+                        burl = _proxy_state['stream_url'].rsplit('/', 1)[0] + '/'
+                        fixed = re.sub(
+                            r'^(?!https?://)(?!#)(.+)$',
+                            lambda m: _urljoin(burl, m.group(1)),
+                            raw, flags=re.MULTILINE)
+                        fixed = re.sub(
+                            r'URI="(?!https?://)(.*?)"',
+                            lambda m: 'URI="' + _urljoin(burl, m.group(1)) + '"',
+                            fixed, flags=re.IGNORECASE)
+                        new_map = {}
+                        for line in fixed.splitlines():
+                            line = line.strip()
+                            if line and not line.startswith('#') and 'chunklist_' in line:
+                                km = re.search(r'(chunklist_\d+_\w+)', line)
+                                if km:
+                                    new_map[km.group(1)] = line
+                        for mi in re.finditer(r'URI="(https?://[^"]*chunklist_[^"]*)"', fixed, re.IGNORECASE):
+                            km = re.search(r'(chunklist_\d+_\w+)', mi.group(1))
+                            if km:
+                                new_map[km.group(1)] = mi.group(1)
+                        with _proxy_state['lock']:
+                            _proxy_state['url_map'].update(new_map)
+                        return True
+                    except Exception:
+                        return False
+
+                # Localhost proxy: serves master + proxies chunklists with auto-reconnect
                 class _H(BaseHTTPRequestHandler):
                     def do_GET(self):
-                        self.send_response(200)
-                        self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                        self.send_header('Content-Length', str(len(master_bytes)))
-                        self.end_headers()
-                        self.wfile.write(master_bytes)
+                        if self.path.startswith('/chunklist'):
+                            parsed = urllib_parse.urlparse(self.path)
+                            params = urllib_parse.parse_qs(parsed.query)
+                            req_url = params.get('url', [None])[0]
+                            if not req_url:
+                                self.send_error(400)
+                                return
+                            km = re.search(r'(chunklist_\d+_\w+)', req_url)
+                            type_key = km.group(1) if km else None
+                            cdn_url = _proxy_state['url_map'].get(type_key, req_url) if type_key else req_url
+
+                            def _fetch_and_absolutize(u):
+                                """Fetch chunklist and absolutize relative URIs so ISA resolves them against CDN."""
+                                creq = _Req(u, headers=_proxy_state['headers'])
+                                resp = _uopen(creq, timeout=10)
+                                raw = resp.read().decode('utf-8', 'replace')
+                                cbase = u.rsplit('/', 1)[0] + '/'
+                                raw = re.sub(
+                                    r'^(?!https?://)(?!#)(\S+)$',
+                                    lambda m: _urljoin(cbase, m.group(1)),
+                                    raw, flags=re.MULTILINE)
+                                raw = re.sub(
+                                    r'URI="(?!https?://)([^"]+)"',
+                                    lambda m: 'URI="' + _urljoin(cbase, m.group(1)) + '"',
+                                    raw, flags=re.IGNORECASE)
+                                return raw.encode('utf-8')
+
+                            try:
+                                data = _fetch_and_absolutize(cdn_url)
+                                self.send_response(200)
+                                self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                self.send_header('Content-Length', str(len(data)))
+                                self.end_headers()
+                                self.wfile.write(data)
+                            except Exception:
+                                # CDN session died — try to get a fresh one
+                                if type_key and _refresh_session():
+                                    new_url = _proxy_state['url_map'].get(type_key)
+                                    if new_url and new_url != cdn_url:
+                                        try:
+                                            data = _fetch_and_absolutize(new_url)
+                                            self.send_response(200)
+                                            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                            self.send_header('Content-Length', str(len(data)))
+                                            self.end_headers()
+                                            self.wfile.write(data)
+                                            return
+                                        except Exception:
+                                            pass
+                                # Reconnect failed — end stream gracefully
+                                endlist = b'#EXTM3U\n#EXT-X-ENDLIST\n'
+                                self.send_response(200)
+                                self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                                self.send_header('Content-Length', str(len(endlist)))
+                                self.end_headers()
+                                self.wfile.write(endlist)
+                        else:
+                            self.send_response(200)
+                            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+                            self.send_header('Content-Length', str(len(master_bytes)))
+                            self.end_headers()
+                            self.wfile.write(master_bytes)
                     def do_HEAD(self):
                         self.send_response(200)
                         self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
@@ -310,10 +441,6 @@ def Playvid(url, name):
                     daemon_threads = True
                     allow_reuse_address = True
 
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.bind(('127.0.0.1', 0))
-                port = sock.getsockname()[1]
-                sock.close()
                 srv = _S(('127.0.0.1', port), _H)
                 _cb_proxy = srv
                 t = threading.Thread(target=srv.serve_forever)
