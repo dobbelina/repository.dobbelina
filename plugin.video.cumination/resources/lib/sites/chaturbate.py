@@ -290,6 +290,18 @@ def Playvid(url, name):
                     r'URI="(?!https?://)(.*?)"',
                     lambda m: 'URI="' + _urljoin(base, m.group(1)) + '"',
                     master_fixed, flags=re.IGNORECASE)
+                # Debug log for proxy events (toggle via Settings > enh_debug)
+                _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
+                _dbg_on = addon.getSetting('enh_debug') == 'true'
+                def _dbg(msg):
+                    if not _dbg_on:
+                        return
+                    try:
+                        with open(_dbg_path, 'a') as f:
+                            f.write('{} {}\n'.format(time.strftime('%H:%M:%S'), msg))
+                    except Exception:
+                        pass
+
                 # Bind proxy port first so we can rewrite chunklist URLs
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.bind(('127.0.0.1', 0))
@@ -316,6 +328,7 @@ def Playvid(url, name):
                     _km = re.search(r'(chunklist_\d+_\w+)', _mi.group(1))
                     if _km:
                         _proxy_state['url_map'][_km.group(1)] = _mi.group(1)
+                _dbg('PROXY START port={} keys={}'.format(port, list(_proxy_state['url_map'].keys())))
 
                 # Rewrite only .m3u8 chunklist URLs to go through our proxy
                 # (leave init segments / .m4s files as direct CDN URLs)
@@ -361,8 +374,10 @@ def Playvid(url, name):
                                 new_map[km.group(1)] = mi.group(1)
                         with _proxy_state['lock']:
                             _proxy_state['url_map'].update(new_map)
+                        _dbg('REFRESH OK new_keys={}'.format(list(new_map.keys())))
                         return True
-                    except Exception:
+                    except Exception as e:
+                        _dbg('REFRESH FAIL {}'.format(e))
                         return False
 
                 # Localhost proxy: serves master + proxies chunklists with auto-reconnect
@@ -402,12 +417,13 @@ def Playvid(url, name):
                                 self.send_header('Content-Length', str(len(data)))
                                 self.end_headers()
                                 self.wfile.write(data)
-                            except Exception:
+                            except Exception as e:
                                 # CDN session died — retry reconnect for up to 30s
-                                # (covers stream switches where new origin takes a moment)
+                                _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
                                 reconnected = False
                                 if type_key:
                                     for _attempt in range(6):
+                                        _dbg('RECONNECT attempt={}/6 type={}'.format(_attempt + 1, type_key))
                                         time.sleep(5)
                                         if _refresh_session():
                                             new_url = _proxy_state['url_map'].get(type_key)
@@ -420,11 +436,12 @@ def Playvid(url, name):
                                                     self.end_headers()
                                                     self.wfile.write(data)
                                                     reconnected = True
+                                                    _dbg('RECONNECT OK attempt={} type={}'.format(_attempt + 1, type_key))
                                                     break
-                                                except Exception:
-                                                    pass
+                                                except Exception as e2:
+                                                    _dbg('RECONNECT FETCH FAIL attempt={} err={}'.format(_attempt + 1, e2))
                                 if not reconnected:
-                                    # All retries exhausted — force stop playback
+                                    _dbg('GIVING UP type={} — stopping playback'.format(type_key))
                                     if not _proxy_state.get('stopping'):
                                         _proxy_state['stopping'] = True
                                         try:
