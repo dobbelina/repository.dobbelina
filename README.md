@@ -5,7 +5,7 @@
 # Cumination
 
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&pause=1000&color=FF8FE3&center=true&vCenter=true&width=600&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination++Add-on)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&pause=1000&color=FF8FE3&center=true&vCenter=true&width=600&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination++Add-on)](https://github.com/dobbelina/repository.dobbelina)
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12 & camilt
 
