@@ -272,6 +272,9 @@ def Playvid(url, name):
                 if _cb_proxy is not None:
                     try:
                         _cb_proxy.shutdown()
+                    except Exception:
+                        pass
+                    try:
                         _cb_proxy.server_close()
                     except Exception:
                         pass
@@ -395,10 +398,13 @@ def Playvid(url, name):
                     time.sleep(3)
                     try:
                         _cb_proxy.shutdown()
+                    except Exception as sex:
+                        _dbg('shutdown err: {}'.format(sex))
+                    try:
                         _cb_proxy.server_close()
                         _dbg('Proxy server shutdown')
-                    except Exception:
-                        pass
+                    except Exception as sex:
+                        _dbg('close err: {}'.format(sex))
 
                 def _bg_reconnect():
                     try:
@@ -409,7 +415,8 @@ def Playvid(url, name):
                             _dbg('RECONNECT attempt={}/15'.format(_attempt + 1))
                             if _refresh_session():
                                 _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
-                                _proxy_state['reconnecting'] = False
+                                with _proxy_state['lock']:
+                                    _proxy_state['reconnecting'] = False
                                 _dbg('WATCHDOG waiting 5s to check ISA')
                                 time.sleep(5)
                                 if _proxy_state.get('stopping'):
@@ -429,9 +436,10 @@ def Playvid(url, name):
                         _force_stop('reconnect exhausted')
 
                 def _trigger_reconnect(reason):
-                    if _proxy_state.get('reconnecting') or _proxy_state.get('stopping'):
-                        return
-                    _proxy_state['reconnecting'] = True
+                    with _proxy_state['lock']:
+                        if _proxy_state.get('reconnecting') or _proxy_state.get('stopping'):
+                            return
+                        _proxy_state['reconnecting'] = True
                     _dbg('RECONNECT TRIGGERED: {}'.format(reason))
                     t2 = threading.Thread(target=_bg_reconnect)
                     t2.daemon = True
@@ -662,10 +670,13 @@ def Playvid(url, name):
                     _proxy_state['stopping'] = True
                     try:
                         srv.shutdown()
-                        srv.server_close()
-                        _dbg('MONITOR: proxy shutdown complete')
                     except Exception as mex2:
                         _dbg('MONITOR: shutdown err {}'.format(mex2))
+                    try:
+                        srv.server_close()
+                        _dbg('MONITOR: proxy shutdown complete')
+                    except Exception as mex3:
+                        _dbg('MONITOR: close err {}'.format(mex3))
 
                 _mt = threading.Thread(target=_monitor_player)
                 _mt.daemon = True
