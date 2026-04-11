@@ -316,6 +316,8 @@ def Playvid(url, name):
                     'last_refresh': 0,
                     'lock': threading.Lock(),
                     'chunklist_cache': {},
+                    'seg_cdn_urls': {},
+                    'latest_seg': {},
                 }
 
                 # Populate initial chunklist URL map (type_key -> cdn_url)
@@ -397,7 +399,7 @@ def Playvid(url, name):
                             _proxy_state['last_request'] = time.time()
 
                             def _fetch_and_absolutize(u):
-                                """Fetch chunklist and absolutize relative URIs so ISA resolves them against CDN."""
+                                """Fetch chunklist, absolutize relative URIs, and route segments through proxy."""
                                 creq = _Req(u, headers=_proxy_state['headers'])
                                 resp = _uopen(creq, timeout=10)
                                 raw = resp.read().decode('utf-8', 'replace')
@@ -409,6 +411,23 @@ def Playvid(url, name):
                                 raw = re.sub(
                                     r'URI="(?!https?://)([^"]+)"',
                                     lambda m: 'URI="' + _urljoin(cbase, m.group(1)) + '"',
+                                    raw, flags=re.IGNORECASE)
+                                # Track current CDN segment URLs for fallback
+                                for _l in raw.splitlines():
+                                    _l = _l.strip()
+                                    if _l and not _l.startswith('#') and '.m4s' in _l:
+                                        _sn = _l.rsplit('/', 1)[-1].split('?')[0]
+                                        _proxy_state['seg_cdn_urls'][_sn] = _l
+                                        if type_key:
+                                            _proxy_state['latest_seg'][type_key] = _l
+                                # Rewrite segment URLs to go through localhost proxy
+                                raw = re.sub(
+                                    r'^(https?://[^\s]+\.m4s[^\s]*)$',
+                                    lambda m: 'http://127.0.0.1:{}/segment?url={}'.format(port, urllib_parse.quote(m.group(1), safe='')),
+                                    raw, flags=re.MULTILINE)
+                                raw = re.sub(
+                                    r'URI="(https?://[^"]+\.m4s[^"]*)"',
+                                    lambda m: 'URI="http://127.0.0.1:{}/segment?url={}"'.format(port, urllib_parse.quote(m.group(1), safe='')),
                                     raw, flags=re.IGNORECASE)
                                 return raw.encode('utf-8')
 
@@ -515,6 +534,67 @@ def Playvid(url, name):
                                     self.send_header('Content-Length', str(len(endlist)))
                                     self.end_headers()
                                     self.wfile.write(endlist)
+                        elif self.path.startswith('/segment'):
+                            parsed = urllib_parse.urlparse(self.path)
+                            params = urllib_parse.parse_qs(parsed.query)
+                            seg_url = params.get('url', [None])[0]
+                            if not seg_url:
+                                self.send_error(400)
+                                return
+                            seg_name = seg_url.rsplit('/', 1)[-1].split('?')[0]
+                            # Try the requested URL first
+                            try:
+                                sreq = _Req(seg_url, headers=_proxy_state['headers'])
+                                sresp = _uopen(sreq, timeout=10)
+                                data = sresp.read()
+                                ct = sresp.headers.get('Content-Type', 'video/mp4')
+                                self.send_response(200)
+                                self.send_header('Content-Type', ct)
+                                self.send_header('Content-Length', str(len(data)))
+                                self.end_headers()
+                                self.wfile.write(data)
+                                return
+                            except Exception as e:
+                                _dbg('SEG FAIL {} {}'.format(seg_name, e))
+                            # Fallback: try current CDN URL for same segment name
+                            current_url = _proxy_state['seg_cdn_urls'].get(seg_name)
+                            if current_url and current_url != seg_url:
+                                try:
+                                    sreq = _Req(current_url, headers=_proxy_state['headers'])
+                                    sresp = _uopen(sreq, timeout=10)
+                                    data = sresp.read()
+                                    ct = sresp.headers.get('Content-Type', 'video/mp4')
+                                    self.send_response(200)
+                                    self.send_header('Content-Type', ct)
+                                    self.send_header('Content-Length', str(len(data)))
+                                    self.end_headers()
+                                    self.wfile.write(data)
+                                    _dbg('SEG FALLBACK OK {}'.format(seg_name))
+                                    return
+                                except Exception as e2:
+                                    _dbg('SEG FALLBACK FAIL {}'.format(e2))
+                            # Last resort: serve the latest known segment for this track
+                            tm = re.search(r'(video|audio)_(\d+)_llhls', seg_name)
+                            if tm:
+                                for tk, latest in _proxy_state['latest_seg'].items():
+                                    if tm.group(1) in tk and tm.group(2) in tk:
+                                        try:
+                                            sreq = _Req(latest, headers=_proxy_state['headers'])
+                                            sresp = _uopen(sreq, timeout=10)
+                                            data = sresp.read()
+                                            ct = sresp.headers.get('Content-Type', 'video/mp4')
+                                            self.send_response(200)
+                                            self.send_header('Content-Type', ct)
+                                            self.send_header('Content-Length', str(len(data)))
+                                            self.end_headers()
+                                            self.wfile.write(data)
+                                            _dbg('SEG LATEST OK {}'.format(seg_name))
+                                            return
+                                        except Exception as e3:
+                                            _dbg('SEG LATEST FAIL {}'.format(e3))
+                                            break
+                            self.send_error(502)
+                            return
                         else:
                             self.send_response(200)
                             self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
