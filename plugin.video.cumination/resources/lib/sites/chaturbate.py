@@ -272,6 +272,7 @@ def Playvid(url, name):
                 if _cb_proxy is not None:
                     try:
                         _cb_proxy.shutdown()
+                        _cb_proxy.server_close()
                     except Exception:
                         pass
                     _cb_proxy = None
@@ -383,6 +384,59 @@ def Playvid(url, name):
                         _dbg('REFRESH FAIL {}'.format(e))
                         return False
 
+                def _force_stop(reason):
+                    _proxy_state['stopping'] = True
+                    _dbg('FORCE STOP: {}'.format(reason))
+                    try:
+                        xbmc.executebuiltin('PlayerControl(Stop)')
+                        _dbg('PlayerControl(Stop) sent')
+                    except Exception as ex2:
+                        _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                    time.sleep(3)
+                    try:
+                        _cb_proxy.shutdown()
+                        _cb_proxy.server_close()
+                        _dbg('Proxy server shutdown')
+                    except Exception:
+                        pass
+
+                def _bg_reconnect():
+                    try:
+                        for _attempt in range(15):
+                            if _proxy_state.get('stopping'):
+                                _dbg('RECONNECT aborted - proxy stopping')
+                                return
+                            _dbg('RECONNECT attempt={}/15'.format(_attempt + 1))
+                            if _refresh_session():
+                                _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
+                                _proxy_state['reconnecting'] = False
+                                _dbg('WATCHDOG waiting 5s to check ISA')
+                                time.sleep(5)
+                                if _proxy_state.get('stopping'):
+                                    return
+                                gap = time.time() - _proxy_state.get('last_request', 0)
+                                _dbg('WATCHDOG gap={:.1f}s'.format(gap))
+                                if gap > 4:
+                                    _force_stop('ISA went silent {:.0f}s after reconnect'.format(gap))
+                                else:
+                                    _dbg('WATCHDOG OK -- ISA still active')
+                                return
+                            time.sleep(2)
+                        _dbg('GIVING UP after 15 attempts')
+                    except Exception as ex:
+                        _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
+                    if not _proxy_state.get('stopping'):
+                        _force_stop('reconnect exhausted')
+
+                def _trigger_reconnect(reason):
+                    if _proxy_state.get('reconnecting') or _proxy_state.get('stopping'):
+                        return
+                    _proxy_state['reconnecting'] = True
+                    _dbg('RECONNECT TRIGGERED: {}'.format(reason))
+                    t2 = threading.Thread(target=_bg_reconnect)
+                    t2.daemon = True
+                    t2.start()
+
                 # Localhost proxy: serves master + proxies chunklists with auto-reconnect
                 class _H(BaseHTTPRequestHandler):
                     def do_GET(self):
@@ -457,50 +511,8 @@ def Playvid(url, name):
                                     return
 
                                 # CDN session died — kick off background reconnect
-                                if not _proxy_state.get('reconnecting'):
-                                    _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
-                                    _proxy_state['reconnecting'] = True
-
-                                    def _force_stop(reason):
-                                        _proxy_state['stopping'] = True
-                                        _dbg('FORCE STOP: {}'.format(reason))
-                                        try:
-                                            xbmc.executebuiltin('PlayerControl(Stop)')
-                                            _dbg('PlayerControl(Stop) sent')
-                                        except Exception as ex2:
-                                            _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
-                                        # give PlayerControl(Stop) time to work before killing proxy
-                                        time.sleep(3)
-                                        try:
-                                            _cb_proxy.shutdown()
-                                            _dbg('Proxy server shutdown')
-                                        except Exception:
-                                            pass
-
-                                    def _bg_reconnect():
-                                        try:
-                                            for _attempt in range(15):
-                                                _dbg('RECONNECT attempt={}/15'.format(_attempt + 1))
-                                                if _refresh_session():
-                                                    _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
-                                                    _proxy_state['reconnecting'] = False
-                                                    _dbg('WATCHDOG waiting 5s to check ISA')
-                                                    time.sleep(5)
-                                                    gap = time.time() - _proxy_state.get('last_request', 0)
-                                                    _dbg('WATCHDOG gap={:.1f}s'.format(gap))
-                                                    if gap > 4:
-                                                        _force_stop('ISA went silent {:.0f}s after reconnect'.format(gap))
-                                                    else:
-                                                        _dbg('WATCHDOG OK — ISA still active')
-                                                    return
-                                                time.sleep(2)
-                                            _dbg('GIVING UP after 15 attempts')
-                                        except Exception as ex:
-                                            _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
-                                        _force_stop('reconnect exhausted')
-                                    t2 = threading.Thread(target=_bg_reconnect)
-                                    t2.daemon = True
-                                    t2.start()
+                                _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
+                                _trigger_reconnect('chunklist fail type={}: {}'.format(type_key, e))
 
                                 # While reconnecting, try serving from refreshed URLs
                                 if type_key and not _proxy_state.get('stopping'):
@@ -542,6 +554,7 @@ def Playvid(url, name):
                                 self.send_error(400)
                                 return
                             seg_name = seg_url.rsplit('/', 1)[-1].split('?')[0]
+                            _proxy_state['last_request'] = time.time()
                             # Try the requested URL first
                             try:
                                 sreq = _Req(seg_url, headers=_proxy_state['headers'])
@@ -556,6 +569,7 @@ def Playvid(url, name):
                                 return
                             except Exception as e:
                                 _dbg('SEG FAIL {} {}'.format(seg_name, e))
+                                _trigger_reconnect('segment fail: {}'.format(seg_name))
                             # Fallback: try current CDN URL for same segment name
                             current_url = _proxy_state['seg_cdn_urls'].get(seg_name)
                             if current_url and current_url != seg_url:
@@ -617,6 +631,45 @@ def Playvid(url, name):
                 t = threading.Thread(target=srv.serve_forever)
                 t.daemon = True
                 t.start()
+
+                def _monitor_player():
+                    """Poll xbmc.Player state and tear down the proxy when playback ends."""
+                    try:
+                        mon = xbmc.Monitor()
+                        player = xbmc.Player()
+                        # Short grace window (8s) for ISA to actually begin playback
+                        started = False
+                        for _ in range(16):
+                            if mon.abortRequested() or _proxy_state.get('stopping'):
+                                break
+                            if player.isPlaying():
+                                started = True
+                                break
+                            if mon.waitForAbort(0.5):
+                                break
+                        if not started:
+                            _dbg('MONITOR: playback never started within 8s, tearing down')
+                        else:
+                            _dbg('MONITOR: playback started, watching for stop')
+                            while not mon.abortRequested() and not _proxy_state.get('stopping'):
+                                if not player.isPlaying():
+                                    _dbg('MONITOR: player stopped, shutting down proxy')
+                                    break
+                                if mon.waitForAbort(2):
+                                    break
+                    except Exception as mex:
+                        _dbg('MONITOR THREAD CRASHED: {}'.format(mex))
+                    _proxy_state['stopping'] = True
+                    try:
+                        srv.shutdown()
+                        srv.server_close()
+                        _dbg('MONITOR: proxy shutdown complete')
+                    except Exception as mex2:
+                        _dbg('MONITOR: shutdown err {}'.format(mex2))
+
+                _mt = threading.Thread(target=_monitor_player)
+                _mt.daemon = True
+                _mt.start()
 
                 videourl = 'http://127.0.0.1:{}/master.m3u8'.format(port)
             except Exception:
