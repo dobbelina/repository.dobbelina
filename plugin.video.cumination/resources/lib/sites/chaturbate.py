@@ -35,6 +35,7 @@ site = AdultSite('chaturbate', '[COLOR hotpink]Chaturbate[/COLOR]', bu, 'chaturb
 
 addon = utils.addon
 _cb_proxy = None
+_cb_proxy_state = None
 HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4'}
 
 
@@ -267,17 +268,40 @@ def Playvid(url, name):
             from six.moves.urllib.parse import urljoin as _urljoin
 
             try:
-                global _cb_proxy
+                global _cb_proxy, _cb_proxy_state
+
+                # Debug log for proxy events (toggle via Settings > enh_debug)
+                _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
+                _dbg_on = addon.getSetting('enh_debug') == 'true'
+                def _dbg(msg):
+                    if not _dbg_on:
+                        return
+                    try:
+                        with open(_dbg_path, 'a') as f:
+                            f.write('{} {}\n'.format(time.strftime('%H:%M:%S'), msg))
+                    except Exception:
+                        pass
+
+                # Signal the previous stream's monitor/reconnect threads to exit
+                # so the old srv reference doesn't keep the old proxy alive.
+                if _cb_proxy_state is not None:
+                    _dbg('CLEANUP: signalling old state stopping=True')
+                    _cb_proxy_state['stopping'] = True
+                    _cb_proxy_state = None
 
                 if _cb_proxy is not None:
+                    _dbg('CLEANUP: shutting down previous proxy {}'.format(
+                        getattr(_cb_proxy, 'server_address', '?')))
                     try:
                         _cb_proxy.shutdown()
-                    except Exception:
-                        pass
+                        _dbg('CLEANUP: shutdown() OK')
+                    except Exception as cex1:
+                        _dbg('CLEANUP: shutdown() FAILED: {}'.format(cex1))
                     try:
                         _cb_proxy.server_close()
-                    except Exception:
-                        pass
+                        _dbg('CLEANUP: server_close() OK')
+                    except Exception as cex2:
+                        _dbg('CLEANUP: server_close() FAILED: {}'.format(cex2))
                     _cb_proxy = None
 
                 headers = HTTP_HEADERS_IPAD.copy()
@@ -294,17 +318,6 @@ def Playvid(url, name):
                     r'URI="(?!https?://)(.*?)"',
                     lambda m: 'URI="' + _urljoin(base, m.group(1)) + '"',
                     master_fixed, flags=re.IGNORECASE)
-                # Debug log for proxy events (toggle via Settings > enh_debug)
-                _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
-                _dbg_on = addon.getSetting('enh_debug') == 'true'
-                def _dbg(msg):
-                    if not _dbg_on:
-                        return
-                    try:
-                        with open(_dbg_path, 'a') as f:
-                            f.write('{} {}\n'.format(time.strftime('%H:%M:%S'), msg))
-                    except Exception:
-                        pass
 
                 # Bind proxy port first so we can rewrite chunklist URLs
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -381,7 +394,13 @@ def Playvid(url, name):
                                 new_map[km.group(1)] = mi.group(1)
                         with _proxy_state['lock']:
                             _proxy_state['url_map'].update(new_map)
-                        _dbg('REFRESH OK new_keys={}'.format(list(new_map.keys())))
+                            # Invalidate cached chunklists and segment maps so the
+                            # next ISA request pulls a fresh chunklist with the new
+                            # JWT session instead of serving stale dead-segment bodies.
+                            _proxy_state['chunklist_cache'].clear()
+                            _proxy_state['seg_cdn_urls'].clear()
+                            _proxy_state['latest_seg'].clear()
+                        _dbg('REFRESH OK new_keys={} caches_cleared'.format(list(new_map.keys())))
                         return True
                     except Exception as e:
                         _dbg('REFRESH FAIL {}'.format(e))
@@ -407,33 +426,55 @@ def Playvid(url, name):
                         _dbg('close err: {}'.format(sex))
 
                 def _bg_reconnect():
+                    needs_force_stop = True
                     try:
                         for _attempt in range(15):
                             if _proxy_state.get('stopping'):
                                 _dbg('RECONNECT aborted - proxy stopping')
+                                needs_force_stop = False
                                 return
                             _dbg('RECONNECT attempt={}/15'.format(_attempt + 1))
                             if _refresh_session():
                                 _dbg('RECONNECT OK attempt={}'.format(_attempt + 1))
                                 with _proxy_state['lock']:
                                     _proxy_state['reconnecting'] = False
-                                _dbg('WATCHDOG waiting 5s to check ISA')
-                                time.sleep(5)
+                                _dbg('WATCHDOG waiting 8s to check ISA')
+                                time.sleep(8)
                                 if _proxy_state.get('stopping'):
+                                    needs_force_stop = False
                                     return
                                 gap = time.time() - _proxy_state.get('last_request', 0)
                                 _dbg('WATCHDOG gap={:.1f}s'.format(gap))
-                                if gap > 4:
-                                    _force_stop('ISA went silent {:.0f}s after reconnect'.format(gap))
+                                if gap > 6:
+                                    _dbg('WATCHDOG over threshold, rechecking in 3s')
+                                    time.sleep(3)
+                                    if _proxy_state.get('stopping'):
+                                        needs_force_stop = False
+                                        return
+                                    gap2 = time.time() - _proxy_state.get('last_request', 0)
+                                    _dbg('WATCHDOG recheck gap={:.1f}s'.format(gap2))
+                                    if gap2 > 6:
+                                        needs_force_stop = False
+                                        _force_stop('ISA silent {:.0f}s after reconnect'.format(gap2))
+                                        return
+                                    _dbg('WATCHDOG OK on recheck -- ISA recovered')
                                 else:
                                     _dbg('WATCHDOG OK -- ISA still active')
+                                needs_force_stop = False
                                 return
                             time.sleep(2)
                         _dbg('GIVING UP after 15 attempts')
                     except Exception as ex:
-                        _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
-                    if not _proxy_state.get('stopping'):
-                        _force_stop('reconnect exhausted')
+                        try:
+                            _dbg('RECONNECT THREAD CRASHED: {}'.format(ex))
+                        except Exception:
+                            pass
+                    finally:
+                        if needs_force_stop and not _proxy_state.get('stopping'):
+                            try:
+                                _force_stop('reconnect exhausted')
+                            except Exception:
+                                pass
 
                 def _trigger_reconnect(reason):
                     with _proxy_state['lock']:
@@ -636,40 +677,62 @@ def Playvid(url, name):
 
                 srv = _S(('127.0.0.1', port), _H)
                 _cb_proxy = srv
+                _cb_proxy_state = _proxy_state
                 t = threading.Thread(target=srv.serve_forever)
                 t.daemon = True
                 t.start()
 
                 def _monitor_player():
                     """Poll xbmc.Player state and tear down the proxy when playback ends."""
+                    _dbg('MONITOR: thread started for port={}'.format(port))
+                    my_port_tag = ':{}/'.format(port)
                     try:
                         mon = xbmc.Monitor()
                         player = xbmc.Player()
-                        # Short grace window (8s) for ISA to actually begin playback
-                        started = False
-                        for _ in range(16):
+                        # Grace window (15s) for ISA to actually begin playing OUR URL.
+                        # We wait until getPlayingFile() actually points at us before
+                        # starting the watch-for-stop loop, otherwise a rapid click
+                        # would see the old stream's URL and immediately self-destruct.
+                        confirmed = False
+                        for _ in range(30):
                             if mon.abortRequested() or _proxy_state.get('stopping'):
                                 break
-                            if player.isPlaying():
-                                started = True
+                            try:
+                                cur = player.getPlayingFile() if player.isPlaying() else ''
+                            except Exception:
+                                cur = ''
+                            if cur and my_port_tag in cur:
+                                confirmed = True
                                 break
                             if mon.waitForAbort(0.5):
                                 break
-                        if not started:
-                            _dbg('MONITOR: playback never started within 8s, tearing down')
+                        if not confirmed:
+                            _dbg('MONITOR: never confirmed as active stream within 15s, tearing down')
                         else:
-                            _dbg('MONITOR: playback started, watching for stop')
+                            _dbg('MONITOR: confirmed active stream, watching for stop')
                             while not mon.abortRequested() and not _proxy_state.get('stopping'):
                                 if not player.isPlaying():
                                     _dbg('MONITOR: player stopped, shutting down proxy')
                                     break
-                                if mon.waitForAbort(2):
+                                # We already confirmed we're the active URL, so if
+                                # getPlayingFile now points elsewhere the user moved on.
+                                try:
+                                    cur = player.getPlayingFile()
+                                except Exception:
+                                    cur = ''
+                                if cur and my_port_tag not in cur:
+                                    _dbg('MONITOR: port={} no longer active (now {}), stopping'.format(port, cur))
+                                    break
+                                if mon.waitForAbort(1):
                                     break
                     except Exception as mex:
                         _dbg('MONITOR THREAD CRASHED: {}'.format(mex))
+                    _dbg('MONITOR: teardown entered addr={}'.format(
+                        getattr(srv, 'server_address', '?')))
                     _proxy_state['stopping'] = True
                     try:
                         srv.shutdown()
+                        _dbg('MONITOR: shutdown() OK')
                     except Exception as mex2:
                         _dbg('MONITOR: shutdown err {}'.format(mex2))
                     try:
