@@ -17,6 +17,7 @@
 '''
 
 import re
+import time
 from resources.lib import utils
 from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
@@ -51,13 +52,26 @@ def List(url):
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
     re_duration = 'class="views-counter2"[^>]*>([^<]+)'
+    skip = 'ico-private'
 
-    utils.videos_list(site, 'thothub.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration)
-    
-    nextp = re.compile(r'<a[^>]+href="([^"]+)"[^>]*>Next</a>', re.DOTALL).search(html)
-    if nextp:
-        site.add_dir('Next Page >>', site.url + nextp.group(1), 'List', site.img_next)
-        
+    utils.videos_list(site, 'thothub.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, skip=skip)
+
+    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', html, re.DOTALL | re.IGNORECASE)
+    if match:
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        ts = int(time.time() * 1000)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
+        lpnr, lastp = 0, ''
+        match = re.search(r':(\d+)">Last', html, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lastp = '/{}'.format(lpnr)
+        nurl = nurl.replace('+from_albums', '')
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+        site.add_dir('Next Page >> (' + str(npage) + lastp + ')', nurl, 'List', site.img_next)
+
     utils.eod()
 
 
@@ -92,10 +106,16 @@ def Models(url):
                 img = match_img.group(1) if match_img else site.img_cat
                 site.add_dir(match_name.group(1), match_url.group(1), 'List', img, '')
      
-    nextp = re.compile(r'<a[^>]+href="([^"]+)"[^>]*>Next</a>', re.DOTALL).search(html)
-    if nextp:
-        site.add_dir('Next Page >>', site.url + nextp.group(1), 'Models', site.img_next)
-    
+    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', html, re.DOTALL | re.IGNORECASE)
+    if match:
+        npage = int(match.group(1)) + 1
+        block_id = match.group(2)
+        params = match.group(3).replace(';', '&').replace(':', '=')
+        ts = int(time.time() * 1000)
+        nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
+        nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
+        site.add_dir('Next Page >> (' + str(npage) + ')', nurl, 'Models', site.img_next)
+
     utils.eod()
 
 
