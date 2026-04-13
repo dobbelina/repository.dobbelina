@@ -1,11 +1,4 @@
-[B]Version 1.1.178[/B]
-- reallifecams, voyeur-house - fix nextpage
-- watchporn - fix lookup info
-- thothub - new site
-- cloudbate - new site
-- chaturbate - play with Inputstream Adaptive always enabled
-- chaturbate - context menu: Find recordings featuring model_name on Cloudbate
-- chaturbate - fix playback
-- watchporn - fix categories
-- naughtyblog - fix listing
+[B]Version 1.1.179[/B]
+- thothub - fix pagination and filter private videos
+
 
