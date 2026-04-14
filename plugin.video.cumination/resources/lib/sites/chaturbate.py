@@ -261,11 +261,32 @@ def Playvid(url, name):
 
     if playmode == 0:
         if m3u8stream:
-            import socket, threading
+            import socket, threading, gzip, zlib
             from http.server import BaseHTTPRequestHandler
             from socketserver import TCPServer, ThreadingMixIn
             from six.moves.urllib.request import Request as _Req, urlopen as _uopen
             from six.moves.urllib.parse import urljoin as _urljoin
+
+            def _read_body(resp):
+                # mmcdn edges return gzipped bodies even without Accept-Encoding,
+                # sometimes with Content-Encoding header and sometimes without.
+                # decompress on either signal so downstream decode/passthrough is clean.
+                raw = resp.read()
+                ce = (resp.headers.get('Content-Encoding') or '').lower()
+                if ce == 'gzip' or raw[:2] == b'\x1f\x8b':
+                    try:
+                        raw = gzip.decompress(raw)
+                    except Exception:
+                        pass
+                elif ce == 'deflate':
+                    try:
+                        raw = zlib.decompress(raw)
+                    except Exception:
+                        try:
+                            raw = zlib.decompress(raw, -zlib.MAX_WBITS)
+                        except Exception:
+                            pass
+                return raw
 
             try:
                 global _cb_proxy, _cb_proxy_state
@@ -307,7 +328,7 @@ def Playvid(url, name):
                 headers = HTTP_HEADERS_IPAD.copy()
                 headers['Referer'] = url
                 req = _Req(m3u8stream, headers=headers)
-                master_raw = _uopen(req, timeout=10).read().decode('utf-8', 'replace')
+                master_raw = _read_body(_uopen(req, timeout=10)).decode('utf-8', 'replace')
                 base = m3u8stream.rsplit('/', 1)[0] + '/'
 
                 master_fixed = re.sub(
@@ -371,7 +392,7 @@ def Playvid(url, name):
                         _proxy_state['last_refresh'] = now
                     try:
                         rq = _Req(_proxy_state['stream_url'], headers=_proxy_state['headers'])
-                        raw = _uopen(rq, timeout=10).read().decode('utf-8', 'replace')
+                        raw = _read_body(_uopen(rq, timeout=10)).decode('utf-8', 'replace')
                         burl = _proxy_state['stream_url'].rsplit('/', 1)[0] + '/'
                         fixed = re.sub(
                             r'^(?!https?://)(?!#)(.+)$',
@@ -505,7 +526,7 @@ def Playvid(url, name):
                                 """Fetch chunklist, absolutize relative URIs, and route segments through proxy."""
                                 creq = _Req(u, headers=_proxy_state['headers'])
                                 resp = _uopen(creq, timeout=10)
-                                raw = resp.read().decode('utf-8', 'replace')
+                                raw = _read_body(resp).decode('utf-8', 'replace')
                                 cbase = u.rsplit('/', 1)[0] + '/'
                                 raw = re.sub(
                                     r'^(?!https?://)(?!#)(\S+)$',
