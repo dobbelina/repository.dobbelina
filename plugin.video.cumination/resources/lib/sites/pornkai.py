@@ -23,6 +23,9 @@ from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
 site = AdultSite('pornkai', "[COLOR hotpink]PornKai[/COLOR]", 'https://pornkai.com/', 'pornkai.png', 'pornkai')
+# pornkai 403s chrome/edge user-agents, firefox still works
+pornkai_headers = utils.base_hdrs.copy()
+pornkai_headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'})
 
 
 @site.register(default_mode=True)
@@ -35,7 +38,7 @@ def Main():
 
 @site.register()
 def List(url):
-    html = utils.getHtml(url, site.url)
+    html = utils.getHtml(url, site.url, headers=pornkai_headers)
     html = html.replace('\\n', '\n').replace('\\t', '\t').replace('\\"', '"')
 
     delimiter = '<div class="thumbnail">'
@@ -77,7 +80,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url)
+    cathtml = utils.getHtml(url, headers=pornkai_headers)
     match = re.compile(r'''thumbnail_link"\s*href="([^"]+)".+?src='([^']+)'.+?title">([^<]+)<''', re.IGNORECASE | re.DOTALL).findall(cathtml)
     for caturl, img, name in match:
         name = utils.cleantext(name)
@@ -91,7 +94,7 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, regex=r'iframe.+?src="([^"]+)"')
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
-    videohtml = utils.getHtml(url, site.url)
+    videohtml = utils.getHtml(url, site.url, headers=pornkai_headers)
     match = re.compile(r'iframe.+?src="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         videolink = match[0]
