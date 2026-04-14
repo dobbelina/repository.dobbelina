@@ -46,13 +46,21 @@ def List(url):
         url = url.split('?')[0]
     url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
+    # new video-item markup uses relative hrefs — absolutize them so Playvid gets a full URL
+    listhtml = listhtml.replace('href="/', 'href="{}'.format(site.url))
+    # scope to the last video-list block — every page (home, search, model) renders a
+    # trending strip above the actual results using the same video-item markup, so
+    # take only the final block to avoid the trending items leaking into every listing
+    blocks = list(re.finditer(r'<div[^>]*data-testid="video-list"', listhtml))
+    if blocks:
+        listhtml = listhtml[blocks[-1].start():]
 
-    delimiter = '<div class="video-item'
+    delimiter = 'data-testid="video-item"'
     re_videopage = r'<a\s+href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
-    re_img = 'data-src="([^"]+jpg)"'
-    re_duration = r'class="video-badge l">([^<]+)<'
-    re_quality = 'class="video-badge h">([^<]+)<'
+    re_img = r'src="([^"]+\.jpg[^"]*)"'
+    re_duration = r'data-testid="video-item-length"\s*>\s*([^\s<]+)'
+    re_quality = r'data-testid="video-item-resolution"\s*>\s*([^\s<]+)'
 
     utils.videos_list(site, 'spankbang.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality)
     nextp = re.compile(r'class="next"><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
@@ -64,7 +72,8 @@ def List(url):
             lp = '/' + lp[0]
         else:
             lp = ''
-        site.add_dir('Next Page.. ({}{})'.format(np, lp), site.url[:-1] + nextp, 'List', site.img_next)
+        # nextp is already absolute thanks to the href= replace above
+        site.add_dir('Next Page.. ({}{})'.format(np, lp), nextp, 'List', site.img_next)
     # elif nextps:
     #     nextp = nextps.group(1)
     #     pgtxt = re.findall(r'class="status">(.*?)</span', listhtml)[0].replace('<span>/', 'of').capitalize()
@@ -87,31 +96,49 @@ def Search(url, keyword=None):
 @site.register()
 def Tags(url):
     cathtml = utils.getHtml(url, '')
-    matchmain = re.compile('<div class="search_holder">(.*?)</html', re.IGNORECASE | re.DOTALL).findall(cathtml)[0]
-    match = re.compile('<li><a href="([^"]+)" class="keyword">([^<]+)<', re.DOTALL).findall(matchmain)
-    for catpage, name in sorted(match, key=lambda x: x[1]):
-        site.add_dir(name, site.url[:-1] + catpage, 'List')
+    # the full A-Z tag list still renders with the classic keyword markup — the
+    # featured/popular strip at the top uses data-testid="tag" but only holds ~40 items
+    match = re.compile(
+        r'<a\s+href="([^"]+)"\s+class="keyword">([^<]+)<',
+        re.DOTALL | re.IGNORECASE,
+    ).findall(cathtml)
+    # the page renders a "Top Tags" strip above the full A-Z list using the same markup,
+    # so each popular tag shows up twice — dedup by href, keep first occurrence
+    seen = set()
+    unique = [(h, n) for h, n in match if not (h in seen or seen.add(h))]
+    for catpage, name in sorted(unique, key=lambda x: x[1].lower()):
+        if catpage.startswith('/'):
+            catpage = site.url[:-1] + catpage
+        site.add_dir(name.strip(), catpage, 'List')
     utils.eod()
 
 
 @site.register()
 def Models_alphabet(url):
     cathtml = utils.getHtml(url, '')
-    cathtml = cathtml.split('<ul class="alphabets">')[-1].split('</ul>')[0]
-    match = re.compile(r'<li><a href="([^"]+)".*?>([^<]+)<', re.DOTALL).findall(cathtml)
+    match = re.compile(
+        r'href="([^"]+)"[^>]*data-testid="alphabet-letter"[^>]*>\s*([^\s<]+)\s*<',
+        re.DOTALL | re.IGNORECASE,
+    ).findall(cathtml)
     for catpage, name in match:
-        site.add_dir(name, site.url[:-1] + catpage, 'Models', '', '')
+        if catpage.startswith('/'):
+            catpage = site.url[:-1] + catpage
+        site.add_dir(name.strip(), catpage, 'Models', '', '')
     utils.eod()
 
 
 @site.register()
 def Models(url):
     cathtml = utils.getHtml(url, '')
-    cathtml = cathtml.split('<ul class="list">')[-1].split('</ul>')[0]
-    match = re.compile(r'<li><a href="([^"]+)".*?>([^<]+)<.+?svg>([\s\d]+)</span', re.DOTALL).findall(cathtml)
+    match = re.compile(
+        r'<a\s+href="([^"]*/pornstar/[^"]*)"[^>]*>\s*([^\n<]+?)\s*<span[^>]*>\s*(\d+)\s*<',
+        re.DOTALL | re.IGNORECASE,
+    ).findall(cathtml)
     for catpage, name, videos in match:
-        name = name + '[COLOR hotpink]{}[/COLOR]'.format(videos)
-        site.add_dir(name, site.url[:-1] + catpage, 'List', '', '')
+        if catpage.startswith('/'):
+            catpage = site.url[:-1] + catpage
+        name = name.strip() + ' [COLOR hotpink]({})[/COLOR]'.format(videos)
+        site.add_dir(name, catpage, 'List', '', '')
     utils.eod()
 
 
@@ -128,7 +155,9 @@ def Playvid(url, name, download=None):
     videourl = utils.prefquality(sources, sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
     if not videourl:
         return
-    vp.play_from_direct_link(videourl.replace(r'\u0026', '&'))
+    videourl = videourl.replace(r'\u0026', '&')
+    videourl += '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, url)
+    vp.play_from_direct_link(videourl)
 
 
 @site.register()
