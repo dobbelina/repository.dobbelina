@@ -46,9 +46,9 @@ def List(url):
         url = url.split('?')[0]
     url += '?o=new&q={}&d={}'.format(filtersQ[filterQ], filtersL[filterL])
     listhtml = utils.getHtml(url, '')
-    # new video-item markup uses relative hrefs — absolutize them so Playvid gets a full URL
+    # new video-item markup uses relative hrefs - absolutize them so Playvid gets a full URL
     listhtml = listhtml.replace('href="/', 'href="{}'.format(site.url))
-    # scope to the last video-list block — every page (home, search, model) renders a
+    # scope to the last video-list block - every page (home, search, model) renders a
     # trending strip above the actual results using the same video-item markup, so
     # take only the final block to avoid the trending items leaking into every listing
     blocks = list(re.finditer(r'<div[^>]*data-testid="video-list"', listhtml))

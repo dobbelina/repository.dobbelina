@@ -1,4 +1,7 @@
 [B]Version 1.1.179[/B]
 - thothub - fix pagination and filter private videos
+- chaturbate - decompress gzipped manifests
+- spankbang - fix listings after site redesign
+
 
 
