@@ -2,6 +2,6 @@
 - thothub - fix pagination and filter private videos
 - chaturbate - decompress gzipped manifests
 - spankbang - fix listings after site redesign
-
+- chaturbate - Cloudbate search feature for long press menu in "Online Favourites"
 
 

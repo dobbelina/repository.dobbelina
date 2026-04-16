@@ -261,7 +261,7 @@ def Playvid(url, name):
 
     if playmode == 0:
         if m3u8stream:
-            import socket, threading, gzip, zlib
+            import socket, threading, gzip, zlib  # noqa: E401
             from http.server import BaseHTTPRequestHandler
             from socketserver import TCPServer, ThreadingMixIn
             from six.moves.urllib.request import Request as _Req, urlopen as _uopen
@@ -294,6 +294,7 @@ def Playvid(url, name):
                 # Debug log for proxy events (toggle via Settings > enh_debug)
                 _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
                 _dbg_on = addon.getSetting('enh_debug') == 'true'
+
                 def _dbg(msg):
                     if not _dbg_on:
                         return
@@ -685,10 +686,12 @@ def Playvid(url, name):
                             self.send_header('Content-Length', str(len(master_bytes)))
                             self.end_headers()
                             self.wfile.write(master_bytes)
+
                     def do_HEAD(self):
                         self.send_response(200)
                         self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
                         self.end_headers()
+
                     def log_message(self, *a):
                         pass
 
@@ -873,7 +876,12 @@ def onlineFav(url):
             tags = tags if utils.PY3 else tags.encode('utf8')
             subject += "[CR][CR]" + tags
 
-            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True, fav='del')
+            contextmenu = []
+            id = model["username"]
+            contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(id))
+            contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(id), 'RunPlugin(' + contextrecord + ')'))
+
+            site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True, fav='del', contextm=contextmenu)
     utils.eod()
 
 
