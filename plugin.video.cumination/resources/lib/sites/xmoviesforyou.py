@@ -28,7 +28,7 @@ site = AdultSite('xmoviesforyou', '[COLOR hotpink]Xmoviesforyou[/COLOR]', 'https
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?q=', 'Search', site.img_search)
-    List(site.url)
+    List(site.url + 'page/1')
     utils.eod()
 
 
@@ -36,7 +36,7 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url, '')
 
-    delimiter = r'<article class="group'
+    delimiter = r' class="group'
     re_videopage = '<a href="([^"]+)"'
     re_name = 'alt="([^"]+)"'
     re_img = r'<img src="([^"]+)"'
