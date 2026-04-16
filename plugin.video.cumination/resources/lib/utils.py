@@ -1237,13 +1237,16 @@ def textBox(heading, announce):
             self.setControls()
 
         def setControls(self):
-            self.win.getControl(self.CONTROL_LABEL).setLabel(heading)
             try:
-                f = open(announce)
-                text = f.read()
-            except:
-                text = announce
-            self.win.getControl(self.CONTROL_TEXTBOX).setText(str(text))
+                self.win.getControl(self.CONTROL_LABEL).setLabel(heading)
+                try:
+                    f = open(announce)
+                    text = f.read()
+                except:
+                    text = announce
+                self.win.getControl(self.CONTROL_TEXTBOX).setText(str(text))
+            except RuntimeError:
+                xbmc.executebuiltin('Dialog.Close(%d)' % self.WINDOW)
             return
 
     TextBox()
