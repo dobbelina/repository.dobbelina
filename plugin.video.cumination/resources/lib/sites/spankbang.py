@@ -96,14 +96,14 @@ def Search(url, keyword=None):
 @site.register()
 def Tags(url):
     cathtml = utils.getHtml(url, '')
-    # the full A-Z tag list still renders with the classic keyword markup — the
+    # the full A-Z tag list still renders with the classic keyword markup - the
     # featured/popular strip at the top uses data-testid="tag" but only holds ~40 items
     match = re.compile(
         r'<a\s+href="([^"]+)"\s+class="keyword">([^<]+)<',
         re.DOTALL | re.IGNORECASE,
     ).findall(cathtml)
     # the page renders a "Top Tags" strip above the full A-Z list using the same markup,
-    # so each popular tag shows up twice — dedup by href, keep first occurrence
+    # so each popular tag shows up twice - dedup by href, keep first occurrence
     seen = set()
     unique = [(h, n) for h, n in match if not (h in seen or seen.add(h))]
     for catpage, name in sorted(unique, key=lambda x: x[1].lower()):
