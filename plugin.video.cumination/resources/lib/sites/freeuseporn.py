@@ -26,7 +26,7 @@ site = AdultSite('freeuseporn', '[COLOR hotpink]Freeuse Porn[/COLOR]', 'https://
 
 @site.register(default_mode=True)
 def Main(url):
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + "tags/", 'Tags', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + "tags/", 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos/', 'Search', site.img_search)
     List(site.url + 'videos?o=mr&page=1')
     utils.eod()
@@ -34,19 +34,17 @@ def Main(url):
 
 @site.register()
 def List(url):
+    utils.kodilog('Listing URL: {}'.format(url))
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'href="([^"]+)">\s*?<div class="item">.*?duration">([^<]+)<.*?src="([^"]+)"\s*title="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'>\s*<a href="([^"]+)"\s*class="group flex.+?img src="([^"]+)"\s*title="([^"]+).+?transition-opacity">([\s\d:]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
-    for videopage, duration, img, name in match:
+    for videopage, img, name, duration in match:
         name = utils.cleantext(name)
         duration = utils.cleantext(duration.strip())
         videopage = site.url + videopage
 
-        contexturl = (utils.addon_sys
-                      + "?mode=freeuseporn.Lookupinfo"
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-
+        contexturl = (utils.addon_sys + "?mode=freeuseporn.Lookupinfo&url=" + urllib_parse.quote_plus(videopage))
         contextmenu = [('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')')]
 
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, contextm=contextmenu)
@@ -77,7 +75,7 @@ def Search(url, keyword=None):
 @site.register()
 def Tags(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile('href="/search/videos/([^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile('href="/search/videos/([^"]+)".+?</i> ([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for tag, name in sorted(match):
         name = utils.cleantext(name)
         site.add_dir(name, site.url + 'search/videos/', 'Search', '', keyword=tag)
@@ -87,8 +85,7 @@ def Tags(url):
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Tag", r'href="/([^"]+)"><i\s*class="fas\s*fa-(?:th-list|tag)"></i>([^<]+)<', '')
+        ("Tag", r'href="/search/videos/([^"]+)".+?</i>([^<]+)<', '')
     ]
-
     lookupinfo = utils.LookupInfo(site.url, url, 'freeuseporn.List', lookup_list)
     lookupinfo.getinfo()

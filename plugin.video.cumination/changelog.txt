@@ -1,9 +1,4 @@
-[B]Version 1.1.179[/B]
-- thothub - fix pagination and filter private videos
-- chaturbate - decompress gzipped manifests
-- spankbang - fix listings after site redesign
-- chaturbate - Cloudbate search feature for long press menu in "Online Favourites"
-- fix crashes on first launch with some skins
-- xmoviesforyou - fix listing
-
+[B]Version 1.1.180[/B]
+- premiumporn - fix listing, playback
+- freeuse porn - fix listing
 
