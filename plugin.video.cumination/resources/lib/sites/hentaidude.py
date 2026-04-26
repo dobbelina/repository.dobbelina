@@ -92,7 +92,7 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download=download)
+    # vp = utils.VideoPlayer(name, download=download)
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
@@ -124,6 +124,7 @@ def Playvid(url, name, download=None):
             en = decoded_token.get("en")
             iv = decoded_token.get("iv")
             uri = decoded_token.get("uri")
+            uri = 'https:' + uri if uri.startswith('//') else uri
 
             data = '''------geckoformboundarybfec28fb1c2316e132ff23ab04e3d114
 Content-Disposition: form-data; name="action"
