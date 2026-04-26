@@ -41,10 +41,10 @@ def List(url):
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    url = re.compile(r'class="vp-pagination".+?href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
+    url = re.compile(r'class="vp-pagi-wrap".+?href="([^"]+)">Next', re.DOTALL | re.IGNORECASE).search(listhtml)
     if url:
-        curr_pg = re.compile(r'class="vp-pagination".+?current">([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-        last_pg = re.compile(r'class="vp-pagination".+?hellip.+?href.+?>([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+        curr_pg = re.compile(r'class="vp-pagi-wrap".+?current">([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+        last_pg = re.compile(r'class="vp-pagi-wrap".+?hellip.+?href.+?>([^<]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
         pgtxt = 'Currently in Page {0} of {1}'.format(curr_pg.group(1), last_pg.group(1))
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), url.group(1), 'List', site.img_next)
     utils.eod()

@@ -1,4 +1,5 @@
 [B]Version 1.1.181[/B]
 - hentaidude - fix playback
+- aagmal - fix pagination
 
 
