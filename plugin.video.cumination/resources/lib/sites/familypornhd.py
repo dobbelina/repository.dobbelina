@@ -131,7 +131,7 @@ def Playvid(url, name, download=None):
             videourl = jsondata["streaming_url"]
             videourl += '|Referer=https://bestwish.lol/&Origin=https://bestwish.lol'
             vp.play_from_direct_link(videourl)
-        elif 'video-mart.com' in iframeurl or 'videostreamingworld.com' in iframeurl:
+        elif 'video-mart.com' in iframeurl or 'videostreamingworld.com' in iframeurl or 'watchstreamhd.com' in iframeurl:
             host = iframeurl.rsplit('/', 2)[0]
             url1 = '{}/player/index.php?data={}&do=getVideo'.format(host, hash)
             hdr = dict(utils.base_hdrs).copy()
