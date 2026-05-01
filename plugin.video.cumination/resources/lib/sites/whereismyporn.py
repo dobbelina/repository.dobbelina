@@ -20,7 +20,7 @@ import re
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('wimp', '[COLOR hotpink]WhereIsMyPorn[/COLOR]', 'https://whereismyporn.com/', '', 'wimp')
+site = AdultSite('wimp', '[COLOR hotpink]WhereIsMyPorn[/COLOR]', 'https://whereismyporn.com/', 'whereismyporn.png', 'wimp')
 
 addon = utils.addon
 
@@ -35,16 +35,16 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    match = re.compile('<img.*?src="([^"]+)".*?entry-title"><a href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'data-main-thumb="([^"]+)".+?href="([^"]+)"\s+title="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for img, videopage, name in match:
         name = utils.cleantext(name)
 
         site.add_download_link(name, videopage, 'Playvid', img, name)
 
-    np = re.compile(r'next\s*page-numbers"\s*href="([^"]+)"', re.DOTALL | re.IGNORECASE).search(listhtml)
+    np = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         np = np.group(1)
-        nextpage = re.search('page/(\d+)', np).group(1)
+        nextpage = re.search(r'page/(\d+)', np).group(1)
         site.add_dir('Next Page... ({0})'.format(nextpage), np, 'List', site.img_next)
     utils.eod()
 
