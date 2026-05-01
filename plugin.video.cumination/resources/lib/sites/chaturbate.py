@@ -262,8 +262,15 @@ def Playvid(url, name):
     if playmode == 0:
         if m3u8stream:
             import socket, threading, gzip, zlib  # noqa: E401
-            from http.server import BaseHTTPRequestHandler
-            from socketserver import TCPServer, ThreadingMixIn
+            # py2 (kodi 18.x leia) doesnt have http.server / socketserver,
+            # those are py3 names. fall back to py2 names so the proxy
+            # imports cleanly on older builds. issue #1845
+            try:
+                from http.server import BaseHTTPRequestHandler
+                from socketserver import TCPServer, ThreadingMixIn
+            except ImportError:
+                from BaseHTTPServer import BaseHTTPRequestHandler
+                from SocketServer import TCPServer, ThreadingMixIn
             from six.moves.urllib.request import Request as _Req, urlopen as _uopen
             from six.moves.urllib.parse import urljoin as _urljoin
 
