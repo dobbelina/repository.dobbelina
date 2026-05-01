@@ -431,11 +431,20 @@ def Playvid(url, name):
                 def _force_stop(reason):
                     _proxy_state['stopping'] = True
                     _dbg('FORCE STOP: {}'.format(reason))
+                    # skip the global Stop if player moved to another proxy
+                    # (sibling playvid). still tear our own proxy down below.
                     try:
-                        xbmc.executebuiltin('PlayerControl(Stop)')
-                        _dbg('PlayerControl(Stop) sent')
-                    except Exception as ex2:
-                        _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
+                        cur = xbmc.Player().getPlayingFile() or ''
+                    except Exception:
+                        cur = ''
+                    if cur and ':{}/'.format(port) not in cur:
+                        _dbg('PlayerControl(Stop) skipped, player on diff proxy {}'.format(cur))
+                    else:
+                        try:
+                            xbmc.executebuiltin('PlayerControl(Stop)')
+                            _dbg('PlayerControl(Stop) sent')
+                        except Exception as ex2:
+                            _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
                     time.sleep(3)
                     try:
                         _cb_proxy.shutdown()
