@@ -110,7 +110,7 @@ def SiteMain(url):
 def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?float-right(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videourl, name, thumb, info, provider in match:
         if 'class="font-[100]"' in info:
             name = '[COLOR red](Paid Video)[/COLOR] ' + name
