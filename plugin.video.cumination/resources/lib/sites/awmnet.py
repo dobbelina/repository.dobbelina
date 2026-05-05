@@ -14,6 +14,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 '''
 
 import re
@@ -28,60 +29,64 @@ from resources.lib.decrypters import txxx
 site = AdultSite('awmnet', '[COLOR hotpink]AWM Network[/COLOR] - [COLOR deeppink]49 sites[/COLOR]', '', 'awmnet.jpg', 'awmnet')
 
 sitelist = [
-    ['4tube', 'https://www.4tube.com/templates/4tube/images/logo.png', 'https://www.4tube.com/'],
     ['AI PornVideos', 'https://www.aipornvideos.com/images/aipornvideos/logo.png', 'https://www.aipornvideos.com/'],
     ['Anal Galore', 'https://www.analgalore.com/templates/analgalore/images/logo.png', 'https://www.analgalore.com/'],
     ['Asian Galore', 'https://www.asiangalore.com/templates/asiangalore/images/logo.png', 'https://www.asiangalore.com/'],
-    ['Ass O Ass', 'https://www.assoass.com/templates/assoass/images/logo.png', 'https://www.assoass.com/'],
     ['BBW PornVideos', 'https://www.bbwpornvideos.com/images/bbwpornvideos/logo.png', 'https://www.bbwpornvideos.com/'],
     ['BigCockXXX', 'https://www.bigcockxxx.com/images/bigcockxxx/logo.png', 'https://www.bigcockxxx.com/'],
     ['Biporn', 'https://www.biporn.com/templates/biporn/images/logo.png', 'https://www.biporn.com/'],
     ['Cartoon Porn Videos', 'https://www.cartoonpornvideos.com/templates/cartoonpornvideos/images/logo.png', 'https://www.cartoonpornvideos.com/'],
-    ['CoqNu', 'https://www.coqnu.com/templates/coqnu/images/logo.png', 'https://www.coqnu.com/'],
-    ['Dino Tube', 'https://www.dinotube.com/templates/dinotube/images/logo.png', 'https://www.dinotube.com/'],
     ['Ebony Galore', 'https://www.ebonygalore.com/templates/ebonygalore/images/logo.png', 'https://www.ebonygalore.com/'],
-    ['EL Ladies', 'https://www.el-ladies.com/templates/el-ladies/images/logo.png', 'https://www.el-ladies.com/'],
-    ['For Her Tube', 'https://www.forhertube.com/templates/forhertube/images/logo.png', 'https://www.forhertube.com/'],
-    ['Fucd', 'https://www.fucd.com/templates/fucd/images/logo.png', 'https://www.fucd.com/'],
     ['Full Porn Videos', 'https://www.fullpornvideos.com/templates/fullpornvideos/images/logo.png', 'https://www.fullpornvideos.com/'],
-    ['Fuq', 'https://www.fuq.com/templates/fuq/images/logo.png', 'https://www.fuq.com/'],
-    ['Fux', 'https://www.fux.com/templates/fux/images/logo.png', 'https://www.fux.com/'],
     ['GayMale Tube', 'https://www.gaymaletube.com/templates/gaymaletube/images/logo.png', 'https://www.gaymaletube.com/'],
-    ['Got Porn', 'https://www.gotporn.com/templates/gotporn/images/logo.png', 'https://www.gotporn.com/'],
     ['Hentai Galore', 'https://www.hentaigalore.com/images/hentaigalore/logo.png', 'https://www.hentaigalore.com/'],
     ['Homemade Galore', 'https://www.homemadegalore.com/templates/homemadegalore/images/logo.png', 'https://www.homemadegalore.com/'],
-    ['iXXX', 'https://www.ixxx.com/templates/ixxx/images/logo.png', 'https://www.ixxx.com/'],
     ['Latin Galore', 'https://www.latingalore.com/templates/latingalore/images/logo.png', 'https://www.latingalore.com/'],
     ['Lesbian Porn Videos', 'https://www.lesbianpornvideos.com/templates/lesbianpornvideos/images/logo.png', 'https://www.lesbianpornvideos.com/'],
-    ['Lobster Tube', 'https://www.lobstertube.com/templates/lobstertube/images/logo.png', 'https://www.lobstertube.com/'],
     ['Lupo Porno', 'https://www.lupoporno.com/templates/lupoporno/images/logo.png', 'https://www.lupoporno.com/'],
-    ['Mature Tube', 'https://www.maturetube.com/templates/maturetube/images/logo.png', 'https://www.maturetube.com/'],
-    ['Melons Tube', 'https://www.melonstube.com/templates/melonstube/images/logo.png', 'https://www.melonstube.com/'],
-    ['Meta Porn', 'https://www.metaporn.com/templates/metaporn/images/logo.png', 'https://www.metaporn.com/'],
     ['Model Galore', 'https://www.modelgalore.com/templates/modelgalore/images/logo.png', 'https://www.modelgalore.com/'],
     ['New Porno', 'https://www.newporno.com/templates/newporno/images/logo.png', 'https://www.newporno.com/'],
     ['Porn HD', 'https://www.pornhd.com/templates/pornhd/images/logo.png', 'https://www.pornhd.com/'],
-    ['Porn MD', 'https://www.pornmd.com/templates/pornmd/images/logo.png', 'https://www.pornmd.com/'],
     ['Porn TV', 'https://www.porntv.com/templates/porntv/images/logo.png', 'https://www.porntv.com/'],
-    ['Porzo', 'https://www.porzo.com/templates/porzo/images/logo.png', 'https://www.porzo.com/'],
-    ['Qorno', 'https://www.qorno.com/templates/qorno/images/logo.png', 'https://www.qorno.com/'],
-    ['Samba Porno', 'https://www.sambaporno.com/templates/sambaporno/images/logo.png', 'https://www.sambaporno.com/'],
     ['Short Porn', 'https://www.shortporn.com/templates/shortporn/images/logo.png', 'https://www.shortporn.com/'],
-    ['Stocking Tease', 'https://www.stocking-tease.com/templates/stocking-tease/images/logo.png', 'https://www.stocking-tease.com/'],
     ['TG Tube', 'https://www.tgtube.com/templates/tgtube/images/logo.png', 'https://www.tgtube.com/'],
-    ['Tiava', 'https://www.tiava.com/templates/tiava/images/logo.png', 'https://www.tiava.com/'],
-    ['Toro Porno', 'https://www.toroporno.com/templates/toroporno/images/logo.png', 'https://www.toroporno.com/'],
-    ['Tube BDSM', 'https://www.tubebdsm.com/templates/tubebdsm/images/logo.png', 'https://www.tubebdsm.com/'],
-    ['Tube Galore', 'https://www.tubegalore.com/templates/tubegalore/images/logo.png', 'https://www.tubegalore.com/'],
-    ['Tube Porn', 'https://www.tubeporn.com/templates/tubeporn/images/logo.png', 'https://www.tubeporn.com/'],
     ['Tube Pornstars', 'https://www.tubepornstars.com/templates/tubepornstars/images/logo.png', 'https://www.tubepornstars.com/'],
     ['VR XXX', 'https://www.vrxxx.com/templates/vrxxx/images/logo.png', 'https://www.vrxxx.com/'],
     ['XXXmilfs', 'https://www.xxxmilfs.com/images/xxxmilfs/logo.png?69f905d4', 'https://www.xxxmilfs.com/']
 ]
 
+sitelist2 = [
+    ['4tube', 'https://www.4tube.com/templates/4tube/images/logo.png', 'https://www.4tube.com/'],
+    ['Ass O Ass', 'https://www.assoass.com/templates/assoass/images/logo.png', 'https://www.assoass.com/'],
+    ['CoqNu', 'https://www.coqnu.com/templates/coqnu/images/logo.png', 'https://www.coqnu.com/'],
+    ['Dino Tube', 'https://www.dinotube.com/templates/dinotube/images/logo.png', 'https://www.dinotube.com/'],
+    ['EL Ladies', 'https://www.el-ladies.com/templates/el-ladies/images/logo.png', 'https://www.el-ladies.com/'],
+    ['For Her Tube', 'https://www.forhertube.com/templates/forhertube/images/logo.png', 'https://www.forhertube.com/'],
+    ['Fucd', 'https://www.fucd.com/templates/fucd/images/logo.png', 'https://www.fucd.com/'],
+    ['Fuq', 'https://www.fuq.com/templates/fuq/images/logo.png', 'https://www.fuq.com/'],
+    ['Fux', 'https://www.fux.com/templates/fux/images/logo.png', 'https://www.fux.com/'],
+    ['Got Porn', 'https://www.gotporn.com/templates/gotporn/images/logo.png', 'https://www.gotporn.com/'],
+    ['iXXX', 'https://www.ixxx.com/templates/ixxx/images/logo.png', 'https://www.ixxx.com/'],
+    ['Lobster Tube', 'https://www.lobstertube.com/templates/lobstertube/images/logo.png', 'https://www.lobstertube.com/'],
+    ['Lupo Porno', 'https://www.lupoporno.com/templates/lupoporno/images/logo.png', 'https://www.lupoporno.com/'],
+    ['Mature Tube', 'https://www.maturetube.com/templates/maturetube/images/logo.png', 'https://www.maturetube.com/'],
+    ['Melons Tube', 'https://www.melonstube.com/templates/melonstube/images/logo.png', 'https://www.melonstube.com/'],
+    ['Meta Porn', 'https://www.metaporn.com/templates/metaporn/images/logo.png', 'https://www.metaporn.com/'],
+    ['Porn MD', 'https://www.pornmd.com/templates/pornmd/images/logo.png', 'https://www.pornmd.com/'],
+    ['Porzo', 'https://www.porzo.com/templates/porzo/images/logo.png', 'https://www.porzo.com/'],
+    ['Qorno', 'https://www.qorno.com/templates/qorno/images/logo.png', 'https://www.qorno.com/'],
+    ['Samba Porno', 'https://www.sambaporno.com/templates/sambaporno/images/logo.png', 'https://www.sambaporno.com/'],
+    ['Stocking Tease', 'https://www.stocking-tease.com/templates/stocking-tease/images/logo.png', 'https://www.stocking-tease.com/'],
+    ['Tiava', 'https://www.tiava.com/templates/tiava/images/logo.png', 'https://www.tiava.com/'],
+    ['Toro Porno', 'https://www.toroporno.com/templates/toroporno/images/logo.png', 'https://www.toroporno.com/'],
+    ['Tube BDSM', 'https://www.tubebdsm.com/templates/tubebdsm/images/logo.png', 'https://www.tubebdsm.com/'],
+    ['Tube Galore', 'https://www.tubegalore.com/templates/tubegalore/images/logo.png', 'https://www.tubegalore.com/'],
+    ['Tube Porn', 'https://www.tubeporn.com/templates/tubeporn/images/logo.png', 'https://www.tubeporn.com/'],
+]
+
 
 def getBaselink(url):
-    for pornsite in sitelist:
+    for pornsite in sitelist + sitelist2:
         domain = urllib_parse.urlparse(pornsite[2]).netloc
         if domain in url:
             siteurl = pornsite[2]
@@ -93,6 +98,10 @@ def getBaselink(url):
 def Main():
     for pornsite in sorted(sitelist):
         site.add_dir('[COLOR hotpink]{0}[/COLOR]'.format(pornsite[0]), pornsite[2], 'SiteMain', pornsite[1])
+    site.add_download_link('[COLOR red]----Below sites are effectively clones----[/COLOR]', '', '', '')
+    site.add_download_link('[COLOR red]----Same videos, different metrics/sorting----[/COLOR]', '', '', '')
+    for pornsite in sorted(sitelist2):
+        site.add_dir('[COLOR hotpink]{0}[/COLOR]'.format(pornsite[0]), pornsite[2], 'SiteMain', pornsite[1])
     utils.eod()
 
 
@@ -102,7 +111,20 @@ def SiteMain(url):
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstar', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl + 'a-z', 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
+    if 'bbwpornvideos' in siteurl or 'forhertube' in siteurl or 'ixxx' in siteurl or 'pornmd' in siteurl or 'stocking-tease' in siteurl or 'tubegalore' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'c/', 'Search', site.img_search)
+    elif 'gaymaletube' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'cat/', 'Search', site.img_search)
+    elif 'lupoporno' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/categorie/', 'Search', site.img_search)
+    elif 'modelgalore' in siteurl or 'tubepornstars' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/a/', 'Search', site.img_search)
+    elif 'sambaporno' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/cat/', 'Search', site.img_search)
+    elif 'toroporno' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/categorias/', 'Search', site.img_search)
+    else:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'category/', 'Search', site.img_search)
     List(siteurl + 'new?pricing=free')
 
 
@@ -135,7 +157,7 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '%20')
-        searchUrl = searchUrl + title + '?pricing=free'
+        searchUrl = searchUrl + title + '?pricing=free' + '&filter%5Border_by%5D=date'
         List(searchUrl)
 
 
