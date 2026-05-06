@@ -47,6 +47,7 @@ def List(url):
     re_name = 'title="([^"]+)"'
     re_img = r'data-original="([^"]+)"'
     re_duration = r'class="duration">\s*([\d:]+)\s*<'
+    skip = 'Native Text'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('xxxtube.Lookupinfo') + "&url=")
@@ -54,7 +55,7 @@ def List(url):
     cm_related = (utils.addon_sys + "?mode=" + str('xxxtube.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'xxxtube.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
+    utils.videos_list(site, 'xxxtube.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm, skip=skip)
 
     re_npurl = 'class="item active">.+?href="/([^"]+)"'
     re_npnr = r'class="item active">.+?href="[^"]+">(\d+)<'

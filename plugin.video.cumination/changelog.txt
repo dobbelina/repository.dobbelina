@@ -1,9 +1,4 @@
-[B]Version 1.1.181[/B]
-- hentaidude - fix playback
-- aagmal - fix pagination
-- familypornhd - fix playback
-- whereismyporn - fix listing
-- awm network - fix listing
-- chaturbate kodi 18.x compatibility
+[B]Version 1.1.182[/B]
+- freeomovie - fix playback
 
 
