@@ -65,6 +65,10 @@ def Playvid(url, name, download=None):
         r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
         if r:
             videourl = r.group(1)
+    if not videourl:
+        r = re.search(r'<article.+?iframe\s*data-src="([^"]+)', videopage, re.DOTALL | re.IGNORECASE)
+        if r:
+            videourl = r.group(1)
 
     if not videourl:
         utils.notify('Oh Oh', 'No Videos found')
