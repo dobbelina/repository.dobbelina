@@ -1,4 +1,4 @@
-<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.181">
+<addon id="plugin.video.cumination" name="Cumination" provider-name="Cumination" version="1.1.182">
     <requires>
         <import addon="script.module.six" />
         <import addon="script.module.kodi-six" />
