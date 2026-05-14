@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2015 Whitecream
@@ -34,8 +35,7 @@ tapi = 'https://chaturbate.com/api/ts/hashtags/tag-table-data/'
 site = AdultSite('chaturbate', '[COLOR hotpink]Chaturbate[/COLOR]', bu, 'chaturbate.png', 'chaturbate', True)
 
 addon = utils.addon
-_cb_proxy = None
-_cb_proxy_state = None
+_cb_proxies = {}  # port -> {'proxy': srv, 'state': _proxy_state} - supports simultaneous streams
 HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4'}
 
 
@@ -296,7 +296,7 @@ def Playvid(url, name):
                 return raw
 
             try:
-                global _cb_proxy, _cb_proxy_state
+                global _cb_proxies
 
                 # Debug log for proxy events (toggle via Settings > enh_debug)
                 _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
@@ -311,27 +311,8 @@ def Playvid(url, name):
                     except Exception:
                         pass
 
-                # Signal the previous stream's monitor/reconnect threads to exit
-                # so the old srv reference doesn't keep the old proxy alive.
-                if _cb_proxy_state is not None:
-                    _dbg('CLEANUP: signalling old state stopping=True')
-                    _cb_proxy_state['stopping'] = True
-                    _cb_proxy_state = None
-
-                if _cb_proxy is not None:
-                    _dbg('CLEANUP: shutting down previous proxy {}'.format(
-                        getattr(_cb_proxy, 'server_address', '?')))
-                    try:
-                        _cb_proxy.shutdown()
-                        _dbg('CLEANUP: shutdown() OK')
-                    except Exception as cex1:
-                        _dbg('CLEANUP: shutdown() FAILED: {}'.format(cex1))
-                    try:
-                        _cb_proxy.server_close()
-                        _dbg('CLEANUP: server_close() OK')
-                    except Exception as cex2:
-                        _dbg('CLEANUP: server_close() FAILED: {}'.format(cex2))
-                    _cb_proxy = None
+                # Each stream binds its own ephemeral port - no previous proxy to kill.
+                # _cb_proxies keeps ALL active streams alive simultaneously.
 
                 headers = HTTP_HEADERS_IPAD.copy()
                 headers['Referer'] = url
@@ -364,6 +345,8 @@ def Playvid(url, name):
                     'chunklist_cache': {},
                     'seg_cdn_urls': {},
                     'latest_seg': {},
+                    'request_count': 0,
+                    'last_request': time.time(),
                 }
 
                 # Populate initial chunklist URL map (type_key -> cdn_url)
@@ -454,11 +437,11 @@ def Playvid(url, name):
                             _dbg('PlayerControl(Stop) FAILED: {}'.format(ex2))
                     time.sleep(3)
                     try:
-                        _cb_proxy.shutdown()
+                        srv.shutdown()
                     except Exception as sex:
                         _dbg('shutdown err: {}'.format(sex))
                     try:
-                        _cb_proxy.server_close()
+                        srv.server_close()
                         _dbg('Proxy server shutdown')
                     except Exception as sex:
                         _dbg('close err: {}'.format(sex))
@@ -538,6 +521,7 @@ def Playvid(url, name):
                             type_key = km.group(1) if km else None
                             cdn_url = _proxy_state['url_map'].get(type_key, req_url) if type_key else req_url
                             _proxy_state['last_request'] = time.time()
+                            _proxy_state['request_count'] = _proxy_state.get('request_count', 0) + 1
 
                             def _fetch_and_absolutize(u):
                                 """Fetch chunklist, absolutize relative URIs, and route segments through proxy."""
@@ -640,6 +624,8 @@ def Playvid(url, name):
                             if not seg_url:
                                 self.send_error(400)
                                 return
+                            _proxy_state['last_request'] = time.time()
+                            _proxy_state['request_count'] = _proxy_state.get('request_count', 0) + 1
                             seg_name = seg_url.rsplit('/', 1)[-1].split('?')[0]
                             _proxy_state['last_request'] = time.time()
                             # Try the requested URL first
@@ -716,54 +702,55 @@ def Playvid(url, name):
                     allow_reuse_address = True
 
                 srv = _S(('127.0.0.1', port), _H)
-                _cb_proxy = srv
-                _cb_proxy_state = _proxy_state
+                _cb_proxies[port] = {'proxy': srv, 'state': _proxy_state}
                 t = threading.Thread(target=srv.serve_forever)
                 t.daemon = True
                 t.start()
 
                 def _monitor_player():
-                    """Poll xbmc.Player state and tear down the proxy when playback ends."""
+                    """Keep proxy alive while ISA is actively fetching from it.
+                    Only tear down when no requests have been made for an extended
+                    period (stream genuinely ended/stopped), or stopping is flagged.
+                    This allows multiple simultaneous streams - each proxy lives
+                    independently based on its own request activity, not on whether
+                    its URL is the 'current' xbmc.Player item.
+                    """
                     _dbg('MONITOR: thread started for port={}'.format(port))
-                    my_port_tag = ':{}/'.format(port)
+                    # Grace period: wait up to 30s for ISA to start hitting this proxy
+                    _proxy_state['last_request'] = time.time()
                     try:
                         mon = xbmc.Monitor()
-                        player = xbmc.Player()
-                        # Grace window (15s) for ISA to actually begin playing OUR URL.
-                        # We wait until getPlayingFile() actually points at us before
-                        # starting the watch-for-stop loop, otherwise a rapid click
-                        # would see the old stream's URL and immediately self-destruct.
+                        # Phase 1: wait for first request to arrive (up to 30s)
                         confirmed = False
-                        for _ in range(30):
+                        for _ in range(60):
                             if mon.abortRequested() or _proxy_state.get('stopping'):
+                                _dbg('MONITOR: abort/stop during grace window')
                                 break
-                            try:
-                                cur = player.getPlayingFile() if player.isPlaying() else ''
-                            except Exception:
-                                cur = ''
-                            if cur and my_port_tag in cur:
+                            if time.time() - _proxy_state.get('last_request', 0) < 29:
+                                # last_request was seeded at start; a real request
+                                # will update it - if it stays unchanged we haven't
+                                # been hit yet. We detect a real request by checking
+                                # whether seg/chunklist count incremented instead.
+                                pass
+                            if _proxy_state.get('request_count', 0) > 0:
                                 confirmed = True
+                                _dbg('MONITOR: first request received, proxy active')
                                 break
                             if mon.waitForAbort(0.5):
                                 break
                         if not confirmed:
-                            _dbg('MONITOR: never confirmed as active stream within 15s, tearing down')
+                            # No requests in 30s - ISA never picked us up
+                            _dbg('MONITOR: no requests in 30s, tearing down idle proxy')
                         else:
-                            _dbg('MONITOR: confirmed active stream, watching for stop')
+                            # Phase 2: watch for inactivity (no requests for 30s = stream ended)
+                            _dbg('MONITOR: watching for inactivity (idle_timeout=30s)')
                             while not mon.abortRequested() and not _proxy_state.get('stopping'):
-                                if not player.isPlaying():
-                                    _dbg('MONITOR: player stopped, shutting down proxy')
+                                if mon.waitForAbort(5):
                                     break
-                                # We already confirmed we're the active URL, so if
-                                # getPlayingFile now points elsewhere the user moved on.
-                                try:
-                                    cur = player.getPlayingFile()
-                                except Exception:
-                                    cur = ''
-                                if cur and my_port_tag not in cur:
-                                    _dbg('MONITOR: port={} no longer active (now {}), stopping'.format(port, cur))
-                                    break
-                                if mon.waitForAbort(1):
+                                idle = time.time() - _proxy_state.get('last_request', 0)
+                                _dbg('MONITOR: port={} idle={:.0f}s'.format(port, idle))
+                                if idle > 30:
+                                    _dbg('MONITOR: port={} idle >30s, tearing down'.format(port))
                                     break
                     except Exception as mex:
                         _dbg('MONITOR THREAD CRASHED: {}'.format(mex))
@@ -780,6 +767,8 @@ def Playvid(url, name):
                         _dbg('MONITOR: proxy shutdown complete')
                     except Exception as mex3:
                         _dbg('MONITOR: close err {}'.format(mex3))
+                    _cb_proxies.pop(port, None)
+                    _dbg('MONITOR: removed port={} from _cb_proxies'.format(port))
 
                 _mt = threading.Thread(target=_monitor_player)
                 _mt.daemon = True
