@@ -1,4 +1,2 @@
-[B]Version 1.1.182[/B]
-- freeomovie - fix playback
-- AWM network search fix
-- aagmaal - fix playback
+[B]Version 1.1.183[/B]
+- chaturbate capture multiple streams
