@@ -111,8 +111,10 @@ def SiteMain(url):
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstar', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl + 'a-z', 'Tags', site.img_cat)
-    if 'bbwpornvideos' in siteurl or 'forhertube' in siteurl or 'ixxx' in siteurl or 'pornmd' in siteurl or 'stocking-tease' in siteurl or 'tubegalore' in siteurl:
+    if 'bbwpornvideos' in siteurl or 'forhertube' in siteurl or 'pornmd' in siteurl or 'stocking-tease' in siteurl or 'tubegalore' in siteurl:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'c/', 'Search', site.img_search)
+    elif 'ixxx' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
     elif 'gaymaletube' in siteurl:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'cat/', 'Search', site.img_search)
     elif 'lupoporno' in siteurl:
@@ -133,6 +135,10 @@ def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, siteurl)
     match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    if not match:
+        utils.notify(msg='No models found!')
+        return ''
+
     for videourl, name, thumb, info, provider in match:
         if 'class="font-[100]"' in info:
             name = '[COLOR red](Paid Video)[/COLOR] ' + name
