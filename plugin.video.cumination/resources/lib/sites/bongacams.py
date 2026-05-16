@@ -35,6 +35,7 @@ def Main():
     bu = "http://tools.bongacams.com/promo.php?c=226355&type=api&api_type=json&categories[]="
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}female'.format(bu), 'List', '', '')
+        site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', "http://tools.bongacams.com/promo.php?c=226355&type=api&api_type=json", 'onlineFav', '', '')
         site.add_dir('  International - Queen of Queens', site.url + 'contest/queen-of-queens-international', 'List3', '', '')
         site.add_dir('  North America & Western Europe\'s - Queen of Queens', site.url + 'contest/queen-of-queens', 'List3', '', '')
         site.add_dir('  Latin American - Queen of Queens', site.url + 'contest/queen-of-queens-latin-america', 'List3', '', '')
@@ -67,6 +68,8 @@ def List(url):
         if model['hd_cam']:
             name += ' [COLOR gold]HD[/COLOR]'
         subject = ''
+        if model.get('is_geo'):
+            subject += u'[B][COLOR hotpink]GeoLocked[/COLOR][/B]\n'
         if model.get('hometown'):
             subject += u'Location: {}'.format(model.get('hometown'))
         if model.get('homecountry'):
@@ -97,7 +100,9 @@ def List(url):
             subject += u'- Dislikes: {}\n\n'.format(model['turns_off'])
         if model.get('tags'):
             subject += u', '.join(model.get('tags'))
-        site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, noDownload=True)
+        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username))
+        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
+        site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, noDownload=True)
     utils.eod()
 
 
@@ -122,6 +127,10 @@ def clean_database(showdialog=True):
 
 @site.register()
 def Playvid(url, name):
+    if url is None or url == '':
+        utils.notify(name, 'Model Offline', icon='thumb')
+        return
+
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
@@ -142,6 +151,9 @@ def Playvid(url, name):
     if amf_json['status'] == 'error':
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return
+    # if amf_json.get('performerData', {}).get('is_Online') is None: 
+    #     utils.notify(name, 'Model Offline', icon='thumb')
+    #     return       
 
     if 'private' in amf_json.get('performerData', {}).get('showType'):
         utils.notify(name, 'Model in private chat', icon='thumb')
@@ -155,13 +167,13 @@ def Playvid(url, name):
         vp.progress.close()
         return
     elif amf.startswith("//mobile"):
-        videourl = 'https:' + amf + '/hls/stream_' + url + '.m3u8'
+        videourl = 'https:' + amf + '/hls/stream_' + amf_json.get('performerData', {}).get('username') + '.m3u8'
     else:
-        videourl = 'https:' + amf + '/hls/stream_' + url + '/playlist.m3u8'
+        videourl = 'https:' + amf + '/hls/stream_' + amf_json.get('performerData', {}).get('username') + '/playlist.m3u8'
         try:
             m3u8 = utils._getHtml(videourl, referer=site.url)
-        except urllib_error.HTTPError:
-            utils.notify(name, 'Model Offline', icon='thumb')
+        except:     # urllib_error.HTTPError:
+            utils.notify(name, 'Model Offline or GeoLocked', icon='thumb')
             vp.progress.close()
             return
         quals = re.findall(r'\d+x(\d+).+\n(.+)', m3u8)
@@ -176,34 +188,77 @@ def Playvid(url, name):
 
 @site.register()
 def List2(url):
-    site.add_download_link('[COLOR red][B]Refresh[/B][/COLOR]', url, 'utils.refresh', '', '', noDownload=True)
+    headers = {'X-Requested-With': 'XMLHttpRequest'}
+    data = utils._getHtml(url, site.url, headers=headers)
+    timePeriod = json.loads(data).get("data").get("topRooms").get("content").get("winners").get("timePeriod")
+
+    site.add_download_link('Current contest standings: {} - [COLOR red][B]Refresh[/B][/COLOR]'.format(timePeriod), url, 'utils.refresh', '', '', noDownload=True)
     if utils.addon.getSetting("online_only") == "true":
-        url = url + '?online_only=1'
+        online_only = True
+        url = url + '?isOnlineOnly=on'
         site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
     else:
+        online_only = False
         site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    headers = {'X-Requested-With': 'XMLHttpRequest'}
-    data = utils._getHtml(url, site.url, headers=headers)
-    items = json.loads(data).get('result').get('chatActivities')
+
+    items = (
+        json.loads(data)
+        .get("data", {})
+        .get("topRooms", {})
+        .get("content", {})
+        .get("winners", {})
+        .get("thumbs", [])
+    )
+
     for item in items:
-        username = item.get('user').get('username')
-        name = item.get('user').get('displayName')
-        name = name.encode('utf8') if utils.PY2 else name
-        img = 'https:' + item.get('user').get('profileImageUrls').get('thumb_xbig_lq')
-        if item.get('user').get('isOnline'):
-            status = 'Online'
+        is_live = item.get("liveBadge") is not None
+        status = "Online" if is_live else "Offline"
+
+        if online_only and status == "Offline":
+            continue
+
+        name = item.get("footer", {}).get("displayName", "")
+        if utils.PY2 and name:
+            name = name.encode("utf8")
+
+        link_path = item.get("link", {}).get("url", {}).get("url", "")
+        if status == "Online":
+            username = link_path.strip("/") if link_path else ""
         else:
-            status = 'Offline'
-            username = ' '
-        subject = 'Status: {0}[CR]'.format(status)
-        subject += 'Place: {0}[CR]'.format(item.get('chatActivity').get('place'))
-        subject += 'Viewers: {0}[CR]'.format(item.get('chatActivity').get('viewers'))
-        subject += 'Prize: {0}[CR]'.format(item.get('chatActivity').get('prizeFormatted'))
-        site.add_download_link(name, username, 'Playvid', img, subject, noDownload=True)
+            username = " "
+
+        img_src = item.get("avatar", {}).get("src", "")
+        if img_src.startswith("//"):
+            img = "https:" + img_src
+        else:
+            img = "https://" + img_src if img_src else ""
+
+        place = item.get("stripe", {}).get("place", "")
+
+        content_list = item.get("content", [])
+        viewers = ""
+        prize_formatted = ""
+
+        for c in content_list:
+            text_val = c.get("text", "")
+            if "members" in text_val.lower():
+                viewers = "".join(filter(str.isdigit, text_val))
+            elif "prize" in text_val.lower():
+                prize_formatted = text_val
+
+        subject = "Status: {0}[CR]".format(status)
+        subject += "Place: {0}[CR]".format(place)
+        subject += "Viewers: {0}[CR]".format(viewers)
+        subject += "Prize: {0}[CR]".format(prize_formatted)
+
+        site.add_download_link(
+            name, username, "Playvid", img, subject, noDownload=True
+        )
     utils.eod()
+  
 
 
 @site.register()
@@ -219,23 +274,71 @@ def List3(url):
         clean_database(False)
     headers = {'X-Requested-With': 'XMLHttpRequest'}
     data = utils._getHtml(url, site.url, headers=headers)
-    items = json.loads(data).get('result').get('contestItems')
+    #timePeriod = json.loads(data).get("data").get("topModels").get("content").get("winners").get("thumbs", [])   #.get("content").get("winners").get("timePeriod")
+    json_data = json.loads(data).get("data", {})
+
+    top_winners_list = (
+        json_data.get("topModels", {})
+        .get("content", {})
+        .get("topWinners", {})
+        .get("thumbs", [])
+    )
+
+    winners_list = (
+        json_data.get("topModels", {})
+        .get("content", {})
+        .get("winners", {})
+        .get("thumbs", [])
+    )
+
+    items = top_winners_list + winners_list
+
     for item in items:
-        username = item.get('user').get('username')
-        name = item.get('user').get('displayName')
-        name = name.encode('utf8') if utils.PY2 else name
-        img = 'https:' + item.get('user').get('profileImageUrls').get('thumb_xbig_lq')
-        if item.get('user').get('isOnline'):
-            status = 'Online'
+        is_live = item.get("liveBadge") is not None
+        status = "Online" if is_live else "Offline"
+
+        # if online_only and status == "Offline":
+        #     continue
+
+        name = item.get("footer", {}).get("displayName", "")
+        if utils.PY2 and name:
+            name = name.encode("utf8")
+
+        link_path = item.get("link", {}).get("url", {}).get("url", "")
+        if status == "Online":
+            username = link_path.strip("/") if link_path else ""
         else:
-            status = 'Offline'
-            username = ' '
-        subject = 'Status: {0}[CR]'.format(status)
-        subject += 'Place: {0}[CR]'.format(item.get('contestItem').get('place'))
-        subject += 'Points: {0}[CR]'.format(item.get('contestItem').get('points'))
-        subject += 'Prize: {0}[CR]'.format(item.get('contestItem').get('prizeFormatted'))
-        site.add_download_link(name, username, 'Playvid', img, subject, noDownload=True)
+            username = " "
+
+        img_src = item.get("avatar", {}).get("src", "")
+        if img_src.startswith("//"):
+            img = "https:" + img_src
+        else:
+            img = "https://" + img_src if img_src else ""
+
+        place = item.get("stripe", {}).get("place", "")
+
+        content_list = item.get("content", [])
+        viewers = ""
+        prize_formatted = ""
+
+        for c in content_list:
+            text_val = c.get("text", "")
+            if "members" in text_val.lower():
+                viewers = "".join(filter(str.isdigit, text_val))
+            elif "prize" in text_val.lower():
+                prize_formatted = text_val
+
+        subject = "Status: {0}[CR]".format(status)
+        subject += "Place: {0}[CR]".format(place)
+        subject += "Viewers: {0}[CR]".format(viewers)
+        subject += "Prize: {0}[CR]".format(prize_formatted)
+
+        site.add_download_link(
+            name, username, "Playvid", img, subject, noDownload=True
+        )
     utils.eod()
+
 
 
 @site.register()
@@ -245,3 +348,74 @@ def online(url):
     else:
         utils.addon.setSetting("online_only", "true")
     utils.refresh()
+
+
+@site.register()
+def onlineFav(url):
+    data = utils._getHtml(url)
+    model_list = json.loads(data)
+
+    conn = sqlite3.connect(utils.favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='bongacams.Playvid'")
+    favorite_data = {
+        row[0].split('[COLOR')[0].strip(): {'db_url': row[1], 'db_image': row[2]} 
+        for row in c.fetchall()
+    }
+    c.close()
+
+    model_lookup = {
+        item['display_name']: item | favorite_data[item['display_name']]
+        for item in model_list
+        if item['display_name'] in favorite_data
+    }
+
+    for model_name, info in model_lookup.items():
+        username = info['username']
+        name = info['display_name']
+        img = info['db_image']
+        age = info['display_age']
+        name += ' [COLOR hotpink][{}][/COLOR]'.format(age)
+        if info['hd_cam']:
+            name += ' [COLOR gold]HD[/COLOR]'
+        subject = ''
+        if info['is_geo']:
+            subject += u'[B][COLOR hotpink]GeoLocked[/COLOR][/B]\n'
+        if info['hometown']:
+            subject += u'Location: {}'.format(info['hometown'])
+        if info['homecountry']:
+            subject += u', {}\n'.format(info['homecountry']) if subject else u'Location: {}\n'.format(info['homecountry'])
+        if info['ethnicity']:
+            subject += u'\n- {}\n'.format(info['ethnicity'])
+        if info['primary_language']:
+            subject += u'- Speaks {}\n'.format(info['primary_language'])
+        if info['secondary_language']:
+            subject = subject[:-1] + u', {}\n'.format(info['secondary_language'])
+        if info['eye_color']:
+            subject += u'- {} Eyed\n'.format(info['eye_color'])
+        if info['hair_color']:
+            subject = subject[:-1] + u' {}\n'.format(info['hair_color'])
+        if info['height']:
+            subject += u'- {} tall\n'.format(info['height'])
+        if info['weight']:
+            subject += u'- {} weight\n'.format(info['weight'])
+        if info['bust_penis_size']:
+            subject += u'- {} Boobs\n'.format(info['bust_penis_size']) if 'Female' in info['gender'] else u'- {} Cock\n'.format(info['bust_penis_size'])
+        if info['pubic_hair']:
+            subject = subject[:-1] + u' and {} Pubes\n'.format(info['pubic_hair'])
+        if info['vibratoy']:
+            subject += u'- Lovense Toy\n\n'
+        if info['turns_on']:
+            subject += u'- Likes: {}\n'.format(info['turns_on'])
+        if info['turns_off']:
+            subject += u'- Dislikes: {}\n\n'.format(info['turns_off'])
+        chat_status = ''
+        if info['chat_status']:
+            if info['chat_status'] != 'public':
+                current_show = '[COLOR blue] {}[/COLOR]'.format(info['chat_status'])
+
+        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username))
+        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
+        site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, noDownload=True)
+    utils.eod()
