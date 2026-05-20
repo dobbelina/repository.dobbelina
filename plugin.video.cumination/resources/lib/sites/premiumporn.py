@@ -150,17 +150,54 @@ def Play(url, name, download=None):
             elif "bysewihe" in embed_url:
                 id = embed_url.split('/e/')[-1].split('/')[0]
                 details_url = 'https://bysewihe.com/api/videos/{}/embed/details'.format(id)
-                hdr = utils.base_hdrs.copy()
-                hdr['X-Embed-Origin'] = 'premiumporn.org'
-                hdr['X-Embed-Parent'] = embed_url
-                hdr['X-Embed-Referer'] = site.url
+                hdr = {
+                    "accept": "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "content-type": "application/json",
+                    "dnt": "1",
+                    "origin": "https://rupertisdivingintoocean.com",
+                    "priority": "u=1, i",
+                    "referer": f"https://rupertisdivingintoocean.com/29f/{id}",
+                    "sec-ch-ua": "\"Chromium\";v=\"148\", \"Microsoft Edge\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                    "sec-ch-ua-mobile": "?0",
+                    "sec-ch-ua-platform": "\"Windows\"",
+                    "sec-fetch-dest": "empty",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-origin",
+                    "sec-fetch-storage-access": "active",
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
+                    "x-embed-origin": "premiumporn.org",
+                    "x-embed-parent": f"https://bysewihe.com/e/{id}/backroom-casting-couch-its-straight-to-the-ass-for-this-hesitant-thespian-anna-starr-premiumporn-org",
+                    "x-embed-referer": "https://premiumporn.org/",
+                    "Cookie": "byse_viewer_id=d37a643bd2cd4b88a225fcdb190e20e1; byse_device_id=dfed09c6894c43c98067c0c628ba6000"
+                }
+                body = {
+                    "fingerprint": {
+                        "token": "eyJ2aWV3ZXJfaWQiOiJkMzdhNjQzYmQyY2Q0Yjg4YTIyNWZjZGIxOTBlMjBlMSIsImRldmljZV9pZCI6ImRmZWQwOWM2ODk0YzQzYzk4MDY3YzBjNjI4YmE2MDAwIiwiY29uZmlkZW5jZSI6MC42LCJpYXQiOjE3NzkzMDkzOTEsImV4cCI6MTc3OTMwOTk5MX0.2b1obfsUhLt1JRSP5y67cFtzB1mu-heJExZ1Q83-qto",
+                        "viewer_id": "d37a643bd2cd4b88a225fcdb190e20e1",
+                        "device_id": "dfed09c6894c43c98067c0c628ba6000",
+                        "confidence": 0.6
+                    }
+                }
+                import json
+                data = json.dumps(body)
+
                 details_data = utils.getHtml(details_url, embed_url, headers=hdr)
                 details_json = json.loads(details_data)
                 embed = details_json.get('embed_frame_url', '')
-                api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
-                api_data = utils.getHtml(api_url, embed, headers=hdr)
-                encrypted_data = json.loads(api_data)
+                # https://rupertisdivingintoocean.com/api/videos/bzge23ak4p7c/embed/playback
+                # api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
+                # api_url = 'https://rupertisdivingintoocean.com/api/videos/{}/embed/playback'.format(id)
+                # api_data = utils.getHtml(api_url, embed, headers=hdr)
 
+                api_url = "https://rupertisdivingintoocean.com/api/videos/{}/embed/playback".format(id)
+
+                api_data = utils.getHtml(api_url, 
+                                        referer="https://rupertisdivingintoocean.com/29f/{}".format(id),
+                                        headers=hdr,
+                                        data=data)
+
+                encrypted_data = json.loads(api_data)
                 playback = encrypted_data["playback"]
 
                 iv = base64_url_decode(playback["iv"])
