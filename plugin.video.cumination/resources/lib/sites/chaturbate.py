@@ -135,6 +135,14 @@ def Online(stamp):
 
 @site.register()
 def List(url, page=1):
+    favorite = {}
+    conn = sqlite3.connect(utils.favoritesdb)
+    conn.text_factory = str
+    c = conn.cursor()
+    c.execute("SELECT url FROM favorites WHERE mode='chaturbate.Playvid'")
+    favorite = [row[0] for row in c.fetchall()]
+    c.close()
+
     if 'follow=true' in url and 'offline=false' in url:
         site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=true&offset=0', 'List', '', '')
     if 'follow=true' in url:
@@ -148,8 +156,23 @@ def List(url, page=1):
     listhtml = json.loads(listhtml)
     models = listhtml.get('rooms')
     for model in models:
-        name = model.get('username')
-        videopage = '{0}{1}/'.format(bu, name)
+        if model.get('is_following'):
+            name = f'[COLOR hotpink]♥[/COLOR]'
+            fav = 'del'
+        else:
+            name = ''
+            fav = 'add'
+ 
+        if any(model['username'] in username for username in favorite):
+            name += f'[COLOR yellow]★[/COLOR]'
+            fav = 'del'
+        else:
+            name += ''
+            fav = 'add'
+        follow = model.get('is_following')
+
+        name += model.get('username')
+        videopage = '{0}{1}/'.format(bu, model.get('username'))
         age = model.get('display_age')
         age = 'Unknown' if age is None else age
         location = model.get('location')
@@ -183,14 +206,13 @@ def List(url, page=1):
         img = model.get('img')
 
         id = model.get('username')
-        follow = model.get('is_following')
         contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
         contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
         contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if not follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(id))
         contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(id), 'RunPlugin(' + contextrecord + ')'))
 
-        site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, noDownload=True)
+        site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, fav=fav, noDownload=True)
 
     total_items = listhtml.get('total_count')
     nextp = (page * 100) < total_items
@@ -975,6 +997,88 @@ def get_cookie():
     return cookiestr
 
 
+
+def Record(id):
+    import xbmcgui
+    import xbmcplugin
+    import urllib.parse as urllib_parse
+    import sys
+
+    handle = int(sys.argv[1])
+
+    search_engines = [
+        {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
+        {"name": "iXXX",      "url": "https://www.ixxx.com/search/{0}/",      "search": "?mode=awmnet.Search&url={}&keyword={}"}
+    ]
+
+    names = [site["name"] for site in search_engines]
+
+    selections = xbmcgui.Dialog().multiselect('Select site(s) for search', names)
+
+    if selections is None:
+        utils.eod()
+        return
+
+    # Construim un folder cu toate site-urile selectate
+    for idx in selections:
+        site = search_engines[idx]
+        target_url = site["url"].format(id)
+
+        contexturl = (
+            utils.addon_sys +
+            site["search"].format(
+                urllib_parse.quote_plus(target_url),
+                id
+            )
+        )
+
+        li = xbmcgui.ListItem(label=site["name"])
+        xbmcplugin.addDirectoryItem(
+            handle=handle,
+            url=contexturl,
+            listitem=li,
+            isFolder=True
+        )
+
+    xbmcplugin.endOfDirectory(handle)
+
+
+def Record(id):
+    import xbmcgui
+    import xbmc
+    from urllib.parse import quote_plus
+
+    search_engines = [
+        {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
+        {"name": "iXXX",      "url": "https://www.ixxx.com/search/{0}/",      "search": "?mode=awmnet.Search&url={}&keyword={}"}
+    ]
+
+    names = [site["name"] for site in search_engines]
+
+    # MULTISELECT
+    selections = xbmcgui.Dialog().multiselect('Select site(s) for search', names)
+
+    if selections is None:
+        utils.eod()
+        return
+
+    for idx in selections:
+        selected_site = search_engines[idx]
+        target_url = selected_site["url"].format(id)
+
+        contexturl = (
+            utils.addon_sys +
+            selected_site["search"].format(
+                quote_plus(target_url),
+                id
+            )
+        )
+        xbmcgui.Dialog().textviewer(selected_site["url"], str(contexturl))
+        xbmc.log('MULTISELECT - ' + str(contexturl), xbmc.LOGNONE)
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+    utils.eod()
+
 @site.register()
 def Record(id):
     import xbmcgui
@@ -995,5 +1099,5 @@ def Record(id):
             id
         ))
         
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     utils.eod()
