@@ -1084,7 +1084,10 @@ def Record(id):
     import xbmcgui
     search_engines = [
         {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
-        {"name": "iXXX", "url": "https://www.ixxx.com/search/{0}/", "search": "?mode=awmnet.Search&url={}&keyword={}"} 
+        {"name": "iXXX", "url": "https://www.ixxx.com/search/{0}/", "search": "?mode=awmnet.Search&url={}&keyword={}"},
+        {"name": "CamWhoresBay - Login available for private videos", "url": "https://www.camwhoresbay.com/search/{0}/", "search": "?mode=camwhoresbay.Search&url={}&keyword={}"},
+        {"name": "DrTuber", "url": "https://www.drtuber.com/search/videos/{0}/", "search": "?mode=drtuber.Search&url={}&keyword={}"}
+
     ]
     
     names = [site["name"] for site in search_engines]
@@ -1099,5 +1102,5 @@ def Record(id):
             id
         ))
         
-    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     utils.eod()

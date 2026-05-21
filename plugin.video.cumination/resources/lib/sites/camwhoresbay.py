@@ -113,7 +113,9 @@ def List(url, page=1):
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lastp + ')', nurl, 'List', site.img_next, contextm=cm)
-    utils.eod()
+        utils.eod()
+    else:
+        utils.notify('CamWhoresBay', 'No videos found on this page')
 
 
 @site.register()
@@ -183,7 +185,10 @@ def Search(url, keyword=None):
     else:
         title = keyword.replace(' ', '+')
         searchUrl = searchUrl.format(title)
-        List(searchUrl)
+        try:            
+            List(searchUrl, 1)
+        except: 
+            utils.notify('CamWhoresBay', 'Search failed!')  
 
 
 @site.register()
