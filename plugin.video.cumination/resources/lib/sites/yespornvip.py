@@ -17,6 +17,7 @@
 '''
 
 import re
+from urllib.request import Request, urlopen
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -27,13 +28,26 @@ addon = utils.addon
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Team Skeet[/COLOR]', site.url + 'channels/team-skeet/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]OnlyFans[/COLOR]', site.url + 'channels/onlyfans/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Vixen[/COLOR]', site.url + 'channels/vixen-g7g6z5/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pure Taboo[/COLOR]', site.url + 'channels/puretaboo-g7g6z5/', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + '?from=1')
 
+    fetch_homepage()
+    kt = get_cookie_for_domain('kt_qparams', site.url)
+    if not kt:
+        kt = '6i3wgc'
+
+    if '-' in kt:
+        kt = kt.split('-')[-1]
+    if '&' in kt:
+        kt = kt.split('&')[0]
+
+    site.add_dir('[COLOR hotpink]Team Skeet[/COLOR]', site.url + 'channels/team-skeet-' + kt + '/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]OnlyFans[/COLOR]', site.url + 'channels/onlyfans-' + kt + '/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Vixen[/COLOR]', site.url + 'channels/vixen-' + kt + '/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pure Taboo[/COLOR]', site.url + 'channels/puretaboo-' + kt + '/', 'List', site.img_cat)
+
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+
+    List(site.url)
+    utils.eod()
 
 @site.register()
 def List(url):
@@ -47,18 +61,22 @@ def List(url):
         r'data-fav-video-id="(\d+)"',
         re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
-    import xbmcgui
-    # xbmcgui.Dialog().textviewer("Debug", f"Match: {str(match)}")
     for urlpage, name, img, quality, duration, embed in match:
         name = utils.cleantext(name)
         videopage = site.url + 'embed/' + embed
         site.add_download_link(name+ f' [COLOR yellow]({duration})[/COLOR][COLOR hotpink] [{quality}][/COLOR]', videopage, 'Playvid', img, name)
 
-    np = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        np = np.group(1)
-        nextpage = re.search(r'page/(\d+)', np).group(1)
-        site.add_dir('Next Page... ({0})'.format(nextpage), np, 'List', site.img_next)
+    m = re.search(
+        r"<a[^>]*class=['\"]next['\"][^>]*data-parameters=['\"][^'\"]*from:(\d+)",
+        listhtml,
+        re.DOTALL
+    )
+
+    if m:
+        nextpage = m.group(1)
+        url = url.split('?from=')[0] + '?from=' + nextpage if '?from=' in url else url + '?from=' + nextpage
+        site.add_dir('Next Page... ({0})'.format(nextpage),
+                    url, 'List', site.img_next)
     utils.eod()
 
 
@@ -125,3 +143,19 @@ def play_from_kt_player(self, html, url=None):
         return
     self.play_from_direct_link(videourl)
 
+
+def get_cookie_for_domain(name, domain):
+    domain = domain.replace('https://', '').replace('http://', '').split('/')[0]
+    for c in utils.cj:
+        if c.name == name and domain in c.domain:
+            return c.value
+    return None
+
+
+def fetch_homepage():
+    try:
+        req = Request('https://yesporn.vip/', headers=utils.base_hdrs)
+        urlopen(req)
+        utils.cj.save(utils.TRANSLATEPATH(utils.cookiePath), ignore_discard=True, ignore_expires=True)
+    except Exception as e:
+        utils.kodilog("fetch_homepage error: %s" % e)
