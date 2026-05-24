@@ -2,3 +2,7 @@
 - pornhits - site removed
 - rule34video - added lookupinfo
 - x-x-x video - fix thumbnails
+- chaturbate added optional players
+- bongacams added optional players
+- added HypnoTube
+- added YesPorn.vip
