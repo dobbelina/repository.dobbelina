@@ -87,8 +87,11 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         url = "{0}{1}".format(url, keyword.replace(' ', '+'))
-        List(url)
-
+        try:
+            List(url)
+        except:
+            return
+            utils.notify('Drtuber', 'Search failed!')
 
 @site.register()
 def Play(url, name, download=None):

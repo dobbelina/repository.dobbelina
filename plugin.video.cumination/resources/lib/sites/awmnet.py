@@ -111,15 +111,16 @@ def SiteMain(url):
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstar', 'Tags', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl + 'a-z', 'Tags', site.img_cat)
-    if 'bbwpornvideos' in siteurl or 'forhertube' in siteurl or 'pornmd' in siteurl or 'stocking-tease' in siteurl or 'tubegalore' in siteurl:
+    if any(domain in url for domain in ('bbwpornvideos', 'forhertube', 'pornmd', 'stocking-tease', 'tubegalore')):
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'c/', 'Search', site.img_search)
     elif 'ixxx' in siteurl:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
     elif 'gaymaletube' in siteurl:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'cat/', 'Search', site.img_search)
     elif 'lupoporno' in siteurl:
-        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/categorie/', 'Search', site.img_search)
-    elif 'modelgalore' in siteurl or 'tubepornstars' in siteurl:
+        site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/search/a/', 'Search', site.img_search)
+    elif any(domain in url for domain in ('modelgalore', 'tubepornstars', 'homemadegalore', 'analgalore', 'bigcockxxx', 'biporn', 'cartoonpornvideos', \
+                                          'ebonygalore', 'fullpornvideos', 'gaymaletube', 'latingalore', 'lesbianpornvideos')):
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search/a/', 'Search', site.img_search)
     elif 'sambaporno' in siteurl:
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'en/cat/', 'Search', site.img_search)
