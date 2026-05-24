@@ -20,6 +20,7 @@ import re
 import time
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from six.moves import urllib_parse
 
 site = AdultSite('rule34video', '[COLOR hotpink]Rule34 Video[/COLOR]', 'https://rule34video.com/', 'rule34video.png', 'rule34video')
 
@@ -41,7 +42,12 @@ def List(url):
     for videopage, img, name, hd, duration in match:
         name = utils.cleantext(name.strip())
         hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
-        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd)
+
+        cm = []
+        cm_lookupinfo = (utils.addon_sys + "?mode=" + str('rule34video.Lookupinfo') + "&url=" + urllib_parse.quote_plus(videopage))
+        cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+
+        site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration, quality=hd, contextm=cm)
 
     nextp = re.compile(r'pager\s*next">.+?block-id="([^"]+)"\s*data-parameters="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
@@ -130,3 +136,15 @@ def Playvid(url, name, download=None):
     if "kt_player('kt_player'" in vpage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
         vp.play_from_kt_player(vpage, url)
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Artist", r'video_meta_pill" href="https://rule34video.com/(models/[^"]+)">.+?alt="([^"]+)"', ''),
+        ("Categorie", r'video_meta_pill" href="https://rule34video.com/(categories/[^"]+)">.+?alt="([^"]+)"', ''),
+        ("Uploaded by", r'video_meta_pill" href="https://rule34video.com/(members/[^"]+)">.+?alt="([^"]+)"', ''),
+        ("Tag", r'class="tag_item" href="https://rule34video.com/(tags/[^"]+)">([^<]+)<', ''),
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'rule34video.List', lookup_list)
+    lookupinfo.getinfo()

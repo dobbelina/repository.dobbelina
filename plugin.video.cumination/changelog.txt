@@ -1,5 +1,8 @@
-[B]Version 1.1.183[/B]
-- chaturbate capture multiple streams
-- AWM network - fixed search for iXXX
-- bongacams - fixed Hour's top chat rooms, added Online favorites
-- chaturbate - added more choices of search engine for recorded model shows
+[B]Version 1.1.184[/B]
+- pornhits - site removed
+- rule34video - added lookupinfo
+- x-x-x video - fix thumbnails
+- chaturbate added optional players
+- bongacams added optional players
+- added HypnoTube
+- added YesPorn.vip

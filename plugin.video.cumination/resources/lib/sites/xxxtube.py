@@ -45,7 +45,7 @@ def List(url):
     delimiter = r'class="thumb-inner"'
     re_videopage = '<a href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = r'data-original="([^"]+)"'
+    re_img = r'src="([^"]+)"'
     re_duration = r'class="duration">\s*([\d:]+)\s*<'
     skip = 'Native Text'
 
