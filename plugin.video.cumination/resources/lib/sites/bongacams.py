@@ -1,3 +1,5 @@
+
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2017 Whitecream, hdgdl, Team Cumination
@@ -41,7 +43,7 @@ def Main():
         'Playvid_classic': 'Classic'
     }.get(player)
     site.add_download_link(
-        f'Current player: [COLOR fuchsia][B]{pretty_name}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]',
+        u'Current player: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
         site.url,
         'Playvid_change',
         '',
