@@ -378,7 +378,7 @@ def update_url(url):
             url = re.sub(r'/\d+$', '', url)
             if length != 'all':
                 url = url.replace(site.url + type, site.url + type + '/d:' + length)
-        if (date == 'anytime' and '/m:' in url) or (date != 'anytine' and '/m:' + date not in url):
+        if (date == 'anytime' and '/m:' in url) or (date != 'anytime' and '/m:' + date not in url):
             url = re.sub(r'/m:[^/]+', '', url)
             if type != 'tags':
                 url = re.sub(r'/\d+$', '', url)
