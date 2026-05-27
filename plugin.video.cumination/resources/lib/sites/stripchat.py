@@ -135,13 +135,15 @@ def clean_database(showdialog=True):
         pass
 
 
-@site.register()
+
 def Playvid(url, name):
     global GENERIC_URL
 
     altUrl = 'https://go.stripchat.com/api/models?limit=1&modelsList='
     data = json.loads(utils._getHtml(altUrl + name))
     data = data['models'][0]
+    import xbmcgui 
+    xbmcgui.Dialog().textviewer('Debug', str(data['stream']['url']))
     if data["username"] == name:
         GENERIC_URL = data['stream']['url']
     else:
@@ -166,7 +168,7 @@ def Playvid(url, name):
     xbmc.Player().play(item=proxy_url, listitem=li)
 
 
-# old playvid function, kept for reference
+@site.register()
 def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
