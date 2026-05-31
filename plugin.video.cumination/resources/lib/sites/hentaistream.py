@@ -35,19 +35,11 @@ def Main():
 @site.register()
 def List(url, episodes=True):
     listhtml = utils.getHtml(url, site.url)
-    pattern = re.compile(
-        r'<div wire:key.*?href="([^"]+)".*?'                                # 1. href
-        r'src="([^"]+)".*?'                                                 # 2. src
-        r'alt="([^"]+)".*?'                                                 # 3. alt
-        r'<div[^>]*class="ml-auto[^"]*"[^>]*>\s*([^<\n][^<]*?)\s*</div>'    # 4. quality text
-        , re.DOTALL
-    )
-
-    matches = pattern.findall(listhtml)
-    # match = re.compile('<div wire:key.*?href="([^"]+)".*?<img alt="([^"]+)".*?src="/([^"]+)".*?<p[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name, hd in matches:
-        hd = " [COLOR hotpink][{0}][/COLOR]".format(hd.upper().strip())
-        name = utils.cleantext(name) + hd
+    match = re.compile(r'<div wire:key.*?href="([^"]+)".*?<img\s+src="([^"]+)".*?alt="([^"]+)".*?ring-white/10">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name, hd in match:
+        name = utils.cleantext(name)
+        hd= hd.upper().split('|')[0].strip()
+        hd = " [COLOR orange]{0}[/COLOR]".format(hd)
         fanart_img = site.url + img
         cover_img = fanart_img.replace('gallery', 'cover').replace('-0-thumbnail', '')
         site.add_download_link(name, videopage, 'Playvid', cover_img, name, fanart=fanart_img, quality=hd)
