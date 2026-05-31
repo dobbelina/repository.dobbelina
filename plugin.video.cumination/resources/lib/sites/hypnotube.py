@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2023 Team Cumination
@@ -39,7 +40,7 @@ def List(url):
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
 
-        site.add_download_link(name+ f' [COLOR yellow]({duration})[/COLOR]', site.url + "video/" + videopage, 'Playvid', img, name)
+        site.add_download_link(name+ u' [COLOR yellow]({})[/COLOR]'.format(duration), site.url + "video/" + videopage, 'Playvid', img, name)
 
     np = re.compile(r"title='Next' href='([^']+)'", re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:

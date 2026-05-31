@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2023 Team Cumination
@@ -19,6 +20,7 @@
 import re
 from urllib.request import Request, urlopen
 from resources.lib import utils
+from resources.lib.decrypters.kvsplayer import kvs_decode
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('yespornvip', '[COLOR hotpink]YesPorn.vip[/COLOR]', 'https://yesporn.vip/', 'yespornvip.webp', 'yespornvip')
@@ -64,7 +66,7 @@ def List(url):
     for urlpage, name, img, quality, duration, embed in match:
         name = utils.cleantext(name)
         videopage = site.url + 'embed/' + embed
-        site.add_download_link(name+ f' [COLOR yellow]({duration})[/COLOR][COLOR hotpink] [{quality}][/COLOR]', videopage, 'Playvid', img, name)
+        site.add_download_link(name+ u' [COLOR yellow]({0})[/COLOR][COLOR hotpink] [{1}][/COLOR]'.format(duration, quality), videopage, 'Playvid', img, name)
 
     m = re.search(
         r"<a[^>]*class=['\"]next['\"][^>]*data-parameters=['\"][^'\"]*from:(\d+)",
@@ -90,6 +92,26 @@ def Search(url, keyword=None):
 
 
 @site.register()
+def Playvid(url, name, download=None):
+
+    vp = utils.VideoPlayer(name, download)
+    html = utils.getHtml(url)
+    
+    license = re.search(r"license_code:\s*'(\$\d+)",html, flags=re.DOTALL | re.IGNORECASE)
+    video_url = re.search(r"video_url:\s*'([^']+)",html, flags=re.DOTALL | re.IGNORECASE)
+    
+    if license and video_url:
+        lc = license.group(1)
+        vu = video_url.group(1)
+        
+        final_url = kvs_decode(vu, lc)
+   
+        final_url += '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, url)
+        vp.play_from_direct_link(final_url)
+    else:
+        vp.play_from_site_link(url + ('/' if not url.endswith('/') else ''))
+
+
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     # vp.play_from_site_link(url, url)
