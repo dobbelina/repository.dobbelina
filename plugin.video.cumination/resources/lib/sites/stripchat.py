@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     Cumination
     Copyright (C) 2017 Whitecream, hdgdl, Team Cumination
@@ -18,7 +19,24 @@ import sqlite3
 import json
 import re
 from resources.lib import utils
+import threading
+import time
+
+try:
+    import BaseHTTPServer as httpserver
+    import urllib2 as urlreq
+except:
+    import http.server as httpserver
+    import urllib.request as urlreq
+
+import xbmc
+import xbmcgui
 from resources.lib.adultsite import AdultSite
+
+GENERIC_URL = None
+PROXY_PORT = 8090
+
+UA = "Mozilla/5.0 (iPad; CPU OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
 
 site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
 
@@ -65,7 +83,8 @@ def List(url, page=1):
         videourl = model['hlsPlaylist']
         # fanart = model.get('') if utils.addon.getSetting('posterfanart') == 'true' else None
         fanart = model.get('previewUrlThumbSmall')
-        img = 'https://img.strpst.com/thumbs/{0}/{1}_webp'.format(model.get('snapshotTimestamp'), model.get('id'))
+        img = 'https://img.doppiocdn.media/snapshot/{0}/{1}_webp'.format(model.get('id'), model.get('popularSnapshotTimestamp'))
+        # img = 'https://img.strpst.com/thumbs/{0}/{1}_webp'.format(model.get('snapshotTimestamp'), model.get('id'))
         # img = img.replace('{0}/previews'.format(model.get('snapshotServer')), 'thumbs') + '_webp'
         subject = model.get('groupShowTopic')
         if subject:
@@ -116,11 +135,45 @@ def clean_database(showdialog=True):
         pass
 
 
+
+def Playvid(url, name):
+    global GENERIC_URL
+
+    altUrl = 'https://go.stripchat.com/api/models?limit=1&modelsList='
+    data = json.loads(utils._getHtml(altUrl + name))
+    data = data['models'][0]
+    import xbmcgui 
+    xbmcgui.Dialog().textviewer('Debug', str(data['stream']['url']))
+    if data["username"] == name:
+        GENERIC_URL = data['stream']['url']
+    else:
+        utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
+        return
+
+    start_generic_proxy()
+
+    proxy_url = "http://127.0.0.1:%d/stream" % PROXY_PORT
+
+    li = xbmcgui.ListItem(name)
+    li.setPath(proxy_url)
+
+    li.setProperty('inputstream', 'inputstream.adaptive')
+    li.setProperty('inputstream.adaptive.manifest_type', 'hls')
+    li.setProperty('inputstream.adaptive.stream_headers',
+                   'User-Agent=%s' % UA)
+
+    li.setMimeType('application/vnd.apple.mpegurl')
+    li.setContentLookup(False)
+
+    xbmc.Player().play(item=proxy_url, listitem=li)
+
+
 @site.register()
 def Playvid(url, name):
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
+    # altUrl = 'https://stripchat.com/api/external/v4/widget/?limit=1&modelsList='
+    altUrl = 'https://go.stripchat.com/api/models?limit=1&modelsList='
     data = json.loads(utils._getHtml(altUrl + name))
     data = data['models'][0]
     if data["username"] == name:
@@ -190,3 +243,31 @@ def online(url):
     else:
         utils.addon.setSetting("online_only", "true")
     utils.refresh()
+
+
+class GenericProxy(httpserver.BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        global GENERIC_URL
+
+        if not GENERIC_URL:
+            self.send_error(500, "URL m3u8 lipsă")
+            return
+
+        try:
+            req = urlreq.Request(GENERIC_URL, headers={'User-Agent': UA})
+            data = urlreq.urlopen(req).read()
+        except Exception as e:
+            self.send_error(500, "Eroare la preluarea playlistului: %s" % e)
+            return
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/vnd.apple.mpegurl")
+        self.end_headers()
+        self.wfile.write(data)
+
+def start_generic_proxy():
+    server = httpserver.HTTPServer(('127.0.0.1', PROXY_PORT), GenericProxy)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.daemon = True
+    thread.start()
