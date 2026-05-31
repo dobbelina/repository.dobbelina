@@ -157,14 +157,14 @@ def List(url, page=1):
     models = listhtml.get('rooms')
     for model in models:
         if model.get('is_following'):
-            name = u'[COLOR hotpink]♥[/COLOR]'
+            name = f'[COLOR hotpink]♥[/COLOR]'
             fav = 'del'
         else:
             name = ''
             fav = 'add'
  
         if any(model['username'] in username for username in favorite):
-            name += u'[COLOR yellow]★[/COLOR]'
+            name += f'[COLOR yellow]★[/COLOR]'
             fav = 'del'
         else:
             name += ''
