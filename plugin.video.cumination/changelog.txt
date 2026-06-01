@@ -1,7 +1,4 @@
-[B]Version 1.1.185[/B]
-- hentaistream - fix listing
-- Added Ikisoda
-- Added Porn4Fans
-- Added SuperPorn
-- Various legacy fixes
+[B]Version 1.1.186[/B]
+- premiumporn - fix playback
+- 85po - fix playback
 

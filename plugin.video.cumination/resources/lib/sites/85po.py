@@ -110,7 +110,7 @@ def Playvid(url, name, download=None):
     vpage = utils.getHtml(url, site.url)
     if "kt_player('kt_player'" in vpage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
-        vp.play_from_kt_player(vpage, url)
+        vp.play_from_kt_player(vpage, url, follow_redirects=True)
 
 
 @site.register()
