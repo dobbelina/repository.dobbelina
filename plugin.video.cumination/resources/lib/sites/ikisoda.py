@@ -38,7 +38,7 @@ def Main():
         utils.addon.setSetting("ikisodaper_page", str(perPage))
     perPage = getPerPage()
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?items_per_page=120', 'List1', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + f'jav-models/?&models_per_page={perPage}&sort_by=video_viewed_count&type=actress', 'List2', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'jav-models/?&models_per_page={perPage}&sort_by=video_viewed_count&type=actress'.format(perPage), 'List2', site.img_cat)
   
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url)
@@ -131,7 +131,7 @@ def List1(url):
             f"[COLOR gold]{title}[/COLOR]  "
             f"[COLOR cyan]{count}[/COLOR]"
         )
-        site.add_dir(f"{label}", href + f'?items_per_page={perPage}', 'List', site.img_cat)
+        site.add_dir(f"{label}", href + '?items_per_page={perPage}'.format(perPage), 'List', site.img_cat)
     np = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).search(html)
     if np:
         np = np.group(1)
@@ -164,7 +164,7 @@ def List2(url):
             f"[COLOR hotpink] [{rating} rating][/COLOR]"
         )
 
-        site.add_dir(f"{label}", href + f'?items_per_page={perPage}', 'List', quote(img, safe=':/'))
+        site.add_dir(f"{label}", href + '?items_per_page={perPage}'.format(perPage), 'List', quote(img, safe=':/'))
 
     np = re.search(
         r'<li\s+class="next".*?<a\s+href="([^"]+)"',

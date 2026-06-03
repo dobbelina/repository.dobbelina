@@ -214,7 +214,7 @@ def Playvid_proxy(url, name):
         hdr = utils.base_hdrs
         hdr.update({'X-Requested-With': 'XMLHttpRequest'})
         response = utils._postHtml(
-            f"{site.url}tools/amf.php",
+            "{site.url}tools/amf.php".format(site.url),
             form_data=postRequest,
             headers=hdr,
             compression=False

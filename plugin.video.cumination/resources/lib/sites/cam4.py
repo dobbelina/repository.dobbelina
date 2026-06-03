@@ -29,9 +29,9 @@ from resources.lib import utils
 cj = utils.cj
 site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
 IOS_UA = {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'}
-STREAM_INFO =   f"{site.url}rest/v1.0/profile/{0}/streamInfo"
-INFO_URL =      f"{site.url}rest/v1.0/search/performer/{0}"
-PROFILE_URL =   f"{site.url}rest/v1.0/profile/{0}/info"
+STREAM_INFO  = "{0}rest/v1.0/profile/{1}/streamInfo".format(site.url, 0)
+INFO_URL     = "{0}rest/v1.0/search/performer/{1}".format(site.url, 0)
+PROFILE_URL  = "{0}rest/v1.0/profile/{1}/info".format(site.url, 0)
 
 addon = utils.addon
 cam4logged = utils.addon.getSetting('cam4logged').lower() == 'true'
