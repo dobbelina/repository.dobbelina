@@ -28,6 +28,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    
     List(site.url + 'latest-updates/1/')
 
 
