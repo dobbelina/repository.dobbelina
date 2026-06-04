@@ -22,12 +22,6 @@ import xbmcgui
 from resources.lib import utils
 from six.moves import urllib_parse
 from resources.lib.adultsite import AdultSite
-import json
-import base64
-try:
-    from Cryptodome.Cipher import AES
-except Exception as error:
-    utils.kodilog('Import Error Cryptodome: {}'.format(error))
 
 site = AdultSite('premiumporn', '[COLOR hotpink]PremiumPorn[/COLOR]', 'https://premiumporn.org/', 'premiumporn.png', 'premiumporn')
 
@@ -106,23 +100,6 @@ def Search(url, keyword=None):
         List(url)
 
 
-def base64_url_decode(data):
-    padding = 4 - (len(data) % 4)
-    if padding != 4:
-        data += '=' * padding
-    data = data.replace('-', '+').replace('_', '/')
-    return base64.b64decode(data)
-
-
-def decrypt_aes_gcm(payload, key, iv):
-    try:
-        cipher = AES.new(key, AES.MODE_GCM, nonce=iv)
-        plaintext = cipher.decrypt_and_verify(payload[:-16], payload[-16:])
-        return plaintext.decode('utf-8')
-    except Exception as e:
-        return "Decryption failed: {}".format(str(e))
-
-
 @site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
@@ -133,92 +110,7 @@ def Play(url, name, download=None):
         src = {m[1]: m[0] for m in match}
         embed_url = utils.selector("Select host", src)
         if embed_url:
-            if "vidara" in embed_url:
-                id = embed_url.split('/e/')[1].split('"')[0]
-                vid_url = "https://vidara.so/api/stream"
-                data = {"filecode": id, "device": "web"}
-                response = utils.postHtml(vid_url, json_data=data, headers={'Content-Type': 'application/json'})
-                response_json = json.loads(response)
-                video_url = response_json.get('streaming_url', '')
-                if video_url:
-                    vp.play_from_direct_link(video_url)
-                    vp.progress.close()
-                    return
-                else:
-                    utils.notify('Oh oh', 'Unable to retrieve video URL')
-                    return
-            elif "bysewihe" in embed_url:
-                id = embed_url.split('/e/')[-1].split('/')[0]
-                details_url = 'https://bysewihe.com/api/videos/{}/embed/details'.format(id)
-                hdr = {
-                    "accept": "*/*",
-                    "accept-language": "en-US,en;q=0.9",
-                    "content-type": "application/json",
-                    "dnt": "1",
-                    "origin": "https://rupertisdivingintoocean.com",
-                    "priority": "u=1, i",
-                    "referer": "https://rupertisdivingintoocean.com/29f/{id}".format(id=id),
-                    "sec-ch-ua": "\"Chromium\";v=\"148\", \"Microsoft Edge\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
-                    "sec-ch-ua-mobile": "?0",
-                    "sec-ch-ua-platform": "\"Windows\"",
-                    "sec-fetch-dest": "empty",
-                    "sec-fetch-mode": "cors",
-                    "sec-fetch-site": "same-origin",
-                    "sec-fetch-storage-access": "active",
-                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
-                    "x-embed-origin": "premiumporn.org",
-                    "x-embed-parent": "https://bysewihe.com/e/{id}/backroom-casting-couch-its-straight-to-the-ass-for-this-hesitant-thespian-anna-starr-premiumporn-org".format(id=id),
-                    "x-embed-referer": "https://premiumporn.org/",
-                    "Cookie": "byse_viewer_id=d37a643bd2cd4b88a225fcdb190e20e1; byse_device_id=dfed09c6894c43c98067c0c628ba6000"
-                }
-                body = {
-                    "fingerprint": {
-                        "token": "eyJ2aWV3ZXJfaWQiOiJkMzdhNjQzYmQyY2Q0Yjg4YTIyNWZjZGIxOTBlMjBlMSIsImRldmljZV9pZCI6ImRmZWQwOWM2ODk0YzQzYzk4MDY3YzBjNjI4YmE2MDAwIiwiY29uZmlkZW5jZSI6MC42LCJpYXQiOjE3NzkzMDkzOTEsImV4cCI6MTc3OTMwOTk5MX0.2b1obfsUhLt1JRSP5y67cFtzB1mu-heJExZ1Q83-qto",
-                        "viewer_id": "d37a643bd2cd4b88a225fcdb190e20e1",
-                        "device_id": "dfed09c6894c43c98067c0c628ba6000",
-                        "confidence": 0.6
-                    }
-                }
-                import json
-                data = json.dumps(body)
-
-                details_data = utils.getHtml(details_url, embed_url, headers=hdr)
-                details_json = json.loads(details_data)
-                embed = details_json.get('embed_frame_url', '')
-                # https://rupertisdivingintoocean.com/api/videos/bzge23ak4p7c/embed/playback
-                # api_url = 'https://g9r6.com/api/videos/{}/embed/playback'.format(id)
-                # api_url = 'https://rupertisdivingintoocean.com/api/videos/{}/embed/playback'.format(id)
-                # api_data = utils.getHtml(api_url, embed, headers=hdr)
-
-                api_url = "https://rupertisdivingintoocean.com/api/videos/{}/embed/playback".format(id)
-
-                api_data = utils.getHtml(api_url, 
-                                        referer="https://rupertisdivingintoocean.com/29f/{}".format(id),
-                                        headers=hdr,
-                                        data=data)
-
-                encrypted_data = json.loads(api_data)
-                playback = encrypted_data["playback"]
-
-                iv = base64_url_decode(playback["iv"])
-                payload = base64_url_decode(playback["payload"])
-
-                key_part1 = base64_url_decode(playback["key_parts"][0])
-                key_part2 = base64_url_decode(playback["key_parts"][1])
-                combined_key = key_part1 + key_part2
-
-                result = decrypt_aes_gcm(payload, combined_key, iv)
-                src = {}
-                for source in json.loads(result).get('sources', []):
-                    video_url = source.get('url', '').replace('\\u0026', '&')
-                    label = source.get('label', '')
-                    src[label] = video_url
-
-                video_url = utils.prefquality(src, sort_by=lambda x: 2160 if x == '4k' else int(x[:-1]), reverse=True)
-                if video_url:
-                    vp.play_from_direct_link(video_url)
-                    vp.progress.close()
-                    return
+            vp.play_from_link_to_resolve(embed_url)
     else:
         utils.notify('Oh oh', 'No video found')
 
