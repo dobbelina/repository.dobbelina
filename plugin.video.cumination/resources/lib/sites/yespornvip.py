@@ -137,12 +137,9 @@ def play_from_kt_player(self, html, url=None):
             videourl = utils.prefquality(sources, sort_by=lambda x: 2160 if x == '4k' else int(x.split('p')[0]), reverse=True)
         except:
             videourl = utils.selector('Select quality', sources, reverse=True)
-    xbmcgui.Dialog().textviewer("Debug", f"Sources: {str(sources)}\nSelected URL: {videourl}\nLicense: {license}")
     data = utils.getHtml(videourl, url)
-    xbmcgui.Dialog().textviewer("Debug", f"Sources: {str(data)}\nSelected URL: {videourl}\nLicense: {license}")
     videourl_match = re.search(r'file\s*:\s*"([^"]+)"', data, re.DOTALL | re.IGNORECASE)
-    xbmcgui.Dialog().textviewer("Debug", f"Sources: {str(videourl_match)}")
-    
+   
 
     if not videourl:
         self.progress.close()

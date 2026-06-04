@@ -75,7 +75,7 @@ def List(url):
     for videopage, img, duration, name, views, rating in matches:
         name = utils.cleantext(name)
         videopage = site.url[:-1] + videopage if videopage.startswith('/') else videopage
-        site.add_download_link(f"{name} [COLOR yellow]({duration})[/COLOR][COLOR hotpink] [{views} views, {rating} rating][/COLOR]", videopage, 'Playvid', img, name)
+        site.add_download_link("{name} [COLOR yellow]({duration})[/COLOR][COLOR hotpink] [{views} views, {rating} rating][/COLOR]".format(name=name, duration=duration, views=views, rating=rating), videopage, 'Playvid', img, name)
 
     np = re.search(
         r'<li\s+class="next".*?<a\s+href="([^"]+)"',
@@ -97,7 +97,7 @@ def List(url):
             nextpage = "?"
 
         site.add_dir(
-            f"Next Page... ({nextpage})",
+            "Next Page... ({nextpage})".format(nextpage=nextpage),
             np,
             "List",
             site.img_next
@@ -128,10 +128,10 @@ def List1(url):
     matches = pattern.findall(html)
     for href, img, title, count in matches:
         label = (
-            f"[COLOR gold]{title}[/COLOR]  "
-            f"[COLOR cyan]{count}[/COLOR]"
-        )
-        site.add_dir(f"{label}", href + '?items_per_page={perPage}'.format(perPage), 'List', site.img_cat)
+            "[COLOR gold]{title}[/COLOR]  "
+            "[COLOR cyan]{count}[/COLOR]"
+        ).format(title=title, count=count)
+        site.add_dir("{label}".format(label=label), href + '?items_per_page={perPage}'.format(perPage), 'List', site.img_cat)
     np = re.compile(r'href="([^"]+)">Next<', re.DOTALL | re.IGNORECASE).search(html)
     if np:
         np = np.group(1)
@@ -158,13 +158,13 @@ def List2(url):
     matches = pattern.findall(html)
     for href, img, title, count, views, rating in matches:
         label = (
-            f"[COLOR gold]{title}[/COLOR]  "
-            f"[COLOR cyan]{count}[/COLOR]"
-            f"[COLOR yellow] ({views} views)[/COLOR]"
-            f"[COLOR hotpink] [{rating} rating][/COLOR]"
-        )
+            "[COLOR gold]{title}[/COLOR]  "
+            "[COLOR cyan]{count}[/COLOR]"
+            "[COLOR yellow] ({views} views)[/COLOR]"
+            "[COLOR hotpink] [{rating} rating][/COLOR]"
+        ).format(title=title, count=count, views=views, rating=rating)
 
-        site.add_dir(f"{label}", href + '?items_per_page={perPage}'.format(perPage), 'List', quote(img, safe=':/'))
+        site.add_dir("{label}".format(label=label), href + '?items_per_page={perPage}'.format(perPage), 'List', quote(img, safe=':/'))
 
     np = re.search(
         r'<li\s+class="next".*?<a\s+href="([^"]+)"',
@@ -186,7 +186,7 @@ def List2(url):
             nextpage = "?"
 
         site.add_dir(
-            f"Next Page... ({nextpage})",
+            "Next Page... ({nextpage})".format(nextpage=nextpage),
             np,
             "List2",
             site.img_next
