@@ -36,6 +36,7 @@ def Main():
 
 @site.register()
 def List(url):
+    utils.kodilog('Listing url: {0}'.format(url))
     listhtml = utils.getHtml(url, site.url)
     albums = listhtml.split(' id="album-')
     for album in albums:
@@ -76,9 +77,9 @@ def List(url):
         elif vids:
             site.add_dir(name, iurl, 'List2', img, desc=name, section='vids', contextm=cm)
 
-    re_npurl = r'<li class="active"><span>\d+</span></li>\s+<li><a href="([^"]+)">'
-    re_npnr = r'<li class="active"><span>\d+</span></li>\s+<li><a href="[^"]+">(\d+)<'
-    re_lpnr = r'>(\d+)</a></li>\s+<li><a href="[^"]+"\s+rel="next"'
+    re_npurl = r'class="page-item active"\D+>\d+<\D+href="([^"]+)"'
+    re_npnr = r'class="page-item active"\D+>\d+<\D+href="[^"]+">(\d+)<'
+    re_lpnr = r'>(\d+)<\D+href="[^"]+"\s+rel="next"'
     utils.next_page(site, 'erome.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='erome.GotoPage', baseurl=url.split('?')[0])
     utils.eod()
 

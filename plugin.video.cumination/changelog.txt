@@ -4,3 +4,4 @@
 - uflash - site removed
 - hitprn - .com replaced with hitprn.net
 - xnxx - added lookupinfo
+- erome - fix nextpage
