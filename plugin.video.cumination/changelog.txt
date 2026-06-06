@@ -3,3 +3,4 @@
 - 85po - fix playback
 - uflash - site removed
 - hitprn - .com replaced with hitprn.net
+- xnxx - added lookupinfo

@@ -21,6 +21,7 @@ import json
 import xbmcplugin
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+from six.moves import urllib_parse
 
 site = AdultSite('xnxx', '[COLOR hotpink]XNXX[/COLOR]', 'https://www.xnxx.com/', 'https://static-cdn77.xnxx-cdn.com/v3/img/skins/xnxx/logo-xnxx.png', 'xnxx')
 
@@ -39,11 +40,18 @@ def List(url):
     hdr = utils.base_hdrs
     hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0'
     listhtml = utils.getHtml(url, site.url, headers=hdr)
-    match = re.compile(r'<div\s*id="video.+?href="([^"]+).+?data-src="([^"]+).+?title.+?>([^<]+).+?(\d+(?:min|sec)).+?(\d+p)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    for videopage, img, name, duration, quality in match:
-        name = utils.cleantext(name)
-        site.add_download_link(name, site.url[:-1] + videopage, 'Playvid', img, name, duration=duration, quality=quality, noDownload=True)
 
+    delimiter = '<div id="video_'
+    re_videopage = 'href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = 'data-mzl="([^"]+)"'
+    re_duration = r'</span>\s*(\d+(?:min|sec))\s*<span'
+
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=premiumporn.Lookupinfo&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+
+    utils.videos_list(site, 'xnxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
     np = re.compile(r'class="pagination.+?class="active".+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         currpg = re.compile(r'class="pagination.+?class="active".+?>(\d+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
@@ -134,3 +142,13 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         List(url + keyword.replace(' ', '+'))
+
+
+@site.register()
+def Lookupinfo(url):
+    lookup_list = [
+        ("Porn Maker", r'<a class="gold-plate" href="/(porn-maker/[^"]+)">([^<]+)<', ''),
+        ("Tag", r'class="is-keyword" href="/(search/[^"]+)">([^<]+)<', '')
+    ]
+    lookupinfo = utils.LookupInfo(site.url, url, 'xnxx.List', lookup_list)
+    lookupinfo.getinfo()
