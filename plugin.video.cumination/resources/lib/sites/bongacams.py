@@ -214,7 +214,7 @@ def Playvid_proxy(url, name):
         hdr = utils.base_hdrs
         hdr.update({'X-Requested-With': 'XMLHttpRequest'})
         response = utils._postHtml(
-            f"{site.url}tools/amf.php",
+            "{site.url}tools/amf.php".format(site.url),
             form_data=postRequest,
             headers=hdr,
             compression=False
@@ -248,10 +248,10 @@ def Playvid_proxy(url, name):
         server = "https:" + server
 
     # VIDEO
-    base_video = f"{server}/hls/stream_{username}"
+    base_video = "{server}/hls/stream_{username}".format(server=server, username=username)
 
     # AUDIO
-    base_audio = f"{server}/public-aac/stream_{username}"
+    base_audio = "{server}/public-aac/stream_{username}".format(server=server, username=username)
 
     headers = {
         "User-Agent": utils.USER_AGENT,
@@ -279,7 +279,7 @@ def Playvid_proxy(url, name):
     # ★ prefetch pentru următorul segment
     def prefetch_next(segment_name):
         try:
-            base = f"{base_video}/{segment_name}"
+            base = "{base_video}/{segment_name}".format(base_video=base_video, segment_name=segment_name)
             data = raw_get(base)
             if data:
                 cache_ts[segment_name] = (time.time(), data)
@@ -320,7 +320,7 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            url = f"{base_video}/playlist.m3u8"
+            url = "{base_video}/playlist.m3u8".format(base_video=base_video)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -332,7 +332,7 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -352,7 +352,7 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            url = f"{base_video}/{self.path.lstrip('/')}"
+            url = "{base_video}/{self.path.lstrip('/')}".format(base_video=base_video, self=self)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -364,7 +364,7 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -375,7 +375,7 @@ def Playvid_proxy(url, name):
             self.wfile.write(data)
 
         def serve_audio_playlist(self, now):
-            url = f"{base_audio}/{self.path.split('/')[-1]}"
+            url = "{base_audio}/{self.path.split('/')[-1]}".format(base_audio=base_audio, self=self)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -387,7 +387,7 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
 
@@ -416,12 +416,12 @@ def Playvid_proxy(url, name):
                     return
 
             # FETCH VIDEO
-            url = f"{base_video}/{clean.lstrip('/')}"
+            url = "{base_video}/{clean.lstrip('/')}".format(base_video=base_video, clean=clean)
             data = raw_get(url)
 
             # AUDIO fallback
             if not data:
-                url = f"{base_audio}/{clean.lstrip('/')}"
+                url = "{base_audio}/{clean.lstrip('/')}".format(base_audio=base_audio, clean=clean)
                 data = raw_get(url)
 
             if not data:
@@ -450,7 +450,7 @@ def Playvid_proxy(url, name):
                 base, num = seg.rsplit("-", 1)
                 num = num.replace(".ts", "")
                 next_num = str(int(num) + 1)
-                return f"{base}-{next_num}.ts"
+                return "{base}-{next_num}.ts".format(base=base, next_num=next_num)
             except:
                 return None
 
@@ -458,7 +458,7 @@ def Playvid_proxy(url, name):
     port = server.server_port
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
-    proxy_url = f"http://127.0.0.1:{port}/playlist.m3u8"
+    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
 
     li = xbmcgui.ListItem(name, path=proxy_url)
     li.setProperty("inputstream", "inputstream.adaptive")
@@ -487,7 +487,7 @@ def Playvid_proxy_(url, name):
         hdr = utils.base_hdrs
         hdr.update({'X-Requested-With': 'XMLHttpRequest'})
         response = utils._postHtml(
-            f"{site.url}tools/amf.php",
+            "{}tools/amf.php".format(site.url),
             form_data=postRequest,
             headers=hdr,
             compression=False
@@ -521,10 +521,10 @@ def Playvid_proxy_(url, name):
         server = "https:" + server
 
     # VIDEO
-    base_video = f"{server}/hls/stream_{username}"
+    base_video = "{server}/hls/stream_{username}".format(server=server, username=username)
 
     # AUDIO
-    base_audio = f"{server}/public-aac/stream_{username}"
+    base_audio = "{server}/public-aac/stream_{username}".format(server=server, username=username)
 
     headers = {
         "User-Agent": utils.USER_AGENT,
@@ -585,7 +585,7 @@ def Playvid_proxy_(url, name):
                     self.wfile.write(data)
                     return
 
-            url = f"{base_video}/playlist.m3u8"
+            url = "{base_video}/playlist.m3u8".format(base_video=base_video)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -597,7 +597,7 @@ def Playvid_proxy_(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -617,7 +617,7 @@ def Playvid_proxy_(url, name):
                     self.wfile.write(data)
                     return
 
-            url = f"{base_video}/{self.path.lstrip('/')}"
+            url = "{base_video}/{self.path.lstrip('/')}".format(base_video=base_video, self=self)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -629,7 +629,7 @@ def Playvid_proxy_(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -640,7 +640,7 @@ def Playvid_proxy_(url, name):
             self.wfile.write(data)
 
         def serve_audio_playlist(self, now):
-            url = f"{base_audio}/{self.path.split('/')[-1]}"
+            url = "{base_audio}/{self.path.split('/')[-1]}".format(base_audio=base_audio, self=self)
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -652,7 +652,7 @@ def Playvid_proxy_(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             data = "\n".join(new_lines).encode("utf-8")
 
@@ -674,12 +674,12 @@ def Playvid_proxy_(url, name):
                     return
 
             # VIDEO
-            url = f"{base_video}/{clean.lstrip('/')}"
+            url = "{base_video}/{clean.lstrip('/')}".format(base_video=base_video, clean=clean)
             data = raw_get(url)
 
             # AUDIO fallback
             if not data:
-                url = f"{base_audio}/{clean.lstrip('/')}"
+                url = "{base_audio}/{clean.lstrip('/')}".format(base_audio=base_audio, clean=clean)
                 data = raw_get(url)
 
             if not data:
@@ -697,7 +697,7 @@ def Playvid_proxy_(url, name):
     port = server.server_port
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
-    proxy_url = f"http://127.0.0.1:{port}/playlist.m3u8"
+    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
 
     li = xbmcgui.ListItem(name, path=proxy_url)
     li.setProperty("inputstream", "inputstream.adaptive")
@@ -1142,7 +1142,7 @@ class BongaProxyHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(data.encode('utf-8'))
         except Exception as e:
-            utils.log(f"BONGA PROXY ERROR: {e}")
+            utils.log("BONGA PROXY ERROR: {e}".format(e=e))
             self.send_response(404)
             self.end_headers()
 

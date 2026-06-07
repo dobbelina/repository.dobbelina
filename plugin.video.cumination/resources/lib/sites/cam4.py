@@ -29,9 +29,9 @@ from resources.lib import utils
 cj = utils.cj
 site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
 IOS_UA = {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'}
-STREAM_INFO =   f"{site.url}rest/v1.0/profile/{0}/streamInfo"
-INFO_URL =      f"{site.url}rest/v1.0/search/performer/{0}"
-PROFILE_URL =   f"{site.url}rest/v1.0/profile/{0}/info"
+STREAM_INFO  = "{0}rest/v1.0/profile/{1}/streamInfo".format(site.url, 0)
+INFO_URL     = "{0}rest/v1.0/search/performer/{1}".format(site.url, 0)
+PROFILE_URL  = "{0}rest/v1.0/profile/{1}/info".format(site.url, 0)
 
 addon = utils.addon
 cam4logged = utils.addon.getSetting('cam4logged').lower() == 'true'
@@ -147,7 +147,7 @@ def List(url, page=1):
         utils.addon.setSetting("cam4per_page", str(perPage))
 
     site.add_download_link(
-        'Current models per page: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Refresh[/B][/COLOR]'.format(perPage), 
+        'Current models per page: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(perPage), 
         url, 
         'PerPage', 
         '', 
@@ -209,12 +209,18 @@ def List(url, page=1):
         if username in followed_set:
             context.append((
                 "Unfollow {}".format(username),
-                f"RunPlugin({utils.addon_sys}?mode=cam4.unfollow&model={urllib_parse.quote_plus(username)})"
+                "RunPlugin({}?mode=cam4.unfollow&model={})".format(
+                    utils.addon_sys,
+                    urllib_parse.quote_plus(username)
+                )
             ))
         else:
             context.append((
                 "Follow {}".format(username),
-                f"RunPlugin({utils.addon_sys}?mode=cam4.follow&model={urllib_parse.quote_plus(username)})"
+                "RunPlugin({}?mode=cam4.follow&model={})".format(
+                    utils.addon_sys,
+                    urllib_parse.quote_plus(username)
+                )
             ))
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(cam.get('username')))
         context.append((('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(cam.get('username')), 'RunPlugin(' + contextrecord + ')')))
@@ -284,9 +290,9 @@ def Playvid_Adaptive(url, name):
     li.setProperty('inputstream.adaptive.manifest_type', 'hls')
 
     manifest_headers = (
-        f"User-Agent={headers['User-Agent']}&"
-        f"Referer={headers['Referer']}&"
-        f"Origin={headers['Origin']}"
+        "User-Agent={headers['User-Agent']}&".format(headers=headers) +
+        "Referer={headers['Referer']}&".format(headers=headers) +
+        "Origin={headers['Origin']}".format(headers=headers)
     )
 
     li.setProperty('inputstream.adaptive.manifest_headers', manifest_headers)
@@ -395,7 +401,7 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             new_playlist = "\n".join(new_lines).encode('utf-8')
             cache_m3u8[self.path] = (now, new_playlist)
@@ -415,7 +421,7 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            child_url = f"{base_url}/{self.path.lstrip('/')}"
+            child_url = "{base_url}/{self.path.lstrip('/')}".format(base_url=base_url, self=self)
             data_raw = raw_get(child_url)
             if not data_raw:
                 self.send_error(404)
@@ -428,7 +434,7 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
 
             new_playlist = "\n".join(new_lines).encode('utf-8')
             cache_m3u8[self.path] = (now, new_playlist)
@@ -451,7 +457,7 @@ def Playvid_proxy(url, name):
             # ex: /0_2/index.m3u8?tkn=0
             subfolder = self.path.split("/")[1].split("/")[0]
             clean_path = self.path.split("?")[0].lstrip("/")
-            sub_url = f"{base_url}/{clean_path}"
+            sub_url = "{base_url}/{clean_path}".format(base_url=base_url, clean_path=clean_path)
 
             data_raw = raw_get(sub_url)
             if not data_raw:
@@ -466,7 +472,7 @@ def Playvid_proxy(url, name):
                     new_lines.append(line)
                 else:
                     # ex: seg-1-v1-a1.ts
-                    new_lines.append(f"http://127.0.0.1:{port}/{subfolder}/{line}")
+                    new_lines.append("http://127.0.0.1:{port}/{subfolder}/{line}".format(port=port, subfolder=subfolder, line=line))
 
             new_playlist = "\n".join(new_lines).encode('utf-8')
             cache_m3u8[self.path] = (now, new_playlist)
@@ -488,7 +494,7 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            segment_url = f"{base_url}/{clean_path.lstrip('/')}"
+            segment_url = "{base_url}/{clean_path.lstrip('/')}".format(base_url=base_url, clean_path=clean_path)
             data = raw_get(segment_url)
 
             if not data:
@@ -496,9 +502,9 @@ def Playvid_proxy(url, name):
                 base_name = clean_path.split("/")[-1].replace(".ts", "")
 
                 candidates = [
-                    f"{base_url}/{folder}/seg-1-v1-a1.ts",
-                    f"{base_url}/{folder}/video_00001.ts",
-                    f"{base_url}/{folder}/{base_name}.ts",
+                    "{base_url}/{folder}/seg-1-v1-a1.ts".format(base_url=base_url, folder=folder),
+                    "{base_url}/{folder}/video_00001.ts".format(base_url=base_url, folder=folder),
+                    "{base_url}/{folder}/{base_name}.ts".format(base_url=base_url, folder=folder, base_name=base_name),
                 ]
 
                 for cand in candidates:
@@ -522,7 +528,7 @@ def Playvid_proxy(url, name):
 
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
-    proxy_url = f"http://127.0.0.1:{port}/playlist.m3u8"
+    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
 
     li = xbmcgui.ListItem(name, path=proxy_url)
     li.setProperty('inputstream', 'inputstream.adaptive')
@@ -727,7 +733,7 @@ def login():
             return True
 
     except Exception as e:
-        print(f"Eroare la executarea utils._postHtml pentru Login Cam4: {e}")
+        print("Error on utils._postHtml for Login Cam4: {e}".format(e=e))
         utils.notify('Cam4', 'Eroare la autentificare')
 
     utils.addon.setSetting('cam4logged', 'false')
@@ -763,7 +769,7 @@ def logout():
         return True
         
     except Exception as e:
-        print(f"Eroare la executarea utils._postHtml pentru Logout Cam4: {e}")
+        print("Error on utils._postHtml for Logout Cam4: {e}".format(e=e))
         return False
 
 
@@ -938,7 +944,7 @@ def list_followed_online(cams):
 
     for cam in followed_online:
         #name = cam.get('username')
-        name = f"[COLOR yellow]♥[/COLOR] {cam.get('username')}"
+        name = "[COLOR yellow]♥[/COLOR] {cam.get('username')}".format(cam=cam)
         fav='del'
         username = cam.get('username')
         age = cam.get('age')
@@ -976,12 +982,18 @@ def list_followed_online(cams):
         if username in followed_set:
             context.append((
                 "Unfollow {}".format(username),
-                f"RunPlugin({utils.addon_sys}?mode=cam4.unfollow&model={urllib_parse.quote_plus(username)})"
+                "RunPlugin({}?mode=cam4.unfollow&model={})".format(
+                    utils.addon_sys,
+                    urllib_parse.quote_plus(username)
+                )
             ))
         else:
             context.append((
                 "Follow {}".format(username),
-                f"RunPlugin({utils.addon_sys}?mode=cam4.follow&model={urllib_parse.quote_plus(username)})"
+                "RunPlugin({}?mode=cam4.follow&model={})".format(
+                    utils.addon_sys,
+                    urllib_parse.quote_plus(username)
+                )
             ))
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(cam.get('username')))
         context.append((('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(cam.get('username')), 'RunPlugin(' + contextrecord + ')')))
@@ -1059,7 +1071,7 @@ def list_offline():
 
     username = utils.addon.getSetting("cam4_username")
     base = site.url.rstrip('/')
-    url = f"{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000"
+    url = "{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000".format(base=base, username=username)
 
     favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
     data = json.loads(favs_json)
@@ -1068,14 +1080,14 @@ def list_offline():
     favs = data.get("usersList", [])
     all_fav_names = {f["username"] for f in favs}
     import xbmcgui
-    xbmcgui.Dialog().ok("Debug", f"Total favorites: {str(all_fav_names)}")
+    xbmcgui.Dialog().ok("Debug", "Total favorites: {favs}".format(favs=str(all_fav_names)))
 
 def list_offline():
     import json
 
     username = utils.addon.getSetting("cam4_username")
     base = site.url.rstrip('/')
-    url = f"{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000"
+    url = "{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000".format(base=base, username=username)
 
     favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
     data = json.loads(favs_json)
@@ -1096,8 +1108,8 @@ def list_offline():
 
     for cam in offline_cams:
         name = cam.get("username")
-        display = f"[COLOR gray]★ {name}[/COLOR]"
-        img = cam.get("profileThumbnailUrl") or f"{base}/images/placeholder_offline.png"
+        display = "[COLOR gray]★ {name}[/COLOR]".format(name=name)
+        img = cam.get("profileThumbnailUrl") or "{base}/images/placeholder_offline.png".format(base=base)
         subject = "[COLOR gray]Offline[/COLOR]"
 
         site.add_download_link(display, "", "", img, subject, noDownload=True)
@@ -1118,13 +1130,13 @@ def follow(model):
         return
 
     base = site.url.rstrip('/')
-    url = f"{base}/rest/v1.0/favorites/{username}/{model}"
+    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(base=base, username=username, model=model)
 
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json; charset=utf-8",
         "Origin": base,
-        "Referer": f"{base}/{model}",
+        "Referer": "{base}/{model}".format(base=base, model=model),
         "User-Agent": utils.USER_AGENT,
         "DNT": "1"
     }
@@ -1145,12 +1157,12 @@ def follow(model):
         r = requests.post(url, headers=headers, cookies=cookies, data="")
 
         if r.status_code == 200:
-            utils.notify("Cam4", f"{model} followed")
+            utils.notify("Cam4", "{model} followed".format(model=model))
         else:
-            utils.notify("Cam4", f"Error {r.status_code} on follow")
+            utils.notify("Cam4", "Error {code} on follow".format(code=r.status_code))
 
     except Exception as e:
-        utils.notify("Cam4", f"Error: {e}")
+        utils.notify("Cam4", "Error: {e}".format(e=e))
 
 
 @site.register()
@@ -1166,13 +1178,13 @@ def unfollow(model):
 
     # URL corect (fără dublu slash)
     base = site.url.rstrip('/')
-    url = f"{base}/rest/v1.0/favorites/{username}/{model}"
+    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(base=base, username=username, model=model)
 
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json; charset=utf-8",
         "Origin": base,
-        "Referer": f"{base}/{model}",
+        "Referer": "{base}/{model}".format(base=base, model=model),
         "User-Agent": utils.USER_AGENT,
         "DNT": "1"
     }
@@ -1194,12 +1206,12 @@ def unfollow(model):
         r = requests.delete(url, headers=headers, cookies=cookies)
 
         if r.status_code == 200:
-            utils.notify("Cam4", f"{model} unfollowed")
+            utils.notify("Cam4", "{model} unfollowed".format(model=model))
         else:
-            utils.notify("Cam4", f"Error {r.status_code} on unfollow")
+            utils.notify("Cam4", "Error {code} on unfollow".format(code=r.status_code))
 
     except Exception as e:
-        utils.notify("Cam4", f"Error: {e}")
+        utils.notify("Cam4", "Error: {e}".format(e=e))
 
 
 def get_cam4_SESSION_ID():
