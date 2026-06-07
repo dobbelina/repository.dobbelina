@@ -1,11 +1,2 @@
-[B]Version 1.1.186[/B]
-- premiumporn - fix playback
-- 85po - fix playback
-- uflash - site removed
-- hitprn - .com replaced with hitprn.net
-- xnxx - added lookupinfo
-- erome - fix nextpage
-- Added fpoxxx
-- Added heavyfetish
-- Added notfans
-- Added yourlesbians
+[B]Version 1.1.187[/B]
+- xnxx - fix lookupinfo, thumbnails

@@ -37,21 +37,29 @@ def Main():
 
 @site.register()
 def List(url):
+    utils.kodilog('Listing videos for url: {0}'.format(url))
+    if '/porn-maker/' in url:
+        List2(url)
+        return
     hdr = utils.base_hdrs
     hdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0'
     listhtml = utils.getHtml(url, site.url, headers=hdr)
+    listhtml = listhtml.replace('/THUMBNUM/', '').replace('THUMBNUM', '1')
 
     delimiter = '<div id="video_'
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-mzl="([^"]+)"'
+    # re_img = 'data-sfwthumb="([^"]+)"'
+    re_img = 'data-src="([^"]+)"'
+    # re_img = 'data-mzl="([^"]+)"'
     re_duration = r'</span>\s*(\d+(?:min|sec))\s*<span'
+    re_quality = r'</span>\s*(\d+p)\s*</span>'
 
     cm = []
-    cm_lookupinfo = (utils.addon_sys + "?mode=premiumporn.Lookupinfo&url=")
+    cm_lookupinfo = (utils.addon_sys + "?mode=xnxx.Lookupinfo&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
 
-    utils.videos_list(site, 'xnxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
+    utils.videos_list(site, 'xnxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
     np = re.compile(r'class="pagination.+?class="active".+?href="([^"]+)"\s*class="no', re.DOTALL | re.IGNORECASE).search(listhtml)
     if np:
         currpg = re.compile(r'class="pagination.+?class="active".+?>(\d+)', re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
@@ -67,6 +75,7 @@ def List(url):
 
 @site.register()
 def List2(url, page=0):
+    utils.kodilog('Listing2 videos for url: {0}'.format(url + '/videos/best/{0}'.format(page)))
     jlist = utils.getHtml(url + '/videos/best/{0}'.format(page), site.url)
     jlist = json.loads(jlist)
     items = jlist.get('videos')
@@ -79,7 +88,11 @@ def List2(url, page=0):
                   '1080p' if item.get('h') and item.get('hp') else \
                   '720p' if item.get('h') else \
                   '360p' if item.get('hm') == 0 else '480p'
-        site.add_download_link(name, vidpage, 'Playvid', img, name, duration=item.get('d'), quality=quality, noDownload=True)
+        cm = []
+        cm_lookupinfo = (utils.addon_sys + "?mode=xnxx.Lookupinfo&url=" + urllib_parse.quote_plus(vidpage))
+        cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+
+        site.add_download_link(name, vidpage, 'Playvid', img, name, duration=item.get('d'), quality=quality, noDownload=True, contextm=cm)
 
     page += 1
     lastpg = -1 * (-(jlist.get('nb_videos')) // jlist.get('nb_per_page'))
@@ -146,9 +159,11 @@ def Search(url, keyword=None):
 
 @site.register()
 def Lookupinfo(url):
+    utils.kodilog('Looking up info for url: {0}'.format(url))
     lookup_list = [
         ("Porn Maker", r'<a class="gold-plate" href="/(porn-maker/[^"]+)">([^<]+)<', ''),
-        ("Tag", r'class="is-keyword" href="/(search/[^"]+)">([^<]+)<', '')
+        ("Tag", r'class="is-keyword" href="/(search/[^"]+)">([^<]+)<', ''),
+        ("Pornstar", r'class="is-pornstar" href="/(search/[^"]+)">([^<]+)<', '')
     ]
     lookupinfo = utils.LookupInfo(site.url, url, 'xnxx.List', lookup_list)
     lookupinfo.getinfo()
