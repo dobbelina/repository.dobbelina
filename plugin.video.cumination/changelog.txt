@@ -1,2 +1,3 @@
 [B]Version 1.1.187[/B]
 - xnxx - fix lookupinfo, thumbnails
+- sites that are incompatible with the Kodi version are ignored and no longer cause the add-on to crash

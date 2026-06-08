@@ -23,7 +23,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('xnxx', '[COLOR hotpink]XNXX[/COLOR]', 'https://www.xnxx.com/', 'https://static-cdn77.xnxx-cdn.com/v3/img/skins/xnxx/logo-xnxx.png', 'xnxx')
+site = AdultSite('xnxx', '[COLOR hotpink]XNXX[/COLOR]', 'https://www.xnxx.com/', 'http://assets-o7.xnxx-cdn.com/v3/img/skins/xnxx/logo-xnxx.png', 'xnxx')
 
 
 @site.register(default_mode=True)
@@ -37,7 +37,6 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog('Listing videos for url: {0}'.format(url))
     if '/porn-maker/' in url:
         List2(url)
         return
@@ -75,7 +74,6 @@ def List(url):
 
 @site.register()
 def List2(url, page=0):
-    utils.kodilog('Listing2 videos for url: {0}'.format(url + '/videos/best/{0}'.format(page)))
     jlist = utils.getHtml(url + '/videos/best/{0}'.format(page), site.url)
     jlist = json.loads(jlist)
     items = jlist.get('videos')
@@ -159,7 +157,6 @@ def Search(url, keyword=None):
 
 @site.register()
 def Lookupinfo(url):
-    utils.kodilog('Looking up info for url: {0}'.format(url))
     lookup_list = [
         ("Porn Maker", r'<a class="gold-plate" href="/(porn-maker/[^"]+)">([^<]+)<', ''),
         ("Tag", r'class="is-keyword" href="/(search/[^"]+)">([^<]+)<', ''),
