@@ -24,7 +24,6 @@ import json
 from six.moves import urllib_parse, urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib import utils
 
 cj = utils.cj
 site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
@@ -247,21 +246,29 @@ def Playvid(url, name):
 
 def Playvid_Adaptive(url, name):
     import json
-    import urllib.parse
     import xbmcgui
     import xbmc
+    import sys
+
+    # PY2/PY3 compat
+    PY2 = sys.version_info[0] == 2
+    if PY2:
+        from urllib import urlencode
+    else:
+        from urllib.parse import urlencode
 
     html = utils._getHtml(url)
     try:
         cdn_list = json.loads(html).get('cdnURL')
     except:
-        utils.notify('Cam4', 'Cannot fetch CDN Url')
+        utils.notify('Cam4', 'Cannot fetch CDN URL')
         return
 
     if not cdn_list:
         utils.notify('Cam4', 'The model is not broadcasting at this moment.')
         return
 
+    # normalize list
     if isinstance(cdn_list, list):
         cdn_urls = cdn_list
     else:
@@ -273,10 +280,17 @@ def Playvid_Adaptive(url, name):
         'Origin': site.url
     }
 
+    # urlencode headers
+    header_str = urlencode(headers)
+
     final_url = None
+
+    # test CDNs
     for cdn in cdn_urls:
-        test_url = cdn + '|' + urllib.parse.urlencode(headers)
-        if utils._getHtml(cdn, error='return'):  # test rapid
+        test_url = cdn + "|" + header_str
+
+        # quick test
+        if utils._getHtml(cdn, error='return'):
             final_url = test_url
             break
 
@@ -284,15 +298,16 @@ def Playvid_Adaptive(url, name):
         utils.notify('Cam4', 'All CDNs failed')
         return
 
+    # Kodi ListItem
     li = xbmcgui.ListItem(name, path=final_url)
 
     li.setProperty('inputstream', 'inputstream.adaptive')
     li.setProperty('inputstream.adaptive.manifest_type', 'hls')
 
+    # manifest headers (PY2 safe)
     manifest_headers = (
-        "User-Agent={headers['User-Agent']}&".format(headers=headers) +
-        "Referer={headers['Referer']}&".format(headers=headers) +
-        "Origin={headers['Origin']}".format(headers=headers)
+        "User-Agent=%s&Referer=%s&Origin=%s" %
+        (headers['User-Agent'], headers['Referer'], headers['Origin'])
     )
 
     li.setProperty('inputstream.adaptive.manifest_headers', manifest_headers)
@@ -307,22 +322,36 @@ def Playvid_Adaptive(url, name):
 #@site.register()
 def Playvid_proxy(url, name):
     import json
-    import urllib.parse
     import xbmc
     import xbmcgui
     import threading
     import time
     import requests
-    from http.server import BaseHTTPRequestHandler, HTTPServer
+    import sys
+
+    # --- PY2/PY3 COMPAT ---
+    PY2 = sys.version_info[0] == 2
+
+    if PY2:
+        import BaseHTTPServer as httpserver
+        import SocketServer as socketserver
+        from urlparse import urlparse
+    else:
+        from http.server import BaseHTTPRequestHandler as HTTPHandler
+        from http.server import HTTPServer as HTTPServerBase
+        import socketserver
+        from urllib.parse import urlparse
+
+    # --- GET PLAYLIST URL ---
     html = utils._getHtml(url)
     try:
         playlist_url = json.loads(html).get('cdnURL')
     except:
-        utils.notify('Cam4', 'Nu pot obține CDN URL')
+        utils.notify('Cam4', 'Cannot fetch CDN URL')
         return
 
     if not playlist_url:
-        utils.notify('Cam4', 'Modelul nu transmite în acest moment')
+        utils.notify('Cam4', 'The model is not broadcasting at this moment.')
         return
 
     if isinstance(playlist_url, list):
@@ -336,22 +365,36 @@ def Playvid_proxy(url, name):
         'Origin': site.url
     }
 
-    def raw_get(url):
+    # --- RAW GET ---
+    def raw_get(u):
         try:
-            r = requests.get(url, headers=headers, timeout=3, verify=False)
+            r = requests.get(u, headers=headers, timeout=3, verify=False)
             if r.status_code == 200:
                 return r.content
             return None
         except:
             return None
 
-    cache_ts = {}
-    cache_m3u8 = {}
+    # --- CACHE ---
+    cache_ts = {}       # { path: (timestamp, data) }
+    cache_m3u8 = {}     # { path: (timestamp, data) }
 
-    TS_TTL = 10       # segmente .ts sunt valabile ~10 secunde
-    M3U8_TTL = 2      # playlist-urile se schimbă rapid
+    TS_TTL = 40         # optimizat
+    M3U8_TTL = 6         # optimizat
+    MAX_TS = 30         # LRU soft
 
-    class Cam4Proxy(BaseHTTPRequestHandler):
+    # --- PREFETCH ---
+    def prefetch_next(segment_url):
+        try:
+            raw_get(segment_url)
+        except:
+            pass
+
+    # --- SERVER CLASS ---
+    class ProxyHandler(httpserver.BaseHTTPRequestHandler if PY2 else HTTPHandler):
+
+        def log_message(self, *args):
+            return  # silent
 
         def do_HEAD(self):
             self.send_response(200)
@@ -362,16 +405,18 @@ def Playvid_proxy(url, name):
             try:
                 now = time.time()
 
-                if self.path.endswith("playlist.m3u8"):
-                    return self.serve_master_playlist(now)
+                p = self.path
 
-                if "chunklist" in self.path and self.path.endswith(".m3u8"):
-                    return self.serve_child_playlist(now)
+                if p.endswith("playlist.m3u8"):
+                    return self.serve_master(now)
 
-                if "index.m3u8" in self.path:
-                    return self.serve_subfolder_playlist(now)
+                if "chunklist" in p and p.endswith(".m3u8"):
+                    return self.serve_child(now)
 
-                if self.path.endswith(".ts"):
+                if "index.m3u8" in p:
+                    return self.serve_subfolder(now)
+
+                if p.endswith(".ts"):
                     return self.serve_ts(now)
 
                 self.send_error(404)
@@ -379,20 +424,16 @@ def Playvid_proxy(url, name):
             except:
                 self.send_error(500)
 
-        def serve_master_playlist(self, now):
+        # --- MASTER PLAYLIST ---
+        def serve_master(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
                 if now - ts < M3U8_TTL:
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
+                    return self._send_m3u8(data)
 
             data_raw = raw_get(playlist_url)
             if not data_raw:
-                self.send_error(404)
-                return
+                return self.send_error(404)
 
             text = data_raw.decode('utf-8')
             new_lines = []
@@ -401,31 +442,25 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
+                    new_lines.append("http://127.0.0.1:%d/%s" % (port, line))
 
-            new_playlist = "\n".join(new_lines).encode('utf-8')
-            cache_m3u8[self.path] = (now, new_playlist)
+            new_playlist = "\n".join(new_lines)
+            data = new_playlist.encode('utf-8')
 
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-            self.end_headers()
-            self.wfile.write(new_playlist)
+            cache_m3u8[self.path] = (now, data)
+            return self._send_m3u8(data)
 
-        def serve_child_playlist(self, now):
+        # --- CHILD PLAYLIST ---
+        def serve_child(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
                 if now - ts < M3U8_TTL:
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
+                    return self._send_m3u8(data)
 
-            child_url = "{base_url}/{self.path.lstrip('/')}".format(base_url=base_url, self=self)
+            child_url = "%s/%s" % (base_url, self.path.lstrip("/"))
             data_raw = raw_get(child_url)
             if not data_raw:
-                self.send_error(404)
-                return
+                return self.send_error(404)
 
             text = data_raw.decode('utf-8')
             new_lines = []
@@ -434,35 +469,28 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
+                    new_lines.append("http://127.0.0.1:%d/%s" % (port, line))
 
-            new_playlist = "\n".join(new_lines).encode('utf-8')
-            cache_m3u8[self.path] = (now, new_playlist)
+            new_playlist = "\n".join(new_lines)
+            data = new_playlist.encode('utf-8')
 
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-            self.end_headers()
-            self.wfile.write(new_playlist)
+            cache_m3u8[self.path] = (now, data)
+            return self._send_m3u8(data)
 
-        def serve_subfolder_playlist(self, now):
+        # --- SUBFOLDER PLAYLIST ---
+        def serve_subfolder(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
                 if now - ts < M3U8_TTL:
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
+                    return self._send_m3u8(data)
 
-            # ex: /0_2/index.m3u8?tkn=0
-            subfolder = self.path.split("/")[1].split("/")[0]
             clean_path = self.path.split("?")[0].lstrip("/")
-            sub_url = "{base_url}/{clean_path}".format(base_url=base_url, clean_path=clean_path)
+            subfolder = clean_path.split("/")[0]
 
+            sub_url = "%s/%s" % (base_url, clean_path)
             data_raw = raw_get(sub_url)
             if not data_raw:
-                self.send_error(404)
-                return
+                return self.send_error(404)
 
             text = data_raw.decode('utf-8')
             new_lines = []
@@ -471,40 +499,38 @@ def Playvid_proxy(url, name):
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    # ex: seg-1-v1-a1.ts
-                    new_lines.append("http://127.0.0.1:{port}/{subfolder}/{line}".format(port=port, subfolder=subfolder, line=line))
+                    new_lines.append("http://127.0.0.1:%d/%s/%s" % (port, subfolder, line))
 
-            new_playlist = "\n".join(new_lines).encode('utf-8')
-            cache_m3u8[self.path] = (now, new_playlist)
+            new_playlist = "\n".join(new_lines)
+            data = new_playlist.encode('utf-8')
 
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
-            self.end_headers()
-            self.wfile.write(new_playlist)
+            cache_m3u8[self.path] = (now, data)
+            return self._send_m3u8(data)
 
+        # --- TS SEGMENTS ---
         def serve_ts(self, now):
             clean_path = self.path.split("?")[0]
 
+            # CACHE HIT
             if clean_path in cache_ts:
                 ts, data = cache_ts[clean_path]
                 if now - ts < TS_TTL:
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'video/mp2t')
-                    self.end_headers()
-                    self.wfile.write(data)
+                    self._send_ts(data)
                     return
 
-            segment_url = "{base_url}/{clean_path.lstrip('/')}".format(base_url=base_url, clean_path=clean_path)
+            # FETCH
+            segment_url = "%s/%s" % (base_url, clean_path.lstrip("/"))
             data = raw_get(segment_url)
 
+            # FALLBACK
             if not data:
-                folder = clean_path.split("/")[1]  # ex: 0_2
+                folder = clean_path.split("/")[1]
                 base_name = clean_path.split("/")[-1].replace(".ts", "")
 
                 candidates = [
-                    "{base_url}/{folder}/seg-1-v1-a1.ts".format(base_url=base_url, folder=folder),
-                    "{base_url}/{folder}/video_00001.ts".format(base_url=base_url, folder=folder),
-                    "{base_url}/{folder}/{base_name}.ts".format(base_url=base_url, folder=folder, base_name=base_name),
+                    "%s/%s/%s.ts" % (base_url, folder, base_name),
+                    "%s/%s/seg-1-v1-a1.ts" % (base_url, folder),
+                    "%s/%s/video_00001.ts" % (base_url, folder),
                 ]
 
                 for cand in candidates:
@@ -513,22 +539,53 @@ def Playvid_proxy(url, name):
                         break
 
             if not data:
-                self.send_error(404)
-                return
+                return self.send_error(404)
 
+            # STORE IN CACHE
             cache_ts[clean_path] = (now, data)
 
+            # LRU SOFT
+            if len(cache_ts) > MAX_TS:
+                oldest = sorted(cache_ts.items(), key=lambda x: x[1][0])[0][0]
+                del cache_ts[oldest]
+
+            # PREFETCH NEXT
+            try:
+                num = int(base_name.split("-")[-1])
+                next_name = base_name.replace(str(num), str(num + 1))
+                next_url = "%s/%s/%s.ts" % (base_url, folder, next_name)
+                threading.Thread(target=prefetch_next, args=(next_url,)).start()
+            except:
+                pass
+
+            return self._send_ts(data)
+
+        # --- SEND HELPERS ---
+        def _send_m3u8(self, data):
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+            self.end_headers()
+            self.wfile.write(data)
+
+        def _send_ts(self, data):
             self.send_response(200)
             self.send_header('Content-Type', 'video/mp2t')
             self.end_headers()
             self.wfile.write(data)
 
-    server = HTTPServer(('127.0.0.1', 0), Cam4Proxy)
+    # --- SERVER ---
+    class ThreadedHTTPServer(socketserver.ThreadingMixIn,
+                             httpserver.HTTPServer if PY2 else HTTPServerBase):
+        daemon_threads = True
+
+    server = ThreadedHTTPServer(('127.0.0.1', 0), ProxyHandler)
     port = server.server_port
 
-    threading.Thread(target=server.serve_forever, daemon=True).start()
+    t = threading.Thread(target=server.serve_forever)
+    t.setDaemon(True)
+    t.start()
 
-    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
+    proxy_url = "http://127.0.0.1:%d/playlist.m3u8" % port
 
     li = xbmcgui.ListItem(name, path=proxy_url)
     li.setProperty('inputstream', 'inputstream.adaptive')
@@ -608,7 +665,6 @@ def onlineFav(url):
 def get_cookie():
     domain = ".cam4.com"
     cookiestr = ""
-    # Căutăm în cookiejar-ul global al addon-ului tău (utils.cj)
     for cookie in utils.cj:
         if cookie.domain == domain and cookie.name == 'cam4_SESSION_ID':
             cookiestr = cookie.value
@@ -921,9 +977,9 @@ def followedCams_():
 
 @site.register()
 def list_followed():
-    cams = followedCams()  # favorite online din API Flash
+    cams = followedCams()  # favorite online from API Flash
     if not cams:
-        utils.notify("Cam4", "Nu există modele favorite online")
+        utils.notify("Cam4", "No followed cams are online")
         utils.eod()
         return
     else:
@@ -944,7 +1000,9 @@ def list_followed_online(cams):
 
     for cam in followed_online:
         #name = cam.get('username')
-        name = "[COLOR yellow]♥[/COLOR] {cam.get('username')}".format(cam=cam)
+        # name = "[COLOR yellow]♥[/COLOR] {cam.get('username')}".format(cam=cam)
+        name = "[COLOR yellow]♥[/COLOR] {cam}".format(cam=cam.get('username'))
+
         fav='del'
         username = cam.get('username')
         age = cam.get('age')
@@ -1009,10 +1067,9 @@ def list_followed_online(cams):
 def list_followed():
     import json
 
-    cams = followedCams()  # lista completă din pasul B
-
+    cams = followedCams()  
     if not cams:
-        utils.notify("Cam4", "Nu există modele favorite online")
+        utils.notify("Cam4", "No followed cams are online")
         utils.eod()
         return
 
@@ -1020,7 +1077,6 @@ def list_followed():
     listhtml = utils._getHtml(listurl, headers=IOS_UA)
     all_cams = json.loads(listhtml).get('users', {})
 
-    # --- FILTRARE FAVORITE ---
     favorite_set = {cam["username"] for cam in cams}
     filtered_cams = [cam for cam in all_cams if cam.get("username") in favorite_set]
 
@@ -1076,11 +1132,9 @@ def list_offline():
     favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
     data = json.loads(favs_json)
 
-    # lista reală de favorite
+
     favs = data.get("usersList", [])
     all_fav_names = {f["username"] for f in favs}
-    import xbmcgui
-    xbmcgui.Dialog().ok("Debug", "Total favorites: {favs}".format(favs=str(all_fav_names)))
 
 def list_offline():
     import json
@@ -1092,18 +1146,14 @@ def list_offline():
     favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
     data = json.loads(favs_json)
 
-    # lista reală de favorite
     favs = data.get("usersList", [])
     all_fav_names = {f["username"] for f in favs}
 
-    # camere online (din API Flash)
     online = followedCams()
     online_names = {cam["username"] for cam in online}
 
-    # camere offline = toate favoritele - cele online
     offline_names = sorted(all_fav_names - online_names)
 
-    # filtrăm detaliile pentru camerele offline
     offline_cams = [f for f in favs if f["username"] in offline_names]
 
     for cam in offline_cams:
@@ -1170,13 +1220,11 @@ def unfollow(model):
     import requests
     import xbmcgui
 
-    # username-ul real folosit de API
     username = utils.addon.getSetting("cam4_username")
     if not username:
         utils.notify("Cam4", "You don't have a Cam4 username")
         return
 
-    # URL corect (fără dublu slash)
     base = site.url.rstrip('/')
     url = "{base}/rest/v1.0/favorites/{username}/{model}".format(base=base, username=username, model=model)
 
@@ -1189,7 +1237,6 @@ def unfollow(model):
         "DNT": "1"
     }
 
-    # Cookie-uri reale din cookie jar
     session_id = get_cam4_SESSION_ID()
     ah_token   = get_cam4_AH()
 
