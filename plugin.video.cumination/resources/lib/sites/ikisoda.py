@@ -38,7 +38,7 @@ def Main():
         utils.addon.setSetting("ikisodaper_page", str(perPage))
     perPage = getPerPage()
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?items_per_page=120', 'List1', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'jav-models/?&models_per_page={perPage}&sort_by=video_viewed_count&type=actress'.format(perPage), 'List2', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'jav-models/?&models_per_page={}&sort_by=video_viewed_count&type=actress'.format(perPage), 'List2', site.img_cat)
   
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url)
@@ -204,6 +204,32 @@ def Search(url, keyword=None):
 
 
 @site.register()
+def Playvid(url, name, download=None):
+    utils.kodilog('porntn Playvid: ' + url)
+    vp = utils.VideoPlayer(name, download)
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+    html = utils.getHtml(url, site.url)
+    sources = {}
+    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(html)[0]
+    patterns = [r"video_url:\s*'([^']+)[^;]+?video_url_text:\s*'([^']+)",
+                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
+                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
+                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
+    for pattern in patterns:
+        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+        for surl, qual in items:
+            qual = '00' if qual == 'preview' else qual
+            qual = qual.replace(' HD', '')
+            surl = kvs_decode(surl, license)
+            sources[qual] = surl
+    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+
+    if not videourl:
+        vp.progress.close()
+        return
+    vp.play_from_direct_link(videourl + '|referer=' + url)
+
+
 def Playvid(url, name, download=None):
 
     vp = utils.VideoPlayer(name, download)
