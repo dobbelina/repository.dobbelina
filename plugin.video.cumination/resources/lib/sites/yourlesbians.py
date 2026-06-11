@@ -124,20 +124,29 @@ def Search(url, keyword=None):
 
 @site.register()
 def Playvid(url, name, download=None):
+    utils.kodilog('porntn Playvid: ' + url)
     vp = utils.VideoPlayer(name, download)
-    html = utils.getHtml(url)
-    
-    license = re.search(r"license_code:\s*'(\$\d+)",html, flags=re.DOTALL | re.IGNORECASE)
-    video_url = re.search(r"video_url:\s*'([^']+)",html, flags=re.DOTALL | re.IGNORECASE)
-    
-    if license and video_url:
-        lc = license.group(1)
-        vu = video_url.group(1)
-        
-        final_url = kvs_decode(vu, lc)
-   
-        final_url += '|User-Agent={0}&Referer={1}'.format(utils.USER_AGENT, url)
-        vp.play_from_direct_link(final_url)
-    else:
-        vp.play_from_site_link(url + ('/' if not url.endswith('/') else ''))
+    vp.progress.update(25, "[CR]Loading video page[CR]")
+    html = utils.getHtml(url, site.url)
+    sources = {}
+    license = re.compile(r"license_code:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(html)[0]
+    patterns = [
+                r"video_url:\s*'([^']+)'.*?(?:video_url_text:\s*'([^']+)')?",
+                r"video_alt_url:\s*'([^']+)[^;]+?video_alt_url_text:\s*'([^']+)",
+                r"video_alt_url2:\s*'([^']+)[^;]+?video_alt_url2_text:\s*'([^']+)",
+                r"video_url:\s*'([^']+)',\s*postfix:\s*'\.mp4',\s*(preview)"]
+    for pattern in patterns:
+        items = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+        for surl, qual in items:
+            qual = '00' if (qual or '480p') == 'preview' else (qual or '480p')
+            qual = qual.replace(' HD', '')
+            surl = kvs_decode(surl, license)
+            sources[qual] = surl
+    videourl = utils.selector('Select quality', sources, setting_valid='qualityask', sort_by=lambda x: 1081 if x == '4k' else int(x[:-1]), reverse=True)
+
+    if not videourl:
+        vp.progress.close()
+        return
+    vp.play_from_direct_link(videourl + '|referer=' + url)
+
 
