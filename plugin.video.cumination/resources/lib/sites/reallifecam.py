@@ -63,7 +63,8 @@ def List(url):
     siteurl = getBaselink(url)
     listhtml = utils.getHtml(url, '')
 
-    match = re.compile(r'col-sm-6.+?<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    # match = re.compile(r'col-sm-6.+?<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\s*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'col-sm-6.+?<a href="([^"]+)".+?img src="([^"]+)" title="([^"]+)"(.+?)class="duration">\D*([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
     for videopage, img, name, quality, duration in match:
         name = utils.cleantext(name)
