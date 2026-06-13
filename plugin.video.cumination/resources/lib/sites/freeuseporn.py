@@ -34,9 +34,8 @@ def Main(url):
 
 @site.register()
 def List(url):
-    utils.kodilog('Listing URL: {}'.format(url))
     listhtml = utils.getHtml(url, '')
-    match = re.compile(r'>\s*<a href="([^"]+)"\s*class="group flex.+?img src="([^"]+)"\s*title="([^"]+).+?transition-opacity">([\s\d:]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'>\s*<a href="([^"]+)"\s*class="group.+?img src="([^"]+)"\s*title="([^"]+).+?transition-opacity">([\s\d:]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if not match:
         return
     for videopage, img, name, duration in match:
