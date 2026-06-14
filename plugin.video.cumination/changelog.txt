@@ -3,4 +3,6 @@
 - sites that are incompatible with the Kodi version are ignored and no longer cause the add-on to crash
 - camcaps - fix listing
 - freeuseporn - fix listing
+- added CamGirlFap
+- added PimpBunny
 
