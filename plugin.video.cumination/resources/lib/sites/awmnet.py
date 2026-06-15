@@ -172,7 +172,8 @@ def Search(url, keyword=None):
 def Tags(url):
     siteurl = getBaselink(url)
     cathtml = utils.getHtml(url, siteurl)
-    match = re.compile(r'<li\s*class="category".+?href="([^"]+)"><span class="category-title">([^<]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r'<li[^>]+class="category[^"]*"[^>]*>.*?href="([^"]+)".*?class="category-title">\s*([^<]+)\s*</span>.*?badge[^>]*>\s*([\d\.km]+)\s*</span>', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    # match = re.compile(r'<li\s*class="category".+?href="([^"]+)"><span class="category-title">([^<]+).+?>([\d\.km]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, videos in match:
         name = utils.cleantext(name) + " [COLOR deeppink](" + videos + " videos)[/COLOR]"
         site.add_dir(name, siteurl[:-1] + catpage + '?pricing=free', 'List', site.img_cat)
