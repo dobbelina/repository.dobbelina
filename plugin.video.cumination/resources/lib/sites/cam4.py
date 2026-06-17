@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 '''
     Cumination
@@ -27,13 +26,17 @@ from resources.lib.adultsite import AdultSite
 
 cj = utils.cj
 site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
-IOS_UA = {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'}
+IOS_UA = {
+    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) '
+                  'AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'
+}
 STREAM_INFO  = "{0}rest/v1.0/profile/{1}/streamInfo".format(site.url, 0)
 INFO_URL     = "{0}rest/v1.0/search/performer/{1}".format(site.url, 0)
 PROFILE_URL  = "{0}rest/v1.0/profile/{1}/info".format(site.url, 0)
 
 addon = utils.addon
 cam4logged = utils.addon.getSetting('cam4logged').lower() == 'true'
+
 
 @site.register(default_mode=True)
 def Main():
@@ -50,34 +53,69 @@ def Main():
     }.get(player)
 
     site.add_download_link(
-        u'Current player: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
+        u'Current player: [COLOR fuchsia][B]{}[/B][/COLOR] - '
+        u'[COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
         site.url,
         'Playvid_change',
         '',
         '',
         noDownload=True
-    )    
-    female = True if utils.addon.getSetting("chatfemale") == "true" else False
-    male = True if utils.addon.getSetting("chatmale") == "true" else False
-    couple = True if utils.addon.getSetting("chatcouple") == "true" else False
-    trans = True if utils.addon.getSetting("chattrans") == "true" else False
+    )
+
+    female = utils.addon.getSetting("chatfemale") == "true"
+    male = utils.addon.getSetting("chatmale") == "true"
+    couple = utils.addon.getSetting("chatcouple") == "true"
+    trans = utils.addon.getSetting("chattrans") == "true"
+
     site.add_dir('[COLOR red]Refresh Cam4 images[/COLOR]', '', 'clean_database', '', Folder=False)
+
     if cam4logged:
         site.add_dir('[COLOR fuchsia]Followed Cams[/COLOR]', '', 'list_followed', '', 1)
         site.add_dir('[COLOR fuchsia]Logout[/COLOR]', '', 'logout', '', Folder=False)
     else:
         site.add_dir('[COLOR red]Login[/COLOR]', '', 'login', '', Folder=False)
 
+    site.add_dir(
+        '[COLOR yellow]Online Favorites[/COLOR]',
+        '&gender=female&broadcastType=female_group&broadcastType=solo&broadcastType=male_female_group',
+        'onlineFav',
+        '',
+        1
+    )
 
-    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '&gender=female&broadcastType=female_group&broadcastType=solo&broadcastType=male_female_group', 'onlineFav', '', 1)
     if female:
-        site.add_dir('[COLOR hotpink]Females[/COLOR]', '&gender=female&broadcastType=female_group&broadcastType=solo&broadcastType=male_female_group', 'List', '', 1)
+        site.add_dir(
+            '[COLOR hotpink]Females[/COLOR]',
+            '&gender=female&broadcastType=female_group&broadcastType=solo&broadcastType=male_female_group',
+            'List',
+            '',
+            1
+        )
     if couple:
-        site.add_dir('[COLOR hotpink]Couples[/COLOR]', '&broadcastType=male_group&broadcastType=female_group&broadcastType=male_female_group', 'List', '', 1)
+        site.add_dir(
+            '[COLOR hotpink]Couples[/COLOR]',
+            '&broadcastType=male_group&broadcastType=female_group&broadcastType=male_female_group',
+            'List',
+            '',
+            1
+        )
     if male:
-        site.add_dir('[COLOR hotpink]Males[/COLOR]', '&gender=male&broadcastType=male_group&broadcastType=solo&broadcastType=male_female_group', 'List', '', 1)
+        site.add_dir(
+            '[COLOR hotpink]Males[/COLOR]',
+            '&gender=male&broadcastType=male_group&broadcastType=solo&broadcastType=male_female_group',
+            'List',
+            '',
+            1
+        )
     if trans:
-        site.add_dir('[COLOR hotpink]Transsexual[/COLOR]', '&gender=shemale', 'List', '', 1)
+        site.add_dir(
+            '[COLOR hotpink]Transsexual[/COLOR]',
+            '&gender=shemale',
+            'List',
+            '',
+            1
+        )
+
     utils.eod()
 
 
@@ -86,8 +124,10 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".cam4s.com")
-            for row in list:
+            rows = conn.execute(
+                "SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".cam4s.com"
+            )
+            for row in rows:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
@@ -99,16 +139,18 @@ def clean_database(showdialog=True):
     except:
         pass
 
+
 @site.register()
 def PerPage(url=None, name=None):
     vq = utils._get_keyboard(heading=utils.i18n('srch_for'))
     if not vq or not vq.isdigit():
         return False
-        
+
     utils.addon.setSetting("cam4per_page", str(vq))
     import xbmc
     xbmc.executebuiltin('Container.Refresh')
     return True
+
 
 @site.register()
 def Playvid_change(url, name):
@@ -127,17 +169,19 @@ def Playvid_change(url, name):
 
     xbmc.executebuiltin('Container.Refresh')
 
+
 @site.register()
 def List(url, page=1):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    favorite = {}
+
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
     c.execute("SELECT url FROM favorites WHERE mode='cam4.Playvid'")
     favorite = [row[0] for row in c.fetchall()]
     c.close()
+
     perPage_setting = utils.addon.getSetting('cam4per_page')
     if perPage_setting and perPage_setting.strip() != "":
         perPage = int(perPage_setting)
@@ -146,51 +190,59 @@ def List(url, page=1):
         utils.addon.setSetting("cam4per_page", str(perPage))
 
     site.add_download_link(
-        'Current models per page: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(perPage), 
-        url, 
-        'PerPage', 
-        '', 
-        '', 
+        'Current models per page: [COLOR fuchsia][B]{}[/B][/COLOR] - '
+        '[COLOR red][B]Change[/B][/COLOR]'.format(perPage),
+        url,
+        'PerPage',
+        '',
+        '',
         noDownload=True
     )
 
-    cams = followedCams() or []
-    followed_set = {cam["username"] for cam in cams}
+    cams_followed = followedCams() or []
+    followed_set = {cam["username"] for cam in cams_followed}
 
-    listurl = '{0}/api/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY{1}&page={2}&resultsPerPage={3}'.format(site.url, url, page, perPage)
+    listurl = (
+        '{0}/api/directoryCams?directoryJson=true&online=true&url=true&'
+        'orderBy=VIDEO_QUALITY{1}&page={2}&resultsPerPage={3}'
+    ).format(site.url, url, page, perPage)
+
     listhtml = utils._getHtml(listurl, headers=IOS_UA)
     cams = json.loads(listhtml).get('users', {})
+
     for cam in cams:
         name = ''
-        if cam4logged and cam.get('username') in followed_set:
+        username = cam.get('username')
+
+        if cam4logged and username in followed_set:
             name += '[COLOR yellow]♥[/COLOR]'
             fav = 'del'
-        if any(cam['username'] in username for username in favorite):
+        elif any(username in fav_url for fav_url in favorite):
             name += u'[COLOR yellow]★ [/COLOR]'
             fav = 'del'
         else:
-            name = ''
             fav = 'add'
-        username = cam.get('username')
-        name += cam.get('username')
+
+        name += username
+
         age = cam.get('age')
         if age:
             name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
+
         hd = ''
         if cam.get('hdStream'):
-            # name = '{0} [COLOR limegreen][HD][/COLOR]'.format(name)
             hd = 'HD'
-        img = cam.get('snapshotImageLink')
-        if not img:
-            img = cam.get('defaultImageLink')
+
+        img = cam.get('snapshotImageLink') or cam.get('defaultImageLink')
 
         subject = ''
 
         if cam.get('viewers'):
             subject += '[COLOR deeppink]Viewers:[/COLOR] {}[CR]'.format(cam.get('viewers'))
         if cam.get('countryCode'):
-            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(utils.get_country(cam.get('countryCode')))
-            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, utils.get_country(cam.get('countryCode')))
+            country = utils.get_country(cam.get('countryCode'))
+            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(country)
+            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, country)
         if cam.get('languages'):
             langs = [utils.get_language(lang) for lang in cam.get('languages')]
             subject += '[COLOR deeppink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
@@ -199,11 +251,14 @@ def List(url, page=1):
         if cam.get('sexPreference'):
             subject += '[CR][COLOR deeppink]Sexual Preference:[/COLOR] {}[CR]'.format(cam.get('sexPreference'))
         if cam.get('statusMessage'):
-            subject += '[CR]{}[CR][CR]'.format(cam.get('statusMessage').encode('utf8') if utils.PY2 else cam.get('statusMessage'))
+            msg = cam.get('statusMessage')
+            subject += '[CR]{}[CR][CR]'.format(msg.encode('utf8') if utils.PY2 else msg)
         if cam.get('showTags'):
-            subject += ', '.join(cam.get('showTags')).encode('utf8') if utils.PY2 else ', '.join(cam.get('showTags'))
+            tags = ', '.join(cam.get('showTags'))
+            subject += tags.encode('utf8') if utils.PY2 else tags
 
-        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, cam.get('username'))
+        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, username)
+
         context = []
         if username in followed_set:
             context.append((
@@ -221,15 +276,34 @@ def List(url, page=1):
                     urllib_parse.quote_plus(username)
                 )
             ))
-        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(cam.get('username')))
-        context.append((('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(cam.get('username')), 'RunPlugin(' + contextrecord + ')')))
-        site.add_download_link(name, video, 'Playvid', img, subject, contextm=context, noDownload=True, fav=fav,quality=hd)
+
+        contextrecord = (
+            utils.addon_sys +
+            "?mode=chaturbate.Record&id=" +
+            urllib_parse.quote_plus(username)
+        )
+        context.append((
+            '[COLOR violet]Find recordings featuring [/COLOR]{}'.format(username),
+            'RunPlugin(' + contextrecord + ')'
+        ))
+
+        site.add_download_link(
+            name,
+            video,
+            'Playvid',
+            img,
+            subject,
+            contextm=context,
+            noDownload=True,
+            fav=fav,
+            quality=hd
+        )
 
     if len(cams) == perPage:
         page += 1
         site.add_dir('Next Page ({})'.format(page), url, 'List', site.img_next, page)
-    utils.eod()
 
+    utils.eod()
 
 @site.register()
 def Playvid(url, name):
@@ -243,14 +317,12 @@ def Playvid(url, name):
         return Playvid_classic(url, name)
 
 
-
 def Playvid_Adaptive(url, name):
     import json
     import xbmcgui
     import xbmc
     import sys
 
-    # PY2/PY3 compat
     PY2 = sys.version_info[0] == 2
     if PY2:
         from urllib import urlencode
@@ -268,7 +340,6 @@ def Playvid_Adaptive(url, name):
         utils.notify('Cam4', 'The model is not broadcasting at this moment.')
         return
 
-    # normalize list
     if isinstance(cdn_list, list):
         cdn_urls = cdn_list
     else:
@@ -280,16 +351,11 @@ def Playvid_Adaptive(url, name):
         'Origin': site.url
     }
 
-    # urlencode headers
     header_str = urlencode(headers)
-
     final_url = None
 
-    # test CDNs
     for cdn in cdn_urls:
         test_url = cdn + "|" + header_str
-
-        # quick test
         if utils._getHtml(cdn, error='return'):
             final_url = test_url
             break
@@ -298,13 +364,10 @@ def Playvid_Adaptive(url, name):
         utils.notify('Cam4', 'All CDNs failed')
         return
 
-    # Kodi ListItem
     li = xbmcgui.ListItem(name, path=final_url)
-
     li.setProperty('inputstream', 'inputstream.adaptive')
     li.setProperty('inputstream.adaptive.manifest_type', 'hls')
 
-    # manifest headers (PY2 safe)
     manifest_headers = (
         "User-Agent=%s&Referer=%s&Origin=%s" %
         (headers['User-Agent'], headers['Referer'], headers['Origin'])
@@ -319,7 +382,6 @@ def Playvid_Adaptive(url, name):
     xbmc.Player().play(final_url, li)
 
 
-#@site.register()
 def Playvid_proxy(url, name):
     import json
     import xbmc
@@ -329,20 +391,16 @@ def Playvid_proxy(url, name):
     import requests
     import sys
 
-    # --- PY2/PY3 COMPAT ---
     PY2 = sys.version_info[0] == 2
 
     if PY2:
         import BaseHTTPServer as httpserver
         import SocketServer as socketserver
-        from urlparse import urlparse
     else:
         from http.server import BaseHTTPRequestHandler as HTTPHandler
         from http.server import HTTPServer as HTTPServerBase
         import socketserver
-        from urllib.parse import urlparse
 
-    # --- GET PLAYLIST URL ---
     html = utils._getHtml(url)
     try:
         playlist_url = json.loads(html).get('cdnURL')
@@ -365,7 +423,6 @@ def Playvid_proxy(url, name):
         'Origin': site.url
     }
 
-    # --- RAW GET ---
     def raw_get(u):
         try:
             r = requests.get(u, headers=headers, timeout=3, verify=False)
@@ -375,26 +432,23 @@ def Playvid_proxy(url, name):
         except:
             return None
 
-    # --- CACHE ---
-    cache_ts = {}       # { path: (timestamp, data) }
-    cache_m3u8 = {}     # { path: (timestamp, data) }
+    cache_ts = {}
+    cache_m3u8 = {}
 
-    TS_TTL = 40         # optimizat
-    M3U8_TTL = 6         # optimizat
-    MAX_TS = 30         # LRU soft
+    TS_TTL = 40
+    M3U8_TTL = 6
+    MAX_TS = 30
 
-    # --- PREFETCH ---
     def prefetch_next(segment_url):
         try:
             raw_get(segment_url)
         except:
             pass
 
-    # --- SERVER CLASS ---
     class ProxyHandler(httpserver.BaseHTTPRequestHandler if PY2 else HTTPHandler):
 
         def log_message(self, *args):
-            return  # silent
+            return
 
         def do_HEAD(self):
             self.send_response(200)
@@ -404,27 +458,21 @@ def Playvid_proxy(url, name):
         def do_GET(self):
             try:
                 now = time.time()
-
                 p = self.path
 
                 if p.endswith("playlist.m3u8"):
                     return self.serve_master(now)
-
                 if "chunklist" in p and p.endswith(".m3u8"):
                     return self.serve_child(now)
-
                 if "index.m3u8" in p:
                     return self.serve_subfolder(now)
-
                 if p.endswith(".ts"):
                     return self.serve_ts(now)
 
                 self.send_error(404)
-
             except:
                 self.send_error(500)
 
-        # --- MASTER PLAYLIST ---
         def serve_master(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
@@ -450,7 +498,6 @@ def Playvid_proxy(url, name):
             cache_m3u8[self.path] = (now, data)
             return self._send_m3u8(data)
 
-        # --- CHILD PLAYLIST ---
         def serve_child(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
@@ -477,7 +524,6 @@ def Playvid_proxy(url, name):
             cache_m3u8[self.path] = (now, data)
             return self._send_m3u8(data)
 
-        # --- SUBFOLDER PLAYLIST ---
         def serve_subfolder(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
@@ -507,32 +553,27 @@ def Playvid_proxy(url, name):
             cache_m3u8[self.path] = (now, data)
             return self._send_m3u8(data)
 
-        # --- TS SEGMENTS ---
         def serve_ts(self, now):
             clean_path = self.path.split("?")[0]
 
-            # CACHE HIT
             if clean_path in cache_ts:
                 ts, data = cache_ts[clean_path]
                 if now - ts < TS_TTL:
                     self._send_ts(data)
                     return
 
-            # FETCH
             segment_url = "%s/%s" % (base_url, clean_path.lstrip("/"))
             data = raw_get(segment_url)
 
-            # FALLBACK
-            if not data:
-                folder = clean_path.split("/")[1]
-                base_name = clean_path.split("/")[-1].replace(".ts", "")
+            folder = clean_path.split("/")[1] if "/" in clean_path else ""
+            base_name = clean_path.split("/")[-1].replace(".ts", "")
 
+            if not data and folder:
                 candidates = [
                     "%s/%s/%s.ts" % (base_url, folder, base_name),
                     "%s/%s/seg-1-v1-a1.ts" % (base_url, folder),
                     "%s/%s/video_00001.ts" % (base_url, folder),
                 ]
-
                 for cand in candidates:
                     data = raw_get(cand)
                     if data:
@@ -541,15 +582,12 @@ def Playvid_proxy(url, name):
             if not data:
                 return self.send_error(404)
 
-            # STORE IN CACHE
             cache_ts[clean_path] = (now, data)
 
-            # LRU SOFT
             if len(cache_ts) > MAX_TS:
                 oldest = sorted(cache_ts.items(), key=lambda x: x[1][0])[0][0]
                 del cache_ts[oldest]
 
-            # PREFETCH NEXT
             try:
                 num = int(base_name.split("-")[-1])
                 next_name = base_name.replace(str(num), str(num + 1))
@@ -560,7 +598,6 @@ def Playvid_proxy(url, name):
 
             return self._send_ts(data)
 
-        # --- SEND HELPERS ---
         def _send_m3u8(self, data):
             self.send_response(200)
             self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
@@ -573,7 +610,6 @@ def Playvid_proxy(url, name):
             self.end_headers()
             self.wfile.write(data)
 
-    # --- SERVER ---
     class ThreadedHTTPServer(socketserver.ThreadingMixIn,
                              httpserver.HTTPServer if PY2 else HTTPServerBase):
         daemon_threads = True
@@ -593,6 +629,7 @@ def Playvid_proxy(url, name):
 
     xbmc.Player().play(proxy_url, li)
 
+
 def Playvid_classic(url, name):
     vp = utils.VideoPlayer(name)
     html = utils._getHtml(url)
@@ -601,8 +638,10 @@ def Playvid_classic(url, name):
 
 @site.register()
 def onlineFav(url):
-    import xbmcgui
-    listurl = '{0}/api/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY{1}'.format(site.url, url)    
+    listurl = (
+        '{0}/api/directoryCams?directoryJson=true&online=true&url=true&'
+        'orderBy=VIDEO_QUALITY{1}'.format(site.url, url)
+    )
     data = utils._getHtml(listurl)
     model_list = json.loads(data).get('users', {})
 
@@ -611,13 +650,13 @@ def onlineFav(url):
     c = conn.cursor()
     c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='cam4.Playvid'")
     favorite_data = {
-        row[0].split('[COLOR')[0].strip(): {'db_url': row[1], 'db_image': row[2]} 
+        row[0].split('[COLOR')[0].strip(): {'db_url': row[1], 'db_image': row[2]}
         for row in c.fetchall()
     }
     c.close()
 
     model_lookup = {
-        item['username']: item | favorite_data[item['username']]
+        item['username']: dict(item, **favorite_data[item['username']])
         for item in model_list
         if item['username'] in favorite_data
     }
@@ -625,42 +664,64 @@ def onlineFav(url):
     for model_name, info in model_lookup.items():
         username = info['username']
         name = info['username']
-        age = info['age']
+        age = info.get('age')
         if age:
             name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
+
         hd = ''
         if info.get('hdStream'):
-            # name = '{0} [COLOR limegreen][HD][/COLOR]'.format(name)
             hd = 'HD'
-        img = info['snapshotImageLink']
-        if not img:
-            img = info['defaultImageLink']
+
+        img = info.get('snapshotImageLink') or info.get('defaultImageLink')
 
         subject = ''
 
-        if info['viewers']:
+        if info.get('viewers'):
             subject += '[COLOR deeppink]Viewers:[/COLOR] {}[CR]'.format(info['viewers'])
-        if info['countryCode']:
-            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(utils.get_country(info['countryCode']))
-            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, utils.get_country(info['countryCode']))
-        if info['languages']:
+        if info.get('countryCode'):
+            country = utils.get_country(info['countryCode'])
+            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(country)
+            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, country)
+        if info.get('languages'):
             langs = [utils.get_language(lang) for lang in info['languages']]
             subject += '[COLOR deeppink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
-        if info['resolution']:
+        if info.get('resolution'):
             subject += '[COLOR deeppink]Resolution:[/COLOR] {}[CR]'.format(info['resolution'])
-        if info['sexPreference']:
+        if info.get('sexPreference'):
             subject += '[CR][COLOR deeppink]Sexual Preference:[/COLOR] {}[CR]'.format(info['sexPreference'])
-        if info['statusMessage']:
-            subject += '[CR]{}[CR][CR]'.format(info['statusMessage'].encode('utf8') if utils.PY2 else info['statusMessage'])
-        if info['showTags']:
-            subject += ', '.join(info['showTags']).encode('utf8') if utils.PY2 else ', '.join(info['showTags'])
+        if info.get('statusMessage'):
+            msg = info['statusMessage']
+            subject += '[CR]{}[CR][CR]'.format(msg.encode('utf8') if utils.PY2 else msg)
+        if info.get('showTags'):
+            tags = ', '.join(info['showTags'])
+            subject += tags.encode('utf8') if utils.PY2 else tags
 
-        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, info['username'])
-        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(info['username']))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(info['username']), 'RunPlugin(' + contextrecord + ')'))]
-        site.add_download_link(name, video, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, noDownload=True, quality=hd, fav='del')
+        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, username)
+        contextrecord = (
+            utils.addon_sys +
+            "?mode=chaturbate.Record&id=" +
+            urllib_parse.quote_plus(username)
+        )
+        contextmenu = [(
+            '[COLOR violet]Find recordings featuring [/COLOR]{}'
+            '[COLOR violet] on Cloudbate[/COLOR]'.format(username),
+            'RunPlugin(' + contextrecord + ')'
+        )]
+
+        site.add_download_link(
+            name,
+            video,
+            'Playvid',
+            img,
+            subject.encode('utf-8') if utils.PY2 else subject,
+            contextm=contextmenu,
+            noDownload=True,
+            quality=hd,
+            fav='del'
+        )
 
     utils.eod()
+
 
 def get_cookie():
     domain = ".cam4.com"
@@ -670,6 +731,7 @@ def get_cookie():
             cookiestr = cookie.value
             break
     return cookiestr
+
 
 @site.register()
 def login():
@@ -800,7 +862,7 @@ def login():
 @site.register()
 def logout():
     logout_url = '{}rest/v2.0/login/logout'.format(site.url)
-    
+
     headers = {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -808,115 +870,30 @@ def logout():
         "Referer": site.url,
         "User-Agent": utils.USER_AGENT
     }
-    
+
     try:
         utils._postHtml(logout_url, headers=headers)
         utils.notify('Cam4', u'It looks like your session ended successfully.')
         clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
-        if clear:
-            if clear == 'Yes':
-                utils.addon.setSetting('cam4user', '')
-                utils.addon.setSetting('cam4pass', '')
+        if clear == 'Yes':
+            utils.addon.setSetting('cam4user', '')
+            utils.addon.setSetting('cam4pass', '')
         utils.addon.setSetting('cam4_sessionid', '')
         utils.addon.setSetting('cam4logged', 'false')
+        global cam4logged
         cam4logged = False
-        
+
         utils.refresh()
         return True
-        
+
     except Exception as e:
         print("Error on utils._postHtml for Logout Cam4: {e}".format(e=e))
         return False
 
-
 @site.register()
 def followedCams():
     import json
-
-    username = utils.addon.getSetting('cam4_display_name')
-    accessHash = utils.addon.getSetting('cam4_accesshash')
-
-    if not username or not accessHash:
-        if not login():
-            utils.notify("Cam4", "Authentication failed!")
-            return []
-        username = utils.addon.getSetting('cam4_display_name')
-        accessHash = utils.addon.getSetting('cam4_accesshash')
-
-    url = (
-        "https://api.cam4.com/webchat/requestChatlessPresenceInformation"
-        "?username={username}"
-        "&accessHash={accessHash}"
-        "&online=true"
-        "&agent=flash"
-        "&type=favorites"
-    ).format(username=username, accessHash=accessHash)
-
-    headers = {
-        "Accept": "application/json, text/plain, */*",
-        "Origin": site.url,
-        "Referer": site.url,
-        "User-Agent": utils.USER_AGENT
-    }
-
-    response = utils._getHtml(url, headers=headers)
-
-    try:
-        data = json.loads(response)
-        return data.get("users", [])
-    except:
-        return []
-
-
-def followedCams():
-    import json
-
-    username = utils.addon.getSetting('cam4_display_name')
-    accessHash = utils.addon.getSetting('cam4_accesshash')
-
-    if not username or not accessHash:
-        if not login():
-            utils.notify("Cam4", "Authentication failed!")
-            return []
-        username = utils.addon.getSetting('cam4_display_name')
-        accessHash = utils.addon.getSetting('cam4_accesshash')
-
-    url = (
-        "https://api.cam4.com/webchat/requestChatlessPresenceInformation"
-        "?username={username}"
-        "&accessHash={accessHash}"
-        "&online=true"
-        "&agent=flash"
-        "&type=favorites"
-    ).format(username=username, accessHash=accessHash)
-
-    headers = {
-        "Accept": "application/json, text/plain, */*",
-        "Origin": site.url,
-        "Referer": site.url,
-        "User-Agent": utils.USER_AGENT
-    }
-
-    response = utils._getHtml(url, headers=headers)
-
-    try:
-        data = json.loads(response)
-        return data.get("users", [])
-    except:
-        return []
-
-
-
-
-def followedCams_():
-    import json
     import xbmc
-
-    sessionid = utils.addon.getSetting('cam4_sessionid')
-    if not sessionid:
-        if not login():
-            utils.notify("Cam4", "Authentication needed")
-            return []
 
     username = utils.addon.getSetting('cam4_display_name')
     accessHash = utils.addon.getSetting('cam4_accesshash')
@@ -959,148 +936,51 @@ def followedCams_():
         xbmc.log("followedCams JSON error: %s" % e, xbmc.LOGERROR)
         return []
 
-    if data.get("count") == 0:
-        utils.notify('Cam4', 'No followed cams are online')
-        return
-    
-    results = data.get("users", [])
-    cams = []
-
-    for item in results:
-        cams.append({
-            "username": item.get("username"),
-            "isBroadcasting": item.get("isBroadcasting", False),
-            "access_level": item.get("access_level"),
-        })
-    return cams
+    return data.get("users", [])
 
 
 @site.register()
 def list_followed():
-    cams = followedCams()  # favorite online from API Flash
-    if not cams:
-        utils.notify("Cam4", "No followed cams are online")
-        utils.eod()
-        return
-    else:
-        list_followed_online(cams)
-
-def list_followed_online(cams):
-    import json
-    base = site.url.rstrip('/')
-    followed_set = {cam["username"] for cam in cams}
-
-    listurl = '{0}/api/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY'.format(site.url)
-    listhtml = utils._getHtml(listurl, headers=IOS_UA)
-    cams_info = json.loads(listhtml).get('users', {})
-    followed_online = [
-        cam for cam in cams_info
-        if cam.get("username") in followed_set
-    ]
-
-    for cam in followed_online:
-        #name = cam.get('username')
-        # name = "[COLOR yellow]♥[/COLOR] {cam.get('username')}".format(cam=cam)
-        name = "[COLOR yellow]♥[/COLOR] {cam}".format(cam=cam.get('username'))
-
-        fav='del'
-        username = cam.get('username')
-        age = cam.get('age')
-        if age:
-            name += ' [COLOR deeppink][{}][/COLOR]'.format(age)
-        hd = ''
-        if cam.get('hdStream'):
-            # name = '{0} [COLOR limegreen][HD][/COLOR]'.format(name)
-            hd = 'HD'
-        img = cam.get('snapshotImageLink')
-        if not img:
-            img = cam.get('defaultImageLink')
-
-        subject = ''
-
-        if cam.get('viewers'):
-            subject += '[COLOR deeppink]Viewers:[/COLOR] {}[CR]'.format(cam.get('viewers'))
-        if cam.get('countryCode'):
-            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(utils.get_country(cam.get('countryCode')))
-            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, utils.get_country(cam.get('countryCode')))
-        if cam.get('languages'):
-            langs = [utils.get_language(lang) for lang in cam.get('languages')]
-            subject += '[COLOR deeppink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
-        if cam.get('resolution'):
-            subject += '[COLOR deeppink]Resolution:[/COLOR] {}[CR]'.format(cam.get('resolution'))
-        if cam.get('sexPreference'):
-            subject += '[CR][COLOR deeppink]Sexual Preference:[/COLOR] {}[CR]'.format(cam.get('sexPreference'))
-        if cam.get('statusMessage'):
-            subject += '[CR]{}[CR][CR]'.format(cam.get('statusMessage').encode('utf8') if utils.PY2 else cam.get('statusMessage'))
-        if cam.get('showTags'):
-            subject += ', '.join(cam.get('showTags')).encode('utf8') if utils.PY2 else ', '.join(cam.get('showTags'))
-
-        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, cam.get('username'))
-        context = []
-        if username in followed_set:
-            context.append((
-                "Unfollow {}".format(username),
-                "RunPlugin({}?mode=cam4.unfollow&model={})".format(
-                    utils.addon_sys,
-                    urllib_parse.quote_plus(username)
-                )
-            ))
-        else:
-            context.append((
-                "Follow {}".format(username),
-                "RunPlugin({}?mode=cam4.follow&model={})".format(
-                    utils.addon_sys,
-                    urllib_parse.quote_plus(username)
-                )
-            ))
-        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(cam.get('username')))
-        context.append((('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(cam.get('username')), 'RunPlugin(' + contextrecord + ')')))
-        site.add_download_link(name, video, 'Playvid', img, subject, contextm=context, noDownload=True, fav=fav,quality=hd)
-    # site.add_dir('[COLOR yellow]Offline Favorites[/COLOR]', "", 'list_offline', '', 1)
-
-    utils.eod()
-
-
-
-
-#@site.register()
-def list_followed():
     import json
 
-    cams = followedCams()  
+    cams = followedCams()
     if not cams:
         utils.notify("Cam4", "No followed cams are online")
         utils.eod()
         return
 
-    listurl = '{0}/api/directoryCams?directoryJson=true&online=true&url=true&orderBy=VIDEO_QUALITY'.format(site.url)
+    listurl = (
+        '{0}/api/directoryCams?directoryJson=true&online=true&url=true&'
+        'orderBy=VIDEO_QUALITY'.format(site.url)
+    )
     listhtml = utils._getHtml(listurl, headers=IOS_UA)
     all_cams = json.loads(listhtml).get('users', {})
 
     favorite_set = {cam["username"] for cam in cams}
     filtered_cams = [cam for cam in all_cams if cam.get("username") in favorite_set]
 
-
     for cam in filtered_cams:
-        name = cam.get('username')
+        username = cam.get('username')
+        name = "[COLOR yellow]♥[/COLOR] {0}".format(username)
+
         age = cam.get('age')
         if age:
-            name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
+            name += ' [COLOR deeppink][{}][/COLOR]'.format(age)
+
         hd = ''
         if cam.get('hdStream'):
-            # name = '{0} [COLOR limegreen][HD][/COLOR]'.format(name)
             hd = 'HD'
-        img = cam.get('snapshotImageLink')
-        if not img:
-            img = cam.get('defaultImageLink')
+
+        img = cam.get('snapshotImageLink') or cam.get('defaultImageLink')
 
         subject = ''
 
         if cam.get('viewers'):
             subject += '[COLOR deeppink]Viewers:[/COLOR] {}[CR]'.format(cam.get('viewers'))
         if cam.get('countryCode'):
-            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(utils.get_country(cam.get('countryCode')))
-            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, utils.get_country(cam.get('countryCode')))
+            country = utils.get_country(cam.get('countryCode'))
+            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(country)
+            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, country)
         if cam.get('languages'):
             langs = [utils.get_language(lang) for lang in cam.get('languages')]
             subject += '[COLOR deeppink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
@@ -1109,14 +989,35 @@ def list_followed():
         if cam.get('sexPreference'):
             subject += '[CR][COLOR deeppink]Sexual Preference:[/COLOR] {}[CR]'.format(cam.get('sexPreference'))
         if cam.get('statusMessage'):
-            subject += '[CR]{}[CR][CR]'.format(cam.get('statusMessage').encode('utf8') if utils.PY2 else cam.get('statusMessage'))
+            msg = cam.get('statusMessage')
+            subject += '[CR]{}[CR][CR]'.format(msg.encode('utf8') if utils.PY2 else msg)
         if cam.get('showTags'):
-            subject += ', '.join(cam.get('showTags')).encode('utf8') if utils.PY2 else ', '.join(cam.get('showTags'))
+            tags = ', '.join(cam.get('showTags'))
+            subject += tags.encode('utf8') if utils.PY2 else tags
 
-        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, cam.get('username'))
-        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(cam.get('username')))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(cam.get('username')), 'RunPlugin(' + contextrecord + ')'))]
-        site.add_download_link(name, video, 'Playvid', img, subject, contextm=contextmenu, noDownload=True, quality=hd)
+        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, username)
+        contextrecord = (
+            utils.addon_sys +
+            "?mode=chaturbate.Record&id=" +
+            urllib_parse.quote_plus(username)
+        )
+        contextmenu = [(
+            '[COLOR violet]Find recordings featuring [/COLOR]{}'
+            '[COLOR violet] on Cloudbate[/COLOR]'.format(username),
+            'RunPlugin(' + contextrecord + ')'
+        )]
+
+        site.add_download_link(
+            name,
+            video,
+            'Playvid',
+            img,
+            subject,
+            contextm=contextmenu,
+            noDownload=True,
+            quality=hd,
+            fav='del'
+        )
 
     utils.eod()
 
@@ -1127,21 +1028,10 @@ def list_offline():
 
     username = utils.addon.getSetting("cam4_username")
     base = site.url.rstrip('/')
-    url = "{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000".format(base=base, username=username)
-
-    favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
-    data = json.loads(favs_json)
-
-
-    favs = data.get("usersList", [])
-    all_fav_names = {f["username"] for f in favs}
-
-def list_offline():
-    import json
-
-    username = utils.addon.getSetting("cam4_username")
-    base = site.url.rstrip('/')
-    url = "{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000".format(base=base, username=username)
+    url = "{base}/rest/v1.0/favorites/{username}?offset=0&limit=1000".format(
+        base=base,
+        username=username
+    )
 
     favs_json = utils._getHtml(url, headers={"User-Agent": utils.USER_AGENT})
     data = json.loads(favs_json)
@@ -1153,7 +1043,6 @@ def list_offline():
     online_names = {cam["username"] for cam in online}
 
     offline_names = sorted(all_fav_names - online_names)
-
     offline_cams = [f for f in favs if f["username"] in offline_names]
 
     for cam in offline_cams:
@@ -1167,12 +1056,9 @@ def list_offline():
     utils.eod()
 
 
-
-
 @site.register()
 def follow(model):
     import requests
-    import xbmcgui
 
     username = utils.addon.getSetting("cam4_username")
     if not username:
@@ -1180,7 +1066,11 @@ def follow(model):
         return
 
     base = site.url.rstrip('/')
-    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(base=base, username=username, model=model)
+    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(
+        base=base,
+        username=username,
+        model=model
+    )
 
     headers = {
         "Accept": "application/json, text/plain, */*",
@@ -1192,7 +1082,7 @@ def follow(model):
     }
 
     session_id = get_cam4_SESSION_ID()
-    ah_token   = get_cam4_AH()
+    ah_token = get_cam4_AH()
 
     if not session_id or not ah_token:
         utils.notify("Cam4", "Missing cookies (login required)")
@@ -1205,12 +1095,10 @@ def follow(model):
 
     try:
         r = requests.post(url, headers=headers, cookies=cookies, data="")
-
         if r.status_code == 200:
             utils.notify("Cam4", "{model} followed".format(model=model))
         else:
             utils.notify("Cam4", "Error {code} on follow".format(code=r.status_code))
-
     except Exception as e:
         utils.notify("Cam4", "Error: {e}".format(e=e))
 
@@ -1218,7 +1106,6 @@ def follow(model):
 @site.register()
 def unfollow(model):
     import requests
-    import xbmcgui
 
     username = utils.addon.getSetting("cam4_username")
     if not username:
@@ -1226,7 +1113,11 @@ def unfollow(model):
         return
 
     base = site.url.rstrip('/')
-    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(base=base, username=username, model=model)
+    url = "{base}/rest/v1.0/favorites/{username}/{model}".format(
+        base=base,
+        username=username,
+        model=model
+    )
 
     headers = {
         "Accept": "application/json, text/plain, */*",
@@ -1238,7 +1129,7 @@ def unfollow(model):
     }
 
     session_id = get_cam4_SESSION_ID()
-    ah_token   = get_cam4_AH()
+    ah_token = get_cam4_AH()
 
     if not session_id or not ah_token:
         utils.notify("Cam4", "Missing cookies (login required)")
@@ -1251,12 +1142,10 @@ def unfollow(model):
 
     try:
         r = requests.delete(url, headers=headers, cookies=cookies)
-
         if r.status_code == 200:
             utils.notify("Cam4", "{model} unfollowed".format(model=model))
         else:
             utils.notify("Cam4", "Error {code} on unfollow".format(code=r.status_code))
-
     except Exception as e:
         utils.notify("Cam4", "Error: {e}".format(e=e))
 
