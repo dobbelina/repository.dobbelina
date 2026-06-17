@@ -1,2 +1,5 @@
 [B]Version 1.1.188[/B]
 - camcaps - fix nextpage
+- added site myporntape
+- awmnet fix
+- cam4 PY2+3 compatibility
