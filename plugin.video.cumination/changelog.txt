@@ -3,3 +3,4 @@
 - added site myporntape
 - awmnet fix
 - cam4 PY2+3 compatibility
+- Bongacams fixes for Adaptive and Proxy player
