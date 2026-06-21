@@ -204,6 +204,9 @@ def Playvid_proxy(url, name):
     import xbmcgui
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
+    # ---------------------------------------------------------
+    # 1. GET ROOM DATA
+    # ---------------------------------------------------------
     try:
         postRequest = [
             ('method', 'getRoomData'),
@@ -214,13 +217,13 @@ def Playvid_proxy(url, name):
         hdr = utils.base_hdrs
         hdr.update({'X-Requested-With': 'XMLHttpRequest'})
         response = utils._postHtml(
-            "{site.url}tools/amf.php".format(site.url),
+            f"{site.url}tools/amf.php",
             form_data=postRequest,
             headers=hdr,
             compression=False
         )
     except:
-        utils.notify(name, "Nu pot obține datele camerei")
+        utils.notify(name, "Cannot retrieve room data")
         return
 
     amf = json.loads(response)
@@ -240,18 +243,18 @@ def Playvid_proxy(url, name):
     )
 
     if not server:
-        utils.notify(name, "Nu pot obține serverul video")
+        utils.notify(name, "Cannot obtain video server")
         return
 
     server = server.replace("\\/", "/")
     if server.startswith("//"):
         server = "https:" + server
 
-    # VIDEO
-    base_video = "{server}/hls/stream_{username}".format(server=server, username=username)
-
-    # AUDIO
-    base_audio = "{server}/public-aac/stream_{username}".format(server=server, username=username)
+    # ---------------------------------------------------------
+    # 2. BASE URLS
+    # ---------------------------------------------------------
+    base_video = f"{server}/hls/stream_{username}"
+    base_audio = f"{server}/public-aac/stream_{username}"
 
     headers = {
         "User-Agent": utils.USER_AGENT,
@@ -268,24 +271,31 @@ def Playvid_proxy(url, name):
         except:
             return None
 
-    # CACHE
+    # ---------------------------------------------------------
+    # 3. CACHE
+    # ---------------------------------------------------------
     cache_ts = {}
     cache_m3u8 = {}
 
-    TS_TTL = 45      # ★ crescut pentru stabilitate
-    M3U8_TTL = 8     # ★ crescut pentru stabilitate
-    MAX_TS = 40      # ★ păstrăm max 40 segmente în cache
+    TS_TTL = 45
+    M3U8_TTL = 8
+    MAX_TS = 40
 
-    # ★ prefetch pentru următorul segment
+    # ---------------------------------------------------------
+    # 4. PREFETCH
+    # ---------------------------------------------------------
     def prefetch_next(segment_name):
         try:
-            base = "{base_video}/{segment_name}".format(base_video=base_video, segment_name=segment_name)
-            data = raw_get(base)
+            url = f"{base_video}/{segment_name}"
+            data = raw_get(url)
             if data:
                 cache_ts[segment_name] = (time.time(), data)
         except:
             pass
 
+    # ---------------------------------------------------------
+    # 5. PROXY SERVER
+    # ---------------------------------------------------------
     class BongaProxy(BaseHTTPRequestHandler):
 
         def do_HEAD(self):
@@ -296,20 +306,25 @@ def Playvid_proxy(url, name):
         def do_GET(self):
             now = time.time()
 
-            if self.path.endswith("playlist.m3u8"):
+            p = self.path
+
+            if p.endswith("playlist.m3u8"):
                 return self.serve_master(now)
 
-            if "chunklist" in self.path and self.path.endswith(".m3u8"):
+            if "chunklist" in p and p.endswith(".m3u8"):
                 return self.serve_child(now)
 
-            if "chunks.m3u8" in self.path:
+            if "chunks.m3u8" in p:
                 return self.serve_audio_playlist(now)
 
-            if self.path.endswith(".ts"):
+            if p.endswith(".ts"):
                 return self.serve_ts(now)
 
             self.send_error(404)
 
+        # -----------------------------------------------------
+        # MASTER PLAYLIST
+        # -----------------------------------------------------
         def serve_master(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
@@ -320,7 +335,7 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            url = "{base_video}/playlist.m3u8".format(base_video=base_video)
+            url = f"{base_video}/playlist.m3u8"
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -328,11 +343,12 @@ def Playvid_proxy(url, name):
 
             text = raw.decode("utf-8")
             new_lines = []
+
             for line in text.splitlines():
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
+                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -342,6 +358,9 @@ def Playvid_proxy(url, name):
             self.end_headers()
             self.wfile.write(data)
 
+        # -----------------------------------------------------
+        # CHILD PLAYLIST (chunklist_xxx.m3u8)
+        # -----------------------------------------------------
         def serve_child(self, now):
             if self.path in cache_m3u8:
                 ts, data = cache_m3u8[self.path]
@@ -352,7 +371,9 @@ def Playvid_proxy(url, name):
                     self.wfile.write(data)
                     return
 
-            url = "{base_video}/{self.path.lstrip('/')}".format(base_video=base_video, self=self)
+            clean = self.path.lstrip("/")
+            url = f"{base_video}/{clean}"
+
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -360,11 +381,12 @@ def Playvid_proxy(url, name):
 
             text = raw.decode("utf-8")
             new_lines = []
+
             for line in text.splitlines():
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
+                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
 
             data = "\n".join(new_lines).encode("utf-8")
             cache_m3u8[self.path] = (now, data)
@@ -374,8 +396,13 @@ def Playvid_proxy(url, name):
             self.end_headers()
             self.wfile.write(data)
 
+        # -----------------------------------------------------
+        # AUDIO PLAYLIST (chunks.m3u8)
+        # -----------------------------------------------------
         def serve_audio_playlist(self, now):
-            url = "{base_audio}/{self.path.split('/')[-1]}".format(base_audio=base_audio, self=self)
+            segment = self.path.split("/")[-1]
+            url = f"{base_audio}/{segment}"
+
             raw = raw_get(url)
             if not raw:
                 self.send_error(404)
@@ -383,11 +410,12 @@ def Playvid_proxy(url, name):
 
             text = raw.decode("utf-8")
             new_lines = []
+
             for line in text.splitlines():
                 if line.startswith("#"):
                     new_lines.append(line)
                 else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
+                    new_lines.append(f"http://127.0.0.1:{port}/{line}")
 
             data = "\n".join(new_lines).encode("utf-8")
 
@@ -396,8 +424,11 @@ def Playvid_proxy(url, name):
             self.end_headers()
             self.wfile.write(data)
 
+        # -----------------------------------------------------
+        # TS SEGMENTS
+        # -----------------------------------------------------
         def serve_ts(self, now):
-            clean = self.path.split("?")[0]
+            clean = self.path.split("?")[0].lstrip("/")
 
             # CACHE HIT
             if clean in cache_ts:
@@ -408,20 +439,18 @@ def Playvid_proxy(url, name):
                     self.end_headers()
                     self.wfile.write(data)
 
-                    # ★ prefetch următorul segment
                     next_seg = self._guess_next_segment(clean)
                     if next_seg:
                         threading.Thread(target=prefetch_next, args=(next_seg,), daemon=True).start()
-
                     return
 
             # FETCH VIDEO
-            url = "{base_video}/{clean.lstrip('/')}".format(base_video=base_video, clean=clean)
+            url = f"{base_video}/{clean}"
             data = raw_get(url)
 
             # AUDIO fallback
             if not data:
-                url = "{base_audio}/{clean.lstrip('/')}".format(base_audio=base_audio, clean=clean)
+                url = f"{base_audio}/{clean}"
                 data = raw_get(url)
 
             if not data:
@@ -430,7 +459,6 @@ def Playvid_proxy(url, name):
 
             cache_ts[clean] = (now, data)
 
-            # ★ limităm cache-ul
             if len(cache_ts) > MAX_TS:
                 cache_ts.pop(next(iter(cache_ts)))
 
@@ -439,265 +467,30 @@ def Playvid_proxy(url, name):
             self.end_headers()
             self.wfile.write(data)
 
-            # ★ prefetch următorul segment
             next_seg = self._guess_next_segment(clean)
             if next_seg:
                 threading.Thread(target=prefetch_next, args=(next_seg,), daemon=True).start()
 
-        # ★ funcție inteligentă pentru a ghici următorul segment
+        # -----------------------------------------------------
+        # GUESS NEXT SEGMENT
+        # -----------------------------------------------------
         def _guess_next_segment(self, seg):
             try:
                 base, num = seg.rsplit("-", 1)
                 num = num.replace(".ts", "")
                 next_num = str(int(num) + 1)
-                return "{base}-{next_num}.ts".format(base=base, next_num=next_num)
+                return f"{base}-{next_num}.ts"
             except:
                 return None
 
+    # ---------------------------------------------------------
+    # 6. START SERVER
+    # ---------------------------------------------------------
     server = HTTPServer(("127.0.0.1", 0), BongaProxy)
     port = server.server_port
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
-    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
-
-    li = xbmcgui.ListItem(name, path=proxy_url)
-    li.setProperty("inputstream", "inputstream.adaptive")
-    li.setProperty("inputstream.adaptive.manifest_type", "hls")
-
-    xbmc.Player().play(proxy_url, li)
-
-
-
-def Playvid_proxy_(url, name):
-    import json
-    import time
-    import threading
-    import requests
-    import xbmc
-    import xbmcgui
-    from http.server import BaseHTTPRequestHandler, HTTPServer
-
-    try:
-        postRequest = [
-            ('method', 'getRoomData'),
-            ('args[]', str(url)),
-            ('args[]', ''),
-            ('args[]', '')
-        ]
-        hdr = utils.base_hdrs
-        hdr.update({'X-Requested-With': 'XMLHttpRequest'})
-        response = utils._postHtml(
-            "{}tools/amf.php".format(site.url),
-            form_data=postRequest,
-            headers=hdr,
-            compression=False
-        )
-    except:
-        utils.notify(name, "Nu pot obține datele camerei")
-        return
-
-    amf = json.loads(response)
-    performer = amf.get("performerData", {})
-    localdata = amf.get("localData", {})
-
-    if not performer.get("isOnline"):
-        utils.notify(name, "Model Offline")
-        return
-
-    username = performer.get("username")
-    server = (
-        localdata.get("videoServerUrl")
-        or performer.get("videoServerUrl")
-        or localdata.get("videoServerUrlHls")
-        or localdata.get("videoServerUrlMobile")
-    )
-
-    if not server:
-        utils.notify(name, "Nu pot obține serverul video")
-        return
-
-    server = server.replace("\\/", "/")
-    if server.startswith("//"):
-        server = "https:" + server
-
-    # VIDEO
-    base_video = "{server}/hls/stream_{username}".format(server=server, username=username)
-
-    # AUDIO
-    base_audio = "{server}/public-aac/stream_{username}".format(server=server, username=username)
-
-    headers = {
-        "User-Agent": utils.USER_AGENT,
-        "Referer": site.url,
-        "Origin": site.url[:-1]
-    }
-
-    def raw_get(url):
-        try:
-            r = requests.get(url, headers=headers, timeout=3, verify=False)
-            if r.status_code == 200:
-                return r.content
-            return None
-        except:
-            return None
-
-    # CACHE
-    cache_ts = {}
-    cache_m3u8 = {}
-    TS_TTL = 30 # 45
-    M3U8_TTL = 5    # 8
-
-    class BongaProxy(BaseHTTPRequestHandler):
-
-        def do_HEAD(self):
-            self.send_response(200)
-            self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-            self.end_headers()
-
-        def do_GET(self):
-            now = time.time()
-
-            # MASTER VIDEO
-            if self.path.endswith("playlist.m3u8"):
-                return self.serve_master(now)
-
-            # CHILD VIDEO
-            if "chunklist" in self.path and self.path.endswith(".m3u8"):
-                return self.serve_child(now)
-
-            # AUDIO PLAYLIST
-            if "chunks.m3u8" in self.path:
-                return self.serve_audio_playlist(now)
-
-            # SEGMENTE VIDEO/AUDIO
-            if self.path.endswith(".ts"):
-                return self.serve_ts(now)
-
-            self.send_error(404)
-
-        def serve_master(self, now):
-            if self.path in cache_m3u8:
-                ts, data = cache_m3u8[self.path]
-                if now - ts < M3U8_TTL:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
-
-            url = "{base_video}/playlist.m3u8".format(base_video=base_video)
-            raw = raw_get(url)
-            if not raw:
-                self.send_error(404)
-                return
-
-            text = raw.decode("utf-8")
-            new_lines = []
-            for line in text.splitlines():
-                if line.startswith("#"):
-                    new_lines.append(line)
-                else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
-
-            data = "\n".join(new_lines).encode("utf-8")
-            cache_m3u8[self.path] = (now, data)
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-            self.end_headers()
-            self.wfile.write(data)
-
-        def serve_child(self, now):
-            if self.path in cache_m3u8:
-                ts, data = cache_m3u8[self.path]
-                if now - ts < M3U8_TTL:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
-
-            url = "{base_video}/{self.path.lstrip('/')}".format(base_video=base_video, self=self)
-            raw = raw_get(url)
-            if not raw:
-                self.send_error(404)
-                return
-
-            text = raw.decode("utf-8")
-            new_lines = []
-            for line in text.splitlines():
-                if line.startswith("#"):
-                    new_lines.append(line)
-                else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
-
-            data = "\n".join(new_lines).encode("utf-8")
-            cache_m3u8[self.path] = (now, data)
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-            self.end_headers()
-            self.wfile.write(data)
-
-        def serve_audio_playlist(self, now):
-            url = "{base_audio}/{self.path.split('/')[-1]}".format(base_audio=base_audio, self=self)
-            raw = raw_get(url)
-            if not raw:
-                self.send_error(404)
-                return
-
-            text = raw.decode("utf-8")
-            new_lines = []
-            for line in text.splitlines():
-                if line.startswith("#"):
-                    new_lines.append(line)
-                else:
-                    new_lines.append("http://127.0.0.1:{port}/{line}".format(port=port, line=line))
-
-            data = "\n".join(new_lines).encode("utf-8")
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/vnd.apple.mpegurl")
-            self.end_headers()
-            self.wfile.write(data)
-
-        def serve_ts(self, now):
-            clean = self.path.split("?")[0]
-
-            if clean in cache_ts:
-                ts, data = cache_ts[clean]
-                if now - ts < TS_TTL:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "video/mp2t")
-                    self.end_headers()
-                    self.wfile.write(data)
-                    return
-
-            # VIDEO
-            url = "{base_video}/{clean.lstrip('/')}".format(base_video=base_video, clean=clean)
-            data = raw_get(url)
-
-            # AUDIO fallback
-            if not data:
-                url = "{base_audio}/{clean.lstrip('/')}".format(base_audio=base_audio, clean=clean)
-                data = raw_get(url)
-
-            if not data:
-                self.send_error(404)
-                return
-
-            cache_ts[clean] = (now, data)
-
-            self.send_response(200)
-            self.send_header("Content-Type", "video/mp2t")
-            self.end_headers()
-            self.wfile.write(data)
-
-    server = HTTPServer(("127.0.0.1", 0), BongaProxy)
-    port = server.server_port
-    threading.Thread(target=server.serve_forever, daemon=True).start()
-
-    proxy_url = "http://127.0.0.1:{port}/playlist.m3u8".format(port=port)
+    proxy_url = f"http://127.0.0.1:{port}/playlist.m3u8"
 
     li = xbmcgui.ListItem(name, path=proxy_url)
     li.setProperty("inputstream", "inputstream.adaptive")
@@ -707,7 +500,7 @@ def Playvid_proxy_(url, name):
 
 def Playvid_Adaptive(url, name):
     if not url:
-        utils.notify(name, 'Model Offline', icon='thumb')
+        utils.notify(name, "Model Offline", icon="thumb")
         return
 
     vp = utils.VideoPlayer(name)
@@ -715,92 +508,100 @@ def Playvid_Adaptive(url, name):
 
     try:
         postRequest = [
-            ('method', 'getRoomData'),
-            ('args[]', str(url)),
-            ('args[]', ''),
-            ('args[]', '')
+            ("method", "getRoomData"),
+            ("args[]", str(url)),
+            ("args[]", ""),
+            ("args[]", "")
         ]
         hdr = utils.base_hdrs
-        hdr.update({'X-Requested-With': 'XMLHttpRequest'})
+        hdr.update({"X-Requested-With": "XMLHttpRequest"})
         response = utils._postHtml(
-            '{0}tools/amf.php'.format(site.url),
+            f"{site.url}tools/amf.php",
             form_data=postRequest,
             headers=hdr,
             compression=False
         )
     except:
-        utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
+        utils.notify("Oh oh", "Couldn't find a playable webcam link", icon="thumb")
         return
 
     amf_json = json.loads(response)
-    if amf_json.get('status') == 'error':
-        utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
+
+    if amf_json.get("status") == "error":
+        utils.notify("Oh oh", "Couldn't find a playable webcam link", icon="thumb")
         return
 
-    if 'private' in amf_json.get('performerData', {}).get('showType'):
-        utils.notify(name, 'Model in private chat', icon='thumb')
+    performer = amf_json.get("performerData", {}) or {}
+    show_type = performer.get("showType") or ""
+
+    if "private" in show_type:
+        utils.notify(name, "Model in private chat", icon="thumb")
         vp.progress.close()
         return
 
-    amf = amf_json.get('localData', {}).get('videoServerUrl')
+    amf = amf_json.get("localData", {}).get("videoServerUrl")
     if amf is None:
-        utils.notify(name, 'Model Offline', icon='thumb')
+        utils.notify(name, "Model Offline", icon="thumb")
         vp.progress.close()
         return
 
-    username = amf_json.get('performerData', {}).get('username')
+    username = performer.get("username")
+    if not username:
+        utils.notify(name, "Cannot obtain username", icon="thumb")
+        vp.progress.close()
+        return
 
     if amf.startswith("//mobile"):
-        base = 'https:' + amf + '/hls/stream_' + username + '.m3u8'
+        base = f"https:{amf}/hls/stream_{username}.m3u8"
     else:
-        base = 'https:' + amf + '/hls/stream_' + username + '/playlist.m3u8'
+        base = f"https:{amf}/hls/stream_{username}/playlist.m3u8"
 
     try:
         m3u8 = utils._getHtml(base, referer=site.url)
     except:
-        utils.notify(name, 'Model Offline or GeoLocked', icon='thumb')
+        utils.notify(name, "Model Offline or GeoLocked", icon="thumb")
         vp.progress.close()
         return
 
-    quals = re.findall(r'\d+x(\d+).+\n(.+)', m3u8)
+    quals = re.findall(r"\d+x(\d+).+\n(.+)", m3u8)
     if quals:
-        sources = {qual: urllib_parse.urljoin(base, vurl) for qual, vurl in quals}
+        sources = {
+            qual: urllib_parse.urljoin(base, vurl)
+            for qual, vurl in quals
+        }
         videourl = utils.selector(
-            'Select quality',
+            "Select quality",
             sources,
-            setting_valid='qualityask',
-            sort_by=lambda x: int(x.split('x')[-1]),
+            setting_valid="qualityask",
+            sort_by=lambda x: int(x.split("x")[-1]),
             reverse=True
         )
     else:
         videourl = base
 
-    videourl += '|User-Agent={0}&Referer={1}&Origin={2}'.format(
+    headers_str = "User-Agent={0}&Referer={1}&Origin={2}".format(
         utils.USER_AGENT,
         site.url,
         site.url[:-1]
     )
 
+    videourl = f"{videourl}|{headers_str}"
+
     vp.progress.update(75, "[CR]Found Stream[CR]")
 
     import xbmcgui, xbmc
-    import xbmcplugin
 
     li = xbmcgui.ListItem(name)
     li.setPath(videourl)
 
-    li.setProperty('inputstream', 'inputstream.adaptive')
-    li.setProperty('inputstream.adaptive.manifest_type', 'hls')
-    li.setProperty('inputstream.adaptive.stream_headers',
-                'User-Agent={0}&Referer={1}&Origin={2}'.format(
-                    utils.USER_AGENT, site.url, site.url[:-1]
-                ))
+    li.setProperty("inputstream", "inputstream.adaptive")
+    li.setProperty("inputstream.adaptive.manifest_type", "hls")
+    li.setProperty("inputstream.adaptive.stream_headers", headers_str)
 
-    li.setMimeType('application/vnd.apple.mpegurl')
+    li.setMimeType("application/vnd.apple.mpegurl")
     li.setContentLookup(False)
 
     xbmc.Player().play(videourl, li)
-
 
 #@site.register()
 def Playvid_classic(url, name):
