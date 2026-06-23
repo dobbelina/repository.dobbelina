@@ -40,7 +40,7 @@ def List(url, page=1):
     except:
         return None
 
-    match = re.compile(r'class="item item-\d+\s*?">\s*<a href="https://www\.tabootube\.xxx/([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="item item.*?<a href="https://www\.tabootube\.xxx/([^"]+)" title="([^"]+)".*?data-original="([^"]+)".*?duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         videopage = site.url + videopage
@@ -106,7 +106,7 @@ def Search(url, keyword=None):
         site.search_dir(url, 'Search')
     else:
         title = keyword.replace(' ', '-')
-        searchUrl = searchUrl + title + '?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=post_date&from=1'
+        searchUrl = searchUrl + '{0}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos=1&from_albums=1'.format(title)
         List(searchUrl, 1)
 
 

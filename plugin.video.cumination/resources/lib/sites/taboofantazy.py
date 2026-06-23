@@ -38,7 +38,7 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url)
     html = listhtml.split('>SHOULD WATCH<')[0]
-    match = re.compile(r'video-uid="\d*?".*?href="([^"]+)"\s*title="([^"]+)">.*?data-src="([^"]+)"(.*?)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'data-post-id="\d*?".*?href="([^"]+)"\s*title="([^"]+)">.*?data-src="([^"]+)"(.*?)</span', re.DOTALL | re.IGNORECASE).findall(listhtml)
     if match:
         for videourl, name, img, hd in match:
             name = utils.cleantext(name)

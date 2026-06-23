@@ -1,6 +1,3 @@
-[B]Version 1.1.188[/B]
-- camcaps - fix nextpage
-- added site myporntape
-- awmnet fix
-- cam4 PY2+3 compatibility
-- Bongacams fixes for Adaptive and Proxy player
+[B]Version 1.1.189[/B]
+- taboofantazy - fix listing
+- tabootoobe - fix listing
