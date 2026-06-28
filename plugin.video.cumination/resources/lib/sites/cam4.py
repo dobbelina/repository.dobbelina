@@ -23,6 +23,23 @@ import json
 from six.moves import urllib_parse, urllib_error
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import xbmcgui
+
+# Compatibilitate Py2/Py3 pentru urllib
+try:
+    # Python 3
+    from urllib.request import Request, urlopen
+    from urllib.error import URLError, HTTPError
+except ImportError:
+    # Python 2
+    from urllib2 import Request, urlopen, URLError, HTTPError
+
+try:
+    # Python 3
+    from urllib.parse import quote
+except ImportError:
+    # Python 2
+    from urllib import quote
 
 cj = utils.cj
 site = AdultSite('cam4', '[COLOR hotpink]Cam4[/COLOR]', 'https://www.cam4.com/', 'cam4.png', 'cam4', True)
@@ -68,6 +85,7 @@ def Main():
     trans = utils.addon.getSetting("chattrans") == "true"
 
     site.add_dir('[COLOR red]Refresh Cam4 images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Tags[/COLOR]', '', 'list_niches', '', 1)
 
     if cam4logged:
         site.add_dir('[COLOR fuchsia]Followed Cams[/COLOR]', '', 'list_followed', '', 1)
@@ -171,7 +189,11 @@ def Playvid_change(url, name):
 
 
 @site.register()
-def List(url, page=1):
+def List(url, page=1, niche=''):
+    try:
+        page = int(page)
+    except Exception:
+        page = 1
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
@@ -199,13 +221,29 @@ def List(url, page=1):
         noDownload=True
     )
 
+    country_setting = utils.addon.getSetting('cam4country')
+    if not country_setting:
+        country_setting = ''
+    utils.addon.setSetting("cam4country", country_setting)
+
+
+    site.add_download_link(
+        'Filter by country - currently: [COLOR fuchsia][B]' + ('All' if country_setting == '' else country_setting) + '[/B][/COLOR] - '
+        '[COLOR red][B]Change[/B][/COLOR]',
+        url,
+        'select_country',
+        '',
+        '',
+        noDownload=True
+    )
+
     cams_followed = followedCams() or []
     followed_set = {cam["username"] for cam in cams_followed}
 
     listurl = (
         '{0}/api/directoryCams?directoryJson=true&online=true&url=true&'
-        'orderBy=VIDEO_QUALITY{1}&page={2}&resultsPerPage={3}'
-    ).format(site.url, url, page, perPage)
+        'orderBy=VIDEO_QUALITY{1}&page={2}&resultsPerPage={3}&niches={4}&country={5}'
+    ).format(site.url, url, page, perPage, niche, country_setting)
 
     listhtml = utils._getHtml(listurl, headers=IOS_UA)
     cams = json.loads(listhtml).get('users', {})
@@ -298,7 +336,6 @@ def List(url, page=1):
             fav=fav,
             quality=hd
         )
-
     if len(cams) == perPage:
         page += 1
         site.add_dir('Next Page ({})'.format(page), url, 'List', site.img_next, page)
@@ -383,6 +420,259 @@ def Playvid_Adaptive(url, name):
 
 
 def Playvid_proxy(url, name):
+    import json
+    import xbmc
+    import xbmcgui
+    import threading
+    import time
+    import requests
+    import sys
+    import traceback
+
+    PY2 = sys.version_info[0] == 2
+
+    if PY2:
+        import BaseHTTPServer as httpserver
+        import SocketServer as socketserver
+    else:
+        from http.server import BaseHTTPRequestHandler as HTTPHandler
+        from http.server import HTTPServer as HTTPServerBase
+        import socketserver
+
+    # ---------- LOG ----------
+    def LOG(msg, level=xbmc.LOGINFO):
+        xbmc.log('[Cam4Proxy] %s' % msg, level)
+
+    LOG('=== Playvid_proxy START ===')
+    LOG('URL: %s' % url)
+
+    # ---------- FETCH CDN URL ----------
+    html = utils._getHtml(url)
+    try:
+        playlist_url = json.loads(html).get('cdnURL')
+    except:
+        utils.notify('Cam4', 'Cannot fetch CDN URL')
+        return
+
+    if not playlist_url:
+        utils.notify('Cam4', 'The model is not broadcasting at this moment.')
+        return
+
+    if isinstance(playlist_url, list):
+        playlist_url = playlist_url[0]
+
+    base_url = playlist_url.rsplit('/', 1)[0]
+    LOG('playlist_url = %s' % playlist_url)
+    LOG('base_url = %s' % base_url)
+
+    headers = {
+        'User-Agent': utils.USER_AGENT,
+        'Referer': site.url,
+        'Origin': site.url
+    }
+
+    # ---------- HTTP GET ----------
+    def raw_get(u, desc=''):
+        LOG('GET [%s]: %s' % (desc, u))
+        try:
+            r = requests.get(u, headers=headers, timeout=4, verify=False)
+            LOG('GET status [%s]: %s' % (desc, r.status_code))
+            if r.status_code == 200:
+                return r.content
+            return None
+        except Exception as e:
+            LOG('GET error [%s]: %s' % (desc, e), xbmc.LOGERROR)
+            return None
+
+    # ---------- DETECT SUBFOLDER ----------
+    def detect_subfolder(segment_name):
+        LOG('Detecting subfolder for segment: %s' % segment_name)
+
+        candidates = [
+            "",
+            "0_2/",
+            "1_2/",
+            "2_2/",
+            "hls/",
+            "hls/0_2/",
+            "hls/1_2/",
+            "hls/2_2/",
+        ]
+
+        for sub in candidates:
+            test_url = "%s/%s%s" % (base_url, sub, segment_name)
+            LOG('Testing: %s' % test_url)
+            data = raw_get(test_url, 'detect')
+            if data:
+                LOG('Detected subfolder: %s' % sub)
+                return sub
+
+        LOG('No subfolder detected, using ""', xbmc.LOGERROR)
+        return ""
+
+    # ---------- PLAYLIST REWRITE ----------
+    def rewrite_playlist(text, port, subfolder):
+        lines = text.splitlines()
+        new_lines = []
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("#"):
+                new_lines.append(line)
+            else:
+                # relativ
+                if not line.startswith("http"):
+                    new_lines.append("http://127.0.0.1:%d/%s%s" % (port, subfolder, line))
+                else:
+                    # absolut
+                    after = line.split("://", 1)[1]
+                    path = after.split("/", 1)[1]
+                    new_lines.append("http://127.0.0.1:%d/%s" % (port, path))
+
+        return "\n".join(new_lines).encode("utf-8")
+
+    # ---------- SERVER ----------
+    class ProxyHandler(httpserver.BaseHTTPRequestHandler if PY2 else HTTPHandler):
+
+        subfolder = None
+        last_segment = None
+        last_ok = 0
+
+        def log_message(self, *args):
+            return
+
+        def do_GET(self):
+            try:
+                path = self.path
+                clean = path.split("?", 1)[0]
+
+                LOG('Kodi GET: %s' % path)
+
+                if clean.endswith("playlist.m3u8"):
+                    return self.serve_master()
+
+                if clean.endswith(".m3u8"):
+                    return self.serve_child()
+
+                if clean.endswith(".ts"):
+                    return self.serve_ts()
+
+                self.send_error(404)
+            except Exception as e:
+                LOG('do_GET exception: %s' % e, xbmc.LOGERROR)
+                self.send_error(500)
+
+        # ---------- MASTER ----------
+        def serve_master(self):
+            data_raw = raw_get(playlist_url, 'master')
+            if not data_raw:
+                return self.send_error(404)
+
+            return self._send_m3u8(
+                rewrite_playlist(data_raw.decode('utf-8', 'ignore'), port, "")
+            )
+
+        # ---------- CHILD ----------
+        def serve_child(self):
+            child_url = "%s/%s" % (base_url, self.path.lstrip("/"))
+            data_raw = raw_get(child_url, 'child')
+            if not data_raw:
+                return self.send_error(404)
+
+            # detect subfolder from first segment
+            text = data_raw.decode('utf-8', 'ignore')
+            for line in text.splitlines():
+                if line.strip() and not line.startswith("#"):
+                    segment = line.strip()
+                    break
+
+            if ProxyHandler.subfolder is None:
+                ProxyHandler.subfolder = detect_subfolder(segment)
+
+            return self._send_m3u8(
+                rewrite_playlist(text, port, ProxyHandler.subfolder)
+            )
+
+        # ---------- SEGMENT ----------
+        def serve_ts(self):
+            segment = self.path.split("/", 1)[1]
+            url = "%s/%s%s" % (base_url, ProxyHandler.subfolder, segment)
+            data = raw_get(url, 'ts')
+
+            # reconectare automată dacă CDN schimbă nodul
+            if not data:
+                LOG('TS FAILED: %s' % url, xbmc.LOGERROR)
+                LOG('Refreshing master to detect new CDN node')
+                master_raw = raw_get(playlist_url, 'master-refresh')
+                if master_raw:
+                    text = master_raw.decode('utf-8', 'ignore')
+                    for line in text.splitlines():
+                        if line.strip() and not line.startswith("#") and line.startswith("http"):
+                            new_base = line.rsplit('/', 1)[0]
+                            LOG('New base_url detected: %s' % new_base)
+                            url2 = "%s/%s%s" % (new_base, ProxyHandler.subfolder, segment)
+                            data = raw_get(url2, 'ts-secondary')
+                            if data:
+                                break
+
+            if not data:
+                LOG('TS STILL FAILED: %s' % segment, xbmc.LOGERROR)
+                return self.send_error(404)
+
+            # prefetch următorul segment
+            try:
+                base_name = segment.split("?")[0]
+                core = base_name.split(".ts")[0]
+                if "_" in core:
+                    left, right = core.rsplit("_", 1)
+                    next_num = str(int(right) + 1)
+                    next_seg = "%s_%s.ts" % (left, next_num)
+                    next_url = "%s/%s%s" % (base_url, ProxyHandler.subfolder, next_seg)
+                    threading.Thread(target=raw_get, args=(next_url, 'prefetch')).start()
+            except:
+                pass
+
+            return self._send_ts(data)
+
+        # ---------- SEND ----------
+        def _send_m3u8(self, data):
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/vnd.apple.mpegurl')
+            self.end_headers()
+            self.wfile.write(data)
+
+        def _send_ts(self, data):
+            self.send_response(200)
+            self.send_header('Content-Type', 'video/mp2t')
+            self.end_headers()
+            self.wfile.write(data)
+
+    # ---------- START SERVER ----------
+    class ThreadedHTTPServer(socketserver.ThreadingMixIn,
+                             httpserver.HTTPServer if PY2 else HTTPServerBase):
+        daemon_threads = True
+
+    server = ThreadedHTTPServer(('127.0.0.1', 0), ProxyHandler)
+    port = server.server_port
+
+    LOG('Proxy started on port %d' % port)
+
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+
+    proxy_url = "http://127.0.0.1:%d/playlist.m3u8" % port
+    LOG('Proxy URL: %s' % proxy_url)
+
+    li = xbmcgui.ListItem(name, path=proxy_url)
+    li.setProperty('inputstream', 'inputstream.adaptive')
+    li.setProperty('inputstream.adaptive.manifest_type', 'hls')
+
+    xbmc.Player().play(proxy_url, li)
+
+
+
+def Playvid_proxy_old(url, name):
     import json
     import xbmc
     import xbmcgui
@@ -1162,3 +1452,178 @@ def get_cam4_AH():
         if c.name == "cam4-AH":
             return c.value
     return ""
+
+def get_cookie_value(name):
+    for c in cj:
+        if c.name == name:
+            return c.value
+    return ""
+
+def cam4_graphql_niches(page=0):
+    """
+    POST minimal către Cam4 GraphQL (getNicheDirectoryData)
+    Folosește cookie-urile din Cumination (cj)
+    Compatibil Python 2 + Python 3
+    """
+
+    # Import local pentru a evita import circular
+    from resources.lib import utils
+
+    # Cookie-urile reale din Cumination
+    session_id = get_cam4_SESSION_ID()
+    ah_cookie  = get_cam4_AH()
+
+    for c in cj:
+        utils.kodilog('c.name=' + c.name + '; c.value=' + c.value)
+
+    # url = "https://www.cam4.com/graph?operation=getNicheDirectoryData&ssr=false"
+    url = "https://www.cam4.com/graph"
+
+    cookies = "cam4_SESSION_ID={}; cam4-AH={};".format(session_id, ah_cookie)
+
+    payload = {
+        "operationName": "getNicheDirectoryData",
+        "variables": {
+            "filter": "all",
+            "gender": "female",
+            "keys": [
+                "directory.directory.tabs.niches",
+                "directory.directory.tabs.liveCams",
+                "directory.directory.tabs.modelPosts",
+                "directory.niche.filter.all",
+                "directory.niche.filter.following",
+                "directory.niche.filter.pendingApproval",
+                "directory.niche.order.active",
+                "directory.niche.order.popular",
+                "directory.niche.order.posts",
+                "directory.niche.order.trending",
+                "directory.niche.search.placeholder",
+                "directory.niche.empty.following.text",
+                "directory.niche.empty.following.button",
+                "account.errorGeneric",
+                "v2profile.niches.pendingBadge"
+            ],
+            "search": "",
+            "sort": "trending",
+            "size": 48,
+            "page": 0
+        },
+        "query": "query getNicheDirectoryData($keys:[String!],$size:Int!,$sort:String,$search:String,$filter:String,$gender:String,$page:Int){controlledFeatures{id hasNicheCreation __typename} i18n{id values:translate(keys:$keys) __typename} niches(size:$size,sort:$sort,search:$search,filter:$filter,gender:$gender,page:$page){id items{id slug bannerUrl thumbnailUrl name{id text originalText __typename} stats{id membersCount postsCount __typename} member{id userId role __typename} newPostsCount isApproved __typename} totalPages nextCursor __typename} user{id accessControl{id isLogged isGuestBilling isAdmin __typename} __typename}}"
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+
+    headers = {
+        "content-type": "application/json",
+        "apollographql-client-name": "CAM4-client",
+        "apollographql-client-version": "26.6.19-132253utc",
+        "cookie": "cam4_SESSION_ID={}; cam4-AH={};".format(session_id, ah_cookie),
+        "user-agent": "Mozilla/5.0"
+    }
+
+
+    req = Request(url, data=data, headers=headers)
+
+    try:
+        response = urlopen(req, timeout=15)
+        raw = response.read()
+        try:
+            raw = raw.decode("utf-8")
+        except:
+            pass
+        return json.loads(raw)
+
+    except HTTPError as e:
+        print(e.read())
+
+    except Exception as e:
+        return {"error": str(e)}
+
+    
+
+
+@site.register()
+def list_niches():
+    import sys
+    data = cam4_graphql_niches(page=0)
+    items = data.get("data", {}).get("niches", {}).get("items", [])
+
+    for item in items:
+        slug = item.get("slug", "")
+        thumb = item.get("thumbnailUrl", "")
+        name = item.get("name", {}).get("text", slug)
+        stats = item.get("stats", {})
+        members = stats.get("membersCount", 0)
+        posts = stats.get("postsCount", 0)
+        if not slug:
+            continue
+
+        url = site.url + "niches/" + slug + '?tab=cams'
+        title = "{}  [COLOR orange]({} members, {} posts)[/COLOR]".format(
+            name, members, posts
+        )
+        encoded_url = quote(url, safe='')
+        plugin_url = "{0}?mode=List&page=1&niches={1}&url={2}".format(
+            sys.argv[0], slug, encoded_url
+        )
+        utils.kodilog('plugin_url = ' + plugin_url)
+        site.add_dir(
+            title,
+            plugin_url,
+            "List",          # acesta este parametrul obligatoriu 'mode'
+            iconimage=thumb
+        )
+
+
+    utils.eod()
+
+
+countries = {
+    "": "ALL", "af": "Afghanistan", "al": "Albania", "dz": "Algeria", "as": "American Samoa", "ad": "Andorra", "ao": "Angola", "ai": "Anguilla",
+    "ag": "Antigua & Barbuda", "ar": "Argentina", "am": "Armenia", "aw": "Aruba", "au": "Australia", "at": "Austria", "az": "Azerbaijan",
+    "bs": "Bahamas", "bh": "Bahrain", "bd": "Bangladesh", "bb": "Barbados", "by": "Belarus", "be": "Belgium", "bz": "Belize", "bj": "Benin",
+    "bm": "Bermuda", "bt": "Bhutan", "bo": "Bolivia", "ba": "Bosnia & Herzegovina", "bw": "Botswana", "bv": "Bouvet Island", "br": "Brazil",
+    "bn": "Brunei Darussalam", "bg": "Bulgaria", "bf": "Burkina Faso", "bi": "Burundi", "kh": "Cambodia", "cm": "Cameroon", "ca": "Canada",
+    "cv": "Cape Verde", "ky": "Cayman Islands", "cf": "Central African Republic", "td": "Chad", "cl": "Chile", "cn": "China", "co": "Colombia",
+    "km": "Comoros", "cg": "Congo", "cd": "Congo,  the Democratic Republic of the", "ck": "Cook Islands", "cr": "Costa Rica", "ci": "Cote D'Ivoire",
+    "hr": "Croatia", "cu": "Cuba", "cw": "Curacao", "cy": "Cyprus", "cz": "Czech Republic", "dk": "Denmark", "dj": "Djibouti", "dm": "Dominica",
+    "do": "Dominican Republic", "ec": "Ecuador", "eg": "Egypt", "sv": "El Salvador", "gq": "Equatorial Guinea", "er": "Eritrea", "ee": "Estonia",
+    "et": "Ethiopia", "fk": "Falkland Islands (Malvinas)", "fo": "Faroe Islands", "fj": "Fiji", "fi": "Finland", "fr": "France", "gf": "French Guiana",
+    "pf": "French Polynesia", "ga": "Gabon", "gm": "Gambia", "ge": "Georgia", "de": "Germany", "gh": "Ghana", "gi": "Gibraltar", "gr": "Greece",
+    "gl": "Greenland", "gd": "Grenada", "gp": "Guadeloupe", "gu": "Guam", "gt": "Guatemala", "gn": "Guinea", "gw": "Guinea-Bissau", "gy": "Guyana",
+    "ht": "Haiti", "va": "Holy See (Vatican City)", "hn": "Honduras", "hk": "Hong Kong", "hu": "Hungary", "is": "Iceland", "in": "India",
+    "id": "Indonesia", "ir": "Iran", "iq": "Iraq", "ie": "Ireland", "il": "Israel", "it": "Italy", "jm": "Jamaica", "jp": "Japan", "je": "Jersey",
+    "jo": "Jordan", "kz": "Kazakhstan", "ke": "Kenya", "ki": "Kiribati", "kp": "Korea,  Democratic People\'s Republic of", "kr": "Korea,  Republic of",
+    "kw": "Kuwait", "kg": "Kyrgyzstan", "la": "Lao", "lv": "Latvia", "lb": "Lebanon", "ls": "Lesotho", "lr": "Liberia", "ly": "Libyan Arab Jamahiriya",
+    "li": "Liechtenstein", "lt": "Lithuania", "lu": "Luxembourg", "mo": "Macao", "mk": "Macedonia", "mg": "Madagascar", "mw": "Malawi", "my": "Malaysia",
+    "mv": "Maldives", "ml": "Mali", "mt": "Malta", "mh": "Marshall Islands", "mq": "Martinique", "mr": "Mauritania", "mu": "Mauritius", "mx": "Mexico",
+    "fm": "Micronesia", "md": "Moldova", "mc": "Monaco", "mn": "Mongolia", "me": "Montenegro", "ms": "Montserrat", "ma": "Morocco", "mz": "Mozambique",
+    "mm": "Myanmar", "na": "Namibia", "nr": "Nauru", "np": "Nepal", "nl": "Netherlands", "an": "Netherlands Antilles", "nc": "New Caledonia",
+    "nz": "New Zealand", "ni": "Nicaragua", "ne": "Niger", "ng": "Nigeria", "nu": "Niue", "nf": "Norfolk Island", "mp": "Northern Mariana Islands",
+    "no": "Norway", "om": "Oman", "pk": "Pakistan", "pw": "Palau", "ps": "Palestine", "pa": "Panama", "pg": "Papua New Guinea", "py": "Paraguay",
+    "pe": "Peru", "ph": "Philippines", "pn": "Pitcairn", "pl": "Poland", "pt": "Portugal", "pr": "Puerto Rico", "qa": "Qatar", "re": "Reunion",
+    "ro": "Romania", "ru": "Russian Federation", "rw": "Rwanda", "bl": "Saint Barths", "sh": "Saint Helena", "kn": "Saint Kitts and Nevis",
+    "lc": "Saint Lucia", "pm": "Saint Pierre & Miquelon", "vc": "Saint Vincent & the Grenadines", "ws": "Samoa", "sm": "San Marino",
+    "st": "Sao Tome & Principe", "sa": "Saudi Arabia", "sn": "Senegal", "rs": "Serbia", "sc": "Seychelles", "sl": "Sierra Leone", "sg": "Singapore",
+    "sk": "Slovakia", "si": "Slovenia", "sb": "Solomon Islands", "so": "Somalia", "za": "South Africa", "es": "Spain", "lk": "Sri Lanka", "sd": "Sudan",
+    "sr": "Suriname", "sj": "Svalbard & Jan Mayen", "sz": "Swaziland", "se": "Sweden", "ch": "Switzerland", "sy": "Syrian Arab Republic", "tw": "Taiwan",
+    "tj": "Tajikistan", "tz": "Tanzania", "th": "Thailand", "tl": "Timor-Leste", "tg": "Togo", "tk": "Tokelau", "to": "Tonga", "tt": "Trinidad & Tobago",
+    "tn": "Tunisia", "tr": "Turkey", "tm": "Turkmenistan", "tc": "Turks & Caicos", "tv": "Tuvalu", "ug": "Uganda", "ua": "Ukraine", "ae": "United Arab Emirates",
+    "gb": "United Kingdom", "us": "United States", "um": "United States Minor Outlying Islands", "uy": "Uruguay", "uz": "Uzbekistan", "vu": "Vanuatu",
+    "ve": "Venezuela", "vn": "Viet Nam", "vg": "Virgin Islands,  British", "vi": "Virgin Islands,  U.S.", "wf": "Wallis & Futuna", "eh": "Western Sahara",
+    "ye": "Yemen", "zm": "Zambia", "zw": "Zimbabwe"
+}
+
+@site.register()
+def select_country():
+    names = list(countries.values())
+    codes = list(countries.keys())
+
+    idx = xbmcgui.Dialog().select("Select country", names)
+    if idx >= 0:
+        selected_code = codes[idx]
+        utils.notify("Selected country", "{} → {}".format(names[idx], selected_code))
+        utils.addon.setSetting("cam4country", selected_code)
+        utils.refresh()
+        return selected_code
+    return None

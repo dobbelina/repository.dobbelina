@@ -1,3 +1,5 @@
 [B]Version 1.1.189[/B]
 - taboofantazy - fix listing
 - tabootoobe - fix listing
+- myporntape - fix pagination
+- Cam4 added Tags and filter by country
