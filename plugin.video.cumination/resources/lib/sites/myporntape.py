@@ -67,7 +67,7 @@ def List(url):
     container = re.compile(r'<div class="pagination"(.+?)</section>', re.DOTALL | re.IGNORECASE).search(listhtml)
     if container:
         # NEXT PAGE
-        m = re.search(r'''a class=['"]btn['"].*?[?:;from\:|from_videos\+from_albums\:](\d+)"''', container.group(1), re.IGNORECASE)
+        m = re.search(r'''<div class="item pager next">[\s\S]*?from:(\d+)"''', container.group(1), re.IGNORECASE)
         if m:
             next_page = m.group(1) if m else None
 
