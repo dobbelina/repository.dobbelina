@@ -1,3 +1,2 @@
-[B]Version 1.1.190[/B]
-- camcaps - fix listing
-- noodlemagazie - fix pagination, lookup info, related videos
+[B]Version 1.1.191[/B]
+- fullporner - fix listing
