@@ -244,18 +244,27 @@ def clean_database(showdialog=True):
 @site.register()
 def Playvid(url, name):
     playmode = int(addon.getSetting('chatplay'))
-    listhtml = utils._getHtml(url, headers=HTTP_HEADERS_IPAD)
+    # dossier isnt in the page html anymore (js renders it), so grab the
+    # hls off the ajax endpoint instead
+    slug = url.rstrip('/').rsplit('/', 1)[-1]
+    hdr = HTTP_HEADERS_IPAD.copy()
+    hdr.update({'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Referer': '{0}{1}/'.format(bu, slug)})
+    edge = {}
+    try:
+        resp = utils._getHtml(bu + 'get_edge_hls_url_ajax/', headers=hdr,
+                              data={'room_slug': slug, 'bandwidth': 'high'})
+        resp = json.loads(resp)
+        if isinstance(resp, dict):
+            edge = resp
+    except ValueError:
+        pass
 
-    r = re.search(r'initialRoomDossier\s*=\s*"([^"]+)', listhtml)
-    if r:
-        data = six.b(r.group(1)).decode('unicode-escape')
-        data = data if six.PY3 else data.encode('utf8')
-        data = json.loads(data)
-    else:
-        data = False
-
-    if data:
-        m3u8stream = data.get('hls_source')
+    # rtmp playmode wants dossier fields we dont get here, leave data false
+    data = False
+    if edge.get('room_status') == 'public' and edge.get('url'):
+        m3u8stream = edge['url']
     else:
         m3u8stream = False
 
