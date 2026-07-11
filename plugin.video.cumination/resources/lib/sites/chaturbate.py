@@ -144,7 +144,9 @@ def List(url, page=1):
     if not isinstance(page, int):
         page = 1
 
-    listhtml = utils._getHtml(url)
+    hdr = utils.base_hdrs.copy()
+    hdr.update({'X-Requested-With': 'XMLHttpRequest'})
+    listhtml = utils._getHtml(url, site.url, headers=hdr)
     listhtml = json.loads(listhtml)
     models = listhtml.get('rooms')
     for model in models:
