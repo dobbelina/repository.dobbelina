@@ -19,6 +19,10 @@
 '''
 
 import re
+try:
+    from urllib.parse import unquote
+except ImportError:
+    from urllib import unquote
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -71,7 +75,7 @@ def List(url):
     re_name = ' title="([^"]+)"'
     re_img = 'data-mediumthumb="([^"]+)"'
     re_duration = '(?:data-title="Video Duration">|class="duration">)([^<]+)<'
-    utils.videos_list(site, 'pornhub.Playvid', main_block, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm_filter)
+    utils.videos_list(site, 'pornhub.Playvid', main_block, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm_filter, img_options='|Referer=https://www.pornhub.com/')
 
     nextp = re.compile(r'<li\s*class="page_next">\s*<a\s*href="([^"]+)"', re.DOTALL).search(listhtml)
     if nextp:
@@ -102,7 +106,6 @@ def Search(url, keyword=None):
 
 @site.register()
 def Categories(url):
-    utils.kodilog('PornHub Categories URL: ' + url)
     cathtml = utils.getHtml(url, site.url, cookiehdr)
     match = re.compile(r'<div class="category-wrapper.*?href="([^"]+)"\s*alt="([^"]+)".*?src="([^"]+).+?<var>([^<]+)<', re.DOTALL).findall(cathtml)
     for catpage, name, img, videos in match:
@@ -114,7 +117,15 @@ def Categories(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.play_from_link_to_resolve(url)
+
+    html = utils.getHtml(url, site.url, cookiehdr)
+    match = re.compile(r',"videoUrl":"([^"]+)","quality":"([^"]+)"', re.DOTALL).findall(html)
+    if match:
+        src = {x[1]: x[0] for x in match}
+        videolink  = utils.prefquality(src, sort_by =lambda x: int(x), reverse=True)
+        if videolink:
+            videolink = videolink.replace('\\/', '/') + '|Referer=https://www.pornhub.com/&Cookie=accessAgeDisclaimerPH=1;accessAgeDisclaimerUK=1&Origin=https://www.pornhub.com'
+            vp.play_from_direct_link(videolink)
 
 
 def get_setting(x):

@@ -1657,7 +1657,7 @@ def fix_url(url, siteurl=None, baseurl=None):
     return url
 
 
-def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None, skip=None, thumbnails=None):
+def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_img=None, re_quality=None, re_duration=None, contextm=None, skip=None, thumbnails=None, img_options=None):
     if thumbnails:
         th = Thumbnails(site.name)
 
@@ -1682,6 +1682,8 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
                 match = re.search(re_img, video, flags=re.DOTALL | re.IGNORECASE)
                 if match:
                     img = fix_url(match.group(1).replace('&amp;', '&'), site.url)
+                    if img_options:
+                        img = img + img_options
                     if thumbnails:
                         img = th.cache_img(img) if thumbnails == 'cache' else th.fix_img(img)
             quality = ''
