@@ -131,4 +131,4 @@ def Playvid(url, name, download=None):
         vp.progress.close()
         return
     vp.progress.update(75, "[CR]Video found[CR]")
-    vp.play_from_direct_link(surl + '|referer=' + url)
+    vp.play_from_direct_link(surl + '|referer=' + site.url)
