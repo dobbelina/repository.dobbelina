@@ -56,6 +56,7 @@ UA = "Mozilla/5.0 (iPad; CPU OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML,
 site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
 # bu = "https://stripchat.com/api/front/models?limit=80&parentTag=autoTagNew&sortBy=stripRanking&offset=0&primaryTag="
 bu = "https://stripchat.com/api/front/models?removeShows=false&recInFeatured=false&limit=80&offset=0&filterGroupTags=&sortBy=stripRanking&parentTag=&nic=true&byw=false&rcmGrp=A&rbCnGr=true&iem=true&decMb=true&ctryTop=true&primaryTag="
+top = "https://stripchat.com/api/front/v5/models/top?gender={0}&period=current&offset=0&limit=100&continent={1}"
 
 @site.register(default_mode=True)
 def Main():
@@ -83,9 +84,9 @@ def Main():
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
-
+    site.add_dir('[COLOR red]Top Models[/COLOR]', 'girls', 'topModels', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '{}girls'.format(bu), 'onlineFav', '', 1)
-
+    # https://stripchat.com/api/front/v5/models/top?gender=female&period=current&offset=0&limit=100&continent=na&uniq=kcbwpy0hugjlieom
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}girls'.format(bu), 'List', '', '')
     if couple:
@@ -100,6 +101,7 @@ def Main():
 
 @site.register()
 def List(url, page=1):
+    online_only = utils.addon.getSetting("online_only").lower() == 'true'
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
 
@@ -109,34 +111,32 @@ def List(url, page=1):
     else:
         perPage = 80
         utils.addon.setSetting("stripchatper_page", str(perPage))
-    '''
-    site.add_download_link(
-        'Current models per page: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(perPage), 
-        url, 
-        'PerPage', 
-        '', 
-        '', 
-        noDownload=True
-    )'''
-    # url = url.format(perPage)
 
-    tag_setting = utils.addon.getSetting('stripchattag')
-    if not tag_setting:
-        tag_setting = 'ALL'
-    utils.addon.setSetting("stripchattag", tag_setting)
+    if '/models/top' not in url:
+        tag_setting = utils.addon.getSetting('stripchattag')
+        if not tag_setting:
+            tag_setting = 'ALL'
+        utils.addon.setSetting("stripchattag", tag_setting)
 
-    site.add_download_link(
-        'Filter - currently: [COLOR fuchsia][B]' + tag_setting + '[/B][/COLOR] - '
-        '[COLOR red][B]Change[/B][/COLOR]',
-        url,
-        'filters',
-        '',
-        '',
-        noDownload=True
-    )
+        site.add_download_link(
+            'Filter - currently: [COLOR fuchsia][B]' + tag_setting + '[/B][/COLOR] - '
+            '[COLOR red][B]Change[/B][/COLOR]',
+            url,
+            'filters',
+            '',
+            '',
+            noDownload=True
+        )
+        tag_setting = '' if tag_setting == 'ALL' else tag_setting
+        url = url.replace('filterGroupTags=&', 'filterGroupTags=%5B%5B%22{0}%22%5D%5D&'.format(tag_setting)).replace('&parentTag=&', '&parentTag={0}&'.format(tag_setting))
+    else:
+        if utils.addon.getSetting("online_only") == "true":
+            online_only = True
+            site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
+        else:
+            online_only = False
+            site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
-    tag_setting = '' if tag_setting == 'ALL' else tag_setting
-    url = url.replace('filterGroupTags=&', 'filterGroupTags=%5B%5B%22{0}%22%5D%5D&'.format(tag_setting)).replace('&parentTag=&', '&parentTag={0}&'.format(tag_setting))
 
     favorite = {}
     conn = sqlite3.connect(utils.favoritesdb)
@@ -149,11 +149,28 @@ def List(url, page=1):
     try:
         response = utils._getHtml(url)
     except:
+        xbmcgui.Dialog().textviewer(url, "URL: " + url + "\n" + str(response))
         return None
     data = json.loads(response)
-    model_list = data["models"]
+    if "models" in data:
+        model_list = data["models"]
+    elif 'tops' in data:
+        model_list = []
+        for top in data.get("tops", []):
+            for winner in top.get("winners", []):
+                model = winner.get("model")
+                if model:
+                    model_list.append(model)
+    else:
+        model_list = [item["model"] for item in data["items"]]
+
+        # model_list = data["items"]
+        # xbmcgui.Dialog().textviewer(url, str(model_list[1]["model"]))
 
     for model in model_list:
+        if online_only is True and model.get("isLive") is False:
+            continue
+        # xbmcgui.Dialog().textviewer(url, str(model))
         name = utils.cleanhtml(model['username'])
         if any(name in fav_url for fav_url in favorite):
             # name = u'[COLOR yellow]★ [/COLOR]' + name
@@ -163,12 +180,37 @@ def List(url, page=1):
 
         try:
             videourl = model['hlsPlaylist']
-            img = 'https://img.doppiocdn.media/snapshot/{0}/{1}_webp'.format(
-                model.get('id'), model.get('popularSnapshotTimestamp')
-            )
         except KeyError:
-            videourl = model['stream']['url']
-            img = model['popularSnapshotUrl']
+            try:
+                videourl = model['stream']['url']
+            except KeyError:
+                videourl = site.url
+
+        # try:
+        #     img = 'https://img.doppiocdn.media/snapshot/{0}/{1}_webp'.format(
+        #         model.get('id'), model.get('popularSnapshotTimestamp')
+        #     )
+        # except KeyError:
+        #     try:
+        #         img = model['popularSnapshotUrl']
+        #     except KeyError:
+        #         img = 'https://img.doppiocdn.media/snapshot/{0}/{1}_webp'.format(
+        #             model.get('id'), model.get('snapshotTimestamp')
+        #         )
+        try:
+            if model.get("isLive") is False:
+                img = model.get("previewUrlThumbBig")
+            else:
+                snap = (
+                    model.get("popularSnapshotTimestamp")
+                    or model.get("snapshotTimestamp")
+                    or 0
+                )
+                img = f"https://img.doppiocdn.media/snapshot/{model['id']}/{snap}_webp"
+
+        except Exception:
+            img = model.get("previewUrlThumbBig") or ""
+
         fanart = model.get('previewUrlThumbSmall')
         subject = model.get('groupShowTopic') or ''
         if subject:
@@ -200,8 +242,9 @@ def List(url, page=1):
             'RunPlugin(' + contextrecord + ')'
         ))
 
+
         site.add_download_link(
-            name,
+            name if model.get("isLive") is True else name + ' [COLOR yellow][Offline][/COLOR]',
             videourl,
             'Playvid',
             img,
@@ -447,6 +490,9 @@ def Playvid_Proxy(url, name):
 
 @site.register()
 def Playvid(url, name):
+    if "[Offline]" in name:
+        utils.notify(name.split("[")[0] + " is OFFLINE")
+        return
     player = utils.addon.getSetting('stripchatplayer')
 
     if player == 'Playvid_proxy':
@@ -669,3 +715,51 @@ def filters(url):
             utils.addon.setSetting("stripchattag", tag + selected_url)
         utils.refresh()
         return
+
+
+@site.register()
+def topModels(url):
+    genders = [
+        {"name": "Girls", "code": "female"},
+        {"name": "Couples", "code": "couple"},
+        {"name": "Guys", "code": "male"},
+        {"name": "Trans", "code": "tranny"}
+    ]
+    names = [item["name"] for item in genders]
+    selection = xbmcgui.Dialog().select('Select Gender', names)
+    if selection == -1:
+        return
+    url = genders[selection]["code"]
+
+    if url == "female":
+        zones = [
+            {"name": "Europe", "code": "eu"},
+            {"name": "North America", "code": "na"},
+            {"name": "South America", "code": "sa"},
+            {"name": "Asia & Pacific", "code": "as"},
+            {"name": "Africa", "code": "af"}
+        ]
+        names = [item["name"] for item in zones]
+
+        selection = xbmcgui.Dialog().select('Select zone', names)
+        if selection == -1:
+            return
+        zone = zones[selection]["code"]
+    else:
+        zone = ""
+
+    periodes = [
+        {"name": "Current Month Top", "code": "current", "url": "https://stripchat.com/api/front/v5/models/top?gender={0}&period=current&offset=0&limit=100&continent={1}".format(url, zone)},
+        {"name": "Last 24h Winners", "code": "hourly", "url": "https://stripchat.com/api/front/v4/models/top/hourly?gender={}".format(url)},
+        {"name": "Last Month Winners", "code": "monthly", "url": "https://stripchat.com/api/front/v5/models/top?gender={0}&period=monthly&offset=0&limit=100&continent={1}".format(url, zone)},
+        {"name": "Hall of Fame 2026", "code": "hallOfFame", "url": "https://stripchat.com/api/front/v3/models/top/hallOfFame?year=2026&gender={}".format(url)}
+    ]
+    names = [item["name"] for item in periodes]
+
+    selection = xbmcgui.Dialog().select('Select Period', names)
+    if selection == -1:
+        return
+    period = periodes[selection]["code"]
+    url = periodes[selection]["url"]
+    List(url)
+    
