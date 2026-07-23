@@ -231,6 +231,11 @@ def List(url, page=1):
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
             subject += '[COLOR deeppink] #[/COLOR]'.join(tags)
 
+        if model.get('streamName') is not None:
+            streamName = model.get('streamName')
+        else:
+            streamName = ''
+        # xbmcgui.Dialog().textviewer(name, streamName)
         context = []
         contextrecord = (
             utils.addon_sys +
@@ -245,7 +250,7 @@ def List(url, page=1):
 
         site.add_download_link(
             name if model.get("isLive") is True else name + ' [COLOR yellow][Offline][/COLOR]',
-            videourl,
+            videourl + '&streamName=' + str(streamName),
             'Playvid',
             img,
             subject,
@@ -488,8 +493,28 @@ def Playvid_Proxy(url, name):
     vp.progress.close()
 
 
+def status(url):
+    if '&streamName=' in url:
+        streamName = url.split('&streamName=')[-1]
+        if streamName !='':
+            api = "https://stripchat.com/api/front/v2/models/{}/cam".format(streamName)
+            data = json.loads(utils._getHtml(api))
+            streamStatus = data['user']['user'].get("status")
+            if streamStatus == 'public':
+                return True
+            else:
+                utils.notify(data['user']['user'].get("username"), streamStatus)
+            return False
+        else:
+            return True
+    else:
+        return True
+
 @site.register()
 def Playvid(url, name):
+    if not status(url):
+        return
+    # https://stripchat.com/api/front/v2/models/208569547/cam
     if "[Offline]" in name:
         utils.notify(name.split("[")[0] + " is OFFLINE")
         return
@@ -609,7 +634,8 @@ def onlineFav(url):
             # https://stripchat3.com/api/front/v2/models/username/ChrystalCade/cam?triggerRequest=loadCam&primaryTag=girls
             # data_model = json.loads(utils._getHtml('https://stripchat3.com/api/front/v2/models/username/{}/cam?triggerRequest=loadCam&primaryTag=girls'.format(model)))
         except Exception as e:
-            utils.notify(model, "Error at API interrogation: %s" % e, icon='thumb')
+            # utils.notify(model, "Error at API interrogation: %s" % e, icon='thumb')
+            utils.kodilog("Error at API interrogation: {0} - {1}".format(model, e))
             continue
         
         contextrecord = (
