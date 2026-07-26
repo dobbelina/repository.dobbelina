@@ -1459,33 +1459,24 @@ def get_cookie_value(name):
             return c.value
     return ""
 
-def cam4_graphql_niches(page=0):
-    """
-    POST minimal către Cam4 GraphQL (getNicheDirectoryData)
-    Folosește cookie-urile din Cumination (cj)
-    Compatibil Python 2 + Python 3
-    """
 
-    # Import local pentru a evita import circular
+def cam4_graphql_niches(gender="female"):
+    """
+    Funcție actualizată pentru Cam4 GraphQL (fără argumente de paginare)
+    Returnează lista de nișe active.
+    """
+    import json
+    from urllib.request import Request, urlopen
+    from urllib.error import HTTPError
     from resources.lib import utils
 
-    # Cookie-urile reale din Cumination
-    session_id = get_cam4_SESSION_ID()
-    ah_cookie  = get_cam4_AH()
-
-    for c in cj:
-        utils.kodilog('c.name=' + c.name + '; c.value=' + c.value)
-
-    # url = "https://www.cam4.com/graph?operation=getNicheDirectoryData&ssr=false"
-    url = "https://www.cam4.com/graph"
-
-    cookies = "cam4_SESSION_ID={}; cam4-AH={};".format(session_id, ah_cookie)
+    url = "https://www.cam4.com/graph?operation=getNicheDirectoryData&ssr=false"
 
     payload = {
         "operationName": "getNicheDirectoryData",
         "variables": {
-            "filter": "all",
-            "gender": "female",
+            "filter": "all",    # "all", "active", "popular"
+            "gender": gender,
             "keys": [
                 "directory.directory.tabs.niches",
                 "directory.directory.tabs.liveCams",
@@ -1505,10 +1496,29 @@ def cam4_graphql_niches(page=0):
             ],
             "search": "",
             "sort": "trending",
-            "size": 48,
-            "page": 0
+            "size": 48
         },
-        "query": "query getNicheDirectoryData($keys:[String!],$size:Int!,$sort:String,$search:String,$filter:String,$gender:String,$page:Int){controlledFeatures{id hasNicheCreation __typename} i18n{id values:translate(keys:$keys) __typename} niches(size:$size,sort:$sort,search:$search,filter:$filter,gender:$gender,page:$page){id items{id slug bannerUrl thumbnailUrl name{id text originalText __typename} stats{id membersCount postsCount __typename} member{id userId role __typename} newPostsCount isApproved __typename} totalPages nextCursor __typename} user{id accessControl{id isLogged isGuestBilling isAdmin __typename} __typename}}"
+        "query": """query getNicheDirectoryData($keys:[String!],$size:Int!,$sort:String,$search:String,$filter:String,$gender:String){
+          controlledFeatures { id hasNicheCreation __typename }
+          i18n { id values:translate(keys:$keys) __typename }
+          niches(size:$size,sort:$sort,search:$search,filter:$filter,gender:$gender) {
+            id
+            items {
+              id
+              slug
+              bannerUrl
+              thumbnailUrl
+              name { id text originalText __typename }
+              stats { id membersCount postsCount __typename }
+              member { id userId role __typename }
+              newPostsCount
+              isApproved
+              __typename
+            }
+            __typename
+          }
+          user { id accessControl { id isLogged isGuestBilling isAdmin __typename } __typename }
+        }"""
     }
 
     data = json.dumps(payload).encode("utf-8")
@@ -1517,36 +1527,36 @@ def cam4_graphql_niches(page=0):
         "content-type": "application/json",
         "apollographql-client-name": "CAM4-client",
         "apollographql-client-version": "26.6.19-132253utc",
-        "cookie": "cam4_SESSION_ID={}; cam4-AH={};".format(session_id, ah_cookie),
         "user-agent": "Mozilla/5.0"
     }
-
 
     req = Request(url, data=data, headers=headers)
 
     try:
         response = urlopen(req, timeout=15)
-        raw = response.read()
-        try:
-            raw = raw.decode("utf-8")
-        except:
-            pass
-        return json.loads(raw)
-
+        raw = response.read().decode("utf-8")
+        parsed = json.loads(raw)
+        utils.kodilog("Cam4 niches count={}".format(
+            len(parsed["data"]["niches"]["items"])
+        ))
+        return parsed
     except HTTPError as e:
-        print(e.read())
-
+        body = e.read().decode("utf-8")
+        utils.kodilog("Cam4 GraphQL HTTPError: {}".format(body))
+        return {"error": "HTTPError", "body": body}
     except Exception as e:
+        utils.kodilog("Cam4 GraphQL Exception: {}".format(e))
         return {"error": str(e)}
-
-    
 
 
 @site.register()
 def list_niches():
     import sys
-    data = cam4_graphql_niches(page=0)
-    items = data.get("data", {}).get("niches", {}).get("items", [])
+    data = cam4_graphql_niches()
+    try:
+        items = data.get("data", {}).get("niches", {}).get("items", [])
+    except:
+        return
 
     for item in items:
         slug = item.get("slug", "")
