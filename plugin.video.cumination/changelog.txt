@@ -1,2 +1,2 @@
-[B]Version 1.1.192[/B]
-- kissjav - fix: download
+[B]Version 1.1.193[/B]
+-Stripchat Added filtering, optional players ISA and Proxy
