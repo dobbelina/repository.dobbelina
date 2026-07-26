@@ -26,6 +26,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 import sys
+import calendar
+from datetime import datetime, timedelta
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -50,14 +52,14 @@ except ImportError:
     from urllib.parse import urlparse, parse_qs
 
 
-
+abbr_to_full = {abbr.lower(): name for abbr, name in zip(calendar.day_abbr, calendar.day_name)}
 UA = "Mozilla/5.0 (iPad; CPU OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
 
 site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://stripchat.com/', 'stripchat.jpg', 'stripchat', True)
 # bu = "https://stripchat.com/api/front/models?limit=80&parentTag=autoTagNew&sortBy=stripRanking&offset=0&primaryTag="
 bu = "https://stripchat.com/api/front/models?removeShows=false&recInFeatured=false&limit=80&offset=0&filterGroupTags=&sortBy=stripRanking&parentTag=&nic=true&byw=false&rcmGrp=A&rbCnGr=true&iem=true&decMb=true&ctryTop=true&primaryTag="
 top = "https://stripchat.com/api/front/v5/models/top?gender={0}&period=current&offset=0&limit=100&continent={1}"
-
+cam = "https://stripchat.com/api/front/v2/models/{}/cam"
 @site.register(default_mode=True)
 def Main():
     player = utils.addon.getSetting('stripchatplayer')
@@ -166,6 +168,7 @@ def List(url, page=1):
 
         # model_list = data["items"]
         # xbmcgui.Dialog().textviewer(url, str(model_list[1]["model"]))
+    total_items = data.get('filteredCount', 0)
 
     for model in model_list:
         if online_only is True and model.get("isLive") is False:
@@ -230,11 +233,36 @@ def List(url, page=1):
             subject += '[COLOR deeppink]#[/COLOR]'
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
             subject += '[COLOR deeppink] #[/COLOR]'.join(tags)
-
         if model.get('streamName') is not None:
             streamName = model.get('streamName')
         else:
             streamName = ''
+
+        if True:    #model.get("isLive") is not True:
+            api = cam.format(model.get("id"))
+            data = json.loads(utils._getHtml(api))
+            if data['cam']['broadcastSchedule']['nearest'].get("day"):
+                subject += '[COLOR deeppink]Next broadcast: [/COLOR]{0} '.format(abbr_to_full[data['cam']['broadcastSchedule']['nearest'].get("day")])
+                subject += (datetime.min + timedelta(seconds=data['cam']['broadcastSchedule']['nearest']['period'][0])).time().strftime("%I %p")
+                subject += ' - ' + (datetime.min + timedelta(seconds=data['cam']['broadcastSchedule']['nearest']['period'][1])).time().strftime("%I %p") + '[CR]'
+            interests = [t for t in data['user']['user'].get('interests')]
+            subject += '[COLOR deeppink]Interests: [/COLOR]'
+            subject += ", ".join(interests)
+            specifics_tags = next(
+                (group["tags"] for group in data["user"]["tagGroups"] if group["id"] == "specifics"),
+                []
+            )
+            subject += '[CR][CR][COLOR deeppink]Specifics: [/COLOR]'
+            subject += ", ".join(specifics_tags)
+            public_tags = next(
+                ([tag.replace('do', '') for tag in group["tags"]]
+                for group in data["user"]["tagGroups"]
+                if group["id"] == "publicActivities"),
+                []
+            )
+
+            subject += '[CR][CR][COLOR deeppink]Public Activities: [/COLOR]'
+            subject += ", ".join(public_tags)
         # xbmcgui.Dialog().textviewer(name, streamName)
         context = []
         contextrecord = (
@@ -262,13 +290,12 @@ def List(url, page=1):
         )
 
 
-    total_items = data.get('filteredCount', 0)
     nextp = (page * 80) < total_items
     if nextp:
-        next = (page * 80) + 1
+        next_p = (page * 80) + 1
         lastpg = -1 * (-total_items // 80)
         page += 1
-        nurl = re.sub(r'offset=\d+', 'offset={0}'.format(next), url)
+        nurl = re.sub(r'offset=\d+', 'offset={0}'.format(next_p), url)
         site.add_dir('Next Page.. (Currently in Page {0} of {1})'.format(page - 1, lastpg),
                      nurl, 'List', site.img_next, page)
 
@@ -497,7 +524,7 @@ def status(url):
     if '&streamName=' in url:
         streamName = url.split('&streamName=')[-1]
         if streamName !='':
-            api = "https://stripchat.com/api/front/v2/models/{}/cam".format(streamName)
+            api = cam.format(streamName)
             data = json.loads(utils._getHtml(api))
             streamStatus = data['user']['user'].get("status")
             if streamStatus == 'public':
@@ -515,6 +542,7 @@ def Playvid(url, name):
     if not status(url):
         return
     # https://stripchat.com/api/front/v2/models/208569547/cam
+    # https://stripchat.com/api/front/users/user-ids/Yaya--728      # Returneaza ID
     if "[Offline]" in name:
         utils.notify(name.split("[")[0] + " is OFFLINE")
         return
@@ -732,7 +760,7 @@ def filters(url):
     filtered = {k.replace(tag, ""): v for k, v in tags.items() if k.startswith(tag) and "-" not in k}
     agregate = ["ALL ["+ str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
     selection = xbmcgui.Dialog().select('Select ' + tag , agregate)
-
+    xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
     if selection != -1:
         if selection == 0:
             utils.addon.setSetting("stripchattag", "")
