@@ -1,2 +1,4 @@
 [B]Version 1.1.193[/B]
--Stripchat Added filtering, optional players ISA and Proxy
+- Stripchat Added filtering, optional players ISA and Proxy
+- eporner - added: Length filter
+- pornez - fix: listing, pagination

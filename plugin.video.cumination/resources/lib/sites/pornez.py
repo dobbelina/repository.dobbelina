@@ -22,12 +22,11 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 
-site = AdultSite('pornez', '[COLOR hotpink]PornEZ[/COLOR]', 'https://pornezoo.net', 'pornez.png', 'pornez')
+site = AdultSite('pornez', '[COLOR hotpink]PorneZOO[/COLOR]', 'https://pornezoo.net', 'https://pornezoo.net/wp-content/uploads/2026/07/Pornezoo-logo.png', 'pornez')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
 
@@ -35,39 +34,26 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
-    videos = listhtml.split('data-post-id="')
-    videos.pop(0)
-    for video in videos:
-        match = re.compile(r'data-src="([^"]+)".+?href="([^"]+)"\s*title="([^"]+).+?"duration">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(video)
-        if match:
-            img, videourl, name, duration = match[0]
-            name = utils.cleantext(name)
-            if name == 'Live Cams':
-                continue
-            cm_related = (utils.addon_sys + "?mode=" + str('pornez.ContextRelated') + "&url=" + urllib_parse.quote_plus(videourl))
-            cm = [('[COLOR violet]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')')]
+    listhtml = listhtml.split('</main>')[0]
 
-            site.add_download_link(name, videourl, 'Play', img, name, duration=duration, contextm=cm)
+    delimiter = 'article data-video-id='
+    re_videopage = '<a href="([^"]+)"'
+    re_name = 'title="([^"]+)"'
+    re_img = 'src="([^"]+)"'
+    re_duration = r'clock-o"></i>([\d:]+)<'
+    re_quality = r'class="hd-video">([^<]+)<'
 
-    match = re.compile(r'href="([^"]+page/(\d+)[^"]*)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
-    if match:
-        npage, np = match[0]
-        matchlp = re.compile(r'"page-link"\s*href="[^"]+">([\d,]+)<', re.DOTALL | re.IGNORECASE).findall(videos[-1])
-        lp = ''
-        if matchlp:
-            lp = '/' + matchlp[-1]
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0}{1})'.format(np, lp), npage, 'List', site.img_next)
-    utils.eod()
+    cm = []
+    cm_related = (utils.addon_sys + "?mode=pornez.Related&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
+    utils.videos_list(site, 'pornez.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
 
-@site.register()
-def Cat(url):
-    cathtml = utils.getHtml(url)
-    match = re.compile(r'class="btn btn-grey" href="([^"]+)"\s*>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    match = match[:-1]
-    for caturl, name in match:
-        name = utils.cleantext(name)
-        site.add_dir(name, caturl, 'List', '')
+    re_npurl = r'<a class="current".+?href="([^"]+)"'
+    re_npnr = r'<a class="current".+?href="[^>]+>(\d+)<'
+    re_lpnr = r'page/(\d+)/[^"]*">Last<'
+
+    utils.next_page(site, 'pornez.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='pornez.GotoPage')
     utils.eod()
 
 
@@ -76,15 +62,13 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = "{0}{1}".format(url, keyword.replace(' ', '%20'))
+        url = "{0}{1}".format(url, keyword.replace(' ', '+'))
         List(url)
 
 
 @site.register()
-def ContextRelated(url):
-    contexturl = (utils.addon_sys
-                  + "?mode=" + str('pornez.List')
-                  + "&url=" + urllib_parse.quote_plus(url))
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('pornez.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 

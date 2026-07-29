@@ -20,23 +20,34 @@ import re
 import json
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import xbmc
 
 
 site = AdultSite('eporner', '[COLOR hotpink]Eporner[/COLOR]', 'https://www.eporner.com/', 'https://static-eu-cdn.eporner.com/new/logo.png', 'eporner')
 
+getinput = utils._get_keyboard
+lengthChoices = {'All': '', '0-15 min': 'duration_max=900', '15-30 min': 'duration_min=900&duration_max=1800', '30-60 min': 'duration_min=1800&duration_max=3600', '60+': 'duration_min=3600'}
+eplength = utils.addon.getSetting("eplength") or 'All'
+
 
 @site.register(default_mode=True)
 def Main():
+    site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(eplength), '', 'EPLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'cats/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstar-list/', 'Pornstars', site.img_cat)
     site.add_dir('[COLOR hotpink]Lists[/COLOR]', site.url, 'Lists', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
-    List(site.url + 'recent/')
+    url = site.url + 'cat/all/'
+    if lengthChoices[eplength]:
+        url = url + '?' + lengthChoices[eplength]
+
+    List(url)
     utils.eod()
 
 
 @site.register()
 def List(url):
+    utils.kodilog('List: {}'.format(url))
     try:
         listhtml = utils.getHtml(url, '')
     except:
@@ -53,9 +64,18 @@ def List(url):
     nextp = re.compile(r"href='([^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(vids[-1])
     if nextp:
         nextp = nextp[0]
-        page = re.findall(r'\d+', nextp)[-1]
+        page = re.findall(r'\d+', nextp.split('?')[0])[-1]
         site.add_dir('Next Page ({})'.format(page), site.url[:-1] + nextp, 'List', site.img_next)
     utils.eod()
+
+
+@site.register()
+def EPLength():
+    input = utils.selector('Select Length', lengthChoices.keys())
+    if input:
+        eplength = input
+        utils.addon.setSetting('eplength', eplength)
+        xbmc.executebuiltin('Container.Refresh')
 
 
 @site.register()
@@ -91,6 +111,9 @@ def Categories(url):
     match = re.compile('class="ctbinner"[^=]+href="([^"]+)" title="([^"]+)"[^:]+img src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, img in sorted(match, key=lambda x: x[1]):
         catpage = site.url[:-1] + catpage
+        if lengthChoices[eplength]:
+            catpage = catpage + '?' + lengthChoices[eplength]
+
         site.add_dir(name, catpage, 'List', '')
     utils.eod()
 
@@ -105,6 +128,8 @@ def Pornstars(url):
     for catpage, name, img, count in match:
         name = utils.cleantext(name) + "[COLOR deeppink] " + count + "[/COLOR]"
         catpage = site.url[:-1] + catpage
+        if lengthChoices[eplength]:
+            catpage = catpage + '?' + lengthChoices[eplength]
         site.add_dir(name, catpage, 'List', '')
     nextp = re.compile(r"href='([^']+)' class='nmnext' title='Next page'", re.DOTALL | re.IGNORECASE).findall(cathtml)
     if nextp:
@@ -116,33 +141,35 @@ def Pornstars(url):
 @site.register()
 def Lists(url):
     lists = {}
-    lists['HD Porn 1080p Videos - Recent'] = site.url + '/cat/hd-1080p/'
-    lists['HD Porn 1080p Videos - Top Rated'] = site.url + '/cat/hd-1080p/SORT-top-rated/'
-    lists['HD Porn 1080p Videos - Longest'] = site.url + '/cat/hd-1080p/SORT-longest/'
-    lists['60 FPS Porn Videos - Recent'] = site.url + '/cat/60fps/'
-    lists['60 FPS Porn Videos - Top Rated'] = site.url + '/cat/60fps/SORT-top-rated/'
-    lists['60 FPS Porn Videos - Longest'] = site.url + '/cat/60fps/SORT-longest/'
-    lists['Popular Porn Videos'] = site.url + '/popular-videos/'
-    lists['Best HD Porn Videos'] = site.url + '/top-rated/'
-    lists['Currently Watched Porn Videos'] = site.url + '/currently/'
-    lists['4K Porn Ultra HD - Recent'] = site.url + '/cat/4k-porn/'
-    lists['4K Porn Ultra HD - Top Rated'] = site.url + '/cat/4k-porn/SORT-top-rated/'
-    lists['4K Porn Ultra HD - Longest'] = site.url + '/cat/4k-porn/SORT-longest/'
-    lists['HD Sex Porn Videos - Recent'] = site.url + '/cat/hd-sex/'
-    lists['HD Sex Porn Videos - Top Rated'] = site.url + '/cat/hd-sex/SORT-top-rated/'
-    lists['HD Sex Porn Videos - Longest'] = site.url + '/cat/hd-sex/SORT-longest/'
-    lists['Amateur Porn Videos - Recent'] = site.url + '/cat/amateur/'
-    lists['Amateur Porn Videos - Top Rated'] = site.url + '/cat/amateur/SORT-top-rated/'
-    lists['Amateur Porn Videos - Longest'] = site.url + '/cat/amateur/SORT-longest/'
-    lists['Solo Girls Porn Videos - Recent'] = site.url + '/cat/solo/'
-    lists['Solo Girls Porn Videos - Top Rated'] = site.url + '/cat/solo/top-rated/'
-    lists['Solo Girls Porn Videos - Longest'] = site.url + '/cat/solo/longest/'
-    lists['VR Porn Videos - Recent'] = site.url + '/cat/vr-porn/'
-    lists['VR Porn Videos - Top Rated'] = site.url + '/cat/vr-porn/SORT-top-rated/'
-    lists['VR Porn Videos - Longest'] = site.url + '/cat/vr-porn/SORT-longest/'
+    lists['HD Porn 1080p Videos - Recent'] = site.url + 'cat/hd-1080p/'
+    lists['HD Porn 1080p Videos - Top Rated'] = site.url + 'cat/hd-1080p/SORT-top-rated/'
+    lists['HD Porn 1080p Videos - Longest'] = site.url + 'cat/hd-1080p/SORT-longest/'
+    lists['60 FPS Porn Videos - Recent'] = site.url + 'cat/60fps/'
+    lists['60 FPS Porn Videos - Top Rated'] = site.url + 'cat/60fps/SORT-top-rated/'
+    lists['60 FPS Porn Videos - Longest'] = site.url + 'cat/60fps/SORT-longest/'
+    lists['Popular Porn Videos'] = site.url + 'cat/popular-videos/'
+    lists['Best HD Porn Videos'] = site.url + 'cat/top-rated/'
+    lists['Currently Watched Porn Videos'] = site.url + 'cat/currently/'
+    lists['4K Porn Ultra HD - Recent'] = site.url + 'cat/4k-porn/'
+    lists['4K Porn Ultra HD - Top Rated'] = site.url + 'cat/4k-porn/SORT-top-rated/'
+    lists['4K Porn Ultra HD - Longest'] = site.url + 'cat/4k-porn/SORT-longest/'
+    lists['HD Sex Porn Videos - Recent'] = site.url + 'cat/hd-sex/'
+    lists['HD Sex Porn Videos - Top Rated'] = site.url + 'cat/hd-sex/SORT-top-rated/'
+    lists['HD Sex Porn Videos - Longest'] = site.url + 'cat/hd-sex/SORT-longest/'
+    lists['Amateur Porn Videos - Recent'] = site.url + 'cat/amateur/'
+    lists['Amateur Porn Videos - Top Rated'] = site.url + 'cat/amateur/SORT-top-rated/'
+    lists['Amateur Porn Videos - Longest'] = site.url + 'cat/amateur/SORT-longest/'
+    lists['Solo Girls Porn Videos - Recent'] = site.url + 'cat/solo/'
+    lists['Solo Girls Porn Videos - Top Rated'] = site.url + 'cat/solo/top-rated/'
+    lists['Solo Girls Porn Videos - Longest'] = site.url + 'cat/solo/longest/'
+    lists['VR Porn Videos - Recent'] = site.url + 'cat/vr-porn/'
+    lists['VR Porn Videos - Top Rated'] = site.url + 'cat/vr-porn/SORT-top-rated/'
+    lists['VR Porn Videos - Longest'] = site.url + 'cat/vr-porn/SORT-longest/'
     url = utils.selector('Select', lists)
     if not url:
         return
+    if lengthChoices[eplength]:
+        url = url + '?' + lengthChoices[eplength]
     List(url)
 
 
