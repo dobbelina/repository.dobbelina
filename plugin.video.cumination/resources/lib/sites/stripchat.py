@@ -760,7 +760,7 @@ def filters(url):
     filtered = {k.replace(tag, ""): v for k, v in tags.items() if k.startswith(tag) and "-" not in k}
     agregate = ["ALL ["+ str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
     selection = xbmcgui.Dialog().select('Select ' + tag , agregate)
-    xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
+    # xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
     if selection != -1:
         if selection == 0:
             utils.addon.setSetting("stripchattag", "")
