@@ -128,13 +128,16 @@ def Playvid(url, name, download=None):
 
 @site.register()
 def Categories(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils._getHtml(url)
     match = re.compile(
-        r'a class="item.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?videos">([^>]+)<',
-        re.DOTALL | re.IGNORECASE
+    r'<a\s+class="item"\s+href="([^"]+)"'
+    r'\s+title="([^"]+)".+?'
+    r'<img[^>]+src="([^"]+)".+?'
+    r'<div class="videos">([^<]+)<'
+    , re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
     for cat_url, cat_title, cat_img, cat_count in match:
-        site.add_dir(cat_title, cat_url, 'List', cat_img)
+        site.add_dir('[COLOR hotpink]' + cat_title + ' [/COLOR][COLOR yellow][{}][/COLOR]'.format(cat_count), cat_url, 'List', cat_img)
     utils.eod()     
 
 @site.register()
