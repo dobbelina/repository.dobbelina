@@ -27,8 +27,8 @@ addon = utils.addon
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
 
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{}/1/', 'Search', site.img_search)    
     List(site.url + '1/')
