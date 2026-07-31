@@ -1638,7 +1638,7 @@ def next_page(site, list_mode, html, re_npurl, re_npnr=None, re_lpnr=None, video
         if contextm:
             cm_page = (addon_sys + "?mode=" + str(contextm) + "&list_mode=" + list_mode + "&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(npnr) + "&lp=" + str(lpnr))
             cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
-        site.add_dir('Next Page {}{}'.format(np, lp), npurl, list_mode, contextm=cm)
+        site.add_dir('Next Page {}{}'.format(np, lp), npurl, list_mode, site.img_next, contextm=cm)
 
 
 def fix_url(url, siteurl=None, baseurl=None):
