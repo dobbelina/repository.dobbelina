@@ -42,7 +42,7 @@ def Main():
 
 @site.register()
 def List(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils._getHtml(url)
     items = re.findall(
         r'<div class="item[^"]*".*?</div>',
         listhtml,
@@ -99,10 +99,33 @@ def List(url):
             duration=duration
         )
 
-    re_npurl = 'class="next"><a href="([^"]+)"'
-    re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
-    re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
-    utils.next_page(site, 'camwhorestv.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr)      #, contextm='camwhorestv.GotoPage')
+    if '/search/' in url or '/categories/' in url or '/models/' in url:
+        re_npnr = re.search(
+            # r'<li class="next">.*?from_videos\+from_albums:([^:]+)">Next'
+            r'<li class="next">.*?[from_albums|from]:(\d+)">Next'
+            , listhtml, re.DOTALL
+        ).group(1)
+        re_lpnr = re.search(
+            r'<li class="last">.*?[from_albums|from]:(\d+)">Last'
+            , listhtml, re.DOTALL
+        ).group(1)
+
+        np = re.compile(r'>\.\.\.<.*?data-parameters="([^"]+):([^:]+)">.*?[from_albums|from]:(\d+)">.*Next'
+            , re.DOTALL | re.IGNORECASE).search(listhtml)
+        npurl = np.group(1).replace(':', '=').replace(';', '&').replace('+', '={}&'.format(re_npnr))
+        if '/search/' in url:
+            block = '&block_id=list_videos_videos_list_search_result&'
+        elif '/categories/' in url or '/models/' in url:
+            block = '&block_id=list_videos_common_videos_list&'
+
+        npurl = (url.split('?')[0] if '?' in url else url) + '?mode=async&function=get_block' + block + npurl + '=' + re_npnr
+        re_npurl = npurl
+        site.add_dir('Next Page... ({0}/{1})'.format(re_npnr, re_lpnr), re_npurl, 'List', site.img_next)
+    else:
+        re_npurl = 'class="next"><a href="([^"]+)"'
+        re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
+        re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
+        utils.next_page(site, 'camwhorestv.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr)      #, contextm='camwhorestv.GotoPage')
 
     utils.eod()
 
@@ -112,7 +135,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url += keyword.replace(' ', '+') + '/'
+        url += keyword.replace(' ', '-') + '/'
         List(url)
 
 
