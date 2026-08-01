@@ -1472,6 +1472,7 @@ class VideoPlayer():
         if not videourl:
             self.progress.close()
             return
+        self.progress.update(90, "[CR]{0}[CR]".format(i18n('play_dlink')))
         self.play_from_direct_link(videourl)
 
     @_cancellable
@@ -1506,11 +1507,12 @@ class VideoPlayer():
         if not link:
             notify(i18n('rslv_fail'), '{0} {1}'.format(source.title, i18n('not_rslv')))
         else:
+            self.progress.close()
             playvid(link, self.name, self.download, IA_check=self.IA_check)
 
     @_cancellable
     def play_from_direct_link(self, direct_link):
-        self.progress.update(90, "[CR]{0}[CR]".format(i18n('play_dlink')))
+        self.progress.close()
         playvid(direct_link, self.name, self.download, IA_check=self.IA_check)
 
     @_cancellable
