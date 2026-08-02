@@ -85,9 +85,9 @@ def Main():
     male = utils.addon.getSetting("chatmale") == "true"
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
-    site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('[COLOR red]Top Models[/COLOR]', 'girls', 'topModels', '', '')
-    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '{}girls'.format(bu), 'onlineFav', '', 1)
+    site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
+    site.add_dir('[COLOR red]Top Models[/COLOR]', 'girls', 'topModels', site.img_models, '')
+    site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '{}girls'.format(bu), 'onlineFav', site.img_favorites, 1)
     # https://stripchat.com/api/front/v5/models/top?gender=female&period=current&offset=0&limit=100&continent=na&uniq=kcbwpy0hugjlieom
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}girls'.format(bu), 'List', '', '')
@@ -760,7 +760,7 @@ def filters(url):
     filtered = {k.replace(tag, ""): v for k, v in tags.items() if k.startswith(tag) and "-" not in k}
     agregate = ["ALL ["+ str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
     selection = xbmcgui.Dialog().select('Select ' + tag , agregate)
-    xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
+    # xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
     if selection != -1:
         if selection == 0:
             utils.addon.setSetting("stripchattag", "")
