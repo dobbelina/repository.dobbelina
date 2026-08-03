@@ -47,7 +47,6 @@ def Main():
 
 @site.register()
 def List(url):
-    utils.kodilog('List: {}'.format(url))
     try:
         listhtml = utils.getHtml(url, '')
     except:

@@ -1,7 +1,2 @@
-[B]Version 1.1.193[/B]
-- Stripchat Added filtering, optional players ISA and Proxy
-- eporner - added: Length filter
-- pornez - fix: listing, pagination
-- New site CamWhores.tv
-- New site xoxostream.com
-- Cam4 - Tags (niches) have been updated according to the site
+[B]Version 1.1.194[/B]
+- noodlemagazine - fix: thumbnais

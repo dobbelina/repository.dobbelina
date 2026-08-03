@@ -83,7 +83,7 @@ def List(url, page=0):
     delimiter = '<div class="item">'
     re_videopage = '<a href="([^"]+)"'
     re_name = 'class="title">([^<]+)<'
-    re_img = 'src="([^"]+jpg)"'
+    re_img = 'src="(https[^"]+)"'
     re_duration = r'</svg>\s*([:\d]+)<'
     re_quality = r'class="hd_mark">([^<]+)<'
     skip = '${video.title}'
