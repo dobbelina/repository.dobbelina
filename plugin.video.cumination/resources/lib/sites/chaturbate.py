@@ -164,7 +164,7 @@ def List(url, page=1):
         else:
             name = ''
             fav = 'add'
- 
+
         if any(model['username'] in username for username in favorite):
             name += u'[COLOR yellow]★[/COLOR]'
             fav = 'del'
@@ -210,9 +210,11 @@ def List(url, page=1):
         id = model.get('username')
         contextfollow = (utils.addon_sys + "?mode=chaturbate.Follow&id=" + urllib_parse.quote_plus(id))
         contextunfollow = (utils.addon_sys + "?mode=chaturbate.Unfollow&id=" + urllib_parse.quote_plus(id))
-        contextmenu = [('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')')] if not follow else [('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')')]
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(id))
-        contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(id), 'RunPlugin(' + contextrecord + ')'))
+        contextmenu = [('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(id), 'RunPlugin(' + contextrecord + ')')]
+        contextmenu.append(('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')') if not follow else ('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')'))
+
+
 
         site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, fav=fav, noDownload=True)
 
@@ -917,7 +919,7 @@ def onlineFav(url):
             contextmenu = []
             id = model["username"]
             contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(id))
-            contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(id), 'RunPlugin(' + contextrecord + ')'))
+            contextmenu.append(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet]'.format(id), 'RunPlugin(' + contextrecord + ')'))
 
             site.add_download_link(name + current_show, url, 'Playvid', image, utils.cleantext(subject), noDownload=True, fav='del', contextm=contextmenu)
     utils.eod()
@@ -1008,110 +1010,431 @@ def get_cookie():
     return cookiestr
 
 
-
-def Record(id):
-    import xbmcgui
-    import xbmcplugin
-    import urllib.parse as urllib_parse
-    import sys
-
-    handle = int(sys.argv[1])
-
-    search_engines = [
-        {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
-        {"name": "iXXX",      "url": "https://www.ixxx.com/search/{0}/",      "search": "?mode=awmnet.Search&url={}&keyword={}"}
-    ]
-
-    names = [site["name"] for site in search_engines]
-
-    selections = xbmcgui.Dialog().multiselect('Select site(s) for search', names)
-
-    if selections is None:
-        utils.eod()
-        return
-
-    # Construim un folder cu toate site-urile selectate
-    for idx in selections:
-        site = search_engines[idx]
-        target_url = site["url"].format(id)
-
-        contexturl = (
-            utils.addon_sys +
-            site["search"].format(
-                urllib_parse.quote_plus(target_url),
-                id
-            )
-        )
-
-        li = xbmcgui.ListItem(label=site["name"])
-        xbmcplugin.addDirectoryItem(
-            handle=handle,
-            url=contexturl,
-            listitem=li,
-            isFolder=True
-        )
-
-    xbmcplugin.endOfDirectory(handle)
-
-
-def Record(id):
-    import xbmcgui
-    import xbmc
-    from urllib.parse import quote_plus
-
-    search_engines = [
-        {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
-        {"name": "iXXX",      "url": "https://www.ixxx.com/search/{0}/",      "search": "?mode=awmnet.Search&url={}&keyword={}"}
-    ]
-
-    names = [site["name"] for site in search_engines]
-
-    # MULTISELECT
-    selections = xbmcgui.Dialog().multiselect('Select site(s) for search', names)
-
-    if selections is None:
-        utils.eod()
-        return
-
-    for idx in selections:
-        selected_site = search_engines[idx]
-        target_url = selected_site["url"].format(id)
-
-        contexturl = (
-            utils.addon_sys +
-            selected_site["search"].format(
-                quote_plus(target_url),
-                id
-            )
-        )
-        xbmcgui.Dialog().textviewer(selected_site["url"], str(contexturl))
-        xbmc.log('MULTISELECT - ' + str(contexturl), xbmc.LOGNONE)
-        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-
-    utils.eod()
-
 @site.register()
 def Record(id):
     import xbmcgui
-    search_engines = [
-        {"name": "Cloudbate", "url": "https://www.cloudbate.com/search/{0}/", "search": "?mode=cloudbate.Search&url={}&keyword={}"},
-        {"name": "iXXX", "url": "https://www.ixxx.com/search/{0}/", "search": "?mode=awmnet.Search&url={}&keyword={}"},
-        {"name": "CamWhoresBay - Login available for private videos", "url": "https://www.camwhoresbay.com/search/{0}/", "search": "?mode=camwhoresbay.Search&url={}&keyword={}"},
-        {"name": "DrTuber", "url": "https://www.drtuber.com/search/videos/{0}/", "search": "?mode=drtuber.Search&url={}&keyword={}"}
 
+    # Liste dynamique des moteurs de recherche disponibles
+    search_engines = [
+        {"name": "Cloudbate", "mode": "cloudbate.Search", "url": "https://www.cloudbate.com/search/{0}/"},
+        {"name": "Archivebate", "mode": "archivebate.Search", "url": "https://archivebate.com/api/v1/search?query={0}"},
+        {"name": "Camwhores", "mode": "camwhorestv.List", "url": "https://www.camwhores.tv/search/{0}/"},
+        {"name": "CamGirlFap", "mode": "camgirlfap.Search", "url": "https://camgirlfap.com/search/{0}/"},
+        {"name": "CamWhoresBay", "mode": "camwhoresbay.Search", "url": "https://www.camwhoresbay.com/search/{0}/"},
+        {"name": "DrTuber", "mode": "drtuber.Search", "url": "https://www.drtuber.com/search/videos/{0}/"},
+        {"name": "iXXX", "mode": "awmnet.Search", "url": "https://www.ixxx.com/search/{0}/"}
     ]
-    
-    names = [site["name"] for site in search_engines]
+
+    names = ["[COLOR hotpink][GLOBAL] Search All Sites[/COLOR]"] + [s["name"] for s in search_engines]
     selection = xbmcgui.Dialog().select('Select site for search', names)
-    
-    if selection != -1:
-        selected_site = search_engines[selection]
-        target_url = selected_site["url"].format(id)
-        
-        contexturl = (utils.addon_sys + selected_site["search"].format(
-            urllib_parse.quote_plus(target_url), 
-            id
-        ))
-        
+
+    if selection == 0:
+        # Recherche globale sur tous les sites
+        contexturl = (utils.addon_sys + "?mode=chaturbate.GlobalSearch&keyword=" + urllib_parse.quote_plus(id))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    elif selection > 0:
+        # Recherche individuelle sur un site spécifique
+        selected_site = search_engines[selection - 1]
+        target_url = selected_site["url"].format(id)
+        # Pour camwhorestv, on utilise List car Search n'existe pas dans le fichier modèle
+        if "camwhorestv" in selected_site["mode"]:
+            contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url))
+        else:
+            contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url) + "&keyword=" + urllib_parse.quote_plus(id))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+    utils.eod()
+
+
+@site.register()
+def GlobalSearch(keyword=None):
+    if not keyword:
+        utils.notify('Global Search', 'No keyword provided')
+        utils.eod()
+        return
+
+    import re
+
+    # Dictionnaire pour stocker les résultats avant affichage (sans limite)
+    all_results = {
+        'cloudbate': [],
+        'archivebate': [],
+        'drtuber': [],
+        'camwhoresbay': [],
+        'camgirlfap': [],
+        'camwhorestv': [],
+        'ixxx': []
+    }
+
+    # 1. Cloudbate - Recherche de modèles
+    try:
+        cloudbate_base = 'https://www.cloudbate.com'
+        search_url = cloudbate_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, cloudbate_base, headers=hdr)
+
+        models = re.compile(r'<li class="lists">\s*<a href="([^"]+)" title="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(html)
+
+        for model_url, model_name in models:
+            if not model_url.startswith('http'):
+                if model_url.startswith('/'):
+                    model_url = cloudbate_base + model_url
+                else:
+                    model_url = cloudbate_base + '/' + model_url
+
+            all_results['cloudbate'].append({
+                'name': model_name,
+                'url': model_url,
+                'type': 'dir'
+            })
+    except Exception as e:
+        utils.kodilog('Cloudbate search error: {}'.format(str(e)))
+
+    # 2. Archivebate - Profils via API
+    try:
+        archive_base = 'https://archivebate.com'
+        search_url = archive_base + '/api/v1/search?query={}'.format(urllib_parse.quote_plus(keyword))
+        hdr = utils.base_hdrs.copy()
+        hdr['Accept'] = 'application/json, text/plain, */*'
+        hdr['X-Requested-With'] = 'XMLHttpRequest'
+        html = utils._getHtml(search_url, archive_base, headers=hdr)
+
+        data = json.loads(html)
+        profiles = data.get('data', [])
+
+        for item in profiles:
+            username = item.get('username', '').strip()
+            platform = item.get('platform', '').strip()
+            gender = item.get('gender', '').strip()
+
+            if not username:
+                continue
+
+            title = username
+            if platform:
+                title += ' [COLOR yellow][{}][/COLOR]'.format(platform)
+            if gender:
+                title += ' [COLOR cyan][{}][/COLOR]'.format(gender)
+            profile_url = archive_base + '/profile/' + urllib_parse.quote(username)
+
+            all_results['archivebate'].append({
+                'name': title,
+                'url': profile_url,
+                'type': 'dir'
+            })
+    except Exception as e:
+        utils.kodilog('Archivebate search error: {}'.format(str(e)))
+
+    # 3. DrTuber - Vidéos directes
+    try:
+        drtuber_base = 'https://www.drtuber.com'
+        search_url = drtuber_base + '/search/videos/{}/'.format(keyword.replace(' ', '+'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, drtuber_base, headers=hdr)
+        html = html.split('</h1>')[-1]
+
+        delimiter = ' <a href="/video'
+        videolist = re.split(delimiter, html)
+
+        if len(videolist) > 1:
+            for video in videolist[1:]:
+                match = re.search(r'^([^"]+)" class="', video)
+                if not match:
+                    continue
+                videopage = match.group(1)
+                if videopage.startswith('/'):
+                    videopage = drtuber_base + videopage
+
+                match = re.search(r'alt="([^"]+)"', video)
+                name = utils.cleantext(match.group(1)) if match else ''
+
+                if not name:
+                    continue
+
+                match = re.search(r'src="([^"]+)"', video)
+                img = match.group(1) if match else ''
+
+                match = re.search(r'class="time_thumb.+?<em>([^<]+)</em>\s*</em>', video)
+                duration = match.group(1) if match else ''
+
+                match = re.search(r'class="quality[^"]*"(?:><i class="ico_|>)([^<"]+)', video)
+                quality = match.group(1) if match else ''
+
+                all_results['drtuber'].append({
+                    'name': name,
+                    'url': videopage,
+                    'img': img,
+                    'duration': duration,
+                    'quality': quality,
+                    'type': 'video',
+                    'mode': 'drtuber.Play'
+                })
+    except Exception as e:
+        utils.kodilog('DrTuber search error: {}'.format(str(e)))
+
+    # 4. CamWhoresBay - Vidéos directes
+    try:
+        cwb_base = 'https://www.camwhoresbay.com'
+        search_url = cwb_base + '/search/{}/'.format(keyword.replace(' ', '+'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, cwb_base, headers=hdr)
+
+        pattern = r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)'
+        match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+
+        for private, videopage, name, img, hd, duration in match:
+            if 'private' in private.lower():
+                continue
+
+            name = utils.cleantext(name)
+            img = 'https:' + img if img.startswith('//') else img
+            quality = 'HD' if '>HD<' in hd else ''
+            if not videopage.startswith('http'):
+                videopage = cwb_base + '/' + videopage.lstrip('/')
+
+            all_results['camwhoresbay'].append({
+                'name': name,
+                'url': videopage,
+                'img': img,
+                'duration': duration,
+                'quality': quality,
+                'type': 'video',
+                'mode': 'camwhoresbay.Playvid'
+            })
+    except Exception as e:
+        utils.kodilog('CamWhoresBay search error: {}'.format(str(e)))
+
+    # 5. CamGirlFap - Vidéos directes
+    try:
+        cgf_base = 'https://camgirlfap.com'
+        search_url = cgf_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, cgf_base, headers=hdr)
+
+        pattern = r'class="thumb thumb_rel item  ".*?href="([^"]+)" title="([^"]+)".*?data-(?:original|src|lazy-load)="([^"]+)".*?time">([^>]+)<'
+        match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+
+        for videopage, name, img, duration in match:
+            name = utils.cleantext(name)
+            if not videopage.startswith('http'):
+                videopage = cgf_base + '/' + videopage.lstrip('/')
+
+            all_results['camgirlfap'].append({
+                'name': name,
+                'url': videopage,
+                'img': img,
+                'duration': duration,
+                'type': 'video',
+                'mode': 'camgirlfap.Playvid'
+            })
+    except Exception as e:
+        utils.kodilog('CamGirlFap search error: {}'.format(str(e)))
+
+    # 6. CamWhores.tv - Vidéos (CORRECTION)
+    try:
+        cw_base = 'https://www.camwhores.tv'
+        search_url = cw_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, cw_base, headers=hdr)
+
+        items = re.findall(r'<div class="item[^"]*".*?</div>', html, re.DOTALL | re.IGNORECASE)
+        match = re.compile(
+            r'<div class="item[^"]*".+?href="([^"]+)".+?'
+            r'title="([^"]+)".+?'
+            r'data-original="([^"]+)".+?'
+            r'duration">([^<]+)<.+?'
+            r'views">([^<]+)<',
+            re.DOTALL | re.IGNORECASE
+        ).findall(html)
+
+        for i, (videopage, name, img, duration, views) in enumerate(match):
+            is_private = False
+            if i < len(items):
+                block = items[i]
+                if 'class="ico-private"' in block:
+                    is_private = True
+
+            if is_private:
+                continue
+
+            name = utils.cleantext(name)
+            if not videopage.startswith('http'):
+                videopage = cw_base + '/' + videopage.lstrip('/')
+
+            parts = img.rstrip("/").split("/")
+            if len(parts) > 2:
+                img_preview = "/".join(parts[:-2]) + "/preview.jpg"
+            else:
+                img_preview = img
+
+            all_results['camwhorestv'].append({
+                'name': name,
+                'url': videopage,
+                'img': img_preview,
+                'duration': duration,
+                'type': 'video',
+                'mode': 'camwhorestv.Playvid'
+            })
+    except Exception as e:
+        utils.kodilog('CamWhores.tv search error: {}'.format(str(e)))
+
+   # 7. iXXX - Vidéos avec filtrage amélioré par pertinence
+    try:
+        ixxx_base = 'https://www.ixxx.com'
+        search_url = ixxx_base + '/search/{}/'.format(keyword.replace(' ', '+'))
+        hdr = utils.base_hdrs.copy()
+        html = utils._getHtml(search_url, ixxx_base, headers=hdr)
+
+        match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(html)
+
+        # Préparation des mots-clés pour la vérification (insensible à la casse)
+        keyword_lower = keyword.lower().replace('-', ' ').replace('+', ' ')
+        keyword_parts = [k.strip() for k in keyword_lower.split() if len(k.strip()) > 2]  # Mots de plus de 2 caractères
+
+        for videourl, name, thumb, info, provider in match:
+            if 'class="font-[100]"' in info:
+                continue
+
+            name_clean = utils.cleantext(name)
+            name_lower = name_lower = name_clean.lower().replace('-', ' ').replace('_', ' ')
+
+            # Vérification stricte : le titre doit contenir le mot-clé ou une partie significative
+            match_found = False
+
+            # Vérifier si le mot-clé complet est dans le titre
+            if keyword_lower in name_lower:
+                match_found = True
+            else:
+                # Vérifier si au moins un mot significatif du mot-clé est présent
+                # et que le nom n'est pas trop générique (évite les résultats "recommandés" non pertinents)
+                if keyword_parts:
+                    matching_parts = sum(1 for part in keyword_parts if part in name_lower)
+                    # Au moins 70% des mots du keyword doivent être présents, ou tous les mots si < 3 mots
+                    threshold = max(1, len(keyword_parts) * 0.7) if len(keyword_parts) > 1 else 1
+                    if matching_parts >= threshold:
+                        match_found = True
+
+            # Filtrer les résultats qui ne correspondent pas
+            if not match_found:
+                continue
+
+            final_name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), name_clean)
+            hd = 'HD' if ' HD' in info else ''
+            duration = re.findall(r'\s([\d:]+)\s', info)
+            duration = duration[0] if duration else ""
+
+            all_results['ixxx'].append({
+                'name': final_name,
+                'url': ixxx_base[:-1] + videourl.replace('&amp;', '&'),
+                'img': thumb,
+                'duration': duration,
+                'quality': hd,
+                'type': 'video',
+                'mode': 'awmnet.Playvid'
+            })
+    except Exception as e:
+        utils.kodilog('iXXX search error: {}'.format(str(e)))
+
+    # Calcul du total de tous les résultats
+    total_results = sum(len(v) for v in all_results.values())
+
+    # En-tête de la page avec le nombre total
+    site.add_dir('[COLOR hotpink]Global Search:[/COLOR] [COLOR yellow]{}[/COLOR]'.format(keyword), '', '', '', Folder=False)
+
+    if total_results == 0:
+        site.add_dir('[COLOR red]No results found on any site[/COLOR]', '', '', '', Folder=False)
+        utils.eod()
+        return
+
+    # Affichage du total sur la même ligne que "Results from all sites"
+    site.add_dir('[COLOR deeppink]--- Results from all sites ({}) ---[/COLOR]'.format(total_results), '', '', '', Folder=False)
+
+    # Affichage des résultats par site avec leur compte respectif
+    if all_results['cloudbate']:
+        site.add_dir('[COLOR violet]--- Cloudbate Models ({}) ---[/COLOR]'.format(len(all_results['cloudbate'])), '', '', '', Folder=False)
+        for item in all_results['cloudbate']:
+            site.add_dir(
+                '[Cloudbate] {}'.format(item['name']),
+                item['url'],
+                'cloudbate.List',
+                ''
+            )
+
+    if all_results['archivebate']:
+        site.add_dir('[COLOR violet]--- Archivebate Profiles ({}) ---[/COLOR]'.format(len(all_results['archivebate'])), '', '', '', Folder=False)
+        for item in all_results['archivebate']:
+            site.add_dir(
+                '[Archivebate] {}'.format(item['name']),
+                item['url'],
+                'archivebate.List',
+                ''
+            )
+
+    if all_results['drtuber']:
+        site.add_dir('[COLOR violet]--- DrTuber Videos ({}) ---[/COLOR]'.format(len(all_results['drtuber'])), '', '', '', Folder=False)
+        for item in all_results['drtuber']:
+            site.add_download_link(
+                '[DrTuber] ' + item['name'],
+                item['url'],
+                item['mode'],
+                item['img'],
+                item['name'],
+                duration=item['duration'],
+                quality=item['quality'],
+                noDownload=True
+            )
+
+    if all_results['camwhoresbay']:
+        site.add_dir('[COLOR violet]--- CamWhoresBay Videos ({}) ---[/COLOR]'.format(len(all_results['camwhoresbay'])), '', '', '', Folder=False)
+        for item in all_results['camwhoresbay']:
+            site.add_download_link(
+                '[CWB] ' + item['name'],
+                item['url'],
+                item['mode'],
+                item['img'],
+                item['name'],
+                duration=item['duration'],
+                quality=item['quality'],
+                noDownload=True
+            )
+
+    if all_results['camgirlfap']:
+        site.add_dir('[COLOR violet]--- CamGirlFap Videos ({}) ---[/COLOR]'.format(len(all_results['camgirlfap'])), '', '', '', Folder=False)
+        for item in all_results['camgirlfap']:
+            site.add_download_link(
+                '[CGF] ' + item['name'],
+                item['url'],
+                item['mode'],
+                item['img'],
+                item['name'],
+                duration=item['duration'],
+                noDownload=True
+            )
+
+    if all_results['camwhorestv']:
+        site.add_dir('[COLOR violet]--- CamWhores.tv Videos ({}) ---[/COLOR]'.format(len(all_results['camwhorestv'])), '', '', '', Folder=False)
+        for item in all_results['camwhorestv']:
+            site.add_download_link(
+                '[CW] ' + item['name'],
+                item['url'],
+                item['mode'],
+                item['img'],
+                item['name'],
+                duration=item['duration'],
+                noDownload=True
+            )
+
+    if all_results['ixxx']:
+        site.add_dir('[COLOR violet]--- iXXX Videos ({}) ---[/COLOR]'.format(len(all_results['ixxx'])), '', '', '', Folder=False)
+        for item in all_results['ixxx']:
+            site.add_download_link(
+                '[iXXX] ' + item['name'],
+                item['url'],
+                item['mode'],
+                item['img'],
+                item['name'],
+                duration=item['duration'],
+                quality=item['quality'],
+                noDownload=True
+            )
+
     utils.eod()
