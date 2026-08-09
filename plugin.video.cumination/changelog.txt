@@ -2,3 +2,4 @@
 - noodlemagazine - fix: thumbnais
 - archivebate - new site
 - chaturbate - additional search sites for model & search sites simultaneously and display the results in a unified view
+- Stripchat Show/Hide model info for increased loading speed
