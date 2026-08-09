@@ -62,6 +62,18 @@ top = "https://stripchat.com/api/front/v5/models/top?gender={0}&period=current&o
 cam = "https://stripchat.com/api/front/v2/models/{}/cam"
 @site.register(default_mode=True)
 def Main():
+    modelInfo_setting = utils.addon.getSetting('stripchat_modelInfo') == "true"
+    utils.addon.setSetting('stripchat_modelInfo', "true" if modelInfo_setting else "false")
+    site.add_download_link(
+        u'Model Info: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format("Visible" if modelInfo_setting else "Hidden"),
+        site.url,
+        'ShowModelInfo',
+        '',
+        '',
+        noDownload=True
+    )
+
+
     player = utils.addon.getSetting('stripchatplayer')
     if not player:
         utils.addon.setSetting('stripchatplayer', 'Playvid_Adaptive')
@@ -76,7 +88,7 @@ def Main():
         u'Current player: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
         site.url,
         'Playvid_change',
-        '',
+        site.img_player,
         '',
         noDownload=True
     )
@@ -215,6 +227,8 @@ def List(url, page=1):
             img = model.get("previewUrlThumbBig") or ""
 
         fanart = model.get('previewUrlThumbSmall')
+        modelInfo_setting = utils.addon.getSetting('stripchat_modelInfo') == "true"
+
         subject = model.get('groupShowTopic') or ''
         if subject:
             subject += '[CR]'
@@ -238,7 +252,7 @@ def List(url, page=1):
         else:
             streamName = ''
 
-        if True:    #model.get("isLive") is not True:
+        if modelInfo_setting:    #model.get("isLive") is not True:
             api = cam.format(model.get("id"))
             data = json.loads(utils._getHtml(api))
             if data['cam']['broadcastSchedule']['nearest'].get("day"):
@@ -816,4 +830,13 @@ def topModels(url):
     period = periodes[selection]["code"]
     url = periodes[selection]["url"]
     List(url)
-    
+
+
+@site.register()
+def ShowModelInfo():
+    current_setting = utils.addon.getSetting('stripchat_modelInfo') == "true"
+    new_value = not current_setting
+    utils.addon.setSetting('stripchat_modelInfo', "true" if new_value else "false")
+    utils.notify("Visible" if new_value else "Hidden", "Model Info")
+
+    xbmc.executebuiltin('Container.Refresh')
