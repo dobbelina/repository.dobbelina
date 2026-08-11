@@ -17,6 +17,7 @@
 '''
 
 import re
+from urllib.parse import quote
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
@@ -31,7 +32,6 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
     if camwhores_logged:
-        # site.add_dir('[COLOR fuchsia]Followed Cams[/COLOR]', '', 'list_followed', '', 1)
         site.add_dir('[COLOR fuchsia]Logout[/COLOR]', '', 'logout_camwhores', site.img_logout, Folder=False)
     else:
         site.add_dir('[COLOR red]Login[/COLOR]', '', 'login_camwhores', site.img_login, Folder=False)
@@ -43,30 +43,27 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils._getHtml(url)
+    
+    # Extraction des blocs d'items
     items = re.findall(
         r'<div class="item[^"]*".*?</div>',
         listhtml,
         re.DOTALL | re.IGNORECASE
     )
+    
+    # Extraction des données vidéo
     match = re.compile(
         r'<div class="item[^"]*".+?href="([^"]+)".+?'          # link
-        r'title="([^"]+)".+?'                                  # titlu
+        r'title="([^"]+)".+?'                                  # title
         r'data-original="([^"]+)".+?'                          # thumbnail
-        r'duration">([^<]+)<.+?'                               # durata
-        r'views">([^<]+)<',                                    # vizualizări
+        r'duration">([^<]+)<.+?'                               # duration
+        r'views">([^<]+)<',                                    # views
         re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
-    items = re.findall(
-        r'<div class="item[^"]*".*?</div>',
-        listhtml,
-        re.DOTALL | re.IGNORECASE
-    )
 
     results = []
-
     for block, (videopage, name, img, duration, views) in zip(items, match):
         is_private = 'class="ico-private"' in block
-
         results.append({
             "href": videopage,
             "title": name,
@@ -82,7 +79,7 @@ def List(url):
         img = item["img"]
         duration = item["duration"]
         views = item["views"]
-        private = item["private"]   # True / False
+        private = item["private"]
 
         label = "[COLOR blue][PV] [/COLOR]" if private else ""
         label += f"{name} [COLOR yellow][{views} views][/COLOR]"
@@ -99,33 +96,52 @@ def List(url):
             duration=duration
         )
 
-    if '/search/' in url or '/categories/' in url or '/models/' in url:
-        re_npnr = re.search(
-            # r'<li class="next">.*?from_videos\+from_albums:([^:]+)">Next'
-            r'<li class="next">.*?[from_albums|from]:(\d+)">Next'
-            , listhtml, re.DOTALL
-        ).group(1)
-        re_lpnr = re.search(
-            r'<li class="last">.*?[from_albums|from]:(\d+)">Last'
-            , listhtml, re.DOTALL
-        ).group(1)
+    # Pagination avec gestion d'erreurs
+    try:
+        if '/search/' in url or '/categories/' in url or '/models/' in url:
+            # Pagination async pour search/categories/models
+            np_match = re.search(
+                r'<li class="next">.*?(?:from_albums|from):(\d+)">Next',
+                listhtml, re.DOTALL | re.IGNORECASE
+            )
+            
+            lp_match = re.search(
+                r'<li class="last">.*?(?:from_albums|from):(\d+)">Last',
+                listhtml, re.DOTALL | re.IGNORECASE
+            )
+            
+            if np_match:
+                re_npnr = np_match.group(1)
+                re_lpnr = lp_match.group(1) if lp_match else "?"
+                
+                # Extraction des paramètres pour l'URL async
+                np = re.search(
+                    r'>\.\.\.<.*?data-parameters="([^"]+):([^:]+)">.*?(?:from_albums|from):(\d+)">.*Next',
+                    listhtml, re.DOTALL | re.IGNORECASE
+                )
+                
+                if np:
+                    npurl = np.group(1).replace(':', '=').replace(';', '&').replace('+', '={}&'.format(re_npnr))
+                    
+                    if '/search/' in url:
+                        block = '&block_id=list_videos_videos_list_search_result&'
+                    else:
+                        block = '&block_id=list_videos_common_videos_list&'
 
-        np = re.compile(r'>\.\.\.<.*?data-parameters="([^"]+):([^:]+)">.*?[from_albums|from]:(\d+)">.*Next'
-            , re.DOTALL | re.IGNORECASE).search(listhtml)
-        npurl = np.group(1).replace(':', '=').replace(';', '&').replace('+', '={}&'.format(re_npnr))
-        if '/search/' in url:
-            block = '&block_id=list_videos_videos_list_search_result&'
-        elif '/categories/' in url or '/models/' in url:
-            block = '&block_id=list_videos_common_videos_list&'
+                    base_url = url.split('?')[0] if '?' in url else url
+                    re_npurl = base_url + '?mode=async&function=get_block' + block + npurl + '=' + re_npnr
+                    
+                    site.add_dir('Next Page... ({0}/{1})'.format(re_npnr, re_lpnr), re_npurl, 'List', site.img_next)
+        else:
+            # Pagination standard pour les autres pages
+            re_npurl = r'class="next"><a href="([^"]+)"'
+            re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
+            re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
+            utils.next_page(site, 'camwhorestv.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr)
+            
+    except Exception as e:
+        utils.kodilog("Pagination error: {0}".format(str(e)))
 
-        npurl = (url.split('?')[0] if '?' in url else url) + '?mode=async&function=get_block' + block + npurl + '=' + re_npnr
-        re_npurl = npurl
-        site.add_dir('Next Page... ({0}/{1})'.format(re_npnr, re_lpnr), re_npurl, 'List', site.img_next)
-    else:
-        re_npurl = 'class="next"><a href="([^"]+)"'
-        re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
-        re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
-        utils.next_page(site, 'camwhorestv.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr)      #, contextm='camwhorestv.GotoPage')
 
     utils.eod()
 
@@ -135,8 +151,11 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url += keyword.replace(' ', '-') + '/'
-        List(url)
+        # Encodage URL propre pour éviter les problèmes avec caractères spéciaux
+        keyword_clean = keyword.strip().replace(' ', '-')
+        keyword_encoded = quote(keyword_clean, safe='-')
+        search_url = url + keyword_encoded + '/'
+        List(search_url)
 
 
 @site.register()
@@ -144,24 +163,37 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     html = utils.getHtml(url)
     if 'class="message"' in html:
-        message = re.search('span class="message">\s(.+) Only', html)
-        utils.notify('', message.group(1).lstrip(" \t"))
+        message = re.search(r'span class="message">\s*(.+?)\s+Only', html, re.IGNORECASE)
+        if message:
+            utils.notify('', message.group(1).strip())
         return
     vp.play_from_kt_player(html)
+
 
 @site.register()
 def Categories(url):
     listhtml = utils._getHtml(url)
     match = re.compile(
-    r'<a\s+class="item"\s+href="([^"]+)"'
-    r'\s+title="([^"]+)".+?'
-    r'<img[^>]+src="([^"]+)".+?'
-    r'<div class="videos">([^<]+)<'
-    , re.DOTALL | re.IGNORECASE
+        r'<a\s+class="item"\s+href="([^"]+)"\s+title="([^"]+)".+?'
+        r'<img[^>]+src="([^"]+)".+?'
+        r'<div class="videos">([^<]+)<',
+        re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
+    
     for cat_url, cat_title, cat_img, cat_count in match:
         site.add_dir('[COLOR hotpink]' + cat_title + ' [/COLOR][COLOR yellow][{}][/COLOR]'.format(cat_count), cat_url, 'List', cat_img)
-    utils.eod()     
+    
+    # Pagination pour catégories
+    try:
+        re_npurl = r'class="next"><a href="([^"]+)"'
+        re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
+        re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
+        utils.next_page(site, 'camwhorestv.Categories', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='camwhorestv.GotoPage')
+    except:
+        pass
+        
+    utils.eod()
+
 
 @site.register()
 def Models(url):
@@ -170,13 +202,20 @@ def Models(url):
         r'a class="item.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?videos">([^>]+)<',
         re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
+    
     for cat_url, cat_title, cat_img, cat_count in match:
         site.add_dir(cat_title + ' [COLOR yellow][{}][/COLOR]'.format(cat_count), cat_url, 'List', cat_img)
-    re_npurl = 'class="next"><a href="([^"]+)"'
-    re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
-    re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
-    utils.next_page(site, 'camwhorestv.Models', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='camwhorestv.GotoPage')
-    utils.eod()     
+    
+    # Pagination pour modèles
+    try:
+        re_npurl = r'class="next"><a href="([^"]+)"'
+        re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
+        re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
+        utils.next_page(site, 'camwhorestv.Models', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='camwhorestv.GotoPage')
+    except:
+        pass
+        
+    utils.eod()
 
 
 def get_camwhores_session():
@@ -263,7 +302,6 @@ def login_camwhores():
             utils.addon.setSetting('camwhores_logged', 'false')
             camwhores_logged = False
             return False
-        utils.notify('Cam4', u'Login successful for {}'.format(cw_user))
 
         display_name = response_json.get('username') or cw_user
         utils.addon.setSetting('camwhores_display_name', display_name)
@@ -317,7 +355,6 @@ def logout_camwhores():
 
     try:
         utils._getHtml(logout_url, headers=headers)
-
         utils.notify('CamWhores', u'Session ended successfully.')
 
         clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)

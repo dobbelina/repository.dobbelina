@@ -1,4 +1,5 @@
 [B]Version 1.1.195[/B]
 - chaturbate - fix - camwhorestv search, download videos
+- camwhorestv - fix - pagination and serach
 
 
