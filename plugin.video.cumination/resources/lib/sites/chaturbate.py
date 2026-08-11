@@ -1014,7 +1014,6 @@ def get_cookie():
 def Record(id):
     import xbmcgui
 
-    # Liste dynamique des moteurs de recherche disponibles
     search_engines = [
         {"name": "Cloudbate", "mode": "cloudbate.Search", "url": "https://www.cloudbate.com/search/{0}/"},
         {"name": "Archivebate", "mode": "archivebate.Search", "url": "https://archivebate.com/api/v1/search?query={0}"},
@@ -1029,24 +1028,26 @@ def Record(id):
     selection = xbmcgui.Dialog().select('Select site for search', names)
 
     if selection == 0:
-        # Recherche globale sur tous les sites
         contexturl = (utils.addon_sys + "?mode=chaturbate.GlobalSearch&keyword=" + urllib_parse.quote_plus(id))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     elif selection > 0:
-        # Recherche individuelle sur un site spécifique
         selected_site = search_engines[selection - 1]
         target_url = selected_site["url"].format(id)
-        # Pour camwhorestv, on utilise List car Search n'existe pas dans le fichier modèle
         if "camwhorestv" in selected_site["mode"]:
             contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url))
         else:
             contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url) + "&keyword=" + urllib_parse.quote_plus(id))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-    utils.eod()
 
 
 @site.register()
 def GlobalSearch(keyword=None):
+    # CORRECTION: Récupération du keyword depuis les paramètres URL si non fourni
+    if not keyword:
+        import sys
+        params = utils.get_params()
+        keyword = params.get('keyword', '')
+    
     if not keyword:
         utils.notify('Global Search', 'No keyword provided')
         utils.eod()
@@ -1054,7 +1055,6 @@ def GlobalSearch(keyword=None):
 
     import re
 
-    # Dictionnaire pour stocker les résultats avant affichage (sans limite)
     all_results = {
         'cloudbate': [],
         'archivebate': [],
@@ -1065,7 +1065,7 @@ def GlobalSearch(keyword=None):
         'ixxx': []
     }
 
-    # 1. Cloudbate - Recherche de modèles
+    # 1. Cloudbate
     try:
         cloudbate_base = 'https://www.cloudbate.com'
         search_url = cloudbate_base + '/search/{}/'.format(keyword.replace(' ', '-'))
@@ -1089,7 +1089,7 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('Cloudbate search error: {}'.format(str(e)))
 
-    # 2. Archivebate - Profils via API
+    # 2. Archivebate
     try:
         archive_base = 'https://archivebate.com'
         search_url = archive_base + '/api/v1/search?query={}'.format(urllib_parse.quote_plus(keyword))
@@ -1124,7 +1124,7 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('Archivebate search error: {}'.format(str(e)))
 
-    # 3. DrTuber - Vidéos directes
+    # 3. DrTuber
     try:
         drtuber_base = 'https://www.drtuber.com'
         search_url = drtuber_base + '/search/videos/{}/'.format(keyword.replace(' ', '+'))
@@ -1171,7 +1171,7 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('DrTuber search error: {}'.format(str(e)))
 
-    # 4. CamWhoresBay - Vidéos directes
+    # 4. CamWhoresBay
     try:
         cwb_base = 'https://www.camwhoresbay.com'
         search_url = cwb_base + '/search/{}/'.format(keyword.replace(' ', '+'))
@@ -1203,7 +1203,7 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('CamWhoresBay search error: {}'.format(str(e)))
 
-    # 5. CamGirlFap - Vidéos directes
+    # 5. CamGirlFap
     try:
         cgf_base = 'https://camgirlfap.com'
         search_url = cgf_base + '/search/{}/'.format(keyword.replace(' ', '-'))
@@ -1229,42 +1229,47 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('CamGirlFap search error: {}'.format(str(e)))
 
-    # 6. CamWhores.tv - Vidéos (CORRECTION)
+    # 6. CamWhores.tv - CORRECTION
     try:
         cw_base = 'https://www.camwhores.tv'
-        search_url = cw_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+        keyword_clean = keyword.strip().replace(' ', '-')
+        keyword_encoded = urllib_parse.quote(keyword_clean, safe='-')
+        search_url = cw_base + '/search/{}/'.format(keyword_encoded)
+        
         hdr = utils.base_hdrs.copy()
+        hdr['Referer'] = cw_base + '/'
         html = utils._getHtml(search_url, cw_base, headers=hdr)
 
-        items = re.findall(r'<div class="item[^"]*".*?</div>', html, re.DOTALL | re.IGNORECASE)
+        items = re.findall(r'<div class="item[^"]*".*?</div>\s*</div>', html, re.DOTALL | re.IGNORECASE)
+        
         match = re.compile(
-            r'<div class="item[^"]*".+?href="([^"]+)".+?'
-            r'title="([^"]+)".+?'
-            r'data-original="([^"]+)".+?'
-            r'duration">([^<]+)<.+?'
+            r'<div class="item[^"]*".*?href="([^"]+)".*?'
+            r'title="([^"]+)".*?'
+            r'data-original="([^"]+)".*?'
+            r'duration">([^<]+)<.*?'
             r'views">([^<]+)<',
             re.DOTALL | re.IGNORECASE
         ).findall(html)
 
-        for i, (videopage, name, img, duration, views) in enumerate(match):
-            is_private = False
-            if i < len(items):
-                block = items[i]
-                if 'class="ico-private"' in block:
-                    is_private = True
-
-            if is_private:
+        for i, data in enumerate(match):
+            if i >= len(items):
+                break
+                
+            videopage, name, img, duration, views = data
+            block = items[i]
+            
+            if 'class="ico-private"' in block:
                 continue
 
             name = utils.cleantext(name)
             if not videopage.startswith('http'):
                 videopage = cw_base + '/' + videopage.lstrip('/')
 
-            parts = img.rstrip("/").split("/")
-            if len(parts) > 2:
+            parts = img.rstrip("/").split("/") if img else []
+            if len(parts) >= 3:
                 img_preview = "/".join(parts[:-2]) + "/preview.jpg"
             else:
-                img_preview = img
+                img_preview = img or ''
 
             all_results['camwhorestv'].append({
                 'name': name,
@@ -1277,7 +1282,7 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('CamWhores.tv search error: {}'.format(str(e)))
 
-   # 7. iXXX - Vidéos avec filtrage amélioré par pertinence
+    # 7. iXXX - CORRECTION: typo name_lower
     try:
         ixxx_base = 'https://www.ixxx.com'
         search_url = ixxx_base + '/search/{}/'.format(keyword.replace(' ', '+'))
@@ -1286,34 +1291,27 @@ def GlobalSearch(keyword=None):
 
         match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(html)
 
-        # Préparation des mots-clés pour la vérification (insensible à la casse)
         keyword_lower = keyword.lower().replace('-', ' ').replace('+', ' ')
-        keyword_parts = [k.strip() for k in keyword_lower.split() if len(k.strip()) > 2]  # Mots de plus de 2 caractères
+        keyword_parts = [k.strip() for k in keyword_lower.split() if len(k.strip()) > 2]
 
         for videourl, name, thumb, info, provider in match:
             if 'class="font-[100]"' in info:
                 continue
 
             name_clean = utils.cleantext(name)
-            name_lower = name_lower = name_clean.lower().replace('-', ' ').replace('_', ' ')
+            name_lower = name_clean.lower().replace('-', ' ').replace('_', ' ')
 
-            # Vérification stricte : le titre doit contenir le mot-clé ou une partie significative
             match_found = False
 
-            # Vérifier si le mot-clé complet est dans le titre
             if keyword_lower in name_lower:
                 match_found = True
             else:
-                # Vérifier si au moins un mot significatif du mot-clé est présent
-                # et que le nom n'est pas trop générique (évite les résultats "recommandés" non pertinents)
                 if keyword_parts:
                     matching_parts = sum(1 for part in keyword_parts if part in name_lower)
-                    # Au moins 70% des mots du keyword doivent être présents, ou tous les mots si < 3 mots
                     threshold = max(1, len(keyword_parts) * 0.7) if len(keyword_parts) > 1 else 1
                     if matching_parts >= threshold:
                         match_found = True
 
-            # Filtrer les résultats qui ne correspondent pas
             if not match_found:
                 continue
 
@@ -1334,10 +1332,8 @@ def GlobalSearch(keyword=None):
     except Exception as e:
         utils.kodilog('iXXX search error: {}'.format(str(e)))
 
-    # Calcul du total de tous les résultats
     total_results = sum(len(v) for v in all_results.values())
 
-    # En-tête de la page avec le nombre total
     site.add_dir('[COLOR hotpink]Global Search:[/COLOR] [COLOR yellow]{}[/COLOR]'.format(keyword), '', '', '', Folder=False)
 
     if total_results == 0:
@@ -1345,10 +1341,8 @@ def GlobalSearch(keyword=None):
         utils.eod()
         return
 
-    # Affichage du total sur la même ligne que "Results from all sites"
     site.add_dir('[COLOR deeppink]--- Results from all sites ({}) ---[/COLOR]'.format(total_results), '', '', '', Folder=False)
 
-    # Affichage des résultats par site avec leur compte respectif
     if all_results['cloudbate']:
         site.add_dir('[COLOR violet]--- Cloudbate Models ({}) ---[/COLOR]'.format(len(all_results['cloudbate'])), '', '', '', Folder=False)
         for item in all_results['cloudbate']:
@@ -1372,6 +1366,7 @@ def GlobalSearch(keyword=None):
     if all_results['drtuber']:
         site.add_dir('[COLOR violet]--- DrTuber Videos ({}) ---[/COLOR]'.format(len(all_results['drtuber'])), '', '', '', Folder=False)
         for item in all_results['drtuber']:
+            # CORRECTION: Ajout de noDownload=False pour permettre téléchargement
             site.add_download_link(
                 '[DrTuber] ' + item['name'],
                 item['url'],
@@ -1380,7 +1375,7 @@ def GlobalSearch(keyword=None):
                 item['name'],
                 duration=item['duration'],
                 quality=item['quality'],
-                noDownload=True
+                noDownload=False
             )
 
     if all_results['camwhoresbay']:
@@ -1394,7 +1389,7 @@ def GlobalSearch(keyword=None):
                 item['name'],
                 duration=item['duration'],
                 quality=item['quality'],
-                noDownload=True
+                noDownload=False
             )
 
     if all_results['camgirlfap']:
@@ -1407,7 +1402,7 @@ def GlobalSearch(keyword=None):
                 item['img'],
                 item['name'],
                 duration=item['duration'],
-                noDownload=True
+                noDownload=False
             )
 
     if all_results['camwhorestv']:
@@ -1420,7 +1415,7 @@ def GlobalSearch(keyword=None):
                 item['img'],
                 item['name'],
                 duration=item['duration'],
-                noDownload=True
+                noDownload=False
             )
 
     if all_results['ixxx']:
@@ -1434,7 +1429,7 @@ def GlobalSearch(keyword=None):
                 item['name'],
                 duration=item['duration'],
                 quality=item['quality'],
-                noDownload=True
+                noDownload=False
             )
 
     utils.eod()
