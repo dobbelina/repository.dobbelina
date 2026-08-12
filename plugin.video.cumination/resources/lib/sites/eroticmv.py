@@ -19,6 +19,7 @@
 import re
 import xbmc
 import xbmcgui
+import base64
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -104,7 +105,15 @@ def Playvid(url, name, download=None):
     match = re.compile(r'og:video:url"\s*content="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         videourl = match[0]
+        pattern = r"http://(.*?)\.m3u8"
+        match = re.search(pattern, videourl)
+        
+        if match:
+            base64_string = match.group(1)
+            decoded_bytes = base64.b64decode(base64_string)
+            decoded_text = decoded_bytes.decode('utf-8')
+
         if 'embed' in videourl:
             vp.play_from_site_link(videourl)
         else:
-            vp.play_from_direct_link(videourl)
+            vp.play_from_direct_link(decoded_text)
