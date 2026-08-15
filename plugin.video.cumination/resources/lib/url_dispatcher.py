@@ -53,6 +53,7 @@ class URL_Dispatcher(object):
         self.img_player = cum_image('cum-player.png')
         self.img_favorites = cum_image('cum-favorites.png')
         self.img_topcams = cum_image('cum-topcams.png')
+        self.img_filters = cum_image('cum-filters.png')
         self.widget = False
 
     def get_full_mode(self, mode):
