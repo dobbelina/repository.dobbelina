@@ -21,6 +21,8 @@ import re
 import os
 import sqlite3
 from six.moves import urllib_parse
+from six.moves.urllib.request import Request, urlopen
+import ssl
 import six
 import json
 import random
@@ -35,8 +37,39 @@ tapi = 'https://chaturbate.com/api/ts/hashtags/tag-table-data/'
 site = AdultSite('chaturbate', '[COLOR hotpink]Chaturbate[/COLOR]', bu, 'chaturbate.png', 'chaturbate', True)
 
 addon = utils.addon
-_cb_proxies = {}  # port -> {'proxy': srv, 'state': _proxy_state} - supports simultaneous streams
+_cb_proxies = {}
 HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4'}
+
+
+def _silent_get(url, headers=None, timeout=10):
+    """Effectue une requête HTTP silencieuse sans notification d'erreur"""
+    try:
+        if headers is None:
+            headers = {}
+
+        req = Request(url, headers=headers)
+
+        # Gestion du SSL pour éviter les erreurs de certificat
+        try:
+            context = ssl._create_unverified_context()
+            response = urlopen(req, timeout=timeout, context=context)
+        except:
+            response = urlopen(req, timeout=timeout)
+
+        return response.read().decode('utf-8', 'replace')
+    except:
+        return None
+
+
+def _silent_get_json(url, headers=None, timeout=10):
+    """Effectue une requête HTTP et retourne le JSON parsé, ou None en cas d'erreur"""
+    try:
+        html = _silent_get(url, headers, timeout)
+        if html:
+            return json.loads(html)
+        return None
+    except:
+        return None
 
 
 @site.register(default_mode=True)
@@ -47,7 +80,6 @@ def Main():
     trans = addon.getSetting("chattrans") == "true"
 
     site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
-    # site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', rapi + '?limit=100&offset=0&keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', site.url + 'ax/search/?keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
@@ -214,8 +246,6 @@ def List(url, page=1):
         contextmenu = [('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(id), 'RunPlugin(' + contextrecord + ')')]
         contextmenu.append(('[COLOR violet]Follow [/COLOR]{}'.format(name), 'RunPlugin(' + contextfollow + ')') if not follow else ('[COLOR violet]Unfollow [/COLOR]{}'.format(name), 'RunPlugin(' + contextunfollow + ')'))
 
-
-
         site.add_download_link(name, videopage, 'Playvid', img, subject, contextm=contextmenu, fav=fav, noDownload=True)
 
     total_items = listhtml.get('total_count')
@@ -268,8 +298,6 @@ def clean_database(showdialog=True):
 @site.register()
 def Playvid(url, name):
     playmode = int(addon.getSetting('chatplay'))
-    # dossier isnt in the page html anymore (js renders it), so grab the
-    # hls off the ajax endpoint instead
     slug = url.rstrip('/').rsplit('/', 1)[-1]
     hdr = HTTP_HEADERS_IPAD.copy()
     hdr.update({'X-Requested-With': 'XMLHttpRequest',
@@ -285,21 +313,15 @@ def Playvid(url, name):
     except ValueError:
         pass
 
-    # rtmp playmode wants dossier fields we dont get here, leave data false
     data = False
     if edge.get('room_status') == 'public' and edge.get('url'):
         m3u8stream = edge['url']
     else:
         m3u8stream = False
 
-    # m3u8stream = m3u8stream.replace('playlist.m3u8', 'playlist_sfm4s.m3u8').replace('live-hls', 'live-c-fhls').replace('live-edge', 'live-c-fhls')
-
     if playmode == 0:
         if m3u8stream:
-            import socket, threading, gzip, zlib  # noqa: E401
-            # py2 (kodi 18.x leia) doesnt have http.server / socketserver,
-            # those are py3 names. fall back to py2 names so the proxy
-            # imports cleanly on older builds. issue #1845
+            import socket, threading, gzip, zlib
             try:
                 from http.server import BaseHTTPRequestHandler
                 from socketserver import TCPServer, ThreadingMixIn
@@ -310,9 +332,6 @@ def Playvid(url, name):
             from six.moves.urllib.parse import urljoin as _urljoin
 
             def _read_body(resp):
-                # mmcdn edges return gzipped bodies even without Accept-Encoding,
-                # sometimes with Content-Encoding header and sometimes without.
-                # decompress on either signal so downstream decode/passthrough is clean.
                 raw = resp.read()
                 ce = (resp.headers.get('Content-Encoding') or '').lower()
                 if ce == 'gzip' or raw[:2] == b'\x1f\x8b':
@@ -331,9 +350,6 @@ def Playvid(url, name):
                 return raw
 
             try:
-                global _cb_proxies
-
-                # Debug log for proxy events (toggle via Settings > enh_debug)
                 _dbg_path = os.path.join(utils.TRANSLATEPATH('special://temp'), 'cb_proxy.log')
                 _dbg_on = addon.getSetting('enh_debug') == 'true'
 
@@ -345,9 +361,6 @@ def Playvid(url, name):
                             f.write('{} {}\n'.format(time.strftime('%H:%M:%S'), msg))
                     except Exception:
                         pass
-
-                # Each stream binds its own ephemeral port - no previous proxy to kill.
-                # _cb_proxies keeps ALL active streams alive simultaneously.
 
                 headers = HTTP_HEADERS_IPAD.copy()
                 headers['Referer'] = url
@@ -364,13 +377,11 @@ def Playvid(url, name):
                     lambda m: 'URI="' + _urljoin(base, m.group(1)) + '"',
                     master_fixed, flags=re.IGNORECASE)
 
-                # Bind proxy port first so we can rewrite chunklist URLs
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.bind(('127.0.0.1', 0))
                 port = sock.getsockname()[1]
                 sock.close()
 
-                # State for session reconnection
                 _proxy_state = {
                     'stream_url': m3u8stream,
                     'headers': headers,
@@ -384,7 +395,6 @@ def Playvid(url, name):
                     'last_request': time.time(),
                 }
 
-                # Populate initial chunklist URL map (type_key -> cdn_url)
                 for _line in master_fixed.splitlines():
                     _line = _line.strip()
                     if _line and not _line.startswith('#') and 'chunklist_' in _line:
@@ -397,8 +407,6 @@ def Playvid(url, name):
                         _proxy_state['url_map'][_km.group(1)] = _mi.group(1)
                 _dbg('PROXY START port={} keys={}'.format(port, list(_proxy_state['url_map'].keys())))
 
-                # Rewrite only .m3u8 chunklist URLs to go through our proxy
-                # (leave init segments / .m4s files as direct CDN URLs)
                 master_fixed = re.sub(
                     r'^(https?://[^\s]+\.m3u8[^\s]*)$',
                     lambda m: 'http://127.0.0.1:{}/chunklist?url={}'.format(port, urllib_parse.quote(m.group(1), safe='')),
@@ -410,7 +418,6 @@ def Playvid(url, name):
                 master_bytes = master_fixed.encode('utf-8')
 
                 def _refresh_session():
-                    """Re-fetch master playlist to get fresh session tokens."""
                     now = time.time()
                     with _proxy_state['lock']:
                         if now - _proxy_state['last_refresh'] < 2:
@@ -441,9 +448,6 @@ def Playvid(url, name):
                                 new_map[km.group(1)] = mi.group(1)
                         with _proxy_state['lock']:
                             _proxy_state['url_map'].update(new_map)
-                            # Invalidate cached chunklists and segment maps so the
-                            # next ISA request pulls a fresh chunklist with the new
-                            # JWT session instead of serving stale dead-segment bodies.
                             _proxy_state['chunklist_cache'].clear()
                             _proxy_state['seg_cdn_urls'].clear()
                             _proxy_state['latest_seg'].clear()
@@ -456,8 +460,6 @@ def Playvid(url, name):
                 def _force_stop(reason):
                     _proxy_state['stopping'] = True
                     _dbg('FORCE STOP: {}'.format(reason))
-                    # skip the global Stop if player moved to another proxy
-                    # (sibling playvid). still tear our own proxy down below.
                     try:
                         cur = xbmc.Player().getPlayingFile() or ''
                     except Exception:
@@ -542,7 +544,6 @@ def Playvid(url, name):
                     t2.daemon = True
                     t2.start()
 
-                # Localhost proxy: serves master + proxies chunklists with auto-reconnect
                 class _H(BaseHTTPRequestHandler):
                     def do_GET(self):
                         if self.path.startswith('/chunklist'):
@@ -559,7 +560,6 @@ def Playvid(url, name):
                             _proxy_state['request_count'] = _proxy_state.get('request_count', 0) + 1
 
                             def _fetch_and_absolutize(u):
-                                """Fetch chunklist, absolutize relative URIs, and route segments through proxy."""
                                 creq = _Req(u, headers=_proxy_state['headers'])
                                 resp = _uopen(creq, timeout=10)
                                 raw = _read_body(resp).decode('utf-8', 'replace')
@@ -572,7 +572,6 @@ def Playvid(url, name):
                                     r'URI="(?!https?://)([^"]+)"',
                                     lambda m: 'URI="' + _urljoin(cbase, m.group(1)) + '"',
                                     raw, flags=re.IGNORECASE)
-                                # Track current CDN segment URLs for fallback
                                 for _l in raw.splitlines():
                                     _l = _l.strip()
                                     if _l and not _l.startswith('#') and '.m4s' in _l:
@@ -580,7 +579,6 @@ def Playvid(url, name):
                                         _proxy_state['seg_cdn_urls'][_sn] = _l
                                         if type_key:
                                             _proxy_state['latest_seg'][type_key] = _l
-                                # Rewrite segment URLs to go through localhost proxy
                                 raw = re.sub(
                                     r'^(https?://[^\s]+\.m4s[^\s]*)$',
                                     lambda m: 'http://127.0.0.1:{}/segment?url={}'.format(port, urllib_parse.quote(m.group(1), safe='')),
@@ -601,7 +599,6 @@ def Playvid(url, name):
                                 self.end_headers()
                                 self.wfile.write(data)
                             except Exception as e:
-                                # If we already gave up, keep hammering stop
                                 if _proxy_state.get('stopping'):
                                     _dbg('STOP REINFORCED (ISA still retrying)')
                                     try:
@@ -616,11 +613,9 @@ def Playvid(url, name):
                                     self.wfile.write(endlist)
                                     return
 
-                                # CDN session died ,kick off background reconnect
                                 _dbg('CHUNKLIST FAIL type={} err={}'.format(type_key, e))
                                 _trigger_reconnect('chunklist fail type={}: {}'.format(type_key, e))
 
-                                # While reconnecting, try serving from refreshed URLs
                                 if type_key and not _proxy_state.get('stopping'):
                                     new_url = _proxy_state['url_map'].get(type_key)
                                     if new_url and new_url != cdn_url:
@@ -636,7 +631,6 @@ def Playvid(url, name):
                                         except Exception:
                                             pass
 
-                                # Serve cached playlist to keep ISA alive during reconnect
                                 cached = _proxy_state['chunklist_cache'].get(type_key) if type_key else None
                                 if cached:
                                     _dbg('SERVING CACHED playlist type={}'.format(type_key))
@@ -663,7 +657,6 @@ def Playvid(url, name):
                             _proxy_state['request_count'] = _proxy_state.get('request_count', 0) + 1
                             seg_name = seg_url.rsplit('/', 1)[-1].split('?')[0]
                             _proxy_state['last_request'] = time.time()
-                            # Try the requested URL first
                             try:
                                 sreq = _Req(seg_url, headers=_proxy_state['headers'])
                                 sresp = _uopen(sreq, timeout=10)
@@ -678,7 +671,6 @@ def Playvid(url, name):
                             except Exception as e:
                                 _dbg('SEG FAIL {} {}'.format(seg_name, e))
                                 _trigger_reconnect('segment fail: {}'.format(seg_name))
-                            # Fallback: try current CDN URL for same segment name
                             current_url = _proxy_state['seg_cdn_urls'].get(seg_name)
                             if current_url and current_url != seg_url:
                                 try:
@@ -695,7 +687,6 @@ def Playvid(url, name):
                                     return
                                 except Exception as e2:
                                     _dbg('SEG FALLBACK FAIL {}'.format(e2))
-                            # Last resort: serve the latest known segment for this track
                             tm = re.search(r'(video|audio)_(\d+)_llhls', seg_name)
                             if tm:
                                 for tk, latest in _proxy_state['latest_seg'].items():
@@ -743,30 +734,15 @@ def Playvid(url, name):
                 t.start()
 
                 def _monitor_player():
-                    """Keep proxy alive while ISA is actively fetching from it.
-                    Only tear down when no requests have been made for an extended
-                    period (stream genuinely ended/stopped), or stopping is flagged.
-                    This allows multiple simultaneous streams - each proxy lives
-                    independently based on its own request activity, not on whether
-                    its URL is the 'current' xbmc.Player item.
-                    """
                     _dbg('MONITOR: thread started for port={}'.format(port))
-                    # Grace period: wait up to 30s for ISA to start hitting this proxy
                     _proxy_state['last_request'] = time.time()
                     try:
                         mon = xbmc.Monitor()
-                        # Phase 1: wait for first request to arrive (up to 30s)
                         confirmed = False
                         for _ in range(60):
                             if mon.abortRequested() or _proxy_state.get('stopping'):
                                 _dbg('MONITOR: abort/stop during grace window')
                                 break
-                            if time.time() - _proxy_state.get('last_request', 0) < 29:
-                                # last_request was seeded at start; a real request
-                                # will update it - if it stays unchanged we haven't
-                                # been hit yet. We detect a real request by checking
-                                # whether seg/chunklist count incremented instead.
-                                pass
                             if _proxy_state.get('request_count', 0) > 0:
                                 confirmed = True
                                 _dbg('MONITOR: first request received, proxy active')
@@ -774,10 +750,8 @@ def Playvid(url, name):
                             if mon.waitForAbort(0.5):
                                 break
                         if not confirmed:
-                            # No requests in 30s - ISA never picked us up
                             _dbg('MONITOR: no requests in 30s, tearing down idle proxy')
                         else:
-                            # Phase 2: watch for inactivity (no requests for 30s = stream ended)
                             _dbg('MONITOR: watching for inactivity (idle_timeout=30s)')
                             while not mon.abortRequested() and not _proxy_state.get('stopping'):
                                 if mon.waitForAbort(5):
@@ -819,7 +793,6 @@ def Playvid(url, name):
     elif playmode == 1:
         if data:
             streamserver = "rtmp://{}/live-edge".format(m3u8stream.split('/')[2])
-            # streamserver = "rtmp://{}/live-edge".format(data['flash_host'])
             modelname = data['broadcaster_username']
             username_full = data['viewer_username']
             username = 'anonymous'
@@ -1042,13 +1015,18 @@ def Record(id):
 
 @site.register()
 def GlobalSearch(keyword=None):
+    # CORRECTION: Désactivation temporaire des notifications pendant la recherche
+    original_notify = utils.notify
+    utils.notify = lambda *args, **kwargs: None
+
     # CORRECTION: Récupération du keyword depuis les paramètres URL si non fourni
     if not keyword:
-        import sys
         params = utils.get_params()
         keyword = params.get('keyword', '')
-    
+
     if not keyword:
+        # Restauration de notify avant de sortir
+        utils.notify = original_notify
         utils.notify('Global Search', 'No keyword provided')
         utils.eod()
         return
@@ -1065,272 +1043,278 @@ def GlobalSearch(keyword=None):
         'ixxx': []
     }
 
-    # 1. Cloudbate
     try:
-        cloudbate_base = 'https://www.cloudbate.com'
-        search_url = cloudbate_base + '/search/{}/'.format(keyword.replace(' ', '-'))
-        hdr = utils.base_hdrs.copy()
-        html = utils._getHtml(search_url, cloudbate_base, headers=hdr)
+        # 1. Cloudbate
+        try:
+            cloudbate_base = 'https://www.cloudbate.com'
+            search_url = cloudbate_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+            hdr = utils.base_hdrs.copy()
+            html = utils._getHtml(search_url, cloudbate_base, headers=hdr)
 
-        models = re.compile(r'<li class="lists">\s*<a href="([^"]+)" title="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(html)
+            models = re.compile(r'<li class="lists">\s*<a href="([^"]+)" title="([^"]+)">', re.IGNORECASE | re.DOTALL).findall(html)
 
-        for model_url, model_name in models:
-            if not model_url.startswith('http'):
-                if model_url.startswith('/'):
-                    model_url = cloudbate_base + model_url
-                else:
-                    model_url = cloudbate_base + '/' + model_url
+            for model_url, model_name in models:
+                if not model_url.startswith('http'):
+                    if model_url.startswith('/'):
+                        model_url = cloudbate_base + model_url
+                    else:
+                        model_url = cloudbate_base + '/' + model_url
 
-            all_results['cloudbate'].append({
-                'name': model_name,
-                'url': model_url,
-                'type': 'dir'
-            })
-    except Exception as e:
-        utils.kodilog('Cloudbate search error: {}'.format(str(e)))
+                all_results['cloudbate'].append({
+                    'name': model_name,
+                    'url': model_url,
+                    'type': 'dir'
+                })
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-    # 2. Archivebate
-    try:
-        archive_base = 'https://archivebate.com'
-        search_url = archive_base + '/api/v1/search?query={}'.format(urllib_parse.quote_plus(keyword))
-        hdr = utils.base_hdrs.copy()
-        hdr['Accept'] = 'application/json, text/plain, */*'
-        hdr['X-Requested-With'] = 'XMLHttpRequest'
-        html = utils._getHtml(search_url, archive_base, headers=hdr)
+        # 2. Archivebate
+        try:
+            archive_base = 'https://archivebate.com'
+            search_url = archive_base + '/api/v1/search?query={}'.format(urllib_parse.quote_plus(keyword))
+            hdr = utils.base_hdrs.copy()
+            hdr['Accept'] = 'application/json, text/plain, */*'
+            hdr['X-Requested-With'] = 'XMLHttpRequest'
+            html = utils._getHtml(search_url, archive_base, headers=hdr)
 
-        data = json.loads(html)
-        profiles = data.get('data', [])
+            data = json.loads(html)
+            profiles = data.get('data', [])
 
-        for item in profiles:
-            username = item.get('username', '').strip()
-            platform = item.get('platform', '').strip()
-            gender = item.get('gender', '').strip()
+            for item in profiles:
+                username = (item.get('username') or '').strip()
+                platform = (item.get('platform') or '').strip()
+                gender = (item.get('gender') or '').strip()
 
-            if not username:
-                continue
-
-            title = username
-            if platform:
-                title += ' [COLOR yellow][{}][/COLOR]'.format(platform)
-            if gender:
-                title += ' [COLOR cyan][{}][/COLOR]'.format(gender)
-            profile_url = archive_base + '/profile/' + urllib_parse.quote(username)
-
-            all_results['archivebate'].append({
-                'name': title,
-                'url': profile_url,
-                'type': 'dir'
-            })
-    except Exception as e:
-        utils.kodilog('Archivebate search error: {}'.format(str(e)))
-
-    # 3. DrTuber
-    try:
-        drtuber_base = 'https://www.drtuber.com'
-        search_url = drtuber_base + '/search/videos/{}/'.format(keyword.replace(' ', '+'))
-        hdr = utils.base_hdrs.copy()
-        html = utils._getHtml(search_url, drtuber_base, headers=hdr)
-        html = html.split('</h1>')[-1]
-
-        delimiter = ' <a href="/video'
-        videolist = re.split(delimiter, html)
-
-        if len(videolist) > 1:
-            for video in videolist[1:]:
-                match = re.search(r'^([^"]+)" class="', video)
-                if not match:
-                    continue
-                videopage = match.group(1)
-                if videopage.startswith('/'):
-                    videopage = drtuber_base + videopage
-
-                match = re.search(r'alt="([^"]+)"', video)
-                name = utils.cleantext(match.group(1)) if match else ''
-
-                if not name:
+                if not username:
                     continue
 
-                match = re.search(r'src="([^"]+)"', video)
-                img = match.group(1) if match else ''
+                title = username
+                if platform:
+                    title += ' [COLOR yellow][{}][/COLOR]'.format(platform)
+                if gender:
+                    title += ' [COLOR cyan][{}][/COLOR]'.format(gender)
+                profile_url = archive_base + '/profile/' + urllib_parse.quote(username)
 
-                match = re.search(r'class="time_thumb.+?<em>([^<]+)</em>\s*</em>', video)
-                duration = match.group(1) if match else ''
+                all_results['archivebate'].append({
+                    'name': title,
+                    'url': profile_url,
+                    'type': 'dir'
+                })
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-                match = re.search(r'class="quality[^"]*"(?:><i class="ico_|>)([^<"]+)', video)
-                quality = match.group(1) if match else ''
+        # 3. DrTuber
+        try:
+            drtuber_base = 'https://www.drtuber.com'
+            search_url = drtuber_base + '/search/videos/{}/'.format(keyword.replace(' ', '+'))
+            hdr = utils.base_hdrs.copy()
+            html = utils._getHtml(search_url, drtuber_base, headers=hdr)
 
-                all_results['drtuber'].append({
+            html = html.split('</h1>')[-1]
+
+            delimiter = ' <a href="/video'
+            videolist = re.split(delimiter, html)
+
+            if len(videolist) > 1:
+                for video in videolist[1:]:
+                    match = re.search(r'^([^"]+)" class="', video)
+                    if not match:
+                        continue
+                    videopage = match.group(1)
+                    if videopage.startswith('/'):
+                        videopage = drtuber_base + videopage
+
+                    match = re.search(r'alt="([^"]+)"', video)
+                    name = utils.cleantext(match.group(1)) if match else ''
+
+                    if not name:
+                        continue
+
+                    match = re.search(r'src="([^"]+)"', video)
+                    img = match.group(1) if match else ''
+
+                    match = re.search(r'class="time_thumb.+?<em>([^<]+)</em>\s*</em>', video)
+                    duration = match.group(1) if match else ''
+
+                    match = re.search(r'class="quality[^"]*"(?:><i class="ico_|>)([^<"]+)', video)
+                    quality = match.group(1) if match else ''
+
+                    all_results['drtuber'].append({
+                        'name': name,
+                        'url': videopage,
+                        'img': img,
+                        'duration': duration,
+                        'quality': quality,
+                        'type': 'video',
+                        'mode': 'drtuber.Play'
+                    })
+        except Exception:
+            pass  # Silencieux - pas de notification
+
+        # 4. CamWhoresBay
+        try:
+            cwb_base = 'https://www.camwhoresbay.com'
+            search_url = cwb_base + '/search/{}/'.format(keyword.replace(' ', '+'))
+            hdr = utils.base_hdrs.copy()
+            html = utils._getHtml(search_url, cwb_base, headers=hdr)
+
+            pattern = r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)'
+            match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+
+            for private, videopage, name, img, hd, duration in match:
+                if 'private' in private.lower():
+                    continue
+
+                name = utils.cleantext(name)
+                img = 'https:' + img if img.startswith('//') else img
+                quality = 'HD' if '>HD<' in hd else ''
+                if not videopage.startswith('http'):
+                    videopage = cwb_base + '/' + videopage.lstrip('/')
+
+                all_results['camwhoresbay'].append({
                     'name': name,
                     'url': videopage,
                     'img': img,
                     'duration': duration,
                     'quality': quality,
                     'type': 'video',
-                    'mode': 'drtuber.Play'
+                    'mode': 'camwhoresbay.Playvid'
                 })
-    except Exception as e:
-        utils.kodilog('DrTuber search error: {}'.format(str(e)))
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-    # 4. CamWhoresBay
-    try:
-        cwb_base = 'https://www.camwhoresbay.com'
-        search_url = cwb_base + '/search/{}/'.format(keyword.replace(' ', '+'))
-        hdr = utils.base_hdrs.copy()
-        html = utils._getHtml(search_url, cwb_base, headers=hdr)
+        # 5. CamGirlFap
+        try:
+            cgf_base = 'https://camgirlfap.com'
+            search_url = cgf_base + '/search/{}/'.format(keyword.replace(' ', '-'))
+            hdr = utils.base_hdrs.copy()
+            html = utils._getHtml(search_url, cgf_base, headers=hdr)
 
-        pattern = r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)'
-        match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+            pattern = r'class="thumb thumb_rel item  ".*?href="([^"]+)" title="([^"]+)".*?data-(?:original|src|lazy-load)="([^"]+)".*?time">([^>]+)<'
+            match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
 
-        for private, videopage, name, img, hd, duration in match:
-            if 'private' in private.lower():
-                continue
+            for videopage, name, img, duration in match:
+                name = utils.cleantext(name)
+                if not videopage.startswith('http'):
+                    videopage = cgf_base + '/' + videopage.lstrip('/')
 
-            name = utils.cleantext(name)
-            img = 'https:' + img if img.startswith('//') else img
-            quality = 'HD' if '>HD<' in hd else ''
-            if not videopage.startswith('http'):
-                videopage = cwb_base + '/' + videopage.lstrip('/')
+                all_results['camgirlfap'].append({
+                    'name': name,
+                    'url': videopage,
+                    'img': img,
+                    'duration': duration,
+                    'type': 'video',
+                    'mode': 'camgirlfap.Playvid'
+                })
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-            all_results['camwhoresbay'].append({
-                'name': name,
-                'url': videopage,
-                'img': img,
-                'duration': duration,
-                'quality': quality,
-                'type': 'video',
-                'mode': 'camwhoresbay.Playvid'
-            })
-    except Exception as e:
-        utils.kodilog('CamWhoresBay search error: {}'.format(str(e)))
+        # 6. CamWhores.tv
+        try:
+            cw_base = 'https://www.camwhores.tv'
+            keyword_clean = keyword.strip().replace(' ', '-')
+            keyword_encoded = urllib_parse.quote(keyword_clean, safe='-')
+            search_url = cw_base + '/search/{}/'.format(keyword_encoded)
 
-    # 5. CamGirlFap
-    try:
-        cgf_base = 'https://camgirlfap.com'
-        search_url = cgf_base + '/search/{}/'.format(keyword.replace(' ', '-'))
-        hdr = utils.base_hdrs.copy()
-        html = utils._getHtml(search_url, cgf_base, headers=hdr)
+            hdr = utils.base_hdrs.copy()
+            hdr['Referer'] = cw_base + '/'
+            html = utils._getHtml(search_url, cw_base, headers=hdr)
 
-        pattern = r'class="thumb thumb_rel item  ".*?href="([^"]+)" title="([^"]+)".*?data-(?:original|src|lazy-load)="([^"]+)".*?time">([^>]+)<'
-        match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(html)
+            items = re.findall(r'<div class="item[^"]*".*?</div>\s*</div>', html, re.DOTALL | re.IGNORECASE)
 
-        for videopage, name, img, duration in match:
-            name = utils.cleantext(name)
-            if not videopage.startswith('http'):
-                videopage = cgf_base + '/' + videopage.lstrip('/')
+            match = re.compile(
+                r'<div class="item[^"]*".*?href="([^"]+)".*?'
+                r'title="([^"]+)".*?'
+                r'data-original="([^"]+)".*?'
+                r'duration">([^<]+)<.*?'
+                r'views">([^<]+)<',
+                re.DOTALL | re.IGNORECASE
+            ).findall(html)
 
-            all_results['camgirlfap'].append({
-                'name': name,
-                'url': videopage,
-                'img': img,
-                'duration': duration,
-                'type': 'video',
-                'mode': 'camgirlfap.Playvid'
-            })
-    except Exception as e:
-        utils.kodilog('CamGirlFap search error: {}'.format(str(e)))
+            for i, data in enumerate(match):
+                if i >= len(items):
+                    break
 
-    # 6. CamWhores.tv - CORRECTION
-    try:
-        cw_base = 'https://www.camwhores.tv'
-        keyword_clean = keyword.strip().replace(' ', '-')
-        keyword_encoded = urllib_parse.quote(keyword_clean, safe='-')
-        search_url = cw_base + '/search/{}/'.format(keyword_encoded)
-        
-        hdr = utils.base_hdrs.copy()
-        hdr['Referer'] = cw_base + '/'
-        html = utils._getHtml(search_url, cw_base, headers=hdr)
+                videopage, name, img, duration, views = data
+                block = items[i]
 
-        items = re.findall(r'<div class="item[^"]*".*?</div>\s*</div>', html, re.DOTALL | re.IGNORECASE)
-        
-        match = re.compile(
-            r'<div class="item[^"]*".*?href="([^"]+)".*?'
-            r'title="([^"]+)".*?'
-            r'data-original="([^"]+)".*?'
-            r'duration">([^<]+)<.*?'
-            r'views">([^<]+)<',
-            re.DOTALL | re.IGNORECASE
-        ).findall(html)
+                if 'class="ico-private"' in block:
+                    continue
 
-        for i, data in enumerate(match):
-            if i >= len(items):
-                break
-                
-            videopage, name, img, duration, views = data
-            block = items[i]
-            
-            if 'class="ico-private"' in block:
-                continue
+                name = utils.cleantext(name)
+                if not videopage.startswith('http'):
+                    videopage = cw_base + '/' + videopage.lstrip('/')
 
-            name = utils.cleantext(name)
-            if not videopage.startswith('http'):
-                videopage = cw_base + '/' + videopage.lstrip('/')
+                parts = img.rstrip("/").split("/") if img else []
+                if len(parts) >= 3:
+                    img_preview = "/".join(parts[:-2]) + "/preview.jpg"
+                else:
+                    img_preview = img or ''
 
-            parts = img.rstrip("/").split("/") if img else []
-            if len(parts) >= 3:
-                img_preview = "/".join(parts[:-2]) + "/preview.jpg"
-            else:
-                img_preview = img or ''
+                all_results['camwhorestv'].append({
+                    'name': name,
+                    'url': videopage,
+                    'img': img_preview,
+                    'duration': duration,
+                    'type': 'video',
+                    'mode': 'camwhorestv.Playvid'
+                })
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-            all_results['camwhorestv'].append({
-                'name': name,
-                'url': videopage,
-                'img': img_preview,
-                'duration': duration,
-                'type': 'video',
-                'mode': 'camwhorestv.Playvid'
-            })
-    except Exception as e:
-        utils.kodilog('CamWhores.tv search error: {}'.format(str(e)))
+        # 7. iXXX
+        try:
+            ixxx_base = 'https://www.ixxx.com'
+            search_url = ixxx_base + '/search/{}/'.format(keyword.replace(' ', '+'))
+            hdr = utils.base_hdrs.copy()
+            html = utils._getHtml(search_url, ixxx_base, headers=hdr)
 
-    # 7. iXXX - CORRECTION: typo name_lower
-    try:
-        ixxx_base = 'https://www.ixxx.com'
-        search_url = ixxx_base + '/search/{}/'.format(keyword.replace(' ', '+'))
-        hdr = utils.base_hdrs.copy()
-        html = utils._getHtml(search_url, ixxx_base, headers=hdr)
+            match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(html)
 
-        match = re.compile(r'class="item-link.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?dark:text-zinc-100">(.*?)class="item-rating.+?text-xsm"></i>([^<]+)</a>', re.DOTALL | re.IGNORECASE).findall(html)
+            keyword_lower = keyword.lower().replace('-', ' ').replace('+', ' ')
+            keyword_parts = [k.strip() for k in keyword_lower.split() if len(k.strip()) > 2]
 
-        keyword_lower = keyword.lower().replace('-', ' ').replace('+', ' ')
-        keyword_parts = [k.strip() for k in keyword_lower.split() if len(k.strip()) > 2]
+            for videourl, name, thumb, info, provider in match:
+                if 'class="font-[100]"' in info:
+                    continue
 
-        for videourl, name, thumb, info, provider in match:
-            if 'class="font-[100]"' in info:
-                continue
+                name_clean = utils.cleantext(name)
+                name_lower = name_clean.lower().replace('-', ' ').replace('_', ' ')
 
-            name_clean = utils.cleantext(name)
-            name_lower = name_clean.lower().replace('-', ' ').replace('_', ' ')
+                match_found = False
 
-            match_found = False
+                if keyword_lower in name_lower:
+                    match_found = True
+                else:
+                    if keyword_parts:
+                        matching_parts = sum(1 for part in keyword_parts if part in name_lower)
+                        threshold = max(1, len(keyword_parts) * 0.7) if len(keyword_parts) > 1 else 1
+                        if matching_parts >= threshold:
+                            match_found = True
 
-            if keyword_lower in name_lower:
-                match_found = True
-            else:
-                if keyword_parts:
-                    matching_parts = sum(1 for part in keyword_parts if part in name_lower)
-                    threshold = max(1, len(keyword_parts) * 0.7) if len(keyword_parts) > 1 else 1
-                    if matching_parts >= threshold:
-                        match_found = True
+                if not match_found:
+                    continue
 
-            if not match_found:
-                continue
+                final_name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), name_clean)
+                hd = 'HD' if ' HD' in info else ''
+                duration = re.findall(r'\s([\d:]+)\s', info)
+                duration = duration[0] if duration else ""
 
-            final_name = '[COLOR yellow][{}][/COLOR] {}'.format(provider.strip(), name_clean)
-            hd = 'HD' if ' HD' in info else ''
-            duration = re.findall(r'\s([\d:]+)\s', info)
-            duration = duration[0] if duration else ""
+                all_results['ixxx'].append({
+                    'name': final_name,
+                    'url': ixxx_base[:-1] + videourl.replace('&amp;', '&'),
+                    'img': thumb,
+                    'duration': duration,
+                    'quality': hd,
+                    'type': 'video',
+                    'mode': 'awmnet.Playvid'
+                })
+        except Exception:
+            pass  # Silencieux - pas de notification
 
-            all_results['ixxx'].append({
-                'name': final_name,
-                'url': ixxx_base[:-1] + videourl.replace('&amp;', '&'),
-                'img': thumb,
-                'duration': duration,
-                'quality': hd,
-                'type': 'video',
-                'mode': 'awmnet.Playvid'
-            })
-    except Exception as e:
-        utils.kodilog('iXXX search error: {}'.format(str(e)))
+    finally:
+        # CORRECTION: Restauration de utils.notify dans tous les cas
+        utils.notify = original_notify
 
     total_results = sum(len(v) for v in all_results.values())
 
@@ -1366,7 +1350,6 @@ def GlobalSearch(keyword=None):
     if all_results['drtuber']:
         site.add_dir('[COLOR violet]--- DrTuber Videos ({}) ---[/COLOR]'.format(len(all_results['drtuber'])), '', '', '', Folder=False)
         for item in all_results['drtuber']:
-            # CORRECTION: Ajout de noDownload=False pour permettre téléchargement
             site.add_download_link(
                 '[DrTuber] ' + item['name'],
                 item['url'],

@@ -1,3 +1,5 @@
 [B]Version 1.1.196[/B]
 - anybunny - fix: listing, playback
 - missav - fix: listing, playback
+- chaturbate -  global search: notifications disabled
+
