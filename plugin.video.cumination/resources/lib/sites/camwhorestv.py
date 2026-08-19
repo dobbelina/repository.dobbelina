@@ -77,13 +77,14 @@ def List(url):
     for item in results:
         videopage = item["href"]
         name = utils.cleantext(item["title"])
-        img = item["img"] + '|User-Agent=' + cwtvhdr['User-Agent']
+        img = item["img"]
+        utils.kodilog(img)
         duration = item["duration"]
         views = item["views"]
         private = item["private"]
 
         label = "[COLOR blue][PV] [/COLOR]" if private else ""
-        label += f"{name} [COLOR yellow][{views} views][/COLOR]"
+        label += f"{name}"  # [COLOR yellow][{views} views][/COLOR]"
 
         parts = img.rstrip("/").split("/")
         img_preview = "/".join(parts[:-2]) + "/preview.jpg"
