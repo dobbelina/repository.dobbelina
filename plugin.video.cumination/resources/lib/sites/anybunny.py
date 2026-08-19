@@ -23,9 +23,12 @@ from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
 import xbmc
 import xbmcgui
+import ssl
+from http.cookiejar import MozillaCookieJar
+from urllib import request
 
 
-site = AdultSite("anybunny", "[COLOR hotpink]Anybunny[/COLOR]", "http://anybunny.org/", "anybunny.png", "anybunny")
+site = AdultSite("anybunny", "[COLOR hotpink]Anybunny[/COLOR]", "https://anybunny.org/", "anybunny.png", "anybunny")
 
 
 @site.register(default_mode=True)
@@ -65,36 +68,10 @@ def List(url):
 
 
 @site.register()
-def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, direct_regex=r"<iframe.+?src='([^']+)'")
-    vpage = utils.getHtml(url, site.url)
-    if not re.match(r'id:\s*"player",\s*file:', vpage, re.DOTALL | re.IGNORECASE):
-        match = re.search(r"<iframe.+?src='([^']+)'", vpage, re.DOTALL | re.IGNORECASE)
-        if match:
-            iframe_url = match.group(1)
-            vpage = utils.getHtml(iframe_url, site.url)
-
-    file = re.search(r'file:\s*"([^"]+")', vpage, re.DOTALL | re.IGNORECASE)
-    if not file:
-        return
-    match = re.compile(r'\[(\d+)\](.+?)[,"]', re.DOTALL | re.IGNORECASE).findall(file.group(1))
-    if match:
-        sources = {quality: video_url for quality, video_url in match}
-        video_url = utils.prefquality(sources, sort_by=lambda x: int(x), reverse=True)
-    else:
-        video_url = re.search(r'file:\s*["]([^"]+)', vpage, re.DOTALL | re.IGNORECASE)
-        if video_url:
-            video_url = video_url.group(1)
-
-    if video_url:
-        video_url = video_url.split(' or ')[-1].split(":cast:")[0]
-        vp.play_from_direct_link(video_url + '|referer={0}'.format(url))
-
-
-@site.register()
 def Categories(url):
+    utils.kodilog('Categories url: {}'.format(url))
     cathtml = utils.getHtml(url, '')
-    match = re.compile("href='/top/([^']+)'>.*?src='([^']+)' alt='([^']+)'", re.DOTALL | re.IGNORECASE).findall(cathtml)
+    match = re.compile(r"href='/top/([^']+)'>.*?src='([^']+)'\s*alt='([^']+)'", re.DOTALL | re.IGNORECASE).findall(cathtml)
     match = sorted(match, key=lambda x: x[2])
     for catid, img, name in match:
         catpage = site.url + 'new/' + catid
@@ -138,3 +115,61 @@ def GotoPage(url, np, lp=0):
 def Related(url):
     contexturl = (utils.addon_sys + "?mode=" + str('anybunny.List') + "&url=" + urllib_parse.quote_plus(url))
     xbmc.executebuiltin('Container.Update(' + contexturl + ')')
+
+
+def fetch(url, headers):
+    request = utils.Request(url, headers=headers)
+    response = utils.opener.open(request, timeout=20)
+    data = response.read().decode('utf-8', errors='ignore')
+    return data
+
+
+@site.register()
+def Playvid(url, name, download=None):
+    hdr = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Referer': url,
+    }
+
+    def make_opener(cookie_jar=None):
+        if cookie_jar is None:
+            cookie_jar = MozillaCookieJar()
+
+        opener = request.build_opener(
+            request.HTTPCookieProcessor(cookie_jar),
+            request.HTTPSHandler(context=ssl.create_default_context())
+        )
+        return opener, cookie_jar
+
+    def fetch(url, cookie_jar=None):
+        opener, cookie_jar = make_opener(cookie_jar)
+        req = request.Request(url, headers=hdr)
+        resp = opener.open(req, timeout=30)
+        data = resp.read().decode('utf-8', 'replace')
+        return data, cookie_jar
+
+    vp = utils.VideoPlayer(name, download)
+
+    cj = None
+
+    for i in range(5):
+        html, cj = fetch(url, cookie_jar=cj)
+        if '/stream1/' in html:
+            break
+
+    if html and '/stream1/' in html:
+        match = re.search(r"<iframe.+?src='([^']*)'", html, re.DOTALL | re.IGNORECASE)
+        if match:
+            iframe_url = match.group(1)
+
+            data, cj = fetch(iframe_url, cookie_jar=cj)
+            match = re.search(r'file:"[^"]*(http[^"]*)"', data, re.DOTALL | re.IGNORECASE)
+            if match:
+                video_url = match.group(1)
+                video_url = video_url + '|User-Agent=' + hdr['User-Agent']
+                vp.play_from_direct_link(video_url)
+    else:
+        utils.notify('Oh Oh', 'No Video found')
