@@ -39,23 +39,6 @@ _proxy_servers = {}
 _proxy_threads = {}
 url = site.url + '?display=tube&filtre=date'
 
-# @site.register(default_mode=True)
-# def Main(url=None):
-#     if not url:
-#         url = site.url + '?display=tube&filtre=date'
-#     site.add_dir('[COLOR hotpink]Filters[/COLOR]', 'https://xtapes.la/?display=tube&filtre=date', 'filters', site.img_filters, Folder=False)
-#     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    
-#     # List('https://xtapes.la/?display=tube&filtre=date')
-#     # https://xtapes.la/?display=tube&filtre=views
-#     # https://xtapes.la/?display=tube&filtre=duree
-#     # https://xtapes.la/?display=tube&filtre=rate
-#     # https://xtapes.la/onlyfans-86589/
-#     # List(url)
-#     site.add_dir('Videos', url, 'xtapes.List', site.img_movies)
-#     utils.eod()
-
-
 
 @site.register(default_mode=True)
 def List(url=None):
@@ -121,6 +104,7 @@ def filters(url):
         r'<li id="menu-item-.+?href="([^"]+)">([^>]+)</a>\s<ul class="sub-menu">'
         , re.DOTALL | re.IGNORECASE
     ).findall(html)
+    container.append((site.url + "porn-movies-hd/", "Full Movies"))
     container.append(("", "Sort by"))
     if not container:
         return
@@ -167,6 +151,11 @@ def filters(url):
                 utils.addon.setSetting('xtapes_networkname', labels[selection])
                 utils.refresh()
     elif selection == 2:
+        filter_value = urls[selection]
+        utils.addon.setSetting('xtapes_network', filter_value)
+        utils.addon.setSetting('xtapes_networkname', labels[selection])
+        utils.refresh()
+    elif selection == 3:
         container = re.compile(
             r'<ul class="filtre-list">(.+?)\s</ul>',
             re.DOTALL | re.IGNORECASE
