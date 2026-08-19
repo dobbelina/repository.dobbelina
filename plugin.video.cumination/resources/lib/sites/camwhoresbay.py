@@ -67,7 +67,7 @@ def List(url, page=1):
         else:
             return None
 
-    match = re.compile(r'class="video-item([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:original|"cover"\s*src)="([^"]+)(.+?)clock\D+([\d:]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(r'class="video-item ([^"]+)".+?href="([^"]+)".+?title="([^"]+).+?(?:data-original|cover" src)="([^"]+)(.+?)clock\D+([\d:]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
     for private, videopage, name, img, hd, name2 in match:
         hd = 'HD' if '>HD<' in hd else ''
         name = utils.cleantext(name)
@@ -161,6 +161,7 @@ def Playlists(url, page=1):
     img = str(randint(1, 4))
     match = re.compile(r'class="item\s*".+?href="([^"]+)"\s*title="([^"]+)".+?class="thumb video' + img + '.+?data-original="([^"]+)".+?class="totalplaylist">([^<]+)', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catpage, name, img, name2 in match:
+        img = 'https:' + img if img.startswith('//') else img
         name = utils.cleantext(name) + ' [COLOR cyan][{}][/COLOR]'.format(name2)
         site.add_dir(name, catpage, 'List', img, 1)
     if re.search(r'<li\s*class="next"><a', cathtml, re.DOTALL | re.IGNORECASE):
@@ -183,12 +184,12 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
+        title = keyword.replace(' ', '-')
         searchUrl = searchUrl.format(title)
-        try:            
+        try:
             List(searchUrl, 1)
-        except: 
-            utils.notify('CamWhoresBay', 'Search failed!')  
+        except:
+            utils.notify('CamWhoresBay', 'Search failed!')
 
 
 @site.register()

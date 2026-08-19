@@ -23,34 +23,35 @@ from resources.lib.adultsite import AdultSite
 
 site = AdultSite('camwhorestv', '[COLOR hotpink]CamWhores.tv[/COLOR]', 'https://www.camwhores.tv/', 'camwhorestv.jpg', 'camwhorestv')
 
-addon = utils.addon
-camwhores_logged = utils.addon.getSetting('camwhores_logged').lower() == 'true'
+camwhores_logged = 'true' in utils.addon.getSetting('camwhores_logged')
+cwtvhdr = utils.base_hdrs.copy()
+cwtvhdr['User-Agent'] = 'Mozilla/5.0 (Windows NT 11.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36'
+
 
 @site.register(default_mode=True)
 def Main():
-    global camwhores_logged
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
     if camwhores_logged:
         site.add_dir('[COLOR fuchsia]Logout[/COLOR]', '', 'logout_camwhores', site.img_logout, Folder=False)
     else:
         site.add_dir('[COLOR red]Login[/COLOR]', '', 'login_camwhores', site.img_login, Folder=False)
-   
+
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'latest-updates/1/')
 
 
 @site.register()
 def List(url):
-    listhtml = utils._getHtml(url)
-    
+    listhtml = utils.getHtml(url, headers=cwtvhdr)
+
     # Extraction des blocs d'items
     items = re.findall(
         r'<div class="item[^"]*".*?</div>',
         listhtml,
         re.DOTALL | re.IGNORECASE
     )
-    
+
     # Extraction des données vidéo
     match = re.compile(
         r'<div class="item[^"]*".+?href="([^"]+)".+?'          # link
@@ -72,11 +73,11 @@ def List(url):
             "views": views,
             "private": is_private
         })
-    
+
     for item in results:
         videopage = item["href"]
         name = utils.cleantext(item["title"])
-        img = item["img"]
+        img = item["img"] + '|User-Agent=' + cwtvhdr['User-Agent']
         duration = item["duration"]
         views = item["views"]
         private = item["private"]
@@ -104,25 +105,25 @@ def List(url):
                 r'<li class="next">.*?(?:from_albums|from):(\d+)">Next',
                 listhtml, re.DOTALL | re.IGNORECASE
             )
-            
+
             lp_match = re.search(
                 r'<li class="last">.*?(?:from_albums|from):(\d+)">Last',
                 listhtml, re.DOTALL | re.IGNORECASE
             )
-            
+
             if np_match:
                 re_npnr = np_match.group(1)
                 re_lpnr = lp_match.group(1) if lp_match else "?"
-                
+
                 # Extraction des paramètres pour l'URL async
                 np = re.search(
                     r'>\.\.\.<.*?data-parameters="([^"]+):([^:]+)">.*?(?:from_albums|from):(\d+)">.*Next',
                     listhtml, re.DOTALL | re.IGNORECASE
                 )
-                
+
                 if np:
                     npurl = np.group(1).replace(':', '=').replace(';', '&').replace('+', '={}&'.format(re_npnr))
-                    
+
                     if '/search/' in url:
                         block = '&block_id=list_videos_videos_list_search_result&'
                     else:
@@ -130,7 +131,7 @@ def List(url):
 
                     base_url = url.split('?')[0] if '?' in url else url
                     re_npurl = base_url + '?mode=async&function=get_block' + block + npurl + '=' + re_npnr
-                    
+
                     site.add_dir('Next Page... ({0}/{1})'.format(re_npnr, re_lpnr), re_npurl, 'List', site.img_next)
         else:
             # Pagination standard pour les autres pages
@@ -138,10 +139,9 @@ def List(url):
             re_npnr = r'class="next"><a href="[^"]*/(\d+)/"'
             re_lpnr = r'class="last"><a href="[^"]*/(\d+)/"'
             utils.next_page(site, 'camwhorestv.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr)
-            
+
     except Exception as e:
         utils.kodilog("Pagination error: {0}".format(str(e)))
-
 
     utils.eod()
 
@@ -161,28 +161,28 @@ def Search(url, keyword=None):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    html = utils.getHtml(url)
+    html = utils.getHtml(url, headers=cwtvhdr)
     if 'class="message"' in html:
         message = re.search(r'span class="message">\s*(.+?)\s+Only', html, re.IGNORECASE)
         if message:
             utils.notify('', message.group(1).strip())
         return
-    vp.play_from_kt_player(html)
+    vp.play_from_kt_player(html, user_agent=cwtvhdr['User-Agent'])
 
 
 @site.register()
 def Categories(url):
-    listhtml = utils._getHtml(url)
+    listhtml = utils.getHtml(url, headers=cwtvhdr)
     match = re.compile(
         r'<a\s+class="item"\s+href="([^"]+)"\s+title="([^"]+)".+?'
         r'<img[^>]+src="([^"]+)".+?'
         r'<div class="videos">([^<]+)<',
         re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
-    
+
     for cat_url, cat_title, cat_img, cat_count in match:
         site.add_dir('[COLOR hotpink]' + cat_title + ' [/COLOR][COLOR yellow][{}][/COLOR]'.format(cat_count), cat_url, 'List', cat_img)
-    
+
     # Pagination pour catégories
     try:
         re_npurl = r'class="next"><a href="([^"]+)"'
@@ -191,21 +191,21 @@ def Categories(url):
         utils.next_page(site, 'camwhorestv.Categories', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='camwhorestv.GotoPage')
     except:
         pass
-        
+
     utils.eod()
 
 
 @site.register()
 def Models(url):
-    listhtml = utils.getHtml(url)
+    listhtml = utils.getHtml(url, headers=cwtvhdr)
     match = re.compile(
         r'a class="item.+?href="([^"]+)".+?title="([^"]+)".+?src="([^"]+)".+?videos">([^>]+)<',
         re.DOTALL | re.IGNORECASE
     ).findall(listhtml)
-    
+
     for cat_url, cat_title, cat_img, cat_count in match:
         site.add_dir(cat_title + ' [COLOR yellow][{}][/COLOR]'.format(cat_count), cat_url, 'List', cat_img)
-    
+
     # Pagination pour modèles
     try:
         re_npurl = r'class="next"><a href="([^"]+)"'
@@ -214,7 +214,7 @@ def Models(url):
         utils.next_page(site, 'camwhorestv.Models', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='camwhorestv.GotoPage')
     except:
         pass
-        
+
     utils.eod()
 
 
@@ -251,7 +251,7 @@ def login_camwhores():
                         'expiry': None,
                         'httpOnly': True
                     }],
-                    "userAgent": utils.USER_AGENT
+                    "userAgent": cwtvhdr['User-Agent']
                 }
             }
             utils.savecookies(cookie_structure)
@@ -272,23 +272,23 @@ def login_camwhores():
         if not cw_pass:
             return False
 
-    login_url = 'https://www.camwhores.tv/login/'
+    login_url = '{}login/'.format(site.url)
 
     payload_dict = {
         "username": cw_user,
         "pass": cw_pass,
         "remember_me": "1",
         "action": "login",
-        "email_link": "https://www.camwhores.tv/email/",
+        "email_link": "{}email/".format(site.url),
         "format": "json",
         "mode": "async"
     }
 
     headers = {
         "Accept": "*/*",
-        "Origin": "https://www.camwhores.tv",
-        "Referer": "https://www.camwhores.tv/",
-        "User-Agent": utils.USER_AGENT,
+        "Origin": site.url[:-1],
+        "Referer": site.url,
+        "User-Agent": cwtvhdr['User-Agent'],
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
         "X-Requested-With": "XMLHttpRequest",
     }
@@ -327,7 +327,7 @@ def login_camwhores():
                         'expiry': None,
                         'httpOnly': True
                     }],
-                    "userAgent": utils.USER_AGENT
+                    "userAgent": cwtvhdr['User-Agent']
                 }
             }
             utils.savecookies(cookie_structure)
@@ -345,16 +345,16 @@ def login_camwhores():
 
 @site.register()
 def logout_camwhores():
-    logout_url = 'https://www.camwhores.tv/logout/'
+    logout_url = '{}logout/'.format(site.url)
 
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Referer": "https://www.camwhores.tv/",
-        "User-Agent": utils.USER_AGENT
+        "Referer": site.url,
+        "User-Agent": cwtvhdr['User-Agent']
     }
 
     try:
-        utils._getHtml(logout_url, headers=headers)
+        utils.getHtml(logout_url, headers=headers)
         utils.notify('CamWhores', u'Session ended successfully.')
 
         clear = utils.selector('Clear stored user & password?', ['Yes', 'No'], reverse=True)
@@ -372,5 +372,5 @@ def logout_camwhores():
         return True
 
     except Exception as e:
-        utils.kodilog("Error on utils._getHtml for Logout CamWhores: {e}".format(e=e))
+        utils.kodilog("Error on utils.getHtml for Logout CamWhores: {e}".format(e=e))
         return False
