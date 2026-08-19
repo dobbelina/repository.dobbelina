@@ -54,6 +54,9 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url)
+    if 'There is no data in this list' in listhtml:
+        utils.notify('Oh oh', 'Nothing found!')
+        return
     match = re.compile(
         r'<div class="thumb thumb_rel item(?![^"]*item--adv-thumb)[^"]*">.*?'
         r'<a\s+href="([^"]+)"\s+title="([^"]+)"[^>]*>.*?'
