@@ -19,33 +19,26 @@ import sqlite3
 import json
 import re
 import threading
-import time
 import random
 import urllib.parse
 import xbmc
 import xbmcgui
-import xbmcplugin
-import sys
 import calendar
 from datetime import datetime, timedelta
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from six.moves import urllib_parse, urllib_error
+from six.moves import urllib_parse
 
 
 try:
     # Python 2
-    import BaseHTTPServer as httpserver
-    import SocketServer as socketserver
     from BaseHTTPServer import BaseHTTPRequestHandler
     from BaseHTTPServer import HTTPServer
     import urllib2 as urlreq
     from urlparse import urlparse, parse_qs
 except ImportError:
     # Python 3
-    import http.server as httpserver
-    import socketserver
     from http.server import BaseHTTPRequestHandler
     from http.server import HTTPServer
     import urllib.request as urlreq
@@ -60,6 +53,8 @@ site = AdultSite('stripchat', '[COLOR hotpink]stripchat.com[/COLOR]', 'http://st
 bu = "https://stripchat.com/api/front/models?removeShows=false&recInFeatured=false&limit=80&offset=0&filterGroupTags=&sortBy=stripRanking&parentTag=&nic=true&byw=false&rcmGrp=A&rbCnGr=true&iem=true&decMb=true&ctryTop=true&primaryTag="
 top = "https://stripchat.com/api/front/v5/models/top?gender={0}&period=current&offset=0&limit=100&continent={1}"
 cam = "https://stripchat.com/api/front/v2/models/{}/cam"
+
+
 @site.register(default_mode=True)
 def Main():
     modelInfo_setting = utils.addon.getSetting('stripchat_modelInfo') == "true"
@@ -72,7 +67,6 @@ def Main():
         '',
         noDownload=True
     )
-
 
     player = utils.addon.getSetting('stripchatplayer')
     if not player:
@@ -151,7 +145,6 @@ def List(url, page=1):
             online_only = False
             site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
-
     favorite = {}
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
@@ -163,7 +156,6 @@ def List(url, page=1):
     try:
         response = utils._getHtml(url)
     except:
-        xbmcgui.Dialog().textviewer(url, "URL: " + url + "\n" + str(response))
         return None
     data = json.loads(response)
     if "models" in data:
@@ -252,7 +244,7 @@ def List(url, page=1):
         else:
             streamName = ''
 
-        if modelInfo_setting:    #model.get("isLive") is not True:
+        if modelInfo_setting:  # model.get("isLive") is not True:
             api = cam.format(model.get("id"))
             data = json.loads(utils._getHtml(api))
             if data['cam']['broadcastSchedule']['nearest'].get("day"):
@@ -270,8 +262,8 @@ def List(url, page=1):
             subject += ", ".join(specifics_tags)
             public_tags = next(
                 ([tag.replace('do', '') for tag in group["tags"]]
-                for group in data["user"]["tagGroups"]
-                if group["id"] == "publicActivities"),
+                 for group in data["user"]["tagGroups"]
+                 if group["id"] == "publicActivities"),
                 []
             )
 
@@ -280,15 +272,12 @@ def List(url, page=1):
         # xbmcgui.Dialog().textviewer(name, streamName)
         context = []
         contextrecord = (
-            utils.addon_sys +
-            "?mode=chaturbate.Record&id=" +
-            urllib_parse.quote_plus(name)
+            utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(name)
         )
         context.append((
             '[COLOR violet]Find recordings featuring [/COLOR]{}'.format(name),
             'RunPlugin(' + contextrecord + ')'
         ))
-
 
         site.add_download_link(
             name if model.get("isLive") is True else name + ' [COLOR yellow][Offline][/COLOR]',
@@ -299,10 +288,9 @@ def List(url, page=1):
             contextm=context,
             noDownload=True,
             fav=fav,
-            quality='HD', 
+            quality='HD',
             fanart=fanart
         )
-
 
     nextp = (page * 80) < total_items
     if nextp:
@@ -321,7 +309,7 @@ def PerPage(url=None, name=None):
     vq = utils._get_keyboard(heading=utils.i18n('Items per page'), default=utils.addon.getSetting("stripchatper_page"))
     if not vq or not vq.isdigit():
         return False
-        
+
     utils.addon.setSetting("stripchatper_page", str(vq))
     import xbmc
     xbmc.executebuiltin('Container.Refresh')
@@ -419,7 +407,6 @@ _proxy_threads = {}
 
 
 def start_generic_proxy(port):
-    global _proxy_servers, _proxy_threads
 
     if port in _proxy_servers:
         return
@@ -434,8 +421,6 @@ def start_generic_proxy(port):
 
 
 def stop_generic_proxy(port):
-    global _proxy_servers, _proxy_threads
-
     if port in _proxy_servers:
         try:
             _proxy_servers[port].shutdown()
@@ -475,7 +460,7 @@ def Playvid_ISA(url, name):
         raw = utils._getHtml(api + name)
         data = json.loads(raw)
         data = data['models'][0]
-    except Exception as e:
+    except Exception:
         utils.notify(name, "Error at API interogation", icon='thumb')
         vp.progress.close()
         return
@@ -537,7 +522,7 @@ def Playvid_Proxy(url, name):
 def status(url):
     if '&streamName=' in url:
         streamName = url.split('&streamName=')[-1]
-        if streamName !='':
+        if streamName != '':
             api = cam.format(streamName)
             data = json.loads(utils._getHtml(api))
             streamStatus = data['user']['user'].get("status")
@@ -550,6 +535,7 @@ def status(url):
             return True
     else:
         return True
+
 
 @site.register()
 def Playvid(url, name):
@@ -633,14 +619,12 @@ def online(url):
 
 @site.register()
 def onlineFav(url):
-    import xbmcgui
-
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
     c = conn.cursor()
     c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='stripchat.Playvid'")
     favorite_data = {
-        row[0]: {'db_url': row[1], 'db_image': row[2]} 
+        row[0]: {'db_url': row[1], 'db_image': row[2]}
         for row in c.fetchall()
     }
     c.close()
@@ -662,7 +646,7 @@ def onlineFav(url):
             img = found.get("previewUrl")
             model = u'[COLOR yellow]★ [/COLOR]' + model
             fav = 'del'
- 
+
             # altUrl = 'https://stripchat.com/api/front/v5/models/search/group/all?limit=24&primaryTag=girls&query=' + model
             # try:
             #     raw = utils._getHtml(altUrl)
@@ -679,16 +663,6 @@ def onlineFav(url):
             # utils.notify(model, "Error at API interrogation: %s" % e, icon='thumb')
             utils.kodilog("Error at API interrogation: {0} - {1}".format(model, e))
             continue
-        
-        contextrecord = (
-            utils.addon_sys +
-            "?mode=chaturbate.Record&id=" +
-            urllib_parse.quote_plus(found["username"])
-        )
-        contextmenu = [(
-            '[COLOR violet]Find recordings featuring [/COLOR]{}'.format(found["username"]),
-            'RunPlugin(' + contextrecord + ')'
-        )]
 
         site.add_download_link(
             found["username"],
@@ -698,48 +672,6 @@ def onlineFav(url):
             quality='HD',
             fav=fav
         )
-    utils.eod()
-    # https://stripchat.com/api/front/v4/models/search/suggestion?limit=1&primaryTag=girls&query=ChrystalCade
-    return
-
-    for model_name, info in model_lookup.items():
-        username = info['username']
-        name = info['username']
-        age = info['age']
-        if age:
-            name = '{0} [COLOR deeppink][{1}][/COLOR]'.format(name, age)
-        hd = ''
-        if info.get('hdStream'):
-            # name = '{0} [COLOR limegreen][HD][/COLOR]'.format(name)
-            hd = 'HD'
-        img = info['snapshotImageLink']
-        if not img:
-            img = info['defaultImageLink']
-
-        subject = ''
-
-        if info['viewers']:
-            subject += '[COLOR deeppink]Viewers:[/COLOR] {}[CR]'.format(info['viewers'])
-        if info['countryCode']:
-            subject += '[CR][COLOR deeppink]Country:[/COLOR] {}[CR]'.format(utils.get_country(info['countryCode']))
-            name = '{0} [COLOR blue][{1}][/COLOR]'.format(name, utils.get_country(info['countryCode']))
-        if info['languages']:
-            langs = [utils.get_language(lang) for lang in info['languages']]
-            subject += '[COLOR deeppink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
-        if info['resolution']:
-            subject += '[COLOR deeppink]Resolution:[/COLOR] {}[CR]'.format(info['resolution'])
-        if info['sexPreference']:
-            subject += '[CR][COLOR deeppink]Sexual Preference:[/COLOR] {}[CR]'.format(info['sexPreference'])
-        if info['statusMessage']:
-            subject += '[CR]{}[CR][CR]'.format(info['statusMessage'].encode('utf8') if utils.PY2 else info['statusMessage'])
-        if info['showTags']:
-            subject += ', '.join(info['showTags']).encode('utf8') if utils.PY2 else ', '.join(info['showTags'])
-
-        video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, info['username'])
-        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(info['username']))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(info['username']), 'RunPlugin(' + contextrecord + ')'))]
-        site.add_download_link(name, video, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, noDownload=True, quality=hd, fav='del')
-
     utils.eod()
 
 
@@ -752,8 +684,8 @@ def filters(url):
         {"name": "Activities on Request", "prefix": "do"},
         {"name": "Ethnicity", "prefix": "ethnicity"},
         {"name": "Hair", "prefix": "hairColor"},
-        {"name": "Specifics", "prefix": "specific"}, 
-        {"name": "Subcultures", "prefix": "subculture"}, 
+        {"name": "Specifics", "prefix": "specific"},
+        {"name": "Subcultures", "prefix": "subculture"},
         {"name": "Countries & Languages", "prefix": "tagLanguage"},
         {"name": "AutoTag", "prefix": "autoTag"}
     ]
@@ -772,9 +704,9 @@ def filters(url):
     tags = cjson["liveTagDetails"]
 
     filtered = {k.replace(tag, ""): v for k, v in tags.items() if k.startswith(tag) and "-" not in k}
-    agregate = ["ALL ["+ str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
-    selection = xbmcgui.Dialog().select('Select ' + tag , agregate)
-    # xbmcgui.Dialog().textviewer(url, str(agregate(selection)))
+    agregate = ["ALL [" + str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
+    selection = xbmcgui.Dialog().select('Select ' + tag, agregate)
+
     if selection != -1:
         if selection == 0:
             utils.addon.setSetting("stripchattag", "")
@@ -827,7 +759,6 @@ def topModels(url):
     selection = xbmcgui.Dialog().select('Select Period', names)
     if selection == -1:
         return
-    period = periodes[selection]["code"]
     url = periodes[selection]["url"]
     List(url)
 

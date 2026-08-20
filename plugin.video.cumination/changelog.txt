@@ -5,4 +5,5 @@
 - 3movs - new site
 - camwhoresbay - fix listing
 - camwhores.tw - fix listing
-- Xtapes.la new site
+- xtapes.la - new site
+- sextb - fix: studios, thumbnails, playback

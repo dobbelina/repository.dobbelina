@@ -22,7 +22,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('sextb', '[COLOR hotpink]SEXTB[/COLOR]', 'https://sextb.net/', 'sextb.png', 'sextb')
+site = AdultSite('sextb', '[COLOR hotpink]SexTB[/COLOR]', 'https://sextb.net/', 'sextb.png', 'sextb')
 enames = {
     'VV': 'VideoVard',
     'TV': 'TurboVIPlay',
@@ -49,7 +49,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Subtitle[/COLOR]', site.url + 'subtitle/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studio', 'Studios', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studios', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'uncensored/pg-1')
     utils.eod()
@@ -64,7 +64,9 @@ def List(url):
         return
     match = re.compile(r'<div class="tray-item(?:\s*tray|").+?href="([^"]+)".+?data-src="([^"]+).+?title">([^<]+).+?time">([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
 
+    thumbnails = utils.Thumbnails(site.name)
     for videopage, img, name, duration in match:
+        img = thumbnails.cache_img(img)
         name = utils.cleantext(name)
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
@@ -107,7 +109,9 @@ def Studios(url):
 def Actress(url):
     cathtml = utils.getHtml(url, site.url)
     match = re.compile(r'class="tray-item-actress".+?href="([^"]+)".+?data-src="([^"]+)".+?actress-title">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    thumbnails = utils.Thumbnails(site.name)
     for caturl, img, name in match:
+        img = thumbnails.cache_img(img)
         name = utils.cleantext(name)
         if caturl.startswith('/'):
             caturl = urllib_parse.urljoin(site.url, caturl)
@@ -131,6 +135,14 @@ def Search(url, keyword=None):
         List(url)
 
 
+def xor_decrypt(encoded, key):
+    import base64
+    decoded = base64.b64decode(encoded)
+    key_bytes = key.encode('utf-8')
+    key_len = len(key_bytes)
+    return "".join(chr(decoded[i] ^ key_bytes[i % key_len]) for i in range(len(decoded)))
+
+
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
@@ -151,9 +163,29 @@ def Playvid(url, name, download=None):
     source = utils.selector('Select Hoster', sources)
     if source:
         filmid, episode = source.split('$$')
-        formdata = {'filmId': filmid, 'episode': episode}
-        player = json.loads(utils.postHtml(ajaxurl, form_data=formdata, headers={'Referer': site.url})).get('player')
-        videourl = re.findall(r'src="([^?"]+)', player)[0] + '$$' + site.url
+
+        match = re.compile(r'window.__pt = "([^"]+)";\s+window.__pk = "([^"]+)";', re.DOTALL | re.IGNORECASE).search(video_page)
+        if match:
+            pt, pk = match.groups()
+
+            form_data = {'filmId': filmid, 'episode': episode, 'pt': pt}
+
+            player_html = utils._postHtml(ajaxurl, form_data=form_data, headers={'Referer': url, 'X-Requested-With': 'XMLHttpRequest'})
+            data = json.loads(player_html)
+            player_enc = data.get('player_enc')
+
+            decrypted_html = xor_decrypt(player_enc, pk)
+            iframe_match = re.search(r'src="([^"]+)"', decrypted_html)
+
+            if iframe_match:
+                iframe_url = iframe_match.group(1)
+                if iframe_url.startswith('//'):
+                    iframe_url = 'https:' + iframe_url
+
+                vp.progress.update(75, "[CR]Resolving video...[/CR]")
+
+                videourl = iframe_url + '$$' + url
+                vp.play_from_link_to_resolve(videourl)
 
     if not videourl:
         vp.progress.close()
