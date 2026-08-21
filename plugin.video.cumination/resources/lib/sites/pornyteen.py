@@ -21,7 +21,16 @@ import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('pornyteen', '[COLOR hotpink]Pornyteen[/COLOR]', 'https://pornyteen.com/', 'pornyteen.png', 'pornyteen')
+# site = AdultSite('pornyteen', '[COLOR hotpink]Pornyteen[/COLOR]', 'https://pornyteen.com/', 'pornyteen.png', 'pornyteen')
+
+site = AdultSite(
+    'pornyteen',
+    '[COLOR hotpink]Pornyteen[/COLOR]',
+    'https://pornyteen.com/',
+    'pornyteen.png',
+    'pornyteen',
+    extract_meta=True
+)
 
 addon = utils.addon
 

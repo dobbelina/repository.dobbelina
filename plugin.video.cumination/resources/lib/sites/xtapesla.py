@@ -33,7 +33,7 @@ from urllib.parse import urljoin, urlparse, parse_qs
 import urllib
 
 
-site = AdultSite('xtapes', '[COLOR hotpink]XTapes.la[/COLOR]', 'https://xtapes.la/', 'xtapes.png', 'xtapes')
+site = AdultSite('xtapes', '[COLOR hotpink]XTapes.la[/COLOR]', 'https://xtapes.la/', 'xtapes.png', 'xtapes', extract_meta=True)
 
 addon = utils.addon
 PROXY_PORT = '8787'
