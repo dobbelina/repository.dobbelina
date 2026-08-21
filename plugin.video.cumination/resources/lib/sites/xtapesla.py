@@ -22,14 +22,16 @@ import xbmcplugin
 import sys
 import json
 import re
+import html
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from six.moves import urllib_parse
 from resources.lib.jsunpack import unpack
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse, parse_qs
 import urllib
+
 
 site = AdultSite('xtapes', '[COLOR hotpink]XTapes.la[/COLOR]', 'https://xtapes.la/', 'xtapes.png', 'xtapes')
 
@@ -44,34 +46,51 @@ url = site.url + '?display=tube&filtre=date'
 def List(url=None):
     network_setting = utils.addon.getSetting('xtapes_network')
     networkname_setting = utils.addon.getSetting('xtapes_networkname')
+    filter_setting = utils.addon.getSetting('xtapes_filter')
     if not network_setting:
         networkname_setting = 'ALL'
-        network_setting = site.url + '?display=tube&filtre=date'
+        network_setting = site.url # + '?display=tube&filtre=date'
         utils.addon.setSetting('xtapes_network', network_setting)
         utils.addon.setSetting('xtapes_networkname', 'ALL')
-    url = network_setting
-
-    filter_setting = utils.addon.getSetting('xtapes_filter')
-    if not filter_setting:
         filter_setting = '?display=tube&filtre=date'
         utils.addon.setSetting('xtapes_filter', filter_setting)
-    url = url + filter_setting.replace('&amp;', '&')
+    if url == site.url: # or ('/search/' in url):
+        url = network_setting + filter_setting
 
+    # filter_setting = utils.addon.getSetting('xtapes_filter')
+    # if not filter_setting:
+    #     filter_setting = '?display=tube&filtre=date'
+    #     utils.addon.setSetting('xtapes_filter', filter_setting)
+    #     import html
+    #     url = url + filter_setting
+    # url = re.sub(r"#038;filtre=[^&]+", "", url) if '?' in url else url
+    # url = parse_qs(urlparse(url).query)
+    # if '/search/' in url:
+    #     # url = url.replace('?display', '&display')
+    #     networkname_setting = (parse_qs(urlparse(url).query)).get("s", [""])[0]
+    #     networkname_setting = (url.split('/search/')[1]).split('/')[0]
+    
     try:
         current_filter = filter_setting.split('filtre=')[1]
     except:
         current_filter = 'date'
     site.add_dir(
-        f'[COLOR hotpink]Filters[/COLOR] Sort by: [COLOR yellow][{current_filter}][/COLOR] Network/Tag: [COLOR yellow][{networkname_setting}][/COLOR]',
+        f'[COLOR hotpink]Filters[/COLOR] Sort by: [COLOR yellow][{current_filter}][/COLOR] ' + ('Search:' if '/search/' in url else 'Network/Tag:') + ' [COLOR yellow][{}][/COLOR]'.format(networkname_setting),
         url,
         'filters',
         site.img_filters,
         Folder=False
     )
 
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    # site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
+    url = url.replace('&#038;', '&')       # .replace('&&', '&')
+    url = url.replace('#038;', '&')
 
     html = utils.getHtml(url)
+    if 'Sorry, but nothing matched your search criteria.' in html:
+        utils.notify(networkname_setting, 'Sorry, but nothing matched your search criteria.')
+
     delimiter = '<li class="border-radius'
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
@@ -85,7 +104,8 @@ def List(url=None):
         contextm='xtapes.Related'
     )
 
-    re_npurl = r'class="next page-numbers" href="([^"]+)"'
+    re_npurl = r'class="next page-numbers" href="([^"]+)">Next videos'
+    # re_npurl = r'<link rel="next" href="([^"]+)" />'
     re_npnr  = r'class="next page-numbers" href="[^"]+/(\d+)'
     re_lpnr  = r"<a class='page-numbers' href='[^']*/(\d+)[^']*'>\s*[\d,]+\s*</a>(?!.*<a class='page-numbers')"
 
@@ -193,8 +213,10 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url += keyword.replace(' ', '+')
-        List(url)
+        url += keyword.replace(' ', '+') + '/page/1/'
+        utils.addon.setSetting('xtapes_network', url)
+        utils.addon.setSetting('xtapes_networkname', keyword)
+        List(url + utils.addon.getSetting("xtapes_filter"))
 
 
 class HLSProxy(BaseHTTPRequestHandler):
@@ -296,7 +318,7 @@ def Playvid(url, name, download=None):
     global PROXY_PORT
 
     vp = utils.VideoPlayer(name, download)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
+    vp.progress.update(25, "[CR]{}[CR]".format(utils.i18n('load_vpage')))
     videohtml = utils.getHtml(url, site.url, ignoreCertificateErrors=True)
     match = re.compile(r'IFRAME SRC="([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
@@ -304,9 +326,22 @@ def Playvid(url, name, download=None):
     else:
         utils.notify(name, utils.i18n('not_found'))
         return
-    raw = utils._getHtml(iframe)
-    videourl = re.compile(r'>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(raw)[0]
-    videourl = unpack(videourl)
+    try:
+        raw = utils._getHtml(iframe)
+    except:
+        try:
+            raw = utils._getHtml(match[1])
+        except:
+            utils.notify('Oh oh', utils.i18n('not_found'))
+            vp.progress.close()
+            return
+    match = re.compile(r'>(eval.+?)<\/script>', re.DOTALL | re.IGNORECASE).findall(raw)
+    if not match:
+        utils.notify('Oh oh', utils.i18n('not_found'))
+        vp.progress.close()
+        return
+
+    videourl = unpack(match[0])
     m = re.search(r'var\s+links\s*=\s*(\{.*?\});', videourl, re.S)
     if not m:
         utils.notify("Playvid", "No links{} found")
@@ -344,7 +379,7 @@ def Playvid(url, name, download=None):
         return
 
     videourl = utils.selector(
-        'Select quality',
+        utils.i18n('pick_qual'),
         sources,
         setting_valid='qualityask',
         sort_by=lambda x: int(x.split()[0].replace("x", "")),
@@ -352,7 +387,7 @@ def Playvid(url, name, download=None):
     )
 
     if not videourl:
-        utils.notify("Playvid", "Nimic selectat")
+        utils.notify("Playvid", "Nothing selected")
         return
 
     PROXY_PORT = 8787
