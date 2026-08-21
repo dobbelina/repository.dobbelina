@@ -7,3 +7,6 @@
 - camwhores.tw - fix listing
 - xtapes.la - new site
 - sextb - fix: studios, thumbnails, playback
+- Pornyteen new site 
+- Xtapes fix pagination
+- Save Search query between sessions
