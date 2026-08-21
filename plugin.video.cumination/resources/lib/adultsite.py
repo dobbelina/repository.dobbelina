@@ -8,7 +8,7 @@ class AdultSite(URL_Dispatcher):
     instances = WeakSet()
     clean_functions = set()
 
-    def __init__(self, name, title, url, image=None, about=None, webcam=False):
+    def __init__(self, name, title, url, image=None, about=None, webcam=False, extract_meta=False):
         self.default_mode = ''
         self.name = name
         self.title = title + '[COLOR white] - webcams[/COLOR]' if webcam else title
@@ -17,6 +17,7 @@ class AdultSite(URL_Dispatcher):
         self.about = about
         self.webcam = webcam
         self.custom = False
+        self.extract_meta = extract_meta
         self.add_to_instances()
 
     def add_to_instances(self):
@@ -73,3 +74,20 @@ class AdultSite(URL_Dispatcher):
         for ins in cls.instances:
             if ins.default_mode and ins.custom:
                 yield ins
+
+    def get_meta_description(self):
+        if not self.extract_meta:
+            return None
+
+        import re, requests
+
+        try:
+            headers = {"Range": "bytes=0-4096"}
+            html = requests.get(self.url, headers=headers, timeout=5).text
+            m = re.search(r'<meta name="description" content="([^"]+)"', html, re.IGNORECASE)
+            if m:
+                return m.group(1).strip()
+        except Exception:
+            return None
+
+        return None
