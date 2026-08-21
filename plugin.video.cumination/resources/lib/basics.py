@@ -288,6 +288,27 @@ def addDir(name, url, mode, iconimage=None, page=None, channel=None, section=Non
         fanart = iconimage
         art.update({'poster': iconimage})
     liz.setArt(art)
+
+    # --- META DESCRIPTION SUPPORT ---
+    try:
+        from resources.lib.adultsite import AdultSite
+
+        site_name = str(mode).split('.')[0]
+        site = AdultSite.get_site_by_name(site_name)
+
+        if site and getattr(site, "extract_meta", False):
+            description = site.get_meta_description()
+            if description:
+                if KODIVER > 19.8:
+                    vtag = liz.getVideoInfoTag()
+                    vtag.setPlot(description)
+                    vtag.setPlotOutline(description)
+                else:
+                    liz.setInfo("Video", {"plot": description, "plotoutline": description})
+    except Exception:
+        pass
+    # --- END META DESCRIPTION SUPPORT ---
+
     if KODIVER > 19.8:
         vtag = liz.getVideoInfoTag()
         vtag.setTitle(name)
