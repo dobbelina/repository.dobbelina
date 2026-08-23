@@ -1,12 +1,4 @@
-[B]Version 1.1.196[/B]
-- anybunny - fix: listing, playback
-- missav - fix: listing, playback
-- chaturbate -  global search: notifications disabled
-- 3movs - new site
-- camwhoresbay - fix listing
-- camwhores.tw - fix listing
-- xtapes.la - new site
-- sextb - fix: studios, thumbnails, playback
-- Pornyteen new site 
-- Xtapes fix pagination
-- Save Search query between sessions
+[B]Version 1.1.197[/B]
+- camwhores.tv - fix listing
+- tabootube - fix listing
+
