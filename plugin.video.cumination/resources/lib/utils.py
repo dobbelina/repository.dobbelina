@@ -1428,7 +1428,7 @@ class VideoPlayer():
             raise ValueError(i18n('no_regex'))
 
     @_cancellable
-    def play_from_kt_player(self, html, referer=None, follow_redirects=False):
+    def play_from_kt_player(self, html, referer=None, follow_redirects=False, user_agent=None):
         license = re.search(r"license_code:\s*'(\$\d+)", html, re.DOTALL | re.IGNORECASE)
         if license:
             license = license.group(1)
@@ -1465,7 +1465,8 @@ class VideoPlayer():
         if follow_redirects:
             videourl = getVideoLink(videourl, referer)
 
-        videourl += '|User-Agent={0}'.format(USER_AGENT)
+        ua = user_agent if user_agent else USER_AGENT
+        videourl += '|User-Agent={0}'.format(ua)
         if referer:
             videourl += '&Referer={0}'.format(referer)
 
