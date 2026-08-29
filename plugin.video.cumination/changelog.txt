@@ -2,3 +2,4 @@
 - camwhores.tv - fix player
 - tabootube - fix listing
 - anybunny - fix listing & player
+- camcaps - new domain name
