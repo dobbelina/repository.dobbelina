@@ -17,7 +17,6 @@
 '''
 
 import re
-import json
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -27,7 +26,7 @@ site = AdultSite('javguru', '[COLOR hotpink]Jav Guru[/COLOR]', 'https://jav.guru
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'wp-json/wp/v2/categories/', 'Catjson', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'jav-tags-list/', 'Toplist', site.img_cat)
     site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'jav-series/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'jav-actress-list/', 'Actress', site.img_cat)
@@ -63,12 +62,11 @@ def List(url):
 
 
 @site.register()
-def Catjson(url):
-    listjson = utils.getHtml(url)
-    jdata = json.loads(listjson)
-    for cat in jdata:
-        name = '{0} ({1})'.format(cat["name"], cat["count"])
-        site.add_dir(name, cat["link"], 'List', '')
+def Categories(url):
+    cathtml = utils.getHtml(url)
+    match = re.compile(r'a href="([^"]+/category/[^"]+)">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    for caturl, name in match:
+        site.add_dir(name, caturl, 'List', '')
     utils.eod()
 
 
