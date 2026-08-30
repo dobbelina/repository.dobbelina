@@ -1,4 +1,6 @@
 [B]Version 1.1.197[/B]
 - camwhores.tv - fix player
 - tabootube - fix listing
-
+- anybunny - fix listing & player
+- camcaps - new domain name
+- javguru - fix categories
