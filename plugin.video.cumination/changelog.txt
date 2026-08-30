@@ -4,3 +4,5 @@
 - anybunny - fix listing & player
 - camcaps - new domain name
 - javguru - fix categories
+- New site SinParty - webcam
+- New site xLoveCam - webchat
