@@ -1,2 +1,3 @@
 [B]Version 1.1.198[/B]
 - asianviralhub - new site
+- aagmaal - fix playback, add OTT category

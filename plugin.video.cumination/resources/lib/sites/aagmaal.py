@@ -26,6 +26,7 @@ site = AdultSite('aagmaal', '[COLOR hotpink]Aag Maal[/COLOR]', 'https://aagmaal.
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]OTT[/COLOR]', site.url + 'ott/', 'OTT', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
@@ -51,18 +52,37 @@ def List(url):
 
 
 @site.register()
+def ListOTT(url):
+    listhtml = utils.getHtml(url, site.url)
+    match = re.compile(r'<article[^>]+>\s*<a\s*href="([^"]+)[^>]+>\s*<img\s*src="([^"]+)"\s*alt="([^"]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    for videopage, img, name in match:
+        name = utils.cleantext(name)
+        site.add_download_link(name, videopage, 'Playvid', img, name)
+
+    purl = re.compile(r'class="next page-numbers"\s*href="([^"]+)').search(listhtml)
+    if purl:
+        curr_pg = re.compile(r'class="page-numbers\s*current">([^<]+)').search(listhtml)
+        last_pg = re.compile(r'class="page-numbers"[^>]+>([^<]+)').findall(listhtml)[-1]
+        pgtxt = 'Currently in Page {0} of {1}'.format(curr_pg.group(1), last_pg)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), purl.group(1), 'ListOTT', site.img_next)
+    utils.eod()
+
+
+@site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videourl = ''
 
     videopage = utils.getHtml(url, site.url)
-    links = re.compile(r'''href="([^"]+)"\s*class="external.+?blank">.*?(?://|\.)([^/]+)''', re.DOTALL | re.IGNORECASE).findall(videopage)
+    pat1 = re.compile(r'''class="vp-dl-server">([^<]+)</div>\s*<p><a\s*class="vp-dl-btn"\s*href="([^"]+)''', re.DOTALL | re.IGNORECASE)
+    pat2 = re.compile(r'''<br\s*/>\s*([\d]+)\.\s*<a\s*href="([^"]+)''', re.DOTALL | re.IGNORECASE)
+    links = pat1.findall(videopage) or pat2.findall(videopage)
     if links:
-        links = {host: link for link, host in links if vp.resolveurl.HostedMediaFile(link)}
+        links = {host: link for host, link in links if vp.resolveurl.HostedMediaFile(link)}
         videourl = utils.selector('Select link', links)
     else:
-        r = re.search(r'<iframe\s*loading="lazy"\s*src="([^"]+)', videopage)
+        r = re.search(r'<iframe\s*(?:loading="lazy"\s*)?src="([^"]+)', videopage)
         if r:
             videourl = r.group(1)
     if not videourl:
@@ -87,6 +107,28 @@ def Categories(url):
         for catpage, name in match:
             name = utils.cleantext(name)
             site.add_dir(name, catpage, 'List')
+        utils.eod()
+
+
+@site.register()
+def OTT(url):
+    otthtml = utils.getHtml(url, site.url)
+    otts = re.compile(
+        r'class="vp-tax-index-card__thumb"\s*href="([^"]+)[^>]+><img\s*src="([^"]+)"\s*alt="([^"]+).+?(\d+)</span>',
+        re.DOTALL | re.IGNORECASE
+    ).findall(otthtml)
+    if otts:
+        for catpage, thumb, name, vids in otts:
+            name = '{0} [COLOR cyan][I][{1} video(s)][/I][/COLOR]'.format(name, vids)
+            site.add_dir(name, catpage, 'ListOTT', thumb)
+
+        purl = re.compile(r'class="next page-numbers"\s*href="([^"]+)').search(otthtml)
+        if purl:
+            curr_pg = re.compile(r'class="page-numbers\s*current">([^<]+)').search(otthtml)
+            last_pg = re.compile(r'class="page-numbers"[^>]+>([^<]+)').findall(otthtml)[-1]
+            pgtxt = 'Currently in Page {0} of {1}'.format(curr_pg.group(1), last_pg)
+            site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({0})'.format(pgtxt), purl.group(1), 'OTT', site.img_next)
+
         utils.eod()
 
 
