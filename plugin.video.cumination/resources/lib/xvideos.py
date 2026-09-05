@@ -231,7 +231,7 @@ def Tags(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    vp = utils.VideoPlayer(name, download, 'src=&quot;([^&]+)&quot;', direct_regex='contentUrl": "([^"]+)"')
+    vp = utils.VideoPlayer(name, download, 'src=&quot;([^&]+)&quot;', direct_regex="html5player\.setVideoHLS\('([^']+)'")
     vp.play_from_site_link(url)
 
 

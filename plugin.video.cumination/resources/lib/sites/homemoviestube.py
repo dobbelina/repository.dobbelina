@@ -36,8 +36,9 @@ def Main():
 def List(url):
     html = utils.getHtml(url, site.url)
 
-    match = re.compile(r'class="vidItem">.+?data-src="([^"]+).+?time">([^<]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    for img, duration, videopage, name in match:
+    # match = re.compile(r'class="vidItem">.+?data-src="([^"]+).+?time">([^<]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
+    match = re.compile(r'class="media-card video-card".+?href="([^"]+)".+?title="([^"]+).+?src="([^"]+)".+?duration-badge">([^>]+)<', re.DOTALL | re.IGNORECASE).findall(html)
+    for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         if videopage.startswith('//'):
             videopage = 'https:' + videopage
@@ -82,12 +83,14 @@ def Search(url, keyword=None):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
+    vp.progress.update(25, "{}[CR]Loading video page[CR]".format(name))
     video_page = utils.getHtml(url, site.url)
 
     source = re.compile(r'<source.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).search(video_page)
     if source:
-        vp.play_from_direct_link(source.group(1) + '|verifypeer=false')
+        videourl = urllib_parse.quote(source.group(1))
+        videourl = (site.url).rstrip('/') + videourl if videourl.startswith('/') else videourl
+        vp.play_from_direct_link(videourl + '|verifypeer=false')
     else:
         vp.progress.close()
         utils.notify('Oh Oh', 'No Videos found')

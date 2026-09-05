@@ -45,7 +45,7 @@ def List(url):
     delimiter = '<article data-video-id="'
     re_videopage = 'href="([^"]+)"'
     re_name = ' title="([^"]+)"'
-    re_img = '(?:img src|img data-src|poster)="([^"]+)"'
+    re_img = '(?:img src|img data-src|poster|data-main-thumb)="([^"]+)"'
     re_duration = 'duration">([^<]+)<'
     re_quality = '>HD<'
 
@@ -110,7 +110,7 @@ def Play(url, name, download=None):
         videomatch = re.compile(r'source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
         if videomatch:
             videourl = videomatch[0] + '|Referer={}'.format(site.url)
-            vp.play_from_direct_link(videourl)
+            vp.play_from_direct_link(videomatch[0])
             return
     utils.notify('Oh oh', 'No video found')
 
