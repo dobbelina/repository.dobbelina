@@ -55,11 +55,12 @@ def Main():
 
 @site.register()
 def List(url):
-    try:
-        listhtml = utils.getHtml(url, '')
-    except:
-        utils.notify(msg='No videos found!')
-        return
+    listhtml = fetch(url)[0]
+    # try:
+    #     listhtml = utils.getHtml(url, '')
+    # except:
+    #     utils.notify(msg='No videos found!')
+    #     return
 
     delimiter = r"<li\s+data-id='|class='nuyrfe"
     re_videopage = "href='([^']+)'"
@@ -81,13 +82,7 @@ def List(url):
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, '')
-    attempts = 0
-    while '<title>anybunny' not in cathtml.lower() and attempts < 5:
-        time.sleep(1)
-        cathtml = utils._getHtml(url, '')
-        attempts += 1
-
+    cathtml = fetch(url)[0]
     match = re.compile(r"href='/top/([^']+)'>.*?src='([^']+)'\s*alt='([^']+)'", re.DOTALL | re.IGNORECASE).findall(cathtml)
     match = sorted(match, key=lambda x: x[2])
     for catid, img, name in match:
@@ -98,13 +93,7 @@ def Categories(url):
 
 @site.register()
 def Categories2(url):
-    cathtml = utils.getHtml(url, '')
-    attempts = 0
-    while '<title>anybunny' not in cathtml.lower() and attempts < 5:
-        time.sleep(1)
-        cathtml = utils._getHtml(url, '')
-        attempts += 1
-
+    cathtml = fetch(url)[0]
     match = re.compile(r"href='/top/([^']+)'>([^<]+)</a> <a>([^)]+\))", re.DOTALL | re.IGNORECASE).findall(cathtml)
     for catid, name, videos in match:
         name = name + " [COLOR deeppink]" + videos + "[/COLOR]"
@@ -163,6 +152,38 @@ def fetch(url, headers=None, cookie_jar=None):
     response = opener.open(request.Request(url, headers=req_headers), timeout=30)
     try:
         return response.read().decode('utf-8', 'replace'), cookie_jar
+    finally:
+        response.close()
+
+
+def fetch_player_page(url, referer, cookie_jar):
+    opener = request.build_opener(
+        request.HTTPCookieProcessor(cookie_jar),
+        request.HTTPSHandler(context=ssl.create_default_context()),
+    )
+    headers = {
+        **DEFAULT_HEADERS,
+        'User-Agent': VIEW_USER_AGENT,
+        'Referer': referer,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Sec-Fetch-Dest': 'iframe',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-GPC': '1',
+        'Priority': 'u=4',
+        'Upgrade-Insecure-Requests': '1',
+        'Pragma': 'no-cache',
+    }
+    try:
+        response = opener.open(request.Request(url, headers=headers), timeout=30)
+    except HTTPError as error:
+        if 300 <= error.code < 400:
+            return '', error.headers.get('Location'), error.headers, cookie_jar
+        raise
+
+    try:
+        text = response.read().decode('utf-8', 'replace')
+        return text, response.geturl(), response.headers, cookie_jar
     finally:
         response.close()
 
@@ -252,11 +273,14 @@ def media_belongs_to_page(media_url, page_url):
     return any(part in media_path for part in page_parts)
 
 
-def follow_redirects(url, referer):
-    opener = request.build_opener(request.HTTPSHandler(context=ssl.create_default_context()))
+def follow_redirects(url, referer, cookie_jar=None):
+    handlers: list[request.BaseHandler] = [request.HTTPSHandler(context=ssl.create_default_context())]
+    if cookie_jar is not None:
+        handlers.insert(0, request.HTTPCookieProcessor(cookie_jar))
+    opener = request.build_opener(*handlers)
     headers = {**DEFAULT_HEADERS, 'Referer': referer}
 
-    for method, extra_headers in (('HEAD', {}), ('GET', {'Range': 'bytes=0-0'})):
+    for method, extra_headers in (('GET', {'Range': 'bytes=0-0'}), ('GET', {})):
         try:
             response = opener.open(request.Request(url, headers={**headers, **extra_headers}, method=method), timeout=30)
             try:
@@ -264,9 +288,15 @@ def follow_redirects(url, referer):
             finally:
                 response.close()
         except (HTTPError, URLError):
-            if method == 'GET':
+            if not extra_headers:
                 raise
     return url
+
+
+class NoRedirectHandler(request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        del req, fp, code, msg, headers, newurl
+        return None
 
 
 def resolve_anybunny(url, return_all=False):
@@ -276,34 +306,61 @@ def resolve_anybunny(url, return_all=False):
 
     is_view_url = parsed.path.lower().startswith('/view/')
     page_headers = {'Referer': site.url}
-    if is_view_url:
-        page_headers['User-Agent'] = VIEW_USER_AGENT
 
     cookie_jar = None
     iframe_url = None
+    player_url = None
+    player_referer = url
     page_text = ''
 
     # Try to fetch page and find iframe (retry up to 5 times)
     for _ in range(5):
         page_text, cookie_jar = fetch(url, headers=page_headers, cookie_jar=cookie_jar)
-
-        # For non-view URLs, try direct extraction first
-        if not is_view_url and not return_all:
-            all_urls = extract_all_media_urls(page_text)
-            for media_url in all_urls:
-                if '.mp4' in media_url.lower() and media_belongs_to_page(media_url, url):
-                    return follow_redirects(media_url, url)
-
         iframe_url = extract_iframe_url(page_text, url)
+
+        if is_view_url and iframe_url and '/stream1/' in iframe_url.lower():
+            try:
+                redirected_url = follow_redirects(iframe_url, url, cookie_jar)
+                # print(f'Debug: Redirected URL: {redirected_url}')
+                if (
+                    'stream1.anybunny.org' in redirected_url.lower()
+                    and '/m4vid/' in redirected_url.lower()
+                    and redirected_url.lower().endswith('.mp4')
+                ):
+                    return [redirected_url] if return_all else redirected_url
+                if '/svpapp/' in redirected_url.lower():
+                    player_url = redirected_url
+                    player_referer = iframe_url
+            except (HTTPError, URLError):
+                pass
+
+        # Non-view pages can be resolved directly without waiting for an iframe.
+        all_urls = extract_all_media_urls(page_text)
+        if all_urls and not is_view_url:
+            valid_urls = [media_url for media_url in all_urls if media_belongs_to_page(media_url, url)]
+            if not return_all:
+                for media_url in valid_urls:
+                    if '.mp4' in media_url.lower():
+                        return follow_redirects(media_url, url)
+
         if iframe_url:
             break
         time.sleep(0.5)
 
     # No iframe found - try direct extraction for return_all
     if not iframe_url:
+        # /view/ can intermittently return direct public sources instead of its
+        # signed stream1 iframe; use those only after all iframe retries.
+        all_urls = extract_all_media_urls(page_text)
+        valid_urls = [u for u in all_urls if media_belongs_to_page(u, url)]
+        if is_view_url and valid_urls:
+            if return_all:
+                return valid_urls
+            for media_url in valid_urls:
+                if '.mp4' in media_url.lower():
+                    return media_url
+            return valid_urls[0]
         if return_all and not is_view_url:
-            all_urls = extract_all_media_urls(page_text)
-            valid_urls = [u for u in all_urls if media_belongs_to_page(u, url)]
             if valid_urls:
                 try:
                     follow_redirects(valid_urls[0], url)
@@ -312,12 +369,16 @@ def resolve_anybunny(url, return_all=False):
                     pass
         return [] if return_all else None
 
-    # Fetch player iframe
-    player_text, _ = fetch(
-        iframe_url,
-        headers={'Referer': url, 'User-Agent': VIEW_USER_AGENT if is_view_url else DEFAULT_HEADERS['User-Agent']},
-        cookie_jar=cookie_jar,
+    # Keep the intermediate /svpapp page; it contains the signed /m4vid URL.
+    if player_url is None:
+        player_url = iframe_url
+    player_text, player_location, _, cookie_jar = fetch_player_page(
+        player_url, player_referer, cookie_jar
     )
+    if player_location and player_location != player_url:
+        player_text, _, _, cookie_jar = fetch_player_page(
+            urljoin(player_url, player_location), player_url, cookie_jar
+        )
 
     all_urls = extract_all_media_urls(player_text)
     if not all_urls:

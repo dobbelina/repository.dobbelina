@@ -1,7 +1,2 @@
-[B]Version 1.1.198[/B]
-- asianviralhub - new site
-- aagmaal - fix playback, add OTT category
-- BlendPorn fixed images
-- Homemovies tube fixed image and player
-- PornMZ fixed images, fixed player
-- Xvideos fixed player
+[B]Version 1.1.199[/B]
+- anybunny - fixed playback, listing
