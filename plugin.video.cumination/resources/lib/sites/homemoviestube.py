@@ -46,23 +46,27 @@ def List(url):
             img = 'https:' + img.replace(' ', '%20')
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
-    nextp = re.compile(r"class='next'><a\s*href='([^']+)'>Next", re.DOTALL | re.IGNORECASE).search(html)
-    if nextp:
-        np = urllib_parse.urljoin(url, nextp.group(1))
-        curr_pg = re.findall(r"class='current'>([^<]+)", html)[0]
-        last_pg = re.findall(r"class='pagination.+?href.+?>([^<]+)", html)[0]
-        site.add_dir('[COLOR hotpink]Next Page[/COLOR] (Currently in Page {0} of {1})'.format(curr_pg, last_pg), np, 'List', site.img_next)
+    re_npurl = r'prev-next-item"(?!.*aria-disabled="true").+?href="([^"]+)'
+    re_npnr  = r'prev-next-item"(?!.*aria-disabled="true").+?href=".+page=(\d+)"\srel'
+    re_lpnr  = r'prev-next-item"(?!.*aria-disabled="true").+?href=".+page=(\d+)"\stitle'
+
+    utils.next_page(
+        site, '{}.List'.format(site.name), html,
+        re_npurl, re_npnr, re_lpnr=re_lpnr,
+        contextm='{}.GotoPage'.format(site.name)
+    )
+
     utils.eod()
 
 
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="category-item\s.+?data-src="([^"]+).+?href="([^"]+).+?>([^<]+)', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    match = re.compile(r'class="channel-card".+?href="([^"]+).+?src="([^"]+).+?badge">([^<]+).+?channel-name">([^>]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     match = list(set(match))
     match.sort(key=lambda x: x[2])
-    for img, caturl, name in match:
-        name = utils.cleantext(name)
+    for caturl, img, cnt, name in match:
+        name = utils.cleantext(name + ' [COLOR blue][{}][/COLOR]'.format(cnt))
         if caturl.startswith('//'):
             caturl = 'https:' + caturl
         if img.startswith('//'):
