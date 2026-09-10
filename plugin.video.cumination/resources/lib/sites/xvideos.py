@@ -17,12 +17,16 @@
 '''
 
 
+import glob
+import json
+import os
 import re
+import threading
+import time
 import xbmc
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-import json
 
 site = AdultSite('xvideos', '[COLOR hotpink]xVideos[/COLOR]', 'https://www.xvideos.com/', 'xvideos.png', 'xvideos')
 
@@ -232,7 +236,147 @@ def Tags(url):
 @site.register()
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download, 'src=&quot;([^&]+)&quot;', direct_regex="html5player\.setVideoHLS\('([^']+)'")
-    vp.play_from_site_link(url)
+    vp.progress.update(25, "[CR]{0}[CR]".format(utils.i18n('load_vpage')))
+    html = utils.getHtml(url, site.url)
+    if 'html5player.setVideoHLS' not in html:
+        if not download:
+            m3u8 = get_interactive_m3u8(html)
+            if m3u8:
+                stream = serve_interactive_m3u8(m3u8)
+                if not stream:
+                    stream = m3u8
+                vp.progress.close()
+                utils.playvid(stream, name, IA_check='IA')
+                return
+        vp.direct_regex = 'contentUrl": "([^"]+)'
+    vp.play_from_html(html, url)
+
+
+def serve_interactive_m3u8(m3u8):
+    """Serve the stitched playlist over a local HTTP server so
+    inputstream.adaptive can play it (native Kodi HLS cannot handle the
+    fMP4 scenes these videos use)."""
+    if not utils.PY3:
+        return None
+    try:
+        from http.server import HTTPServer, SimpleHTTPRequestHandler
+    except ImportError:
+        return None
+    directory = os.path.dirname(m3u8)
+
+    class Handler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            SimpleHTTPRequestHandler.__init__(self, *args, directory=directory, **kwargs)
+
+        def log_message(self, *args, **kwargs):
+            pass
+
+    try:
+        server = HTTPServer(('127.0.0.1', 0), Handler)
+    except OSError:
+        return None
+    threading.Thread(target=server.serve_forever).start()
+    threading.Thread(target=lambda: time.sleep(300)).start()
+    return 'http://127.0.0.1:{}/{}'.format(server.server_port, os.path.basename(m3u8))
+
+
+def get_interactive_m3u8(html):
+    """Interactive videos expose only a 360p linear mp4 plus scene-based HD
+    streams (IVP player). Stitch every scene's best variant into a single local
+    HLS so the whole video plays as one stream in HD."""
+    try:
+        embed = re.compile(r'<iframe src="(https://[^"]+embed\.html)"', re.DOTALL | re.IGNORECASE).findall(html)
+        if not embed:
+            return None
+        embedhtml = utils.getHtml(embed[0], site.url)
+        scenario = re.compile(r"""scenario:\s*['"]([^'"]+)['"]""", re.DOTALL | re.IGNORECASE).findall(embedhtml)
+        if not scenario:
+            return None
+        scenariohtml = utils.getHtml(scenario[0], embed[0])
+        data = json.loads(scenariohtml)
+        assets = data.get('assetsUrl', '').rstrip('/')
+        scene_ids = [s['id'] for s in data.get('scenes', []) if s.get('id') and s.get('kind') not in ('intro', 'external')]
+        if not scene_ids:
+            return None
+
+        lines = ['#EXTM3U', '#EXT-X-VERSION:7', '#EXT-X-TARGETDURATION:120']
+        found = 0
+        for sid in scene_ids:
+            master_url = '{}/{}/master.m3u8'.format(assets, sid)
+            try:
+                master = utils.getHtml(master_url, site.url)
+            except Exception:
+                master = None
+            variant = best_variant(master)
+            if not variant:
+                continue
+            master_base = master_url.rsplit('/', 1)[0]
+            varurl = master_base + '/' + variant
+            playlist = utils.getHtml(varurl, site.url)
+            var_base = varurl.rsplit('/', 1)[0]
+            segments = []
+            init_url = None
+            for line in playlist.splitlines():
+                line = line.strip()
+                if line.startswith('#EXT-X-MAP:'):
+                    m = re.search(r'URI="([^"]+)"', line)
+                    if m:
+                        init_url = m.group(1)
+                        if not init_url.startswith('http'):
+                            init_url = var_base + '/' + init_url
+                elif line and not line.startswith('#'):
+                    segments.append(line if line.startswith('http') else var_base + '/' + line)
+            extinf = re.findall(r'#EXTINF:([0-9.]+)', playlist)
+            if not segments or not extinf:
+                continue
+            if found:
+                lines.append('#EXT-X-DISCONTINUITY')
+            if init_url:
+                lines.append('#EXT-X-MAP:URI="{}"'.format(init_url))
+            for j in range(min(len(segments), len(extinf))):
+                lines.append('#EXTINF:{},'.format(extinf[j]))
+                lines.append(segments[j])
+            found += 1
+        if not found:
+            return None
+        lines.append('#EXT-X-ENDLIST')
+        tempdir = utils.TRANSLATEPATH('special://temp/')
+        for stale in glob.glob(os.path.join(tempdir, 'xvideos_interactive_*.m3u8')):
+            try:
+                os.remove(stale)
+            except OSError:
+                pass
+        path = os.path.join(tempdir, 'xvideos_interactive_{}.m3u8'.format(os.getpid()))
+        with open(path, 'w') as f:
+            f.write('\n'.join(lines))
+        return path
+    except Exception:
+        return None
+
+
+def best_variant(master):
+    if not master:
+        return None
+    variants = []
+    for i, line in enumerate(master.splitlines()):
+        if line.startswith('#EXT-X-STREAM-INF'):
+            uri = master.splitlines()[i + 1].strip() if i + 1 < len(master.splitlines()) else ''
+            if uri and not uri.startswith('#'):
+                mres = re.search(r'RESOLUTION=(\d+)x(\d+)', line)
+                mband = re.search(r'BANDWIDTH=(\d+)', line)
+                mcodec = re.search(r'CODECS="([^"]+)"', line)
+                codecs = mcodec.group(1) if mcodec else ''
+                variants.append({
+                    'height': int(mres.group(2)) if mres else 0,
+                    'bandwidth': int(mband.group(1)) if mband else 0,
+                    'avc': 'avc1' in codecs,
+                    'uri': uri,
+                })
+    if not variants:
+        return None
+    h264 = [v for v in variants if v['avc']]
+    candidates = h264 if h264 else variants
+    return max(candidates, key=lambda v: (v['height'], v['bandwidth']))['uri']
 
 
 @site.register()
