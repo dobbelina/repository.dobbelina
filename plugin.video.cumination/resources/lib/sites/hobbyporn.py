@@ -20,6 +20,8 @@ import re
 import xbmcplugin
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
+import urllib.request
+import ssl
 
 site = AdultSite('hobbyporn', '[COLOR hotpink]Hobby Porn[/COLOR]', 'https://hobby.porn/', 'https://hobby.porn/static/images/logo.png', 'hobbyporn')
 
@@ -56,6 +58,23 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videopage = utils.getHtml(url, site.url)
+    source = re.compile(r'<iframe.+?src="([^"]+)', re.DOTALL | re.IGNORECASE).findall(videopage)
+    if source:
+        videopage = get_html(
+            source[0],
+            referer=site.url,
+            cookies="accessAgeDisclaimerPH=1; accessAgeDisclaimerUK=1"
+        )
+
+        match = re.compile(r',"videoUrl":"([^"]+)","quality":"([^"]+)"', re.DOTALL).findall(videopage)
+        if match:
+            src = {x[1]: x[0] for x in match}
+            videolink  = utils.prefquality(src, sort_by =lambda x: int(x), reverse=True)
+            if videolink:
+                videolink = videolink.replace('\\/', '/') + '|Referer=https://www.pornhub.com/&Cookie=accessAgeDisclaimerPH=1;accessAgeDisclaimerUK=1&Origin=https://www.pornhub.com'
+                vp.play_from_direct_link(videolink)
+                return
+
     sources = re.compile(r"video(?:_alt)?_url:\s*'([^']+).+?video(?:_alt)?_url_text:\s*'([^']+)", re.DOTALL | re.IGNORECASE).findall(videopage)
     if sources:
         sources = {qual: surl for surl, qual in sources}
@@ -117,3 +136,26 @@ def Search(url, keyword=None):
         title = keyword.replace(' ', '-')
         searchUrl = searchUrl + title + '/'
         List(searchUrl)
+
+
+def get_html(url, referer=None, cookies=None):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+    }
+
+    if referer:
+        headers["Referer"] = referer
+
+    if cookies:
+        headers["Cookie"] = cookies
+
+    req = urllib.request.Request(url, headers=headers)
+
+    ctx = ssl.create_default_context()
+    ctx.set_ciphers('DEFAULT@SECLEVEL=1')
+
+    with urllib.request.urlopen(req, timeout=15, context=ctx) as response:
+        return response.read().decode('utf-8', errors='ignore')
