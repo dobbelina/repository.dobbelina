@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     Cumination
     Copyright (C) 2015 Whitecream
@@ -1684,7 +1685,7 @@ def videos_list(site, playvid, html, delimiter, re_videopage, re_name=None, re_i
             if re_img:
                 match = re.search(re_img, video, flags=re.DOTALL | re.IGNORECASE)
                 if match:
-                    img = fix_url(match.group(1).replace('&amp;', '&'), site.url)
+                    img = fix_url(match.group(1).replace('&amp;', '&').replace('–', '%E2%80%93'), site.url)
                     if thumbnails:
                         img = th.cache_img(img) if thumbnails == 'cache' else th.fix_img(img)
                     elif img_options:
