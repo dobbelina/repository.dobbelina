@@ -598,7 +598,11 @@ def Playvid_proxy(url, name):
         # ---------- SEGMENT ----------
         def serve_ts(self):
             segment = self.path.split("/", 1)[1]
-            url = "%s/%s%s" % (base_url, ProxyHandler.subfolder, segment)
+            segment_clean = segment.lstrip("/")
+            if segment_clean.startswith(ProxyHandler.subfolder):
+                segment_clean = segment_clean[len(ProxyHandler.subfolder):]
+            url = "%s/%s%s" % (base_url, ProxyHandler.subfolder, segment_clean)
+
             data = raw_get(url, 'ts')
 
             # reconectare automată dacă CDN schimbă nodul
@@ -1499,26 +1503,27 @@ def cam4_graphql_niches(gender="female"):
             "size": 48
         },
         "query": """query getNicheDirectoryData($keys:[String!],$size:Int!,$sort:String,$search:String,$filter:String,$gender:String){
-          controlledFeatures { id hasNicheCreation __typename }
-          i18n { id values:translate(keys:$keys) __typename }
-          niches(size:$size,sort:$sort,search:$search,filter:$filter,gender:$gender) {
-            id
-            items {
-              id
-              slug
-              bannerUrl
-              thumbnailUrl
-              name { id text originalText __typename }
-              stats { id membersCount postsCount __typename }
-              member { id userId role __typename }
-              newPostsCount
-              isApproved
-              __typename
+            controlledFeatures { id __typename }
+            i18n { id values:translate(keys:$keys) __typename }
+            niches(size:$size,sort:$sort,search:$search,filter:$filter,gender:$gender) {
+                id
+                items {
+                id
+                slug
+                bannerUrl
+                thumbnailUrl
+                name { id text originalText __typename }
+                stats { id membersCount postsCount __typename }
+                member { id userId role __typename }
+                newPostsCount
+                isApproved
+                __typename
+                }
+                __typename
             }
-            __typename
-          }
-          user { id accessControl { id isLogged isGuestBilling isAdmin __typename } __typename }
+            user { id accessControl { id isLogged isGuestBilling isAdmin __typename } __typename }
         }"""
+
     }
 
     data = json.dumps(payload).encode("utf-8")
