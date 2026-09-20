@@ -1,0 +1,689 @@
+# Kodi Media Center language file
+# Addon Name: Cumination
+# Addon id: plugin.video.cumination
+# Addon Provider: Cumination
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: https://forum.kodi.tv/\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: French Translation\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgctxt "#30001"
+msgid "Preferred maximum video quality"
+msgstr "Qualité vidéo maximale préférée"
+
+msgctxt "#30002"
+msgid "Don't ask for videohost"
+msgstr "Ne pas demander l'hébergeur vidéo"
+
+msgctxt "#30003"
+msgid "Auto-refresh Webcam images"
+msgstr "Rafraîchir automatiquement les images webcam"
+
+msgctxt "#30004"
+msgid "Play all parts (no download)"
+msgstr "Lire toutes les parties (pas de téléchargement)"
+
+msgctxt "#30005"
+msgid "Use video thumbnail for poster/fanart"
+msgstr "Utiliser la miniature vidéo pour poster/fanart"
+
+msgctxt "#30006"
+msgid "Enabled"
+msgstr "Activé"
+
+msgctxt "#30007"
+msgid "Disabled"
+msgstr "Désactivé"
+
+msgctxt "#30008"
+msgid "Enable custom view types"
+msgstr "Activer les types de vue personnalisés"
+
+msgctxt "#30009"
+msgid "Quality added to the video name"
+msgstr "Qualité ajoutée au nom de la vidéo"
+
+msgctxt "#30010"
+msgid "Duration added to the video name"
+msgstr "Durée ajoutée au nom de la vidéo"
+
+msgctxt "#30011"
+msgid "Select Sort method for Scenes"
+msgstr "Sélectionner la méthode de tri pour les scènes"
+
+msgctxt "#30012"
+msgid "Latest"
+msgstr "Plus récent"
+
+msgctxt "#30013"
+msgid "Top rated"
+msgstr "Les mieux notés"
+
+msgctxt "#30014"
+msgid "Most viewed"
+msgstr "Les plus vus"
+
+msgctxt "#30016"
+msgid "Play m3u8 streams with Inputstream Adaptive"
+msgstr "Lire les flux m3u8 avec Inputstream Adaptive"
+
+msgctxt "#30017"
+msgid "Toggle Kodi Debug Log on or off"
+msgstr "Activer ou désactiver le journal de débogage Kodi"
+
+msgctxt "#30021"
+msgid "Select Sort method for Movies"
+msgstr "Sélectionner la méthode de tri pour les films"
+
+msgctxt "#30022"
+msgid "Date"
+msgstr "Date"
+
+msgctxt "#30023"
+msgid "Title"
+msgstr "Titre"
+
+msgctxt "#30024"
+msgid "Views"
+msgstr "Vues"
+
+msgctxt "#30025"
+msgid "Likes"
+msgstr "J'aime"
+
+msgctxt "#30026"
+msgid "Enable universal resolvers"
+msgstr "Activer les résolveurs universels"
+
+msgctxt "#30027"
+msgid "Open ResolveURL settings"
+msgstr "Ouvrir les paramètres ResolveURL"
+
+msgctxt "#30028"
+msgid "Set/Change/Remove startup pin"
+msgstr "Définir/Modifier/Supprimer le code PIN de démarrage"
+
+msgctxt "#30029"
+msgid "Cache Web Requests"
+msgstr "Mettre en cache les requêtes web"
+
+msgctxt "#30030"
+msgid "Time to cache in hours"
+msgstr "Durée de mise en cache en heures"
+
+msgctxt "#30031"
+msgid "Cookies"
+msgstr "Cookies"
+
+msgctxt "#30032"
+msgid "Delete all cookies"
+msgstr "Supprimer tous les cookies"
+
+msgctxt "#30051"
+msgid "General"
+msgstr "Général"
+
+msgctxt "#30052"
+msgid "Download Folder"
+msgstr "Dossier de téléchargement"
+
+msgctxt "#30053"
+msgid "Hosts and resolvers"
+msgstr "Hôtes et résolveurs"
+
+msgctxt "#30054"
+msgid "Cam Sites"
+msgstr "Sites de cam"
+
+msgctxt "#30055"
+msgid "Preferred Playback mode"
+msgstr "Mode de lecture préféré"
+
+msgctxt "#30059"
+msgid "Favourites and keywords"
+msgstr "Favoris et mots-clés"
+
+msgctxt "#30060"
+msgid "Favourites"
+msgstr "Favoris"
+
+msgctxt "#30061"
+msgid "Search keywords"
+msgstr "Rechercher des mots-clés"
+
+msgctxt "#30062"
+msgid "Custom sites"
+msgstr "Sites personnalisés"
+
+msgctxt "#30063"
+msgid "Enable or disable installed custom sites"
+msgstr "Activer ou désactiver les sites personnalisés installés"
+
+msgctxt "#30064"
+msgid "Add or remove custom sites"
+msgstr "Ajouter ou supprimer des sites personnalisés"
+
+msgctxt "#30065"
+msgid "Cache"
+msgstr "Cache"
+
+msgctxt "#30100"
+msgid "Select Playback mode"
+msgstr "Sélectionner le mode de lecture"
+
+msgctxt "#30101"
+msgid "HLS"
+msgstr ""
+
+msgctxt "#30102"
+msgid "F4mProxy"
+msgstr ""
+
+msgctxt "#30103"
+msgid "RTMP"
+msgstr ""
+
+msgctxt "#30110"
+msgid "Preferred sections"
+msgstr "Sections préférées"
+
+msgctxt "#30111"
+msgid "Female"
+msgstr "Femme"
+
+msgctxt "#30112"
+msgid "Male"
+msgstr "Homme"
+
+msgctxt "#30113"
+msgid "Couple"
+msgstr "Couple"
+
+msgctxt "#30114"
+msgid "Trans"
+msgstr "Trans"
+
+msgctxt "#30200"
+msgid "Compress backup files"
+msgstr "Compresser les fichiers de sauvegarde"
+
+msgctxt "#30201"
+msgid "Backup favourites"
+msgstr "Sauvegarder les favoris"
+
+msgctxt "#30202"
+msgid "Restore favourites"
+msgstr "Restaurer les favoris"
+
+msgctxt "#30203"
+msgid "Clear favourites"
+msgstr "Effacer les favoris"
+
+msgctxt "#30211"
+msgid "Backup keywords"
+msgstr "Sauvegarder les mots-clés"
+
+msgctxt "#30212"
+msgid "Restore keywords"
+msgstr "Restaurer les mots-clés"
+
+msgctxt "#30213"
+msgid "Clear keywords"
+msgstr "Effacer les mots-clés"
+
+msgctxt "#30214"
+msgid "Use Custom folder for Favourites"
+msgstr "Utiliser un dossier personnalisé pour les favoris"
+
+msgctxt "#30215"
+msgid "Favourites location"
+msgstr "Emplacement des favoris"
+
+msgctxt "#30301"
+msgid "Enable custom sites"
+msgstr "Activer les sites personnalisés"
+
+msgctxt "#30302"
+msgid "Install custom site"
+msgstr "Installer un site personnalisé"
+
+msgctxt "#30303"
+msgid "Uninstall custom site"
+msgstr "Désinstaller un site personnalisé"
+
+msgctxt "#30304"
+msgid "Enable custom site"
+msgstr "Activer le site personnalisé"
+
+msgctxt "#30305"
+msgid "Disable custom site"
+msgstr "Désactiver le site personnalisé"
+
+msgctxt "#30306"
+msgid "List installed custom sites"
+msgstr "Lister les sites personnalisés installés"
+
+msgctxt "#30307"
+msgid "Enable all custom sites"
+msgstr "Activer tous les sites personnalisés"
+
+msgctxt "#30308"
+msgid "Disable all custom sites"
+msgstr "Désactiver tous les sites personnalisés"
+
+msgctxt "#30309"
+msgid "Install all custom sites from folder"
+msgstr "Installer tous les sites personnalisés depuis le dossier"
+
+msgctxt "#30401"
+msgid "4K"
+msgstr ""
+
+msgctxt "#30402"
+msgid "FHD"
+msgstr ""
+
+msgctxt "#30403"
+msgid "HD"
+msgstr ""
+
+msgctxt "#30404"
+msgid "SD"
+msgstr ""
+
+msgctxt "#30405"
+msgid "Ask"
+msgstr "Demander"
+
+msgctxt "#30406"
+msgid "Choose an option"
+msgstr "Choisir une option"
+
+msgctxt "#30407"
+msgid "Set/Change PIN"
+msgstr "Définir/Modifier le code PIN"
+
+msgctxt "#30408"
+msgid "Remove PIN"
+msgstr "Supprimer le code PIN"
+
+msgctxt "#30409"
+msgid "Enter your PIN Code"
+msgstr "Entrez votre code PIN"
+
+msgctxt "#30410"
+msgid "PIN Code incorrect"
+msgstr "Code PIN incorrect"
+
+msgctxt "#30411"
+msgid "The PIN Code is incorrect"
+msgstr "Le code PIN est incorrect"
+
+msgctxt "#30412"
+msgid "Retry"
+msgstr "Réessayer"
+
+msgctxt "#30413"
+msgid "Default viewtype set"
+msgstr "Type de vue par défaut défini"
+
+msgctxt "#30414"
+msgid "Default set as:"
+msgstr "Défini par défaut comme :"
+
+msgctxt "#30415"
+msgid "Oh oh"
+msgstr "Oh oh"
+
+msgctxt "#30416"
+msgid "It looks like this website is too slow."
+msgstr "Il semble que ce site web soit trop lent."
+
+msgctxt "#30417"
+msgid "It looks like the page does not exist."
+msgstr "Il semble que la page n'existe pas."
+
+msgctxt "#30418"
+msgid "It looks like this website is down."
+msgstr "Il semble que ce site web soit hors ligne."
+
+msgctxt "#30419"
+msgid "Python version to old - update to Krypton or FTMC"
+msgstr "Version de Python trop ancienne - mettre à jour vers Krypton ou FTMC"
+
+msgctxt "#30420"
+msgid "Keywords empty"
+msgstr "Mots-clés vides"
+
+msgctxt "#30421"
+msgid "No keywords to back up"
+msgstr "Aucun mot-clé à sauvegarder"
+
+msgctxt "#30422"
+msgid "Error: invalid path"
+msgstr "Erreur : chemin invalide"
+
+msgctxt "#30423"
+msgid "Do you have permission to write to the selected folder?"
+msgstr "Avez-vous la permission d'écrire dans le dossier sélectionné ?"
+
+msgctxt "#30424"
+msgid "Backup complete"
+msgstr "Sauvegarde terminée"
+
+msgctxt "#30425"
+msgid "Backup file:"
+msgstr "Fichier de sauvegarde :"
+
+msgctxt "#30426"
+msgid "Error"
+msgstr "Erreur"
+
+msgctxt "#30427"
+msgid "Invalid backup file"
+msgstr "Fichier de sauvegarde invalide"
+
+msgctxt "#30428"
+msgid "Empty backup"
+msgstr "Sauvegarde vide"
+
+msgctxt "#30429"
+msgid "Could not find a supported link"
+msgstr "Impossible de trouver un lien supporté"
+
+msgctxt "#30430"
+msgid "Resolve failed"
+msgstr "Résolution échouée"
+
+msgctxt "#30431"
+msgid "link could not be resolved"
+msgstr "le lien n'a pas pu être résolu"
+
+msgctxt "#30432"
+msgid "The Cookie file is locked, please restart Kodi"
+msgstr "Le fichier Cookie est verrouillé, veuillez redémarrer Kodi"
+
+msgctxt "#30433"
+msgid "Download failed"
+msgstr "Téléchargement échoué"
+
+msgctxt "#30434"
+msgid "No response from server"
+msgstr "Pas de réponse du serveur"
+
+msgctxt "#30435"
+msgid "Unknown filesize"
+msgstr "Taille de fichier inconnue"
+
+msgctxt "#30436"
+msgid "Unable to download"
+msgstr "Impossible de télécharger"
+
+msgctxt "#30437"
+msgid "Download File Size"
+msgstr "Taille du fichier à télécharger"
+
+msgctxt "#30438"
+msgid "Download Path"
+msgstr "Chemin de téléchargement"
+
+msgctxt "#30439"
+msgid "Cumination Download"
+msgstr "Téléchargement Cumination"
+
+msgctxt "#30440"
+msgid "Stopped Downloading"
+msgstr "Téléchargement arrêté"
+
+msgctxt "#30441"
+msgid "Searching for..."
+msgstr "Recherche de..."
+
+msgctxt "#30442"
+msgid "Warning"
+msgstr "Avertissement"
+
+msgctxt "#30443"
+msgid "This will clear all the keywords"
+msgstr "Ceci effacera tous les mots-clés"
+
+msgctxt "#30444"
+msgid "Continue"
+msgstr "Continuer"
+
+msgctxt "#30445"
+msgid "Select directory to place backup"
+msgstr "Sélectionner le dossier pour placer la sauvegarde"
+
+msgctxt "#30446"
+msgid "Backing up"
+msgstr "Création de la sauvegarde"
+
+msgctxt "#30447"
+msgid "Initialising"
+msgstr "Initialisation"
+
+msgctxt "#30448"
+msgid "Reading database"
+msgstr "Lecture de la base de données"
+
+msgctxt "#30449"
+msgid "Writing backup file"
+msgstr "Écriture du fichier de sauvegarde"
+
+msgctxt "#30450"
+msgid "Select backup file"
+msgstr "Sélectionner le fichier de sauvegarde"
+
+msgctxt "#30451"
+msgid "Restore complete"
+msgstr "Restauration terminée"
+
+msgctxt "#30452"
+msgid "Restore skips items that are already present in keywords to avoid duplicates"
+msgstr "La restauration ignore les éléments déjà présents dans les mots-clés pour éviter les doublons"
+
+msgctxt "#30453"
+msgid "Added"
+msgstr "Ajouté"
+
+msgctxt "#30454"
+msgid "Skipped"
+msgstr "Ignoré"
+
+msgctxt "#30455"
+msgid "Select quality"
+msgstr "Sélectionner la qualité"
+
+msgctxt "#30456"
+msgid "Playing video"
+msgstr "Lecture de la vidéo"
+
+msgctxt "#30457"
+msgid "Searching for videofile"
+msgstr "Recherche du fichier vidéo"
+
+msgctxt "#30458"
+msgid "Loading video page"
+msgstr "Chargement de la page vidéo"
+
+msgctxt "#30459"
+msgid "Searching for supported hosts"
+msgstr "Recherche d'hôtes supportés"
+
+msgctxt "#30460"
+msgid "Playing from direct link"
+msgstr "Lecture via lien direct"
+
+msgctxt "#30461"
+msgid "No regular expression specified"
+msgstr "Aucune expression régulière spécifiée"
+
+msgctxt "#30462"
+msgid "Passing link to ResolveURL"
+msgstr "Passer le lien à ResolveURL"
+
+msgctxt "#30463"
+msgid "Playing from"
+msgstr "Lecture depuis"
+
+msgctxt "#30464"
+msgid "Found subsites"
+msgstr "Subsites trouvés"
+
+msgctxt "#30465"
+msgid "Loading StreamDefence sites"
+msgstr "Chargement des sites StreamDefence"
+
+msgctxt "#30466"
+msgid "Loading FileCrypt sites"
+msgstr "Chargement des sites FileCrypt"
+
+msgctxt "#30467"
+msgid "Loading ShortIX sites"
+msgstr "Chargement des sites ShortIX"
+
+msgctxt "#30468"
+msgid "Exit"
+msgstr "Quitter"
+
+msgctxt "#30469"
+msgid "Enter"
+msgstr "Entrée"
+
+msgctxt "#30470"
+msgid "About"
+msgstr "À propos"
+
+msgctxt "#30471"
+msgid "Loading Keeplinks sites"
+msgstr "Chargement des sites Keeplinks"
+
+msgctxt "#30500"
+msgid "Set content type"
+msgstr "Définir le type de contenu"
+
+msgctxt "#30501"
+msgid "movies"
+msgstr "films"
+
+msgctxt "#30502"
+msgid "videos"
+msgstr "vidéos"
+
+msgctxt "#33001"
+msgid "Error loading custom site"
+msgstr "Erreur lors du chargement du site personnalisé"
+
+msgctxt "#33002"
+msgid "Custom site disabled"
+msgstr "Site personnalisé désactivé"
+
+msgctxt "#33003"
+msgid "Sites"
+msgstr "Sites"
+
+msgctxt "#33004"
+msgid "Favourite videos"
+msgstr "Vidéos favorites"
+
+msgctxt "#33005"
+msgid "Download folder"
+msgstr "Dossier de téléchargement"
+
+msgctxt "#33006"
+msgid "Create custom list"
+msgstr "Créer une liste personnalisée"
+
+msgctxt "#33007"
+msgid "WARNING:"
+msgstr "AVERTISSEMENT :"
+
+msgctxt "#33008"
+msgid "This addon contains adult material.[CR]You may enter only if you are at least 18 years of age."
+msgstr "Cet add-on contient du matériel pour adultes.[CR]Vous ne pouvez entrer que si vous avez au moins 18 ans."
+
+msgctxt "#33009"
+msgid "Custom site disabled due to errors."
+msgstr "Site personnalisé désactivé en raison d'erreurs."
+
+msgctxt "#33010"
+msgid "Listing custom site"
+msgstr "Lister le site personnalisé"
+
+msgctxt "#33011"
+msgid "Clear local cache"
+msgstr "Effacer le cache local"
+
+msgctxt "#33012"
+msgid "Cached Data has been cleared"
+msgstr "Les données en cache ont été effacées"
+
+msgctxt "#33013"
+msgid "All cookies have been cleared"
+msgstr "Tous les cookies ont été effacés"
+
+msgctxt "#33014"
+msgid "The keyword already exists!"
+msgstr "Le mot-clé existe déjà !"
+
+msgctxt "#33015"
+msgid "Advanced"
+msgstr "Avancé"
+
+msgctxt "#33016"
+msgid "Advanced settings, use at your own risk"
+msgstr "Paramètres avancés, utilisez à vos propres risques"
+
+msgctxt "#33017"
+msgid "Filter out keywords from the video listings (separator ;)"
+msgstr "Filtrer les mots-clés des listes vidéo (séparateur ;)"
+
+msgctxt "#33018"
+msgid "Filter out hosters for videos (separator ;)"
+msgstr "Filtrer les hébergeurs pour les vidéos (séparateur ;)"
+
+msgctxt "#33019"
+msgid "Debug Log Options"
+msgstr "Options du journal de débogage"
+
+msgctxt "#33020"
+msgid "Start Kodi Logfile Uploader"
+msgstr "Démarrer le téléverseur de fichier journal Kodi"
+
+msgctxt "#33021"
+msgid "Enable Enhanced Debug Log"
+msgstr "Activer le journal de débogage amélioré"
+
+msgctxt "#33022"
+msgid "Enable Flaresolverr"
+msgstr "Activer Flaresolverr"
+
+msgctxt "#33023"
+msgid "Address where Flaresolverr is running"
+msgstr "Adresse où Flaresolverr s'exécute"
+
+msgctxt "#33024"
+msgid "Flaresolverr"
+msgstr "Flaresolverr"
+
+msgctxt "#33025"
+msgid "Chaturbate Authentication Cookie"
+msgstr "Cookie d'authentification Chaturbate"
+
+msgctxt "#33026"
+msgid "sessionid"
+msgstr "sessionid"
+
+msgctxt "#33027"
+msgid "Page Item Limit (0=no pagination)"
+msgstr "Limite d'éléments par page (0=pas de pagination)"

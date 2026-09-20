@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
-    Cumination
+       
+       Cumination
     Copyright (C) 2017 Whitecream, hdgdl, Team Cumination
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -12,6 +13,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 '''
 
 import os
@@ -25,6 +27,8 @@ import xbmc
 import xbmcgui
 import calendar
 import time
+import gzip
+import io
 from datetime import datetime, timedelta
 
 from resources.lib import utils
@@ -50,32 +54,78 @@ bu = "https://stripchat.com/api/front/models?removeShows=false&recInFeatured=fal
 cam = "https://stripchat.com/api/front/v2/models/{}/cam"
 
 
-def get_api_status(model):
-    """
-    Affiche le statut brut tel que renvoyé par l'API Stripchat
-    """
+def clean_model_name(name):
+    if not name:
+        return ""
+    name = re.sub(r'\[COLOR [^\]]*\]', '', name)
+    name = re.sub(r'\[/COLOR\]', '', name)
+    name = name.replace(u'\u2605', '').strip()
+    name = re.sub(r'\s*\[Offline\]\s*', '', name, flags=re.IGNORECASE)
+    name = ' '.join(name.split())
+    return name.strip()
+
+
+def get_api_data(url):
+    try:
+        req = urlreq.Request(url, headers={
+            'User-Agent': UA,
+            'Accept': 'application/json',
+            'Referer': 'https://stripchat.com/'
+        })
+        
+        with urlreq.urlopen(req, timeout=15) as response:
+            data = response.read()
+            
+            if data[:2] == b'\x1f\x8b':
+                try:
+                    buf = io.BytesIO(data)
+                    with gzip.GzipFile(fileobj=buf) as f:
+                        data = f.read()
+                except:
+                    pass
+            
+            return data.decode('utf-8')
+            
+    except:
+        try:
+            return utils._getHtml(url)
+        except:
+            return None
+
+
+def get_status_info(model):
     status = model.get('status', 'unknown').lower()
-    p2p_rate = model.get('p2pRate', 0)
     
-    # Mapping des statuts avec couleurs
     status_map = {
-        'public': ('PUBLIC', 'green'),
-        'private': ('PRIVE', 'red'),
-        'group': ('GROUPE SHOW', 'orange'),
-        'ticket': ('TICKET SHOW', 'yellow'),
-        'hidden': ('CACHE', 'grey'),
-        'away': ('ABSENT', 'blue'),
-        'idle': ('INACTIF', 'blue'),
-        'p2p': ('P2P', 'hotpink')
+        'public': ('PUBLIC', 'white'),
+        'private': ('PRIVE', 'white'),
+        'group': ('GROUPE SHOW', 'white'),
+        'ticket': ('TICKET SHOW', 'white'),
+        'hidden': ('CACHE', 'white'),
+        'away': ('ABSENT', 'white'),
+        'idle': ('INACTIF', 'white'),
+        'p2p': ('P2P', 'white')
     }
     
-    label, color = status_map.get(status, (status.upper(), 'white'))
+    return status_map.get(status, (status.upper(), 'white'))
+
+
+def get_model_resolution(model):
+    width = 0
+    height = 0
     
-    # Si P2P disponible (même si status est public)
-    if p2p_rate > 0:
-        label += ' + P2P({})'.format(p2p_rate)
+    broadcast_settings = model.get('broadcastSettings') or {}
+    if broadcast_settings:
+        width = broadcast_settings.get('width', 0) or 0
+        height = broadcast_settings.get('height', 0) or 0
     
-    return label, color
+    if not width and not height:
+        stream_data = model.get('stream') or {}
+        if stream_data:
+            width = stream_data.get('width', 0) or 0
+            height = stream_data.get('height', 0) or 0
+    
+    return width, height
 
 
 @site.register(default_mode=True)
@@ -137,14 +187,13 @@ def List(url, page=1):
         tag_setting = utils.addon.getSetting('stripchattag') or 'ALL'
         site.add_download_link('Filter: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(tag_setting), url, 'filters', '', '', noDownload=True)
         tag_param = '' if tag_setting == 'ALL' else tag_setting
-        url = url.replace('filterGroupTags=&', 'filterGroupTags=%5B%5D%5B%22{0}%22%5D%5D&'.format(tag_param)).replace('&parentTag=&', '&parentTag={0}&'.format(tag_param))
+        url = url.replace('filterGroupTags=&', 'filterGroupTags=%5B%5B%22{0}%22%5D%5D&'.format(tag_param)).replace('&parentTag=&', '&parentTag={0}&'.format(tag_param))
     else:
         if utils.addon.getSetting("online_only") == "true":
             site.add_download_link('[COLOR red][B]Show all models[/B][/COLOR]', url, 'online', '', '', noDownload=True)
         else:
             site.add_download_link('[COLOR red][B]Show only models online[/B][/COLOR]', url, 'online', '', '', noDownload=True)
 
-    # Récupération des favoris
     favorite = []
     try:
         conn = sqlite3.connect(utils.favoritesdb)
@@ -170,7 +219,12 @@ def List(url, page=1):
             for winner in top.get("winners", []):
                 model = winner.get("model")
                 if model:
-                    model_list.append(model)
+                    merged_model = model.copy()
+                    for key, value in winner.items():
+                        if key != 'model' and value is not None:
+                            if key not in merged_model or not merged_model.get(key):
+                                merged_model[key] = value
+                    model_list.append(merged_model)
     else:
         model_list = [item["model"] for item in data.get("items", [])]
 
@@ -181,10 +235,8 @@ def List(url, page=1):
         if online_only and not model.get("isLive"):
             continue
             
-        # Récupération du statut API brut
-        status_label, status_color = get_api_status(model)
+        status_label, status_color = get_status_info(model)
         
-        # Nom avec étoile si favoris
         raw_name = utils.cleanhtml(model.get('username', ''))
         
         is_favorite = any(raw_name == fav_name for fav_name in favorite)
@@ -195,90 +247,79 @@ def List(url, page=1):
             name = raw_name
             fav = 'add'
 
-        # URL vidéo
         videourl = model.get('hlsPlaylist') or ''
         if not videourl and model.get('stream'):
             videourl = model.get('stream', {}).get('url', '')
         if not videourl:
             videourl = site.url
 
-        # Images
-        profile_img = model.get("previewUrlThumbBig") or model.get("previewUrl") or ""
+        profile_img = model.get("previewUrlThumbBig") or model.get("previewUrl") or model.get("avatarUrl") or ""
         profile_small = model.get('previewUrlThumbSmall') or profile_img
         
         live_img = profile_img
         if model.get("isLive"):
-            snap = model.get("popularSnapshotTimestamp") or model.get("snapshotTimestamp") or int(time.time() / 60)
-            cb = random.randint(1000, 9999)
-            live_img = f"https://img.doppiocdn.media/snapshot/{model.get('id')}/{snap}_webp?cb={cb}"
+            live_img = model.get('popularSnapshotUrl') or model.get('snapshotUrl')
+            if not live_img:
+                snap = model.get('popularSnapshotTimestamp') or model.get('snapshotTimestamp')
+                if snap and model.get('id'):
+                    live_img = "https://img.doppiocdn.com/snapshot/{0}/{1}".format(model.get('id'), snap)
+                else:
+                    live_img = profile_img
 
         if img_mode == 'profile':
-            img = profile_img
-            fanart = live_img if model.get("isLive") else profile_small
+            img = live_img
+            fanart = profile_img
         else:
-            img = live_img if model.get("isLive") else profile_img
-            fanart = profile_small
+            img = profile_img
+            fanart = live_img
         
         if not img:
             img = site.image
         if not fanart:
             fanart = img
 
-        # Construction du subject avec statut API
-        subject = model.get('groupShowTopic') or ''
-        if subject:
-            subject += '[CR]'
+        subject = ''
         
-        # AJOUT DU STATUT API BRUT
-        subject += '[COLOR {}][B]{}[/B][/COLOR][CR]'.format(status_color, status_label)
+        if model.get('groupShowTopic'):
+            subject += model.get('groupShowTopic') + '[CR]'
         
-        # RÉSOLUTION (width x height) + Mobile si isMobile
-        width = 0
-        height = 0
+        subject += '[COLOR hotpink]Status:[/COLOR] [COLOR {}][B]{}[/B][/COLOR][CR]'.format(status_color, status_label)
         
-        broadcast_settings = model.get('broadcastSettings', {})
-        if broadcast_settings:
-            width = broadcast_settings.get('width', 0)
-            height = broadcast_settings.get('height', 0)
-        
-        if not width and model.get('stream'):
-            stream_data = model.get('stream', {})
-            width = stream_data.get('width', 0)
-            height = stream_data.get('height', 0)
+        width, height = get_model_resolution(model)
         
         if width and height:
+            res_value = '{}x{}'.format(width, height)
             if model.get('isMobile'):
-                subject += 'Resolution: {0}x{1} (Mobile)[CR]'.format(width, height)
-            else:
-                subject += 'Resolution: {0}x{1}[CR]'.format(width, height)
+                res_value += ' (Mobile)'
+            subject += '[COLOR hotpink]Resolution:[/COLOR] {}[CR]'.format(res_value)
         
-        # Informations standards
         if model.get('country'):
-            subject += 'Location: {0}[CR]'.format(utils.get_country(model.get('country')))
+            subject += '[COLOR hotpink]Location:[/COLOR] {}[CR]'.format(utils.get_country(model.get('country')))
+        
         if model.get('languages'):
             langs = [utils.get_language(x) for x in model.get('languages')]
-            subject += 'Languages: {0}[CR]'.format(', '.join(langs))
-        if model.get('broadcastGender'):
-            subject += 'Gender: {0}[CR]'.format(model.get('broadcastGender'))
-        if model.get('viewersCount'):
-            subject += 'Watching: {0}[CR]'.format(model.get('viewersCount'))
+            subject += '[COLOR hotpink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
         
-        # Tags
+        if model.get('broadcastGender'):
+            subject += '[COLOR hotpink]Gender:[/COLOR] {}[CR]'.format(model.get('broadcastGender'))
+        
+        if model.get('viewersCount'):
+            subject += '[COLOR hotpink]Watching:[/COLOR] {}[CR]'.format(model.get('viewersCount'))
+        
         if model.get('tags'):
-            subject += '#'
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
-            subject += ' #'.join(tags)
+            if tags:
+                subject += '[COLOR hotpink]Tags:[/COLOR] #{0}[CR]'.format(' #'.join(tags))
 
         streamName = model.get('streamName') or ''
 
-        # Model Info étendu
         if utils.addon.getSetting('stripchat_modelInfo') == "true":
             try:
                 api = cam.format(model.get("id"))
-                data = json.loads(utils._getHtml(api))
+                data = json.loads(get_api_data(api))
                 if data.get('cam', {}).get('broadcastSchedule', {}).get('nearest', {}).get("day"):
                     sched = data['cam']['broadcastSchedule']['nearest']
-                    subject += '[CR]Next broadcast: {0} '.format(abbr_to_full.get(sched.get("day", ""), ""))
+                    subject += '[CR][COLOR hotpink]Next broadcast:[/COLOR] {0} '.format(abbr_to_full.get(sched.get("day", ""), ""))
                     if sched.get('period'):
                         t1 = (datetime.min + timedelta(seconds=sched['period'][0])).time().strftime("%I %p")
                         t2 = (datetime.min + timedelta(seconds=sched['period'][1])).time().strftime("%I %p")
@@ -288,7 +329,7 @@ def List(url, page=1):
 
         context = []
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(raw_name))
-        context.append(('Find recordings featuring {}'.format(raw_name), 'RunPlugin(' + contextrecord + ')'))
+        context.append(('[COLOR hotpink]Find recordings featuring[/COLOR] {}'.format(raw_name), 'RunPlugin(' + contextrecord + ')'))
 
         display_name = name if model.get("isLive") else name + ' [Offline]'
         
@@ -407,51 +448,57 @@ def stop_generic_proxy(port):
 
 @site.register()
 def Playvid_Classic(url, name):
+    clean_name = clean_model_name(name)
+    
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
         altUrl = 'https://go.stripchat.com/api/models?limit=1&modelsList='
-        data = json.loads(utils._getHtml(altUrl + name))
+        data = json.loads(get_api_data(altUrl + urllib_parse.quote_plus(clean_name)))
         model_data = data['models'][0]
-        if model_data["username"] == name:
+        if model_data["username"].lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
             vp.play_from_direct_link(stream_url)
         else:
-            utils.notify(name, 'Couldn\'t find a playable webcam link', icon='thumb')
+            utils.notify(clean_name, 'Couldn\'t find a playable webcam link', icon='thumb')
     except:
-        utils.notify(name, 'Error loading stream', icon='thumb')
+        utils.notify(clean_name, 'Error loading stream', icon='thumb')
     vp.progress.close()
 
 
 @site.register()
 def Playvid_ISA(url, name):
+    clean_name = clean_model_name(name)
+    
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
         api = "https://go.stripchat.com/api/models?limit=1&modelsList="
-        data = json.loads(utils._getHtml(api + name))
+        data = json.loads(get_api_data(api + urllib_parse.quote_plus(clean_name)))
         model_data = data['models'][0]
-        if model_data.get("username") == name:
+        if model_data.get("username", "").lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
             vp.play_from_direct_link(stream_url)
         else:
-            utils.notify(name, "Couldn't find a playable webcam link", icon='thumb')
+            utils.notify(clean_name, "Couldn't find a playable webcam link", icon='thumb')
     except:
-        utils.notify(name, "Error at API interrogation", icon='thumb')
+        utils.notify(clean_name, "Error at API interrogation", icon='thumb')
     vp.progress.close()
 
 
 @site.register()
 def Playvid_Proxy(url, name):
+    clean_name = clean_model_name(name)
+    
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
         api = "https://go.stripchat.com/api/models?limit=1&modelsList="
-        data = json.loads(utils._getHtml(api + name))
+        data = json.loads(get_api_data(api + urllib_parse.quote_plus(clean_name)))
         model_data = data['models'][0]
-        if model_data["username"] == name:
+        if model_data["username"].lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
             
@@ -463,9 +510,9 @@ def Playvid_Proxy(url, name):
             
             vp.play_from_direct_link(proxy_url)
         else:
-            utils.notify(name, "Couldn't find a playable webcam link", icon='thumb')
+            utils.notify(clean_name, "Couldn't find a playable webcam link", icon='thumb')
     except Exception as e:
-        utils.notify(name, "Error: %s" % str(e), icon='thumb')
+        utils.notify(clean_name, "Error: %s" % str(e), icon='thumb')
     vp.progress.close()
 
 
@@ -475,7 +522,7 @@ def status(url):
         if streamName:
             try:
                 api = cam.format(streamName)
-                data = json.loads(utils._getHtml(api))
+                data = json.loads(get_api_data(api))
                 streamStatus = data.get('user', {}).get('user', {}).get("status")
                 if streamStatus == 'public':
                     return True
@@ -489,10 +536,12 @@ def status(url):
 
 @site.register()
 def Playvid(url, name):
+    clean_name = clean_model_name(name)
+    
     if not status(url):
         return
     if "[Offline]" in name:
-        utils.notify(name.split("[")[0] + " is OFFLINE")
+        utils.notify(clean_name + " is OFFLINE")
         return
     player = utils.addon.getSetting('stripchatplayer')
     if player == 'Playvid_proxy':
@@ -514,33 +563,162 @@ def online(url):
 
 @site.register()
 def onlineFav(url):
+    import random
+    import time
+    
     favorite_data = {}
     try:
         conn = sqlite3.connect(utils.favoritesdb)
         conn.text_factory = str
         c = conn.cursor()
         c.execute("SELECT DISTINCT name, url, image FROM favorites WHERE mode='stripchat.Playvid'")
-        favorite_data = {row[0]: {'db_url': row[1], 'db_image': row[2]} for row in c.fetchall()}
+        for row in c.fetchall():
+            clean_name = row[0]
+            clean_name = re.sub(r'\[COLOR [^\]]*\]', '', clean_name)
+            clean_name = re.sub(r'\[/COLOR\]', '', clean_name)
+            clean_name = clean_name.replace(u'\u2605', '').strip()
+            clean_name = re.sub(r'\s*\[Offline\]\s*', '', clean_name, flags=re.IGNORECASE)
+            clean_name = ' '.join(clean_name.split()).strip()
+            favorite_data[clean_name.lower()] = {'db_url': row[1], 'db_image': row[2], 'original_name': row[0]}
         c.close()
     except:
         pass
 
-    for model_name in favorite_data:
+    if not favorite_data:
+        utils.notify('Favorites', 'No Stripchat favorites found')
+        utils.eod()
+        return
+
+    img_mode = utils.addon.getSetting('stripchat_img_mode') or 'live'
+
+    online_models = {}
+    offset = 0
+    limit = 80
+    max_pages = 25
+    
+    for page in range(max_pages):
         try:
-            altUrl = 'https://stripchat.com/api/front/v4/models/search/suggestion?limit=24&primaryTag=girls&query=' + model_name
-            raw = utils._getHtml(altUrl)
-            data = json.loads(raw)
-            models = data.get('models', [])
-            found = next((m for m in models if m.get("username") == model_name), None)
-            if not found or not found.get("isOnline"):
-                continue
+            batch_url = re.sub(r'limit=\d+', 'limit={}'.format(limit), url)
+            batch_url = re.sub(r'offset=\d+', 'offset={}'.format(offset), batch_url)
             
-            display_name = u'[COLOR yellow]\u2605[/COLOR] ' + found["username"]
-            img = found.get("previewUrl")
+            response = get_api_data(batch_url)
+            if not response:
+                break
+                
+            data = json.loads(response)
+            if not data or not data.get('models'):
+                break
+                
+            models = data['models']
+            if not models:
+                break
+                
+            for model in models:
+                if model.get('isLive'):
+                    username = model.get('username', '').strip().lower()
+                    if username:
+                        online_models[username] = model
             
-            site.add_download_link(display_name, url, 'Playvid', img, quality='HD', fav='del')
+            if len(models) < limit:
+                break
+                
+            offset += limit
+            
         except:
-            continue
+            break
+
+    found_online = False
+    
+    for fav_clean_name_lower, fav_info in favorite_data.items():
+        if fav_clean_name_lower in online_models:
+            model = online_models[fav_clean_name_lower]
+            try:
+                videourl = model.get('hlsPlaylist') or ''
+                if not videourl and model.get('stream'):
+                    videourl = model.get('stream', {}).get('url', '')
+                
+                if not videourl:
+                    continue
+                
+                streamName = model.get('streamName', '')
+                if streamName:
+                    full_url = videourl + '&streamName=' + str(streamName)
+                else:
+                    full_url = videourl
+                
+                raw_name = fav_info['original_name']
+                display_name = raw_name
+                
+                profile_img = model.get("previewUrlThumbBig") or model.get("previewUrl") or model.get("avatarUrl") or fav_info['db_image'] or ""
+                profile_small = model.get('previewUrlThumbSmall') or profile_img
+                
+                live_img = profile_img
+                if model.get("isLive"):
+                    live_img = model.get('popularSnapshotUrl') or model.get('snapshotUrl')
+                    if not live_img:
+                        snap = model.get('popularSnapshotTimestamp') or model.get('snapshotTimestamp')
+                        if snap and model.get('id'):
+                            live_img = "https://img.doppiocdn.com/snapshot/{0}/{1}".format(model.get('id'), snap)
+                        else:
+                            live_img = profile_img
+
+                if img_mode == 'profile':
+                    img = live_img
+                    fanart = profile_img
+                else:
+                    img = profile_img
+                    fanart = live_img
+                
+                if not img:
+                    img = site.image
+                if not fanart:
+                    fanart = img
+
+                subject = ''
+                
+                status_label, status_color = get_status_info(model)
+                subject += '[COLOR hotpink]Status:[/COLOR] [COLOR {}][B]{}[/B][/COLOR][CR]'.format(status_color, status_label)
+                
+                width, height = get_model_resolution(model)
+                
+                if width and height:
+                    res_value = '{}x{}'.format(width, height)
+                    if model.get('isMobile'):
+                        res_value += ' (Mobile)'
+                    subject += '[COLOR hotpink]Resolution:[/COLOR] {}[CR]'.format(res_value)
+                
+                if model.get('country'):
+                    subject += '[COLOR hotpink]Location:[/COLOR] {}[CR]'.format(utils.get_country(model.get('country')))
+                
+                if model.get('languages'):
+                    langs = [utils.get_language(x) for x in model.get('languages')]
+                    subject += '[COLOR hotpink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
+                
+                if model.get('broadcastGender'):
+                    subject += '[COLOR hotpink]Gender:[/COLOR] {}[CR]'.format(model.get('broadcastGender'))
+                
+                if model.get('viewersCount'):
+                    subject += '[COLOR hotpink]Watching:[/COLOR] {}[CR]'.format(model.get('viewersCount'))
+                
+                if model.get('tags'):
+                    tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
+                    if tags:
+                        subject += '[COLOR hotpink]Tags:[/COLOR] #{0}[CR]'.format(' #'.join(tags))
+
+                context = []
+                contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(raw_name))
+                context.append(('[COLOR hotpink]Find recordings featuring[/COLOR] {}'.format(raw_name), 'RunPlugin(' + contextrecord + ')'))
+
+                site.add_download_link(display_name, full_url, 'Playvid', img, subject, 
+                                     contextm=context, noDownload=True, fav='del', quality='HD', fanart=fanart)
+                found_online = True
+                
+            except:
+                pass
+
+    if not found_online:
+        utils.notify('Online Favorites', 'No favorite models are currently online')
+    
     utils.eod()
 
 
@@ -570,13 +748,13 @@ def filters(url):
         cjson = json.loads(listhtml)
         tags = cjson.get("liveTagDetails", {})
         filtered = {k.replace(tag, ""): v for k, v in tags.items() if k.startswith(tag) and "-" not in k}
-        agregate = ["ALL [" + str(count_all) + "]"] + sorted({f"{k} [{v['modelsLive']}]" for k, v in filtered.items()})
+        agregate = ["ALL [" + str(count_all) + "]"] + sorted({"{0} [{1}]".format(k, v['modelsLive']) for k, v in filtered.items()})
         selection = xbmcgui.Dialog().select('Select ' + tag, agregate)
         if selection != -1:
             if selection == 0:
                 utils.addon.setSetting("stripchattag", "")
             else:
-                selected_url = str(agregate[selection]).split(' ')[0]
+                selected_url = str(agregate[selection]).rsplit(' ', 1)[0]
                 utils.addon.setSetting("stripchattag", tag + selected_url)
             utils.refresh()
     except:
