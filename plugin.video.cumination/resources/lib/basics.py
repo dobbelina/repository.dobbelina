@@ -61,6 +61,7 @@ def cum_image(filename, custom=False):
 
 
 def eod(handle=addon_handle, cache=True):
+    viewtype = None
     if addon.getSetting('customview') == 'true':
         skin = xbmc.getSkinDir().lower()
         viewtype = 55 if 'estuary' in skin else 50
@@ -69,8 +70,10 @@ def eod(handle=addon_handle, cache=True):
             currentskin, viewno = setview.split(';')
             if currentskin == skin:
                 viewtype = viewno
-        xbmc.executebuiltin("Container.SetViewMode(%s)" % str(viewtype))
     xbmcplugin.endOfDirectory(handle, cacheToDisc=cache)
+    if viewtype is not None:
+        xbmc.sleep(100)
+        xbmc.executebuiltin("Container.SetViewMode(%s)" % str(viewtype))
 
 
 def addImgLink(name, url, mode):

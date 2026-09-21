@@ -1,10 +1,2 @@
-[B]Version 1.1.200[/B]
-- erogarga - fix: thumbnails
-- Cam4 tags and proxy player
-- French language pack added
-- Incesto69 new site
-- Avjoy new site
-- OnlyJerk new site
-- ShowCamRips new site
-- Chaturbate integrated ShowCamRips search
-- stripchat.com optimization
+[B]Version 1.1.201[/B]
+- fix viewtype

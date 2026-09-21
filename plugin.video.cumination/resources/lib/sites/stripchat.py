@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 '''
-       
        Cumination
     Copyright (C) 2017 Whitecream, hdgdl, Team Cumination
     This program is free software: you can redistribute it and/or modify
@@ -26,7 +25,6 @@ import urllib.parse
 import xbmc
 import xbmcgui
 import calendar
-import time
 import gzip
 import io
 from datetime import datetime, timedelta
@@ -72,10 +70,10 @@ def get_api_data(url):
             'Accept': 'application/json',
             'Referer': 'https://stripchat.com/'
         })
-        
+
         with urlreq.urlopen(req, timeout=15) as response:
             data = response.read()
-            
+
             if data[:2] == b'\x1f\x8b':
                 try:
                     buf = io.BytesIO(data)
@@ -83,9 +81,9 @@ def get_api_data(url):
                         data = f.read()
                 except:
                     pass
-            
+
             return data.decode('utf-8')
-            
+
     except:
         try:
             return utils._getHtml(url)
@@ -95,7 +93,7 @@ def get_api_data(url):
 
 def get_status_info(model):
     status = model.get('status', 'unknown').lower()
-    
+
     status_map = {
         'public': ('PUBLIC', 'white'),
         'private': ('PRIVE', 'white'),
@@ -106,25 +104,25 @@ def get_status_info(model):
         'idle': ('INACTIF', 'white'),
         'p2p': ('P2P', 'white')
     }
-    
+
     return status_map.get(status, (status.upper(), 'white'))
 
 
 def get_model_resolution(model):
     width = 0
     height = 0
-    
+
     broadcast_settings = model.get('broadcastSettings') or {}
     if broadcast_settings:
         width = broadcast_settings.get('width', 0) or 0
         height = broadcast_settings.get('height', 0) or 0
-    
+
     if not width and not height:
         stream_data = model.get('stream') or {}
         if stream_data:
             width = stream_data.get('width', 0) or 0
             height = stream_data.get('height', 0) or 0
-    
+
     return width, height
 
 
@@ -145,11 +143,11 @@ def Main():
     male = utils.addon.getSetting("chatmale") == "true"
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
-    
+
     site.add_dir('[COLOR red]Refresh Stripchat images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     site.add_dir('[COLOR red]Top Models[/COLOR]', 'girls', 'topModels', site.img_models, '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '{}girls'.format(bu), 'onlineFav', site.img_favorites, 1)
-    
+
     if female:
         site.add_dir('[COLOR hotpink]Female[/COLOR]', '{0}girls'.format(bu), 'List', '', '')
     if couple:
@@ -210,7 +208,7 @@ def List(url, page=1):
         data = json.loads(response)
     except:
         return None
-        
+
     if "models" in data:
         model_list = data["models"]
     elif 'tops' in data:
@@ -234,11 +232,11 @@ def List(url, page=1):
     for model in model_list:
         if online_only and not model.get("isLive"):
             continue
-            
+
         status_label, status_color = get_status_info(model)
-        
+
         raw_name = utils.cleanhtml(model.get('username', ''))
-        
+
         is_favorite = any(raw_name == fav_name for fav_name in favorite)
         if is_favorite:
             name = u'[COLOR yellow]\u2605[/COLOR] ' + raw_name
@@ -254,8 +252,8 @@ def List(url, page=1):
             videourl = site.url
 
         profile_img = model.get("previewUrlThumbBig") or model.get("previewUrl") or model.get("avatarUrl") or ""
-        profile_small = model.get('previewUrlThumbSmall') or profile_img
-        
+        # profile_small = model.get('previewUrlThumbSmall') or profile_img
+
         live_img = profile_img
         if model.get("isLive"):
             live_img = model.get('popularSnapshotUrl') or model.get('snapshotUrl')
@@ -272,40 +270,40 @@ def List(url, page=1):
         else:
             img = profile_img
             fanart = live_img
-        
+
         if not img:
             img = site.image
         if not fanart:
             fanart = img
 
         subject = ''
-        
+
         if model.get('groupShowTopic'):
             subject += model.get('groupShowTopic') + '[CR]'
-        
+
         subject += '[COLOR hotpink]Status:[/COLOR] [COLOR {}][B]{}[/B][/COLOR][CR]'.format(status_color, status_label)
-        
+
         width, height = get_model_resolution(model)
-        
+
         if width and height:
             res_value = '{}x{}'.format(width, height)
             if model.get('isMobile'):
                 res_value += ' (Mobile)'
             subject += '[COLOR hotpink]Resolution:[/COLOR] {}[CR]'.format(res_value)
-        
+
         if model.get('country'):
             subject += '[COLOR hotpink]Location:[/COLOR] {}[CR]'.format(utils.get_country(model.get('country')))
-        
+
         if model.get('languages'):
             langs = [utils.get_language(x) for x in model.get('languages')]
             subject += '[COLOR hotpink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
-        
+
         if model.get('broadcastGender'):
             subject += '[COLOR hotpink]Gender:[/COLOR] {}[CR]'.format(model.get('broadcastGender'))
-        
+
         if model.get('viewersCount'):
             subject += '[COLOR hotpink]Watching:[/COLOR] {}[CR]'.format(model.get('viewersCount'))
-        
+
         if model.get('tags'):
             tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
             if tags:
@@ -332,9 +330,8 @@ def List(url, page=1):
         context.append(('[COLOR hotpink]Find recordings featuring[/COLOR] {}'.format(raw_name), 'RunPlugin(' + contextrecord + ')'))
 
         display_name = name if model.get("isLive") else name + ' [Offline]'
-        
-        site.add_download_link(display_name, videourl + '&streamName=' + str(streamName),
-            'Playvid', img, subject, contextm=context, noDownload=True, fav=fav, quality='HD', fanart=fanart)
+
+        site.add_download_link(display_name, videourl + '&streamName=' + str(streamName), 'Playvid', img, subject, contextm=context, noDownload=True, fav=fav, quality='HD', fanart=fanart)
 
     nextp = (page * perPage) < total_items
     if nextp:
@@ -449,7 +446,7 @@ def stop_generic_proxy(port):
 @site.register()
 def Playvid_Classic(url, name):
     clean_name = clean_model_name(name)
-    
+
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
@@ -470,7 +467,7 @@ def Playvid_Classic(url, name):
 @site.register()
 def Playvid_ISA(url, name):
     clean_name = clean_model_name(name)
-    
+
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
@@ -491,7 +488,7 @@ def Playvid_ISA(url, name):
 @site.register()
 def Playvid_Proxy(url, name):
     clean_name = clean_model_name(name)
-    
+
     vp = utils.VideoPlayer(name)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     try:
@@ -501,13 +498,14 @@ def Playvid_Proxy(url, name):
         if model_data["username"].lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
-            
+
             port = random.randint(30000, 60000)
             stop_generic_proxy(port)
             start_generic_proxy(port)
             encoded = urllib.parse.quote_plus(stream_url)
             proxy_url = "http://127.0.0.1:%d/proxy.m3u8?u=%s" % (port, encoded)
-            
+            utils.kodilog("Using proxy URL: %s" % proxy_url)
+
             vp.play_from_direct_link(proxy_url)
         else:
             utils.notify(clean_name, "Couldn't find a playable webcam link", icon='thumb')
@@ -537,7 +535,7 @@ def status(url):
 @site.register()
 def Playvid(url, name):
     clean_name = clean_model_name(name)
-    
+
     if not status(url):
         return
     if "[Offline]" in name:
@@ -563,9 +561,6 @@ def online(url):
 
 @site.register()
 def onlineFav(url):
-    import random
-    import time
-    
     favorite_data = {}
     try:
         conn = sqlite3.connect(utils.favoritesdb)
@@ -595,40 +590,40 @@ def onlineFav(url):
     offset = 0
     limit = 80
     max_pages = 25
-    
+
     for page in range(max_pages):
         try:
             batch_url = re.sub(r'limit=\d+', 'limit={}'.format(limit), url)
             batch_url = re.sub(r'offset=\d+', 'offset={}'.format(offset), batch_url)
-            
+
             response = get_api_data(batch_url)
             if not response:
                 break
-                
+
             data = json.loads(response)
             if not data or not data.get('models'):
                 break
-                
+
             models = data['models']
             if not models:
                 break
-                
+
             for model in models:
                 if model.get('isLive'):
                     username = model.get('username', '').strip().lower()
                     if username:
                         online_models[username] = model
-            
+
             if len(models) < limit:
                 break
-                
+
             offset += limit
-            
+
         except:
             break
 
     found_online = False
-    
+
     for fav_clean_name_lower, fav_info in favorite_data.items():
         if fav_clean_name_lower in online_models:
             model = online_models[fav_clean_name_lower]
@@ -636,22 +631,22 @@ def onlineFav(url):
                 videourl = model.get('hlsPlaylist') or ''
                 if not videourl and model.get('stream'):
                     videourl = model.get('stream', {}).get('url', '')
-                
+
                 if not videourl:
                     continue
-                
+
                 streamName = model.get('streamName', '')
                 if streamName:
                     full_url = videourl + '&streamName=' + str(streamName)
                 else:
                     full_url = videourl
-                
+
                 raw_name = fav_info['original_name']
                 display_name = raw_name
-                
+
                 profile_img = model.get("previewUrlThumbBig") or model.get("previewUrl") or model.get("avatarUrl") or fav_info['db_image'] or ""
-                profile_small = model.get('previewUrlThumbSmall') or profile_img
-                
+                # profile_small = model.get('previewUrlThumbSmall') or profile_img
+
                 live_img = profile_img
                 if model.get("isLive"):
                     live_img = model.get('popularSnapshotUrl') or model.get('snapshotUrl')
@@ -668,38 +663,38 @@ def onlineFav(url):
                 else:
                     img = profile_img
                     fanart = live_img
-                
+
                 if not img:
                     img = site.image
                 if not fanart:
                     fanart = img
 
                 subject = ''
-                
+
                 status_label, status_color = get_status_info(model)
                 subject += '[COLOR hotpink]Status:[/COLOR] [COLOR {}][B]{}[/B][/COLOR][CR]'.format(status_color, status_label)
-                
+
                 width, height = get_model_resolution(model)
-                
+
                 if width and height:
                     res_value = '{}x{}'.format(width, height)
                     if model.get('isMobile'):
                         res_value += ' (Mobile)'
                     subject += '[COLOR hotpink]Resolution:[/COLOR] {}[CR]'.format(res_value)
-                
+
                 if model.get('country'):
                     subject += '[COLOR hotpink]Location:[/COLOR] {}[CR]'.format(utils.get_country(model.get('country')))
-                
+
                 if model.get('languages'):
                     langs = [utils.get_language(x) for x in model.get('languages')]
                     subject += '[COLOR hotpink]Languages:[/COLOR] {}[CR]'.format(', '.join(langs))
-                
+
                 if model.get('broadcastGender'):
                     subject += '[COLOR hotpink]Gender:[/COLOR] {}[CR]'.format(model.get('broadcastGender'))
-                
+
                 if model.get('viewersCount'):
                     subject += '[COLOR hotpink]Watching:[/COLOR] {}[CR]'.format(model.get('viewersCount'))
-                
+
                 if model.get('tags'):
                     tags = [t for t in model.get('tags') if 'tag' not in t.lower()]
                     if tags:
@@ -709,22 +704,20 @@ def onlineFav(url):
                 contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(raw_name))
                 context.append(('[COLOR hotpink]Find recordings featuring[/COLOR] {}'.format(raw_name), 'RunPlugin(' + contextrecord + ')'))
 
-                site.add_download_link(display_name, full_url, 'Playvid', img, subject, 
-                                     contextm=context, noDownload=True, fav='del', quality='HD', fanart=fanart)
+                site.add_download_link(display_name, full_url, 'Playvid', img, subject, contextm=context, noDownload=True, fav='del', quality='HD', fanart=fanart)
                 found_online = True
-                
+
             except:
                 pass
 
     if not found_online:
         utils.notify('Online Favorites', 'No favorite models are currently online')
-    
+
     utils.eod()
 
 
 @site.register()
 def filters(url):
-    import xbmcgui
     groupTags = [
         {"name": "Age", "prefix": "age"},
         {"name": "Body Type", "prefix": "bodyType"},
@@ -764,7 +757,7 @@ def filters(url):
 @site.register()
 def topModels(url):
     import xbmcgui
-    genders = [{"name": "Girls", "code": "female"}, {"name": "Couples", "code": "couple"}, 
+    genders = [{"name": "Girls", "code": "female"}, {"name": "Couples", "code": "couple"},
                {"name": "Guys", "code": "male"}, {"name": "Trans", "code": "tranny"}]
     names = [item["name"] for item in genders]
     selection = xbmcgui.Dialog().select('Select Gender', names)
@@ -774,9 +767,9 @@ def topModels(url):
 
     zone = ""
     if gender_code == "female":
-        zones = [{"name": "Europe", "code": "eu"}, {"name": "North America", "code": "na"}, 
-                {"name": "South America", "code": "sa"}, {"name": "Asia & Pacific", "code": "as"}, 
-                {"name": "Africa", "code": "af"}]
+        zones = [{"name": "Europe", "code": "eu"}, {"name": "North America", "code": "na"},
+                 {"name": "South America", "code": "sa"}, {"name": "Asia & Pacific", "code": "as"},
+                 {"name": "Africa", "code": "af"}]
         names = [item["name"] for item in zones]
         selection = xbmcgui.Dialog().select('Select zone', names)
         if selection == -1:
