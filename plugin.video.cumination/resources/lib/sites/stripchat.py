@@ -456,6 +456,7 @@ def Playvid_Classic(url, name):
         if model_data["username"].lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
+            vp.IA_check = 'skip'
             vp.play_from_direct_link(stream_url)
         else:
             utils.notify(clean_name, 'Couldn\'t find a playable webcam link', icon='thumb')
@@ -477,6 +478,7 @@ def Playvid_ISA(url, name):
         if model_data.get("username", "").lower() == clean_name.lower():
             stream_url = model_data['stream']['url']
             vp.progress.update(75, "[CR]Found Stream[CR]")
+            vp.IA_check = 'IA'
             vp.play_from_direct_link(stream_url)
         else:
             utils.notify(clean_name, "Couldn't find a playable webcam link", icon='thumb')
