@@ -143,18 +143,6 @@ def Play(url, name, download=None):
         vurl = utils._bdecode(vurl)
         vurl = urllib_parse.unquote_plus(vurl)
         videolink = vurl.split('source src="')[-1].split('"')[0] + '|referer=' + siteurl
-    elif 'klcams.com' in playerurl:
-        videohtml = utils.getHtml(playerurl, url)
-
-        match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
-        videolink = match[0]
-        hdr = utils.base_hdrs.copy()
-        hdr['Sec-Fetch-Dest'] = 'iframe'
-        klhtml = utils.getHtml(videolink, 'https://klcams.com/', headers=hdr, error=True)
-        packed = utils.get_packed_data(klhtml)
-
-        vp.play_from_html(packed, videolink)
-        return
     elif 'phixxx.cc/player/play.php?vid=' in playerurl:
         vid = playerurl.split('?vid=')[-1]
         posturl = 'https://phixxx.cc/player/ajax_sources.php'
