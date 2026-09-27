@@ -23,7 +23,8 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 addon = utils.addon
-site = AdultSite("sxyprn", "[COLOR hotpink]Sxy Prn[/COLOR]", "https://sxyprn.com/", "", "sxyprn")
+site = AdultSite("sxyprn", "[COLOR hotpink]Sxy Prn[/COLOR]", "https://sxyprn.net/", "", "sxyprn")
+# mirror: https://sxyprn.com/
 
 
 @site.register(default_mode=True)
