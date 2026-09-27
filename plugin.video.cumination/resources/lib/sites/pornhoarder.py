@@ -21,7 +21,7 @@ from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import requests
 
-site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://www.pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
+site = AdultSite('pornhoarder', '[COLOR hotpink]PornHoarder[/COLOR]', 'https://pornhoarder.tv/', 'pornhoarder.jpg', 'pornhoarder')
 
 ph_headers = {
     'Origin': site.url[:-1],
@@ -99,17 +99,18 @@ def Createdata(page=1, search=''):
         ('search', search),
         ('sort', '0'),
         ('date', '0'),
+        ('servers[]', '47'),
         ('servers[]', '21'),
         ('servers[]', '40'),
+        ('servers[]', '45'),
         ('servers[]', '12'),
         ('servers[]', '35'),
         ('servers[]', '25'),
         ('servers[]', '41'),
-        ('servers[]', '46'),
-        ('servers[]', '17'),
         ('servers[]', '44'),
         ('servers[]', '42'),
         ('servers[]', '43'),
+        ('servers[]', '48'),
         ('servers[]', '29'),
         ('author', '0'),
         ('page', page),
