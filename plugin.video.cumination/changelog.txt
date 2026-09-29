@@ -1,5 +1,2 @@
-[B]Version 1.1.201[/B]
-- fix viewtype
-- stripchat - fix player selector
-- familypornhd - fix player
-- sxyprn - change mirror .com to .net
+[B]Version 1.1.202[/B]
+- chaturbate - fix: Follow user_name

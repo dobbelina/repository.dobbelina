@@ -48,27 +48,27 @@ HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X)
 def get_html_with_retry(url, referer=None, max_retries=3):
     """Récupère HTML avec retry et délai anti-ban"""
     time.sleep(1.5)
-    
+
     hdr = utils.base_hdrs.copy()
     if referer:
         hdr['Referer'] = referer
-    
+
     for attempt in range(max_retries):
         try:
             if 'search.php' in url or referer:
                 listhtml = utils._getHtml(url, referer or 'https://www.showcamrips.com/', headers=hdr)
             else:
                 listhtml = utils.getHtml(url)
-            
+
             if listhtml and len(listhtml) > 1000:
                 return listhtml
-                
+
         except Exception:
             pass
-        
+
         if attempt < max_retries - 1:
             time.sleep(2)
-    
+
     return None
 
 
@@ -346,7 +346,7 @@ def Playvid(url, name):
 
     if playmode == 0:
         if m3u8stream:
-            import socket, threading, gzip, zlib
+            import socket, threading, gzip, zlib  # NoQA
             try:
                 from http.server import BaseHTTPRequestHandler
                 from socketserver import TCPServer, ThreadingMixIn
@@ -993,7 +993,7 @@ def Follow(id):
     hdr = utils.base_hdrs
     hdr.update({'Referer': 'https://chaturbate.com/'})
     postRequest = {"csrfmiddlewaretoken": csrfmiddlewaretoken}
-    response = utils._getHtml(url, headers=hdr, form_data=postRequest)
+    response = utils._postHtml(url, headers=hdr, form_data=postRequest)
     if '"following": true' in response:
         utils.notify('Chaturbate', 'FOLLOWING [COLOR hotpink]{}[/COLOR]'.format(id))
         utils.refresh()
@@ -1024,7 +1024,7 @@ def Record(id):
     ]
 
     names = ["[COLOR hotpink][GLOBAL] Search All Sites[/COLOR]"] + [s["name"] for s in search_engines]
-    
+
     selection = xbmcgui.Dialog().select('Select site for search', names)
 
     if selection == 0:
@@ -1032,7 +1032,7 @@ def Record(id):
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
     elif selection > 0:
         selected_site = search_engines[selection - 1]
-        
+
         if selected_site["name"] == "ShowCamRips":
             contexturl = (utils.addon_sys + "?mode=chaturbate.ShowCamRipsSearch&keyword=" + urllib_parse.quote_plus(id))
             xbmc.executebuiltin('Container.Update(' + contexturl + ')')
@@ -1062,7 +1062,7 @@ def Record(id):
             target_url = selected_site["url"].format(formatted_id)
             contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url) + "&keyword=" + urllib_parse.quote_plus(id))
             xbmc.executebuiltin('Container.Update(' + contexturl + ')')
-       
+
         if selected_site["name"] == "ShowCamRips":
             contexturl = (utils.addon_sys + "?mode=chaturbate.ShowCamRipsSearch&keyword=" + urllib_parse.quote_plus(id))
             xbmc.executebuiltin('Container.Update(' + contexturl + ')')
@@ -1087,32 +1087,33 @@ def Record(id):
             contexturl = (utils.addon_sys + "?mode=" + selected_site["mode"] + "&url=" + urllib_parse.quote_plus(target_url) + "&keyword=" + urllib_parse.quote_plus(id))
             xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
+
 @site.register()
 def ShowCamRipsSearch(url=None, keyword=None):
     """Recherche ShowCamRips avec pagination complète"""
-    
+
     # Récupérer les paramètres si non fournis
     if not url and not keyword:
         params = utils.get_params()
         url = params.get('url', '')
         keyword = params.get('keyword', '')
-    
+
     scr_base = 'https://www.showcamrips.com'
-    
+
     # Si on a un keyword mais pas d'URL, construire l'URL de recherche
     if not url and keyword:
         url = scr_base + "/search.php?Src={}&lg=en".format(urllib_parse.quote_plus(keyword))
-    
+
     # Si on n'a ni URL ni keyword, erreur
     if not url:
         utils.notify('ShowCamRips Search', 'No search term provided')
         utils.eod()
         return
-    
+
     # Déterminer si c'est une recherche search.php ou une page modèle/catégorie
     is_search = 'search.php' in url
     is_model = '/model/en/' in url
-    
+
     # Extraire le numéro de page actuel
     current_page = 1
     if is_search:
@@ -1124,15 +1125,15 @@ def ShowCamRipsSearch(url=None, keyword=None):
         page_match = re.search(r'/(\d+)-pg/?$', url)
         if page_match:
             current_page = int(page_match.group(1))
-    
+
     # Utiliser get_html_with_retry
     listhtml = get_html_with_retry(url, scr_base + '/')
-    
+
     if not listhtml:
         site.add_dir('[COLOR red]Error: No response from ShowCamRips[/COLOR]', '', '', Folder=False)
         utils.eod()
         return
-    
+
     # Détection redirection vers modèle (pour les recherches)
     if is_search and current_page == 1:
         model_match = re.search(r'href=["\'](https?://www\.showcamrips\.com/model/en/([^/"\']+))/?["\']', listhtml, re.I)
@@ -1149,16 +1150,16 @@ def ShowCamRipsSearch(url=None, keyword=None):
                 site.add_dir('[COLOR red]Error loading model page[/COLOR]', '', '', Folder=False)
                 utils.eod()
                 return
-    
+
     matches = []
-    
+
     # Pattern 1: Standard avec data-id et title
     pattern1 = re.compile(
         r'<a[^>]*href=["\']((?:https?://www\.showcamrips\.com)?/show-cam-sex-movies/([^/"\']+))["\'][^>]*data-id=["\'](\d+)["\'][^>]*title=["\']([^"\']+)["\'][^>]*>.*?<img[^>]*(?:data-tn|src)=["\']([^"\']+)["\']',
         re.IGNORECASE | re.DOTALL
     )
     matches = pattern1.findall(listhtml)
-    
+
     # Pattern 2: Recherche avec li et h3
     if not matches:
         pattern2 = re.compile(
@@ -1172,7 +1173,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
                 title_clean = utils.cleantext(html_module.unescape(title)).strip()
                 new_matches.append((videopage, slug, video_id, title_clean, img))
             matches = new_matches
-    
+
     # Pattern 3: Sans image
     if not matches:
         pattern3 = re.compile(
@@ -1186,24 +1187,24 @@ def ShowCamRipsSearch(url=None, keyword=None):
                 title_clean = utils.cleantext(html_module.unescape(title)).strip()
                 new_matches.append((videopage, slug, video_id, title_clean, ''))
             matches = new_matches
-    
+
     if not matches:
         site.add_dir('[COLOR red]No results found on ShowCamRips[/COLOR]', '', '', Folder=False)
         utils.eod()
         return
-    
+
     # Afficher les vidéos
     seen_urls = set()
     for videopage, slug, video_id, title, img in matches:
         if videopage in seen_urls:
             continue
         seen_urls.add(videopage)
-        
+
         if videopage.startswith('/'):
             videopage = scr_base + videopage
-        
+
         title = utils.cleantext(html_module.unescape(title))
-        
+
         # Gestion de l'image
         img_url = site.image
         if img:
@@ -1228,12 +1229,12 @@ def ShowCamRipsSearch(url=None, keyword=None):
                 img_url = img
             elif img.startswith('/'):
                 img_url = scr_base + img
-        
+
         site.add_download_link(title, videopage, 'showcamrips.Playvid', img_url, title)
-    
+
     # PAGINATION - Extraire l'URL depuis le HTML comme dans showcamrips.py
     next_url = None
-    
+
     if is_search:
         # Chercher le lien vers page=X+1 dans le HTML
         next_pattern = r'href=["\']([^"\']*search\.php[^"\']*page={}[^"\']*)["\']'.format(current_page + 1)
@@ -1248,7 +1249,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
                 next_url = re.sub(r'page=\d+', 'page={}'.format(current_page + 1), url)
             else:
                 next_url = url + '&page={}'.format(current_page + 1) if '?' in url else url + '?page={}'.format(current_page + 1)
-    
+
     elif is_model:
         # Pour les modèles: format /model/en/name/X-pg/
         if len(matches) >= 20:
@@ -1257,7 +1258,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
             if not base_url.endswith('/'):
                 base_url += '/'
             next_url = '{}{}-pg/'.format(base_url, current_page + 1)
-    
+
     if next_url:
         site.add_dir(
             '[COLOR hotpink]Next Page ({}) ->[/COLOR]'.format(current_page + 1),
@@ -1265,13 +1266,13 @@ def ShowCamRipsSearch(url=None, keyword=None):
             'chaturbate.ShowCamRipsSearch',
             site.img_next
         )
-    
+
     utils.eod()
 
 
 @site.register()
 def GlobalSearch(keyword=None):
-    
+
     original_notify = utils.notify
     utils.notify = lambda *args, **kwargs: None
 
@@ -1495,20 +1496,20 @@ def GlobalSearch(keyword=None):
         try:
             scr_base = 'https://www.showcamrips.com'
             search_url = scr_base + '/search.php?Src={}&lg=en'.format(urllib_parse.quote_plus(keyword))
-            
+
             html_content = get_html_with_retry(search_url, scr_base + '/')
-            
+
             if html_content:
 
                 matches = []
-                
+
                 # Pattern 1: Standard
                 pattern1 = re.compile(
                     r'<a[^>]*href=["\']((?:https?://www\.showcamrips\.com)?/show-cam-sex-movies/([^/"\']+))["\'][^>]*data-id=["\'](\d+)["\'][^>]*title=["\']([^"\']+)["\'][^>]*>.*?<img[^>]*(?:data-tn|src)=["\']([^"\']+)["\']',
                     re.IGNORECASE | re.DOTALL
                 )
                 matches = pattern1.findall(html_content)
-                
+
                 # Pattern 2: Recherche avec li et h3
                 if not matches:
                     pattern2 = re.compile(
@@ -1522,7 +1523,7 @@ def GlobalSearch(keyword=None):
                             title_clean = utils.cleantext(html_module.unescape(title)).strip()
                             new_matches.append((videopage, slug, video_id, title_clean, img))
                         matches = new_matches
-                
+
                 # Pattern 3: Sans image
                 if not matches:
                     pattern3 = re.compile(
@@ -1542,12 +1543,12 @@ def GlobalSearch(keyword=None):
                     if videopage in seen:
                         continue
                     seen.add(videopage)
-                    
+
                     if videopage.startswith('/'):
                         videopage = scr_base + videopage
-                    
+
                     title = utils.cleantext(html_module.unescape(title))
-                    
+
                     # Gestion de l'image
                     img_url = site.image
                     if img:
@@ -1572,7 +1573,7 @@ def GlobalSearch(keyword=None):
                             img_url = img
                         elif img.startswith('/'):
                             img_url = scr_base + img
-                    
+
                     all_results['showcamrips'].append({
                         'name': title,
                         'url': videopage,
@@ -1580,7 +1581,7 @@ def GlobalSearch(keyword=None):
                         'type': 'video',
                         'mode': 'showcamrips.Playvid'
                     })
-                
+
                 # Lien vers ShowCamRipsSearch pour voir plus de résultats avec pagination
                 if len(matches) >= 20:
                     # Construire l'URL pour ShowCamRipsSearch avec le keyword
@@ -1623,32 +1624,27 @@ def GlobalSearch(keyword=None):
     if all_results['drtuber']:
         site.add_dir('[COLOR violet]--- DrTuber Videos ({}) ---[/COLOR]'.format(len(all_results['drtuber'])), site.url, 'Main', '')
         for item in all_results['drtuber']:
-            site.add_download_link('[DrTuber] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   duration=item['duration'], quality=item['quality'], noDownload=False)
+            site.add_download_link('[DrTuber] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], duration=item['duration'], quality=item['quality'], noDownload=False)
 
     if all_results['camwhoresbay']:
         site.add_dir('[COLOR violet]--- CamWhoresBay Videos ({}) ---[/COLOR]'.format(len(all_results['camwhoresbay'])), site.url, 'Main', '')
         for item in all_results['camwhoresbay']:
-            site.add_download_link('[CWB] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   duration=item['duration'], quality=item['quality'], noDownload=False)
+            site.add_download_link('[CWB] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], duration=item['duration'], quality=item['quality'], noDownload=False)
 
     if all_results['camgirlfap']:
         site.add_dir('[COLOR violet]--- CamGirlFap Videos ({}) ---[/COLOR]'.format(len(all_results['camgirlfap'])), site.url, 'Main', '')
         for item in all_results['camgirlfap']:
-            site.add_download_link('[CGF] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   duration=item['duration'], noDownload=False)
+            site.add_download_link('[CGF] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], duration=item['duration'], noDownload=False)
 
     if all_results['camwhorestv']:
         site.add_dir('[COLOR violet]--- CamWhores.tv Videos ({}) ---[/COLOR]'.format(len(all_results['camwhorestv'])), site.url, 'Main', '')
         for item in all_results['camwhorestv']:
-            site.add_download_link('[CW] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   duration=item['duration'], noDownload=False)
+            site.add_download_link('[CW] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], duration=item['duration'], noDownload=False)
 
     if all_results['ixxx']:
         site.add_dir('[COLOR violet]--- iXXX Videos ({}) ---[/COLOR]'.format(len(all_results['ixxx'])), site.url, 'Main', '')
         for item in all_results['ixxx']:
-            site.add_download_link('[iXXX] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   duration=item['duration'], quality=item['quality'], noDownload=False)
+            site.add_download_link('[iXXX] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], duration=item['duration'], quality=item['quality'], noDownload=False)
 
     if all_results['showcamrips']:
         site.add_dir('[COLOR violet]--- ShowCamRips Videos ({}) ---[/COLOR]'.format(len([x for x in all_results['showcamrips'] if not x.get('is_pagination')])), site.url, 'Main', '')
@@ -1656,7 +1652,6 @@ def GlobalSearch(keyword=None):
             if item.get('is_pagination'):
                 site.add_dir('[SCR] ' + item['name'], item['url'], item['mode'], site.img_next)
             else:
-                site.add_download_link('[SCR] ' + item['name'], item['url'], item['mode'], item['img'], item['name'],
-                                   noDownload=False)
+                site.add_download_link('[SCR] ' + item['name'], item['url'], item['mode'], item['img'], item['name'], noDownload=False)
 
     utils.eod()
