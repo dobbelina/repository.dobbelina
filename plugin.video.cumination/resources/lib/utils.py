@@ -1886,3 +1886,31 @@ class Thumbnails:
             return img_path
         Thread(target=self.download_image, args=(img, img_path), daemon=True).start()
         return img_path
+
+@url_dispatcher.register()
+def addKeywordFromContext(name):
+  
+    clean_name = re.sub(r'\[COLOR[^\]]+\]', '', name)
+    clean_name = re.sub(r'\[/COLOR\]', '', clean_name)
+    clean_name = re.sub(r'\[.*?\]', '', clean_name)  # Enlever toutes les balises BBCode
+    clean_name = clean_name.strip()
+    
+    if not clean_name:
+        notify('Error', 'Invalid keyword')
+        return
+    
+    edited_keyword = _get_keyboard(default=clean_name, heading='Edit keyword before saving')
+    
+    if not edited_keyword or not edited_keyword.strip():
+        return
+    
+    edited_keyword = edited_keyword.strip()
+    
+
+    if check_if_keyword_exists(edited_keyword):
+        notify(i18n('error'), i18n('keyword_exists'))
+        return
+
+    addKeyword(edited_keyword)
+    notify('Keyword added', '"{}" added to search keywords'.format(edited_keyword[:50]))
+    xbmc.executebuiltin('Container.Refresh')
