@@ -23,7 +23,7 @@ import sqlite3
 import time
 import base64
 
-# Compatibilite html.unescape pour Python 2 (Kodi 18) et Python 3 (Kodi 19+)
+# Compatibilité html.unescape pour Python 2 (Kodi 18) et Python 3 (Kodi 19+)
 import six
 if six.PY3:
     import html as html_module
@@ -36,8 +36,8 @@ else:
         @staticmethod
         def unescape(s):
             """
-            Compatibilite html.unescape pour Python 2.
-            Gere les entites HTML (&#xx; &amp; &quot; etc.)
+            Compatibilité html.unescape pour Python 2.
+            Gère les entités HTML (&#xx; &amp; &quot; etc.)
             """
             if s is None:
                 return None
@@ -47,7 +47,7 @@ else:
                 parser = HTMLParser.HTMLParser()
                 return parser.unescape(s)
             except:
-                # Fallback si HTMLParser echoue
+                # Fallback si HTMLParser échoue
                 try:
                     def replace_entity(match):
                         ent = match.group(1)
@@ -82,7 +82,7 @@ HTTP_HEADERS_IPAD = {'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X)
 
 
 def get_html_with_retry(url, referer=None, max_retries=3):
-    """Recupere HTML avec retry et delai anti-ban"""
+    """Récupère HTML avec retry et délai anti-ban"""
     time.sleep(1.5)
 
     hdr = utils.base_hdrs.copy()
@@ -252,14 +252,14 @@ def List(url, page=1):
     models = listhtml.get('rooms')
     for model in models:
         if model.get('is_following'):
-            name = u'[COLOR hotpink]\u2665[/COLOR]'
+            name = u'[COLOR hotpink]♥[/COLOR]'
             fav = 'del'
         else:
             name = ''
             fav = 'add'
 
         if any(model['username'] in username for username in favorite):
-            name += u'[COLOR yellow]\u2605[/COLOR]'
+            name += u'[COLOR yellow]★[/COLOR]'
             fav = 'del'
         else:
             name += ''
@@ -1098,7 +1098,7 @@ def Record(id):
 
 @site.register()
 def ShowCamRipsSearch(url=None, keyword=None):
-    """Recherche ShowCamRips avec pagination complete"""
+    """Recherche ShowCamRips avec pagination complète"""
 
     if not url and not keyword:
         params = utils.get_params()
