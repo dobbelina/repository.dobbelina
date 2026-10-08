@@ -23,47 +23,9 @@ import sqlite3
 import time
 import base64
 
-# Compatibilité html.unescape pour Python 2 (Kodi 18) et Python 3 (Kodi 19+)
 import six
-if six.PY3:
-    import html as html_module
-else:
-    # Python 2 fallback
-    import HTMLParser
-    import htmlentitydefs
-    
-    class html_module:
-        @staticmethod
-        def unescape(s):
-            """
-            Compatibilité html.unescape pour Python 2.
-            Gère les entités HTML (&#xx; &amp; &quot; etc.)
-            """
-            if s is None:
-                return None
-            if not isinstance(s, basestring):
-                s = str(s)
-            try:
-                parser = HTMLParser.HTMLParser()
-                return parser.unescape(s)
-            except:
-                # Fallback si HTMLParser échoue
-                try:
-                    def replace_entity(match):
-                        ent = match.group(1)
-                        if ent.startswith('#x') or ent.startswith('#X'):
-                            return unichr(int(ent[2:], 16))
-                        elif ent.startswith('#'):
-                            return unichr(int(ent[1:]))
-                        else:
-                            return htmlentitydefs.entitydefs.get(ent, match.group(0))
-                    return re.sub(r'&([^;]+);', replace_entity, s)
-                except:
-                    return s
 
 from six.moves import urllib_parse
-from six.moves.urllib.request import Request, urlopen
-import ssl
 import json
 import random
 from resources.lib import utils
@@ -106,31 +68,6 @@ def get_html_with_retry(url, referer=None, max_retries=3):
             time.sleep(2)
 
     return None
-
-
-def _silent_get(url, headers=None, timeout=10):
-    try:
-        if headers is None:
-            headers = {}
-        req = Request(url, headers=headers)
-        try:
-            context = ssl._create_unverified_context()
-            response = urlopen(req, timeout=timeout, context=context)
-        except:
-            response = urlopen(req, timeout=timeout)
-        return response.read().decode('utf-8', 'replace')
-    except:
-        return None
-
-
-def _silent_get_json(url, headers=None, timeout=10):
-    try:
-        html = _silent_get(url, headers, timeout)
-        if html:
-            return json.loads(html)
-        return None
-    except:
-        return None
 
 
 @site.register(default_mode=True)
@@ -228,6 +165,7 @@ def Online(stamp):
 
 @site.register()
 def List(url, page=1):
+    utils.kodilog('Chaturbate List: {}'.format(url))
     favorite = {}
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
@@ -239,6 +177,7 @@ def List(url, page=1):
     if 'follow=true' in url and 'offline=false' in url:
         site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=true&offset=0', 'List', '', '')
     if 'follow=true' in url:
+        utils.kodilog('Chaturbate List: Followed Cams')
         login()
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)
@@ -964,15 +903,14 @@ def login():
     if len(sessionid) == 32:
         session_cookie = get_cookie()
         if sessionid not in session_cookie:
-            cookie = {'solution': {"cookies": [{'name': "sessionid", 'domain': ".chaturbate.com", 'value': sessionid, 'path': '/', 'secure': True, 'expiry': None, 'httpOnly': None}],
-                                   "userAgent": utils.USER_AGENT}}
+            cookie = {'solution': {"cookies": [{'name': "sessionid", 'domain': ".chaturbate.com", 'value': sessionid, 'path': '/', 'secure': True, 'expiry': None, 'httpOnly': None}], "userAgent": utils.USER_AGENT}}
             utils.savecookies(cookie)
 
     url = 'https://chaturbate.com/followed-cams/'
     loginurl = 'https://chaturbate.com/auth/login/?next=/followed-cams/'
 
     loginhtml = utils._getHtml(url, site.url)
-    if '<h1>Chaturbate Login</h1>' not in loginhtml:
+    if '>Chaturbate Login</h1>' not in loginhtml:
         return
 
     username = utils._get_keyboard(default='', heading='Input your Chaturbate username')
@@ -991,15 +929,17 @@ def login():
                    "password": password,
                    "rememberme": "on"}
     response = utils._postHtml(loginurl, headers=hdr, form_data=postRequest)
-    if '<h1>Chaturbate Login</h1>' in response:
+    if '>Chaturbate Login</h1>' in response:
         utils.notify('Chaturbate', 'Login failed please check your username and password')
+    else:
+        addon.setSetting('sessionid', '')
 
 
 @site.register()
 def Unfollow(id):
     url = 'https://chaturbate.com/follow/unfollow/{}/'.format(id)
     html = utils._getHtml(url, site.url)
-    if '<h1>Chaturbate Login</h1>' in html:
+    if '>Chaturbate Login</h1>' in html:
         login()
         html = utils._getHtml(url, site.url)
     match = re.compile(r'"csrfmiddlewaretoken"\s+value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
@@ -1019,7 +959,7 @@ def Unfollow(id):
 def Follow(id):
     url = 'https://chaturbate.com/follow/follow/{}/'.format(id)
     html = utils._getHtml(url, site.url)
-    if '<h1>Chaturbate Login</h1>' in html:
+    if '>Chaturbate Login</h1>' in html:
         login()
         html = utils._getHtml(url, site.url)
     match = re.compile(r'"csrfmiddlewaretoken"\s+value="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
@@ -1167,7 +1107,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
         if matches:
             new_matches = []
             for videopage, slug, video_id, title, img in matches:
-                title_clean = utils.cleantext(html_module.unescape(title)).strip()
+                title_clean = utils.cleantext(title)
                 new_matches.append((videopage, slug, video_id, title_clean, img))
             matches = new_matches
 
@@ -1180,7 +1120,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
         if matches:
             new_matches = []
             for videopage, slug, video_id, title in matches:
-                title_clean = utils.cleantext(html_module.unescape(title)).strip()
+                title_clean = utils.cleantext(title)
                 new_matches.append((videopage, slug, video_id, title_clean, ''))
             matches = new_matches
 
@@ -1198,7 +1138,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
         if videopage.startswith('/'):
             videopage = scr_base + videopage
 
-        title = utils.cleantext(html_module.unescape(title))
+        title = utils.cleantext(title)
 
         img_url = site.image
         if img:
@@ -1232,7 +1172,7 @@ def ShowCamRipsSearch(url=None, keyword=None):
         next_pattern = r'href=["\']([^"\']*search\.php[^"\']*page={}[^"\']*)["\']'.format(current_page + 1)
         next_match = re.search(next_pattern, listhtml, re.I)
         if next_match:
-            next_url = html_module.unescape(next_match.group(1))
+            next_url = next_match.group(1)
             if next_url.startswith('/'):
                 next_url = scr_base + next_url
         elif len(matches) >= 20:
@@ -1505,7 +1445,7 @@ def GlobalSearch(keyword=None):
                     if matches:
                         new_matches = []
                         for videopage, slug, video_id, title, img in matches:
-                            title_clean = utils.cleantext(html_module.unescape(title)).strip()
+                            title_clean = utils.cleantext(title)
                             new_matches.append((videopage, slug, video_id, title_clean, img))
                         matches = new_matches
 
@@ -1518,7 +1458,7 @@ def GlobalSearch(keyword=None):
                     if matches:
                         new_matches = []
                         for videopage, slug, video_id, title in matches:
-                            title_clean = utils.cleantext(html_module.unescape(title)).strip()
+                            title_clean = utils.cleantext(title)
                             new_matches.append((videopage, slug, video_id, title_clean, ''))
                         matches = new_matches
 
@@ -1531,7 +1471,7 @@ def GlobalSearch(keyword=None):
                     if videopage.startswith('/'):
                         videopage = scr_base + videopage
 
-                    title = utils.cleantext(html_module.unescape(title))
+                    title = utils.cleantext(title)
 
                     img_url = site.image
                     if img:
