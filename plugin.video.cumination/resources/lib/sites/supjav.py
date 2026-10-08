@@ -117,11 +117,8 @@ def Playvid(url, name, download=None):
 
 def get_cookies():
     domain = site.url.split('/')[2]
-    utils.kodilog(domain)
     cookiestr = ''
     for cookie in utils.cj:
-        utils.kodilog(cookie.domain)
-        utils.kodilog(cookie.name)
         if domain in cookie.domain and cookie.name == 'cf_clearance':
             cookiestr += 'cf_clearance=' + cookie.value
         if domain in cookie.domain and cookie.name == 'PHPSESSID':

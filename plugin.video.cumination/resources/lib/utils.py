@@ -43,8 +43,7 @@ from resources.lib.basics import (
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
 from resources.lib.jsonrpc import toggle_debug
-from six.moves import (html_parser, http_cookiejar, urllib_error, urllib_parse,
-                       urllib_request)
+from six.moves import (html_parser, http_cookiejar, urllib_error, urllib_parse, urllib_request)
 
 cache = StorageServer.StorageServer("cumination", int(addon.getSetting('cache_time')))
 url_dispatcher = URL_Dispatcher('utils')
@@ -125,6 +124,303 @@ if cj is not None:
 
 opener = urllib_request.build_opener(*handlers)
 urllib_request.install_opener(opener)
+
+
+# -----------------------------------------------------------------------------
+# Cloudflare browser-identity reuse (CF Base Test v1.0.4)
+#
+# FlareSolverr is used as a browser identity refresher.  Once a domain has a
+# matching cf_clearance cookie and the exact User-Agent returned by
+# FlareSolverr, ordinary GET requests can usually reuse that identity without
+# launching another browser solve.
+# -----------------------------------------------------------------------------
+_CF_IDENTITY_PATH = os.path.join(TRANSLATEPATH(profileDir), 'cf_identities.json')
+_CF_CHALLENGE_MARKERS = (
+    '__cf_chl_f_tk',
+    '__cf_chl_jschl_tk__=',
+    '/cdn-cgi/challenge-platform/',
+    'cf-chl-',
+    'cf_chl_',
+    '<title>just a moment',
+    '<title>attention required',
+    'checking your browser',
+    'verify you are human',
+    'challenge-platform',
+)
+
+
+def _cf_log(msg, level=LOGINFO):
+    kodilog('CFBASE: ' + str(msg), level)
+
+
+def _cf_load_json(path):
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            obj = json.load(f)
+            return obj if isinstance(obj, dict) else {}
+    except Exception:
+        return {}
+
+
+def _cf_save_json(path, obj):
+    tmp = path + '.tmp'
+    try:
+        parent = os.path.dirname(path)
+        if parent and not os.path.isdir(parent):
+            os.makedirs(parent)
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(obj, f, indent=2, sort_keys=True)
+        os.replace(tmp, path)
+    except Exception as exc:
+        _cf_log('IDENTITY SAVE FAILED path=%s error=%s' % (path, exc), xbmc.LOGWARNING)
+        try:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+        except Exception:
+            pass
+
+
+def _cf_host(url):
+    try:
+        return (urllib_parse.urlparse(url).hostname or '').lower().strip('.')
+    except Exception:
+        return ''
+
+
+def _cf_origin(url):
+    try:
+        p = urllib_parse.urlparse(url)
+        if p.scheme and p.netloc:
+            return '%s://%s/' % (p.scheme, p.netloc)
+    except Exception:
+        pass
+    return ''
+
+
+def _cf_cookie_matches_url(cookie, url):
+    try:
+        p = urllib_parse.urlparse(url)
+        host = (p.hostname or '').lower().strip('.')
+        path = p.path or '/'
+        raw_domain = (cookie.domain or '').lower()
+        domain = raw_domain.lstrip('.')
+        if not host or not domain:
+            return False
+        domain_ok = (host == domain) or (raw_domain.startswith('.') and host.endswith('.' + domain))
+        if not domain_ok:
+            return False
+        cookie_path = cookie.path or '/'
+        if cookie_path != '/' and not (path == cookie_path or path.startswith(cookie_path.rstrip('/') + '/')):
+            return False
+        try:
+            if cookie.is_expired():
+                return False
+        except Exception:
+            pass
+        if getattr(cookie, 'secure', False) and p.scheme != 'https':
+            return False
+        return True
+    except Exception:
+        return False
+
+
+def _cf_cookies_for_url(url):
+    selected = []
+    try:
+        for cookie in cj:
+            if _cf_cookie_matches_url(cookie, url):
+                selected.append(cookie)
+    except Exception:
+        pass
+    return selected
+
+
+def _cf_has_clearance(host, url=None):
+    target = url or ('https://%s/' % host if host else '')
+    try:
+        return any(c.name == 'cf_clearance' for c in _cf_cookies_for_url(target))
+    except Exception:
+        return False
+
+
+def _cf_flare_cookies(url):
+    result = []
+    for c in _cf_cookies_for_url(url):
+        result.append({
+            'name': c.name,
+            'value': c.value,
+            'domain': c.domain,
+            'path': c.path or '/',
+        })
+    return result
+
+
+def _cf_get_identity(host):
+    if not host:
+        return {}
+    data = _cf_load_json(_CF_IDENTITY_PATH)
+    identity = data.get(host, {})
+    return identity if isinstance(identity, dict) else {}
+
+
+def _cf_save_identity(host, ua):
+    if not host or not ua:
+        return
+    data = _cf_load_json(_CF_IDENTITY_PATH)
+    current = data.get(host, {}) if isinstance(data.get(host, {}), dict) else {}
+    current['user_agent'] = ua
+    current['updated'] = int(time.time())
+    data[host] = current
+    _cf_save_json(_CF_IDENTITY_PATH, data)
+    _cf_log('IDENTITY SAVED host=%s ua_saved=True' % host)
+
+
+def _cf_is_challenge(html):
+    if not html:
+        return False
+    try:
+        low = html[:20000].lower()
+    except Exception:
+        try:
+            low = six.ensure_text(html, errors='ignore')[:20000].lower()
+        except Exception:
+            return False
+    return any(marker in low for marker in _CF_CHALLENGE_MARKERS)
+
+
+def _cf_caller_has_custom_ua(headers):
+    if not headers:
+        return False
+    for k in headers.keys():
+        if str(k).lower() == 'user-agent':
+            try:
+                supplied = headers[k]
+                return bool(supplied and supplied != USER_AGENT and supplied != base_hdrs.get('User-Agent'))
+            except Exception:
+                return True
+    return False
+
+
+def _cf_enabled():
+    try:
+        return addon.getSetting('fs_enable') == 'true'
+    except Exception:
+        return False
+
+
+def _cf_decode_response(response):
+    raw = response.read()
+    cencoding = (response.headers.get('Content-Encoding', '') or '').lower()
+    if cencoding == 'gzip':
+        try:
+            buf = six.BytesIO(raw)
+            f = gzip.GzipFile(fileobj=buf)
+            raw = f.read()
+            f.close()
+        except Exception:
+            pass
+    elif cencoding == 'br':
+        try:
+            raw = decompress(raw)
+        except Exception:
+            pass
+
+    charset = None
+    try:
+        charset = response.headers.get_content_charset()
+    except Exception:
+        pass
+    if not charset:
+        ctype = response.headers.get('Content-Type', '') or ''
+        if 'charset=' in ctype.lower():
+            charset = ctype.lower().split('charset=', 1)[1].split(';', 1)[0].strip()
+    try:
+        return raw.decode(charset or 'utf-8', errors='replace')
+    except Exception:
+        return raw.decode('latin-1', errors='ignore')
+
+
+def _cf_direct_fetch(url, saved_ua, referer='', headers=None, ignoreCertificateErrors=False):
+    """Pure direct GET using the browser identity saved by FlareSolverr."""
+    host = _cf_host(url)
+    req_headers = {
+        'User-Agent': saved_ua,
+        'Referer': referer or _cf_origin(url),
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+    }
+    if headers:
+        for k, v in dict(headers).items():
+            if str(k).lower() != 'user-agent':
+                req_headers[k] = v
+    req_headers['User-Agent'] = saved_ua
+    if not req_headers.get('Referer'):
+        req_headers['Referer'] = _cf_origin(url)
+
+    # Match the proven site-specific fast-GET path as closely as possible.
+    # In particular, do not inject CuMination's pre-built HTTPSHandler/context
+    # into normal fast requests.  On Android/Fire TV that changes the urllib
+    # TLS path enough for some Cloudflare sites (notably SupJav) to reject the
+    # request even though the exact same UA + cf_clearance works through the
+    # default urllib opener.
+    qurl = urllib_parse.quote(url, r':/%?+&=')
+    request = urllib_request.Request(qurl, headers=req_headers)
+    if ignoreCertificateErrors:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        direct_opener = urllib_request.build_opener(
+            urllib_request.HTTPCookieProcessor(cj),
+            urllib_request.HTTPSHandler(context=ctx),
+        )
+        transport = 'custom-ssl'
+    else:
+        direct_opener = urllib_request.build_opener(
+            urllib_request.HTTPCookieProcessor(cj)
+        )
+        transport = 'default-urllib'
+
+    cookie_names = sorted(set(c.name for c in _cf_cookies_for_url(url)))
+    _cf_log('FAST GET TRY host=%s url=%s cookies=%s names=%s referer=%s transport=%s' % (host, url, len(_cf_cookies_for_url(url)), ','.join(cookie_names), req_headers.get('Referer', ''), transport))
+    try:
+        response = direct_opener.open(request, timeout=12)
+        try:
+            status = response.getcode()
+            final_url = response.geturl()
+            html = _cf_decode_response(response)
+        finally:
+            try:
+                response.close()
+            except Exception:
+                pass
+
+        try:
+            cj.save(cookiePath, ignore_discard=True)
+        except Exception:
+            pass
+
+        if status != 200:
+            _cf_log('FAST GET REJECT host=%s url=%s status=%s final=%s' % (host, url, status, final_url))
+            return 'fallback', None
+        if _cf_is_challenge(html):
+            _cf_log('FAST GET CHALLENGED host=%s url=%s status=200-interstitial' % (host, url))
+            return 'challenge', None
+
+        _cf_log('FAST GET SUCCESS host=%s url=%s bytes=%s' % (host, url, len(html)))
+        return 'success', html
+    except urllib_error.HTTPError as exc:
+        code = getattr(exc, 'code', None)
+        _cf_log('FAST GET HTTPERROR host=%s url=%s code=%s' % (host, url, code))
+        if code in (403, 429, 503):
+            return 'challenge', None
+        return 'fallback', None
+    except urllib_error.URLError:
+        _cf_log('FAST GET FAILED host=%s url=%s error=URLError' % (host, url))
+        return 'fallback', None
+    except Exception as exc:
+        _cf_log('FAST GET FAILED host=%s url=%s error=%s' % (host, url, type(exc).__name__))
+        return 'fallback', None
 
 
 class StopDownloading(Exception):
@@ -463,6 +759,39 @@ def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='retu
 
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
+    # Reuse a valid FlareSolverr browser identity before entering the stock
+    # request/fallback path.  This is deliberately limited to ordinary GETs.
+    cf_request_url = url
+    cf_host = _cf_host(cf_request_url)
+    cf_eligible = bool(
+        cf_host
+        and str(cf_request_url).lower().startswith(('http://', 'https://'))
+        and not NoCookie
+        and not data
+        and not _cf_caller_has_custom_ua(headers)
+    )
+    cf_identity = _cf_get_identity(cf_host) if cf_eligible else {}
+    cf_saved_ua = cf_identity.get('user_agent') if isinstance(cf_identity, dict) else None
+    cf_has_clearance = _cf_has_clearance(cf_host, cf_request_url) if cf_eligible else False
+
+    if cf_eligible and cf_saved_ua and cf_has_clearance:
+        cf_state, cf_direct = _cf_direct_fetch(cf_request_url, cf_saved_ua, referer, headers, ignoreCertificateErrors)
+        if cf_state == 'success':
+            return cf_direct
+        if cf_state == 'challenge' and _cf_enabled():
+            notify('Flaresolverr', 'Cloudflare detected, retrying with Flaresolverr.')
+            solved = flaresolve(cf_request_url, referer)
+            _cf_log('FAST GET FALLBACK COMPLETE host=%s url=%s' % (cf_host, cf_request_url))
+            return solved
+        _cf_log('FAST GET BASE FALLBACK host=%s url=%s' % (cf_host, cf_request_url))
+    # elif cf_eligible:
+    #     reasons = []
+    #     if not cf_saved_ua:
+    #         reasons.append('missing-domain-ua')
+    #     if not cf_has_clearance:
+    #         reasons.append('missing-clearance')
+    #     _cf_log('FAST GET SKIP host=%s url=%s reason=%s' % (cf_host, cf_request_url, '+'.join(reasons) if reasons else 'not-ready'))
+
     url = urllib_parse.quote(url, r':/%?+&=')
 
     if data:
@@ -604,6 +933,14 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
             pass
     response.close()
 
+    # Cloudflare can return an interstitial with HTTP 200.  Detect it here so
+    # the first visit can establish an identity even when there was no HTTPError.
+    if cf_eligible and _cf_is_challenge(result):
+        _cf_log('BASE GET CHALLENGED host=%s url=%s status=200-interstitial' % (cf_host, cf_request_url))
+        if _cf_enabled():
+            notify('Flaresolverr', 'Cloudflare detected, retrying with Flaresolverr.')
+            return flaresolve(cf_request_url, referer)
+
     if 'sucuri_cloudproxy_js' in result:
         headers['Cookie'] = get_sucuri_cookie(result)
         result = getHtml(url, referer, headers=headers)
@@ -611,15 +948,48 @@ def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='ret
 
 
 def flaresolve(url, referer):
+    host = _cf_host(url)
+    cookies = _cf_flare_cookies(url)
+    _cf_log('FLARESOLVERR USED host=%s url=%s imported_cookies=%s' % (host, url, len(cookies)))
+
     from resources.lib.flaresolverr import FlareSolverrManager
     flaresolverr = FlareSolverrManager(addon.getSetting('fs_host'))
-    listjson = flaresolverr.request(url).json()
-    solution = listjson['solution']
-    if solution['status'] != 200:
-        raise
-    listhtml = listjson['solution']['response']
-    savecookies(listjson)
-    return listhtml
+    try:
+        try:
+            response = flaresolverr.request(url, cookies=cookies if cookies else None, tries=1)
+        except ValueError as exc:
+            if not cookies or 'invalid cookie domain' not in str(exc).lower():
+                raise
+            _cf_log('FLARESOLVERR COOKIE RETRY host=%s reason=invalid-cookie-domain' % host)
+            response = flaresolverr.request(url, tries=1)
+
+        listjson = response.json()
+        solution = listjson.get('solution') or {}
+        status = solution.get('status')
+        listhtml = solution.get('response') or ''
+        ua = solution.get('userAgent') or ''
+
+        if status != 200:
+            raise ValueError('FlareSolverr solution status=%s' % status)
+        if not listhtml:
+            raise ValueError('FlareSolverr returned empty response')
+        if _cf_is_challenge(listhtml):
+            raise ValueError('FlareSolverr returned challenge/interstitial HTML')
+
+        savecookies(listjson)
+        if ua:
+            _cf_save_identity(host, ua)
+        else:
+            try:
+                _cf_save_identity(host, random_ua.get_ua())
+            except Exception:
+                pass
+        return listhtml
+    finally:
+        try:
+            del flaresolverr
+        except Exception:
+            pass
 
 
 def savecookies(flarejson):

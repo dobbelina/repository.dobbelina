@@ -234,12 +234,12 @@ def addDownLink(name, url, mode, iconimage, desc='', stream=None, fav='add', noD
     contextMenuItems.append(('[COLOR hotpink]' + favtext + ' favorites[/COLOR]', 'RunPlugin(' + favorite + ')'))
     if not noDownload:
         contextMenuItems.append(('[COLOR hotpink]Download Video[/COLOR]', 'RunPlugin(' + dwnld + ')'))
-    
+
     add_keyword_url = (sys.argv[0]
                        + "?mode=" + str('utils.addKeywordFromContext')
                        + "&name=" + urllib_parse.quote_plus(name))
     contextMenuItems.append(('[COLOR hotpink]Add to Search Keywords[/COLOR]', 'RunPlugin(' + add_keyword_url + ')'))
-    
+
     settings_url = (sys.argv[0]
                     + "?mode=" + str('utils.openSettings'))
     contextMenuItems.append(

@@ -2,4 +2,4 @@
 - search keywords can now be added from the context menu from titles
 - chaturbate - username/password-based authentication fixed
 - rule34video - fix listing
-
+- flaresolverr - Improvement: Cookies returned by Flaresolverr are reused; a single call is made per site.
