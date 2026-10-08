@@ -165,7 +165,6 @@ def Online(stamp):
 
 @site.register()
 def List(url, page=1):
-    utils.kodilog('Chaturbate List: {}'.format(url))
     favorite = {}
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
@@ -177,7 +176,6 @@ def List(url, page=1):
     if 'follow=true' in url and 'offline=false' in url:
         site.add_dir('[COLOR yellow]Offline Rooms[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=true&offset=0', 'List', '', '')
     if 'follow=true' in url:
-        utils.kodilog('Chaturbate List: Followed Cams')
         login()
     if addon.getSetting("chaturbate") == "true":
         clean_database(False)

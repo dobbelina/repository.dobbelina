@@ -1,4 +1,5 @@
 [B]Version 1.1.203[/B]
 - search keywords can now be added from the context menu from titles
 - chaturbate - username/password-based authentication fixed
+- rule34video - fix listing
 

@@ -37,7 +37,7 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'open-popup"\s*href="([^"]+)".*?original="([^"]+)".+?alt="([^"]+)"(.*?)time">([^<]+)<', re.IGNORECASE | re.DOTALL).findall(listhtml)
+    match = re.compile(r'open-popup"\s+href="([^"]+)".*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)".*?(<div class="quality">.*?</div>)?.*?class="time">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
     for videopage, img, name, hd, duration in match:
         name = utils.cleantext(name.strip())
