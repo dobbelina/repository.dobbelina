@@ -138,14 +138,12 @@ _CF_IDENTITY_PATH = os.path.join(TRANSLATEPATH(profileDir), 'cf_identities.json'
 _CF_CHALLENGE_MARKERS = (
     '__cf_chl_f_tk',
     '__cf_chl_jschl_tk__=',
-    '/cdn-cgi/challenge-platform/',
     'cf-chl-',
     'cf_chl_',
     '<title>just a moment',
     '<title>attention required',
     'checking your browser',
     'verify you are human',
-    'challenge-platform',
 )
 
 
@@ -974,6 +972,7 @@ def flaresolve(url, referer):
         if not listhtml:
             raise ValueError('FlareSolverr returned empty response')
         if _cf_is_challenge(listhtml):
+            kodilog(listhtml)
             raise ValueError('FlareSolverr returned challenge/interstitial HTML')
 
         savecookies(listjson)

@@ -24,7 +24,7 @@ import xbmc
 import xbmcgui
 
 
-site = AdultSite('wowxxx', '[COLOR hotpink]WOW.xxx[/COLOR]', 'https://www.wow.xxx/', 'wowxxx.png', 'wowxxx')
+site = AdultSite('wowxxx', '[COLOR hotpink]WOWxxx[/COLOR]', 'https://www.wowxxx.to/', 'wowxxx.png', 'wowxxx')
 
 
 @site.register(default_mode=True)
