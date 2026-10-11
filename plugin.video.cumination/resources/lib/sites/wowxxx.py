@@ -56,7 +56,7 @@ def List(url):
     cm_related = (utils.addon_sys + "?mode=" + str('wowxxx.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'wowxxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    utils.videos_list(site, 'wowxxx.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, thumbnails='cache')
 
     re_npurl = 'aria-label="Next" href="([^"]+)"'
     re_npnr = r'aria-label="Next" href="[^"]+/(\d+)/"'
