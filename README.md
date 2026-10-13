@@ -1,9 +1,9 @@
 <div align="center">
   <img height="300" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/icon.png">
 </p>
+<img width="300" height="80" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/cumination.svg" />
 
-# Cumination
-
+***
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&pause=1000&color=FF8FE3&center=true&vCenter=true&width=600&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination++Add-on)](https://github.com/dobbelina/repository.dobbelina)
 
