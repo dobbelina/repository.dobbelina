@@ -1,5 +1,5 @@
 <div align="center">
-  <img height="300" src="https://user-images.githubusercontent.com/46063764/103461711-a9eb6280-4d20-11eb-983b-516b022cbbf5.png">
+  <img height="300" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/icon.png">
 </p>
 
 # Cumination
@@ -28,5 +28,5 @@ broken sites/catchers, or make a pull request.**
 
 </div>
 
-<img width="1200" height="60" alt="cumination" src="https://github.com/user-attachments/assets/3a0be85a-c336-421c-92bc-53b6bdcaa9bc" />
+<img width="1200" height="60" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/Cumination_footer.svg" />
 

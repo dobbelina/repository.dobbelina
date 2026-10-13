@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 60" width="1200" height="60">
+  <defs>
+    <filter id="g" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="c" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <filter id="d" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+    <g id="word" font-family="'Segoe Print', 'Comic Sans MS', cursive" font-size="20" font-weight="bold" font-style="italic" letter-spacing="-.5">
+      <text x="0" y="40" fill="none" stroke="#f05" stroke-width="4" filter="url(#c)" opacity=".8">Cumination</text>
+      <text x="0" y="40" fill="none" stroke="#ff1493" stroke-width="2" filter="url(#d)" opacity=".95">Cumination</text>
+      <text x="0" y="40" fill="#fff" stroke="#fff" stroke-width=".4">Cumination</text>
+    </g>
+    <g id="heart">
+      <path d="M19 45C16 42 3 33 3 27c0-10 12-12 16-3 4-9 16-7 16 3 0 6-13 15-16 18Z" fill="none" stroke="#f05" stroke-width="4" filter="url(#c)" opacity=".8"/>
+      <path d="M19 45C16 42 3 33 3 27c0-10 12-12 16-3 4-9 16-7 16 3 0 6-13 15-16 18Z" fill="none" stroke="#ff1493" stroke-width="2" filter="url(#d)" opacity=".95"/>
+      <path d="M19 45C16 42 3 33 3 27c0-10 12-12 16-3 4-9 16-7 16 3 0 6-13 15-16 18Z" fill="none" stroke="#fff" stroke-width=".4"/>
+    </g>
+    <clipPath id="e">
+      <rect width="1200" height="60" rx="8" ry="8"/>
+    </clipPath>
+    <pattern id="f" width="60" height="30" patternUnits="userSpaceOnUse">
+      <path fill="#080204" d="M0 0h60v30H0z"/>
+      <path fill="#1c0710" d="M1 1h28v13H1z"/>
+      <path fill="#120409" d="M31 1h28v13H31z"/>
+      <path fill="#18050b" d="M-14 15h28v13h-28z"/>
+      <path fill="#240813" d="M16 15h28v13H16z"/>
+      <path fill="#17060c" d="M46 15h28v13H46z"/>
+      <path opacity=".3" d="M5 3h10v4H5z"/>
+      <path fill="#36101f" opacity=".15" d="M35 5h15v2H35z"/>
+      <path opacity=".4" d="M20 17h8v5h-8z"/>
+      <path fill="#36101f" opacity=".2" d="M50 20h4v4h-4z"/>
+    </pattern>
+  </defs>
+  <g clip-path="url(#e)">
+    <path fill="url(#f)" d="M0 0h1200v60H0z"/>
+    <path fill="#f05" opacity=".25" filter="url(#g)" d="M0 15h1200v30H0z"/>
+    <use href="#word" x="15"/>
+    <use href="#heart" x="245"/>
+    <use href="#word" x="415"/>
+    <use href="#heart" x="645"/>
+    <use href="#word" x="815"/>
+    <use href="#heart" x="1045"/>
+  </g>
+</svg>
