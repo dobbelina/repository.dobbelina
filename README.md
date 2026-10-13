@@ -28,8 +28,5 @@ broken sites/catchers, or make a pull request.**
 
 </div>
 
-<img width="1200" height="60" alt="Cumination" src="https://github.com/user-attachments/assets/3de365cd-cf4f-4fc3-9362-dffe5a45e6a8" />
-
-
-
+<img width="1200" height="60" alt="cumination" src="https://github.com/user-attachments/assets/3a0be85a-c336-421c-92bc-53b6bdcaa9bc" />
 
