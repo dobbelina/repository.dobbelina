@@ -1,7 +1,2 @@
-[B]Version 1.1.203[/B]
-- search keywords can now be added from the context menu from titles
-- chaturbate - username/password-based authentication fixed
-- rule34video - fix listing
-- flaresolverr - Improvement: Cookies returned by Flaresolverr are reused; a single call is made per site.
-- wowxxx - new domain wowxxx.to
-- Thanks to 12asdfg12 our longtime contributor!
+[B]Version 1.1.204[/B]
+- noodlemagazine - fix listing
