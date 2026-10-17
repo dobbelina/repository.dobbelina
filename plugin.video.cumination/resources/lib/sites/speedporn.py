@@ -1,6 +1,6 @@
 '''
     Cumination
-    Copyright (C) 2020 Cumination
+    Copyright (C) 2026 Team Cumination
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,206 +17,143 @@
 '''
 
 import re
+import json
+import html as html_lib
+import xbmc
+import xbmcgui
+
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.decrypters.kvsplayer import kvs_decode
 
-site = AdultSite('speedporn', '[COLOR hotpink]SpeedPorn[/COLOR]', 'https://speedporn.net/', 'speedporn.png', 'speedporn')
+
+site = AdultSite('speedporn', '[COLOR hotpink]SpeedPorn[/COLOR]', 'https://speedporn.net/', 'https://i0.wp.com/speedporn.net/wp-content/uploads/2026/10/speedpornlogo.png', 'speedporn')
 
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{}categories/'.format(site.url), 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Categories[/COLOR] - Loads all the pages', '{}categories/'.format(site.url), 'Categories_all', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', '{}pornstars/'.format(site.url), 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Porn videos[/COLOR]', '{}xxxfree/'.format(site.url), 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{}all-porn-movie-studios/'.format(site.url), 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}?s='.format(site.url), 'Search', site.img_search)
-    List(site.url + 'category/1-porn-movies/')
+    for title, path in (
+        ('Genres', 'watch-free-moivies-by-genres/'),
+        ('Pornstars', 'watch-free-moivies-by-pornstars/'),
+        ('Studios', 'watch-free-moivies-by-studios/'),
+        ('Years', 'watch-free-moivies-by-release-years/'),
+        ('Directors', 'watch-free-moivies-by-Directors/'),
+    ):
+        site.add_dir(f'[COLOR hotpink]{title}[/COLOR]', site.url + path, 'Category', site.img_cat)
+
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    List(site.url + 'all-movies/')
+    utils.eod()
+
+
+@site.register()
+def Category(url):
+    page = utils.getHtml(url, '')
+
+    match = re.compile(r'class="tcard" href="([^"]+)">.+?<img src="([^"]+)" alt="([^"]+)".+?<small>([^<]+)</small>', re.DOTALL | re.IGNORECASE).findall(page)
+    if not match:  # years
+        match = re.compile(r'class="tcard" href="([^"]+)"()><b>([^<]+)</b><small>([^<]+)</small>', re.DOTALL | re.IGNORECASE).findall(page)
+    if not match:  # genres
+        match = re.compile(r'class="chip" href="([^"]+)"()>([^<]+)<small>([^<]+)</small>', re.DOTALL | re.IGNORECASE).findall(page)
+
+    for link, img, title, count in match:
+        title = utils.cleantext(title) + ' [COLOR deeppink](' + utils.cleantext(count) + ')[/COLOR]'
+        site.add_dir(title, link, 'List', img)
+
+    next_match = re.search(r'<a\b(?=[^>]*\bclass=["\'][^"\']*\bnext\b)[^>]*\bhref=["\']([^"\']+)["\']', page, re.DOTALL | re.IGNORECASE)
+    if next_match:
+        site.add_dir('[COLOR hotpink]Next Page[/COLOR]', next_match.group(1), 'Category', site.img_next)
     utils.eod()
 
 
 @site.register()
 def List(url):
-    utils.kodilog('speedporn List: ' + url)
-    try:
-        listhtml = utils.getHtml(url)
-    except:
-        return None
-    if 'span class="duration">' in listhtml:
-        match = re.compile(r'class="thumb" href="([^"]+)".+?src="([^"]+)".+?span class="duration">([^<]+).+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    else:
-        match = re.compile(r'class="thumb" href="([^"]+)".+?src="([^"]+)".+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    listhtml = utils.getHtml(url, '')
 
-    for item in match:
-        if len(item) > 3:
-            videopage, img, duration, name = item
-            duration = duration.replace(' hrs.', 'h').replace(' mins.', 'm')
-        else:
-            videopage, img, name = item
-            duration = ''
+    delimiter = 'class="card__th"'
+    re_videopage = 'href="([^"]+)"'
+    re_name = '>([^<]+)</a></h'
+    re_img = 'src="([^"]+)"'
+    re_duration = r'class="card__dur">([\d:]+)<'
 
-        name = utils.cleantext(name)
+    cm = []
+    cm_lookupinfo = (utils.addon_sys + "?mode=" + str('speedporn.Lookupinfo') + "&url=")
+    cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
+    cm_related = (utils.addon_sys + "?mode=" + str('speedporn.Related') + "&url=")
+    cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-        contextmenu = []
-        contexturl = (utils.addon_sys
-                      + "?mode=" + str('speedporn.Lookupinfo')
-                      + "&url=" + urllib_parse.quote_plus(videopage))
-        contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
+    utils.videos_list(site, 'speedporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
-        site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu, duration=duration)
-
-    next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-    if next_page:
-        next_page = next_page[0]
-        page_nr = re.findall(r'\d+', next_page)[-1]
-        site.add_dir('Next Page (' + str(page_nr) + ')', next_page, 'List', site.img_next)
+    re_npurl = r'class="page-numbers current".+?href="([^"]+)"'
+    re_npnr = r'class="page-numbers current".+?href="[^"]+"[^>]*>([\d,]+)<'
+    re_lpnr = r'>([\d,]+)</a>\s*<a class="next page-numbers"'
+    utils.next_page(site, 'speedporn.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='speedporn.GotoPage')
     utils.eod()
 
 
 @site.register()
-def List_all(url):
-    nextpg = True
-    while nextpg:
-        try:
-            listhtml = utils.getHtml(url)
-            match = re.compile(r'class="thumb" href="([^"]+)".+?-src="([^"]+)".+?span class="duration">([^<]+).+?span class="title">([^<]+)', re.DOTALL | re.IGNORECASE).findall(listhtml)
-            for videopage, img, duration, name in match:
-                name = utils.cleantext(name)
-                contextmenu = []
-                contexturl = (utils.addon_sys
-                              + "?mode=" + str('speedporn.Lookupinfo')
-                              + "&url=" + urllib_parse.quote_plus(videopage))
-                contextmenu.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + contexturl + ')'))
-
-                site.add_download_link(name, videopage, 'Playvid', img, contextm=contextmenu, duration=duration)
-            if len(match) == 49:
-                next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(listhtml)
-                if next_page:
-                    url = next_page[0]
-            else:
-                nextpg = False
-        except:
-            nextpg = False
-    utils.eod()
+def GotoPage(list_mode, url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        url = url.replace('/page/{}/'.format(np), '/page/{}/'.format(pg))
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        contexturl = (utils.addon_sys + "?mode=" + str(list_mode) + "&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
-def Categories(url):
-    cathtml = utils.getHtml(url, '')
-    videos = cathtml.split('class="video-block video-block-cat"')
-    videos.pop(0)
-
-    for video in videos:
-        match = re.compile(r'href="([^"]+)".+?src="(http[^"]+jpg)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(video)
-        for catpage, img, name, count in match:
-            name = utils.cleantext(name) + " [COLOR deeppink]" + count.strip() + "[/COLOR]"
-            site.add_dir(name, catpage, 'List', img)
-
-    next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    if next_page:
-        next_page = next_page[0]
-        page_nr = re.findall(r'\d+', next_page)[-1]
-        site.add_dir('Next Page (' + str(page_nr) + ')', next_page, 'Categories', site.img_next)
-    utils.eod()
-
-
-@site.register()
-def Categories_all(url):
-    nextpg = True
-    while nextpg:
-        try:
-            cathtml = utils.getHtml(url, '')
-            videos = cathtml.split('class="video-block video-block-cat"')
-            videos.pop(0)
-
-            for video in videos:
-                match = re.compile(r'href="([^"]+)".+?src="(http[^"]+jpg)".+?class="title">([^<]+)<.+?class="video-datas">([^<]+)</div', re.DOTALL | re.IGNORECASE).findall(video)
-                for catpage, img, name, count in match:
-                    name = utils.cleantext(name) + " [COLOR deeppink]" + count.strip() + "[/COLOR]"
-                    site.add_dir(name, catpage, 'List', img)
-            if len(videos) == 49:
-                next_page = re.compile(r'class="next page-link" href="([^"]+)">&raquo;<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-                if next_page:
-                    url = next_page[0]
-            else:
-                nextpg = False
-        except:
-            nextpg = False
-    utils.eod()
-
-
-@site.register()
-def Tags(url):
-    cathtml = utils.getHtml(url, '')
-    match = re.compile('div class="tag-item"><a href="([^"]+)"[^>]+>([^<]+)<', re.DOTALL | re.IGNORECASE).findall(cathtml)
-    for catpage, name in match:
-        name = utils.cleantext(name)
-        site.add_dir(name, catpage, 'List', '')
-    utils.eod()
+def Related(url):
+    contexturl = (utils.addon_sys + "?mode=" + str('speedporn.List') + "&url=" + urllib_parse.quote_plus(url))
+    xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
 def Playvid(url, name, download=None):
     links = {}
     vp = utils.VideoPlayer(name, download)
-    vp.progress.update(25, "[CR]Loading video page[CR]")
+    vp.progress.update(25, '[CR]Loading video page[CR]')
     videopage = utils.getHtml(url)
-    videopage = videopage.split('>Watch Online')[-1]
 
-    srcs = re.compile(r'<a title="([^"]+)" href="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videopage)
-    for title, src in srcs:
-        title = utils.cleantext(title)
-        title = title.split(' on ')[-1]
-        src = src.split('?link=')[-1]
-        if 'mangovideo' in src:
-            html = utils.getHtml(src, url)
-            if '=' in src:
-                src = src.split('=')[-1]
-            murl = re.compile(r"video_url:\s*'([^']+)'", re.DOTALL | re.IGNORECASE).findall(html)
-            if murl:
-                if murl[0].startswith('function/'):
-                    license = re.findall(r"license_code:\s*'([^']+)", html)[0]
-                    murl = kvs_decode(murl[0], license)
-            else:
-                murl = re.compile(r'action=[^=]+=([^\?]+)/\?download', re.DOTALL | re.IGNORECASE).findall(html)
-                if murl:
-                    murl = murl[0]
-            if murl:
-                links[title] = murl
-        elif vp.resolveurl.HostedMediaFile(src).valid_url():
-            links[title] = src
+    match = re.search(r'data-servers=["\']([^"\']*)["\']', videopage, re.IGNORECASE | re.DOTALL)
+    if match:
+        servers = json.loads(html_lib.unescape(match.group(1)))
+        for server in servers:
+            title = server.get('l', 'Server')
+            src = server.get('u', '')
+            if src:
+                links[title] = src
+
+    if not links:
+        vp.progress.close()
+        utils.notify(msg='SpeedPorn: no server links found')
+        return
+
     videourl = utils.selector('Select server', links, setting_valid=False)
     if not videourl:
         vp.progress.close()
         return
 
-    vp.progress.update(90, "[CR]Loading video page[CR]")
-    if 'mango' in videourl:
-        vp.play_from_direct_link(videourl)
-    else:
-        vp.play_from_link_to_resolve(videourl)
+    vp.progress.update(90, '[CR]Loading video page[CR]')
+    vp.play_from_link_to_resolve(videourl)
 
 
 @site.register()
 def Search(url, keyword=None):
-    searchUrl = url
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        title = keyword.replace(' ', '+')
-        searchUrl = searchUrl + title
-        List(searchUrl)
+        List(url + keyword.replace(' ', '+'))
 
 
 @site.register()
 def Lookupinfo(url):
     lookup_list = [
-        ("Genre", '(genres/[^"]+)" title="([^"]+)', ''),
-        ("Studio", '(director/[^"]+)" title="([^"]+)', ''),
-        ("Actor", '(pornstars/[^"]+)" title="([^"]+)', ''),
+        ('Actor', '(pornstars/[^"]+)">([^<]+)</a>', ''),
+        ('Director', '(directors/[^"]+)">([^<]+)</a>', ''),
+        ('Genres', '(genres/[^"]+)">([^<]+)</a>', ''),
+        ('Studio', '(director/[^"]+)">([^<]+)</a>', ''),
     ]
-
-    lookupinfo = utils.LookupInfo(site.url, url, 'speedporn.List', lookup_list)
-    lookupinfo.getinfo()
+    utils.LookupInfo(site.url, url, 'speedporn.List', lookup_list).getinfo()
