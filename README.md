@@ -1,7 +1,7 @@
 <div align="center">
   <img height="300" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/icon.png">
 </p>
-<img width="390" height="130" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/cumination.svg" />
+<img width="390" height="100" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/cumination.svg" />
 
 ***
 
