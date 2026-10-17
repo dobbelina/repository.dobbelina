@@ -1,11 +1,11 @@
 <div align="center">
   <img height="300" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/icon.png">
 </p>
-<img width="350" height="73" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/cumination.svg" />
+<img width="390" height="130" src="https://raw.githubusercontent.com/dobbelina/repository.dobbelina/master/repository.dobbelina/cumination.svg" />
 
 ***
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Open+Sans&weight=600&size=24&pause=1000&color=FF8FE3&center=true&width=435&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination+Add-on)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Open+Sans&weight=600&size=24&pause=1000&color=FF69B4&center=true&width=435&lines=Welcome+to+Dobbelinas+repository;Home+of+the+Cumination+Add-on)](https://git.io/typing-svg)
 
 All credit to the fantastic people at reddit who has provided the fixes, and especially jdoedev & 12asdfg12 & camilt
 
