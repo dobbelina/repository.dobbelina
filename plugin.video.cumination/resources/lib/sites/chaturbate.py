@@ -77,12 +77,12 @@ def Main():
     couple = addon.getSetting("chatcouple") == "true"
     trans = addon.getSetting("chattrans") == "true"
 
-    site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Refresh Chaturbate images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     site.add_dir('[COLOR hotpink]Look for Online Models[/COLOR]', site.url + 'ax/search/?keywords=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Featured[/COLOR]', rapi + '?limit=100&offset=0', 'List', '', '')
     site.add_dir('[COLOR yellow]Current Hour\'s Top Cams[/COLOR]', bu + 'api/ts/contest/leaderboard/', 'topCams', '', '')
     site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', bu, 'onlineFav', '', '')
-    site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=false&offset=0', 'List', '', '')
+    site.add_dir('[COLOR yellow]Followed Cams[/COLOR]', rapi + '?enable_recommendations=true&follow=true&limit=100&offline=false&offset=0', 'List', site.img_followed, '')
 
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', rapi + '?genders=f&limit=100&offset=0', 'List', '', '')

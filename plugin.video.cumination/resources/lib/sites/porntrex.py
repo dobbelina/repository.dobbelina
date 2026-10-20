@@ -36,11 +36,11 @@ ptlength = utils.addon.getSetting("ptlength") or 'All'
 def PTMain():
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(ptlength), '', 'PTLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'PTCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}search/'.format(site.url), 'PTSearch', site.img_search)
 
     if not ptlogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', site.img_login, Folder=False)
     elif ptlogged:
         site.add_dir('[COLOR hotpink]Porntrex account (favorites, subscriptions)[/COLOR]', '', 'PTAccount', '')
     ptlist = PTList('{0}latest-updates/{1}'.format(site.url, lengthChoices[ptlength]), 1)

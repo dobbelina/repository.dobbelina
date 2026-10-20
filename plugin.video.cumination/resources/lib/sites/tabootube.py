@@ -27,7 +27,7 @@ site = AdultSite('tabootube', '[COLOR hotpink]TabooTube[/COLOR]', 'https://www.t
 @site.register(default_mode=True)
 def Main(url):
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + '?mode=async&function=get_block&block_id=list_videos_most_recent_videos&sort_by=post_date&from=1&_=' + f"{random.randint(10**12, 10**15)}", 1)
     utils.eod()

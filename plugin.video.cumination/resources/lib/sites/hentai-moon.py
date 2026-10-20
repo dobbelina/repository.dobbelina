@@ -33,7 +33,7 @@ ajaxmost = '?mode=async&function=get_block&block_id=list_videos_common_videos_li
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/?mode=async&function=get_block&block_id=list_dvds_channels_list&sort_by=title&from=1', 'Series', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Top Rated[/COLOR]', site.url + 'top-rated/' + ajaxtop, 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Most Viewed[/COLOR]', site.url + 'most-popular/' + ajaxmost, 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)

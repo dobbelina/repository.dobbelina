@@ -39,7 +39,7 @@ enames = {
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/', 'Letters', '', '')
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/', 'Letters', site.img_star, '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s={}&post_type=post', 'Search', site.img_search)
     List(site.url)
     utils.eod()

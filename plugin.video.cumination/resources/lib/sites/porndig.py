@@ -42,7 +42,7 @@ def Main(name):
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'videos/', 'Categories', site.img_cat)
     if addon.getSetting("pdsection") == '0':
         site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'studios/load_more_studios', 'Studios', '', 0)
-        site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/load_more_pornstars', 'Pornstars', '', 0)
+        site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/load_more_pornstars', 'Pornstars', site.img_star, 0)
     List(1, 0, 0)
 
 

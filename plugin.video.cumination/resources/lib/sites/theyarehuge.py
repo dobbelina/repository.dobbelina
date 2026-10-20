@@ -31,12 +31,12 @@ getinput = utils._get_keyboard
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Most Popular[/COLOR]', site.url + 'popular.porn-video/?mode=async&function=get_block&block_id=list_videos_common_videos_list&sort_by=video_viewed&from=1', 'List', site.img_cat, page=1)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'porn-video.tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'porn-video.tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     if not tahlogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'TAHLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'TAHLogin', site.img_login, Folder=False)
     else:
-        site.add_dir('[COLOR hotpink]Logout[/COLOR]', '', 'TAHLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Logout[/COLOR]', '', 'TAHLogin', site.img_logout, Folder=False)
     List(site.url + 'latest-updates/?mode=async&function=get_block&block_id=list_videos_latest_videos_list&sort_by=post_date&from=1', 1)
     utils.eod()
 

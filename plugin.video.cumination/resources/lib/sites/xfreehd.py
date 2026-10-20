@@ -40,7 +40,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR] [COLOR orange][{}][/COLOR]'.format(search_order), site.url + 'search?search_query=', 'Search', site.img_search, contextm=contextmenu)
     if not xflogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', site.img_login, Folder=False)
     else:
         xfuser = utils.addon.getSetting('xfuser')
         site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', '', Folder=False)

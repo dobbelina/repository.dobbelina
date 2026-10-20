@@ -51,7 +51,7 @@ class URL_Dispatcher(object):
         self.img_movies = cum_image('cum-movies.png')
         self.img_models = cum_image('cum-models.png')
         self.img_player = cum_image('cum-player.png')
-        self.img_favorites = cum_image('cum-favorites.png')
+        self.img_star = cum_image('cum-star.png')
         self.img_topcams = cum_image('cum-topcams.png')
         self.img_filters = cum_image('cum-filters.png')
         self.widget = False

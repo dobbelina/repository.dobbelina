@@ -30,7 +30,7 @@ site = AdultSite("sxyprn", "[COLOR hotpink]Sxy Prn[/COLOR]", "https://sxyprn.net
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Top Pornstars[/COLOR]', site.url, 'Stars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Top Pornstars[/COLOR]', site.url, 'Stars', site.img_star)
     site.add_dir('[COLOR hotpink]Top rated last week[/COLOR]', site.url + 'popular/top-rated.html', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Top POP last week[/COLOR]', site.url + 'popular/top-pop.html', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Top viewed last week[/COLOR]', site.url + 'popular/top-viewed.html', 'List', site.img_cat)

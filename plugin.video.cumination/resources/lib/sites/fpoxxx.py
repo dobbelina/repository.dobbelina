@@ -27,7 +27,7 @@ addon = utils.addon
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'models-2/?sort_by=today_videos&from=1', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'models-2/?sort_by=today_videos&from=1', 'Pornstars', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + '?&sort_by=post_date&from=1')
 

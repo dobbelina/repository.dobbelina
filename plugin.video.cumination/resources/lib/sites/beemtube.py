@@ -31,7 +31,7 @@ site = AdultSite('beemtube', '[COLOR hotpink]BeemTube[/COLOR]', 'https://beemtub
 def Main():
     site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/', 'Channels', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/alphabetical/', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars/alphabetical/', 'Pornstars', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?q=', 'Search', site.img_search)
     List(site.url + 'most-recent/')
     utils.eod()

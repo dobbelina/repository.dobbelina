@@ -30,7 +30,7 @@ def Main():
     male = addon.getSetting("chatmale") == "true"
     couple = addon.getSetting("chatcouple") == "true"
     trans = addon.getSetting("chattrans") == "true"
-    site.add_dir('[COLOR red]Refresh Camsoda images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Refresh Camsoda images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     if female:
         site.add_dir('[COLOR violet]Female[/COLOR]', site.url + '/api/v1/browse/react?gender-hide=c,t,m', 'List', '', 1)
         site.add_dir('[COLOR hotpink]North America - Female[/COLOR]', site.url + '/api/v1/browse/react/girls/region/usa?gender-hide=c,t,m', 'List', '', 1)

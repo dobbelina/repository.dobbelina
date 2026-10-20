@@ -41,7 +41,7 @@ def getMFC():
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'php/model_tags.php?vcc=1545329519', 'Tags', '')
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'php/model_tags.php?vcc=1545329519', 'Tags', site.img_tags)
     List(site.url + 'php/model_explorer.php?get_contents=1&sort=cam_score&selection=public&page=1')
 
 

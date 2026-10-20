@@ -74,7 +74,7 @@ def Main():
         u'[COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
         site.url,
         'Playvid_change',
-        '',
+        site.img_player,
         '',
         noDownload=True
     )
@@ -84,14 +84,14 @@ def Main():
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
 
-    site.add_dir('[COLOR red]Refresh Cam4 images[/COLOR]', '', 'clean_database', '', Folder=False)
-    site.add_dir('[COLOR red]Tags[/COLOR]', '', 'list_niches', '', 1)
+    site.add_dir('[COLOR red]Refresh Cam4 images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
+    site.add_dir('[COLOR red]Tags[/COLOR]', '', 'list_niches', site.img_tags, 1)
 
     if cam4logged:
-        site.add_dir('[COLOR fuchsia]Followed Cams[/COLOR]', '', 'list_followed', '', 1)
-        site.add_dir('[COLOR fuchsia]Logout[/COLOR]', '', 'logout', '', Folder=False)
+        site.add_dir('[COLOR fuchsia]Followed Cams[/COLOR]', '', 'list_followed', site.img_followed, 1)
+        site.add_dir('[COLOR fuchsia]Logout[/COLOR]', '', 'logout', site.img_logout, Folder=False)
     else:
-        site.add_dir('[COLOR red]Login[/COLOR]', '', 'login', '', Folder=False)
+        site.add_dir('[COLOR red]Login[/COLOR]', '', 'login', site.img_login, Folder=False)
 
     site.add_dir(
         '[COLOR yellow]Online Favorites[/COLOR]',

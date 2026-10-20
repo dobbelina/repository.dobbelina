@@ -34,13 +34,13 @@ getinput = utils._get_keyboard
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_=', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/?mode=async&function=get_block&block_id=list_models_models_list&sort_by=title&_=', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/?mode=async&function=get_block&block_id=list_models_models_list&sort_by=title&_=', 'Categories', site.img_models)
     site.add_dir('[COLOR hotpink]Playlists[/COLOR]', site.url + 'playlists/?mode=async&function=get_block&block_id=list_playlists_common_playlists_list&sort_by=last_content_date&_=', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     if not whlogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'WHLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'WHLogin', site.img_login, Folder=False)
     else:
-        site.add_dir('[COLOR hotpink]Logout[/COLOR]', '', 'WHLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Logout[/COLOR]', '', 'WHLogin', site.img_logout, Folder=False)
     List(site.url + 'latest-updates/')
     utils.eod()
 

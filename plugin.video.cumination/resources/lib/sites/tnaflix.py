@@ -29,7 +29,7 @@ site = AdultSite('tnaflix', "[COLOR hotpink]T'nAflix[/COLOR]", 'https://www.tnaf
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars?filters[sorting]=2&filter_set=true', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars?filters[sorting]=2&filter_set=true', 'Categories', site.img_star)
     site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels?page=1', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search.php?what=', 'Search', site.img_search)
     List(site.url + 'new/1')

@@ -46,7 +46,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Playlists[/COLOR] [COLOR orange]{}[/COLOR]'.format(sortname), site.url + 'playlists/?mode=async&function=get_block&block_id=list_playlists_common_playlists_list&sort_by={}&from=01'.format(cbsortorder), 'Playlists', site.img_cat, contextm=contextmenu)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{0}/', 'Search', site.img_search)
     if not cblogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'CBLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'CBLogin', site.img_login, Folder=False)
     elif cblogged:
         cbuser = utils.addon.getSetting('cbuser')
         site.add_dir('[COLOR violet]CWB Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'List', site.img_cat)

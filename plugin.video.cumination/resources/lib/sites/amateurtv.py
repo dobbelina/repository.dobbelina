@@ -31,7 +31,7 @@ def Main():
     male = True if utils.addon.getSetting("chatmale") == "true" else False
     couple = True if utils.addon.getSetting("chatcouple") == "true" else False
     trans = True if utils.addon.getSetting("chattrans") == "true" else False
-    site.add_dir('[COLOR red]Refresh Amatuer TV images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Refresh Amatuer TV images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     if female:
         site.add_dir('[COLOR hotpink]Females[/COLOR]', 'w', 'List', '', 1)
     if couple:

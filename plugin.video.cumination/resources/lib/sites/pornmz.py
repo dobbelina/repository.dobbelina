@@ -30,7 +30,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Best[/COLOR]', site.url + 'page/1?filter=popular', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Most Viewed[/COLOR]', site.url + 'page/1?filter=most-viewed', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Longest[/COLOR]', site.url + 'page/1?filter=longest', 'List', site.img_cat)

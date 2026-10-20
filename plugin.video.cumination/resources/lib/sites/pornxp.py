@@ -28,7 +28,7 @@ site = AdultSite('pornxp', '[COLOR hotpink]PornXP[/COLOR]', 'https://pornxp.com-
 def Main():
     site.add_dir('[COLOR hotpink]New releases[/COLOR]', site.url + 'released/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]HD[/COLOR]', site.url + 'hd/?sort=new', 'List', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'tags/', 'Search', site.img_search)
     List(site.url)
     utils.eod()
