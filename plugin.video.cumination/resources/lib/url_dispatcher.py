@@ -45,6 +45,7 @@ class URL_Dispatcher(object):
         self.img_login = cum_image('cum-login.png')
         self.img_logout = cum_image('cum-logout.png')
         self.img_refresh = cum_image('cum-refresh.png')
+        self.img_channels = cum_image('cum-channels.png')
         self.img_favorites = cum_image('cum-favorites.png')
         self.img_tags = cum_image('cum-tags.png')
         self.img_followed = cum_image('cum-followed.png')

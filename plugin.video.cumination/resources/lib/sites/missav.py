@@ -152,7 +152,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Actress List[/COLOR]', site.url + 'en/actresses', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actress List[/COLOR]', site.url + 'en/actresses', 'Models', site.img_star)
     site.add_dir('[COLOR hotpink]Amateur[/COLOR]', 'Amateur', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', 'Uncensored', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Chinese AV[/COLOR]', 'Madou', 'Categories', site.img_cat)

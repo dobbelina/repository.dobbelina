@@ -31,7 +31,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Classiques[/COLOR]', site.url + 'classiques/', 'List', '', '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?search=', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Stars[/COLOR]', site.url + 'filles/', 'Stars', '', '')
+    site.add_dir('[COLOR hotpink]Stars[/COLOR]', site.url + 'filles/', 'Stars', site.img_star)
     List(site.url)
     utils.eod()
 

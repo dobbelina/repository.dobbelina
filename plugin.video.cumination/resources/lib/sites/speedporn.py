@@ -34,7 +34,6 @@ site = AdultSite('speedporn', '[COLOR hotpink]SpeedPorn[/COLOR]', 'https://speed
 def Main():
     for title, path in (
         ('Genres', 'watch-free-moivies-by-genres/'),
-        ('Pornstars', 'watch-free-moivies-by-pornstars/'),
         ('Studios', 'watch-free-moivies-by-studios/'),
         ('Years', 'watch-free-moivies-by-release-years/'),
         ('Directors', 'watch-free-moivies-by-Directors/'),
@@ -42,6 +41,7 @@ def Main():
         site.add_dir(f'[COLOR hotpink]{title}[/COLOR]', site.url + path, 'Category', site.img_cat)
 
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    site.add_dir(f'[COLOR hotpink]Pornstars[/COLOR]', site.url + path, 'Category', site.img_star)
     List(site.url + 'all-movies/')
     utils.eod()
 

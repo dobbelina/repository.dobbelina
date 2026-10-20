@@ -49,8 +49,8 @@ def Main():
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'CBLogin', site.img_login, Folder=False)
     elif cblogged:
         cbuser = utils.addon.getSetting('cbuser')
-        site.add_dir('[COLOR violet]CWB Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'List', site.img_cat)
-        site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(cbuser), '', 'CBLogin', '', Folder=False)
+        site.add_dir('[COLOR violet]CWB Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=01', 'List', site.img_favorites)
+        site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(cbuser), '', 'CBLogin', site.img_logout, Folder=False)
     List(site.url + 'latest-updates/', 1)
     utils.eod()
 

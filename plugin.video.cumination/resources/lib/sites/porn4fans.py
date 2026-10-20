@@ -31,7 +31,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Top Rated[/COLOR]', site.url + 'onlyfans-videos/?p=rating', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Longest[/COLOR]', site.url + 'onlyfans-videos/?p=duration', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     
     List(site.url + 'onlyfans-videos/1/')

@@ -158,7 +158,7 @@ def get_local_thumb(slug):
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', f'{BASE_URL}/api/categories', 'incesto69.ListCategories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', f'{BASE_URL}/pornstars', 'incesto69.ListPornstars', site.img_star)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', f'{BASE_URL}/channels', 'incesto69.ListChannels', '')
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', f'{BASE_URL}/channels', 'incesto69.ListChannels', site.img_channels)
     site.add_dir('[COLOR yellow]Search[/COLOR]', f'{BASE_URL}/search?q=', 'incesto69.Search', site.img_search)
     
     try:

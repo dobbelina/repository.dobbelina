@@ -31,7 +31,7 @@ def Main():
     Used functions are defined in elreyx.py
     '''
     site.add_dir('[COLOR hotpink]Full Movies[/COLOR]', site.url + 'peliculas/amateur', 'MList', site.img_movies)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url, 'Categories', site.img_channels)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'buscar-', 'Search', site.img_search)
     List(site.url)
     utils.eod()
