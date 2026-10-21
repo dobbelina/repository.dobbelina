@@ -109,8 +109,8 @@ def Main():
 def SiteMain(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl, 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstar', 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl + 'a-z', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstar', 'Tags', site.img_star)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', siteurl + 'a-z', 'Tags', site.img_tags)
     if any(domain in url for domain in ('bbwpornvideos', 'forhertube', 'pornmd', 'stocking-tease', 'tubegalore')):
         site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'c/', 'Search', site.img_search)
     elif 'ixxx' in siteurl:

@@ -27,7 +27,7 @@ site = AdultSite('japteenx', '[COLOR hotpink]JapTeenX[/COLOR]', 'https://www.jap
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tags', 'Cats', site.img_cat)
     site.add_dir('[COLOR hotpink]Girls[/COLOR]', site.url + 'pornstars', 'Pornstars', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos?search_query=', 'Search', site.img_search)
     List(site.url + 'videos?o=mr&type=public&page=1')
     utils.eod()

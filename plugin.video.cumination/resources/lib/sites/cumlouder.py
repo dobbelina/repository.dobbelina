@@ -28,9 +28,9 @@ site = AdultSite('cumlouder', '[COLOR hotpink]Cum Louder[/COLOR]', 'https://www.
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/', 'Channels', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels/', 'Channels', site.img_channels)
     site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'series/', 'Series', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'girls/', 'Girls', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'girls/', 'Girls', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?q=', 'Search', site.img_search)
     List(site.url + 'porn/')
     utils.eod()

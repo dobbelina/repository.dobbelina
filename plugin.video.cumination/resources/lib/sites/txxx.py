@@ -95,9 +95,9 @@ def Main(url):
     siteurl = getBaselink(url)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', siteurl + 'categories', 'Categories', site.img_cat)
     if any(x in siteurl for x in ['hclips', 'hdzog', 'txxx', 'shemalez', 'upornia', 'hotmovs', 'inporn', 'manysex']):
-        site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels', 'Channels')
+        site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels', 'Channels', site.img_channels)
     if any(x in siteurl for x in ['hdzog', 'txxx', 'tubepornclassic', 'vjav', 'shemalez', 'upornia', 'thegay', 'tporn', 'seexxx', 'pornzog', 'hotmovs', 'inporn', 'manysex']):
-        site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models', 'Models')
+        site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models', 'Models', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', siteurl + 'search.', 'Search', site.img_search)
     List(siteurl + 'latest-updates')
     utils.eod()

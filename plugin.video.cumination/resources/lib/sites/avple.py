@@ -35,7 +35,7 @@ CDN = [
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Cat', site.img_tags)
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'tags/93/1/date', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search?page=1&sort=date&key=', 'Search', site.img_search)
     List(site.url)

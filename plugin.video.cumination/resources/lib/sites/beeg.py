@@ -33,8 +33,8 @@ site = AdultSite("beeg", "[COLOR hotpink]Beeg[/COLOR]", "https://store.externull
 @site.register(default_mode=True)
 def BGMain():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'tag/recommends?type=other&slug=index', 'Category', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'tag/recommends?type=brand&slug=index', 'Category', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'tag/recommends?type=person&slug=index', 'Category', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'tag/recommends?type=brand&slug=index', 'Category', site.img_channels)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'tag/recommends?type=person&slug=index', 'Category', site.img_models)
     List('https://store.externulls.com/facts/tag?id=27173&limit=48&offset=0', 1)
     utils.eod()
 

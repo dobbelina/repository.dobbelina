@@ -28,7 +28,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'fetish-models/1/?models_per_page=32&sort_by=avg_videos_rating', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'fetish-models/1/?models_per_page=32&sort_by=avg_videos_rating', 'Models', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
 
     List(site.url + '1/?&sort_by=post_date')

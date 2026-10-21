@@ -29,8 +29,8 @@ site = AdultSite('hobbyporn', '[COLOR hotpink]Hobby Porn[/COLOR]', 'https://hobb
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Cat', site.img_tags)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url)
 

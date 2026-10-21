@@ -27,7 +27,7 @@ addon = utils.addon
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'archives/tag/movie', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/porn-movie/', 'List', site.img_movies)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'page/1')
 

@@ -30,7 +30,7 @@ site = AdultSite('netfapx', '[COLOR hotpink]Netfapx[/COLOR]', 'https://netfapx.c
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories & Tags[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstar/?orderby=popular', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstar/?orderby=popular', 'Pornstars', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + '?orderby=newest')
     utils.eod()

@@ -37,7 +37,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Top Rated[/COLOR]', site.url + 'top-rated/', 'List', site.img_next)
     site.add_dir('[COLOR hotpink]Most Popular[/COLOR]', site.url + 'most-popular/', 'List', site.img_next)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/', 'Models', site.img_models)
     
     List(site.url)
     utils.eod()

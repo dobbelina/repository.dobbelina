@@ -123,8 +123,8 @@ def extract_video_info(block):
 
 @site.register(default_mode=True)
 def Main(url=''):
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', '')
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url, 'Search', '')
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url, 'Search', site.img_search)
     List(site.url + 'latest-videos/')
 
 

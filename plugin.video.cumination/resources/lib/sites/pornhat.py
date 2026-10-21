@@ -63,11 +63,11 @@ def getSite(url):
 def Main(url):
     siteurl = getSite(url).url
     if 'max.porn' not in url and 'pornstars.tube' not in url:
-        site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels/', 'Cat', site.img_cat)
+        site.add_dir('[COLOR hotpink]Channels[/COLOR]', siteurl + 'channels/', 'Cat', site.img_channels)
         if 'hello.porn' in url or 'homo.xxx' in url or 'perfectgirls.xxx' in url:
-            site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstars/videos/', 'Cat', site.img_cat)
+            site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', siteurl + 'pornstars/videos/', 'Cat', site.img_star)
         else:
-            site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models/', 'Cat', site.img_cat)
+            site.add_dir('[COLOR hotpink]Models[/COLOR]', siteurl + 'models/', 'Cat', site.img_models)
     if 'pornstars.tube' in url:
         site.add_dir('[COLOR hotpink]Search Pornstars[/COLOR]', siteurl + 'search/', 'Search', site.img_search)
     else:

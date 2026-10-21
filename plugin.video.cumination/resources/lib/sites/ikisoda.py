@@ -38,7 +38,7 @@ def Main():
         utils.addon.setSetting("ikisodaper_page", str(perPage))
     perPage = getPerPage()
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?items_per_page=120', 'List1', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'jav-models/?&models_per_page={}&sort_by=video_viewed_count&type=actress'.format(perPage), 'List2', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'jav-models/?&models_per_page={}&sort_by=video_viewed_count&type=actress'.format(perPage), 'List2', site.img_models)
   
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url)

@@ -46,7 +46,7 @@ def Main():
         u'Current player: [COLOR fuchsia][B]{}[/B][/COLOR] - [COLOR red][B]Change[/B][/COLOR]'.format(pretty_name),
         site.url,
         'Playvid_change',
-        '',
+        site.img_player,
         '',
         noDownload=True
     )

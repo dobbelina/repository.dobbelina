@@ -36,11 +36,11 @@ ptlength = utils.addon.getSetting("ptlength") or 'All'
 def PTMain():
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(ptlength), '', 'PTLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'PTCat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', '', 'PTModelsAZ', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', '{}search/'.format(site.url), 'PTSearch', site.img_search)
 
     if not ptlogged:
-        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'PTLogin', site.img_login, Folder=False)
     elif ptlogged:
         site.add_dir('[COLOR hotpink]Porntrex account (favorites, subscriptions)[/COLOR]', '', 'PTAccount', '')
     ptlist = PTList('{0}latest-updates/{1}'.format(site.url, lengthChoices[ptlength]), 1)
@@ -53,8 +53,8 @@ def PTAccount():
     ptuser = utils.addon.getSetting('ptuser')
     site.add_dir('[COLOR hotpink]Subscription videos[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_videos_videos_from_my_subscriptions&sort_by=&from_my_subscriptions_videos=1'.format(site.url), 'PTList', page=1)
     site.add_dir('[COLOR hotpink]Manage subscriptions[/COLOR]', '{0}my/subscriptions/?mode=async&function=get_block&block_id=list_members_subscriptions_my_subscriptions&sort_by=added_date&from_my_subscriptions=1'.format(site.url), 'PTSubscriptions')
-    site.add_dir('[COLOR hotpink]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=1', 'PTList', site.img_cat)
-    site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', '', Folder=False)
+    site.add_dir('[COLOR hotpink]PT Favorites[/COLOR]', site.url + 'my/favourites/videos/?mode=async&function=get_block&block_id=list_videos_my_favourite_videos&fav_type=0&playlist_id=0&sort_by=&from_my_fav_videos=1', 'PTList', site.img_favorites)
+    site.add_dir('[COLOR hotpink]Logout {0}[/COLOR]'.format(ptuser), '', 'PTLogin', site.img_logout, Folder=False)
     utils.eod()
 
 

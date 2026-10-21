@@ -28,7 +28,7 @@ site = AdultSite('rule34video', '[COLOR hotpink]Rule34 Video[/COLOR]', 'https://
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cats', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'TagMenu', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'TagMenu', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'latest-updates/')
     utils.eod()

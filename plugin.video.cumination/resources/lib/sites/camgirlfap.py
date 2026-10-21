@@ -43,7 +43,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?from=1', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/?sort_by=total_videos&from=1', 'Models', site.img_cat)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'models/?sort_by=total_videos&from=1', 'Models', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
 
     List(site.url + 'latest-updates/?from=1')

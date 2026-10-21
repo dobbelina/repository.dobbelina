@@ -67,7 +67,7 @@ data = {
 def Main(url):
     site.add_download_link(getFilterLabels(), site.url, 'setFilters', '')
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/', 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Babepedia Top 100 Pornstar to search for[/COLOR]', 'https://www.babepedia.com/pornstartop100', 'Babepedia', site.img_search)
+    site.add_dir('[COLOR hotpink]Babepedia Top 100 Pornstar to search for[/COLOR]', 'https://www.babepedia.com/pornstartop100', 'Babepedia', site.img_star)
     List(site.url + 'now' + getFilters(0), page=0)
     utils.eod()
 

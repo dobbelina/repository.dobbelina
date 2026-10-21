@@ -33,10 +33,10 @@ dialog = utils.dialog
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', '{0}categories/'.format(site.url), 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actors[/COLOR]', '{0}actors/?sort=name'.format(site.url), 'Cat', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actors[/COLOR]', '{0}actors/?sort=name'.format(site.url), 'Cat', site.img_star)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', '{0}studios/?sort=title'.format(site.url), 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search Films[/COLOR]', '{0}search/?pattern=&what=1'.format(site.url), 'Search', site.img_search)
-    site.add_dir('[COLOR hotpink]Search Actors[/COLOR]', '{0}search/?pattern=&what=2'.format(site.url), 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search Films[/COLOR]', '{0}search/?pattern=&what=1'.format(site.url), 'Search', site.img_movies)
+    site.add_dir('[COLOR hotpink]Search Actors[/COLOR]', '{0}search/?pattern=&what=2'.format(site.url), 'Search', site.img_star)
     site.add_dir('[COLOR hotpink]Search Studios[/COLOR]', '{0}search/?pattern=&what=3'.format(site.url), 'Search', site.img_search)
     List('{0}all/?sort=created_at'.format(site.url))
     utils.eod()

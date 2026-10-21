@@ -29,7 +29,7 @@ site = AdultSite('porntn', '[COLOR hotpink]PornTN[/COLOR]', 'https://porntn.com/
 @site.register(default_mode=True)
 def Main(url):
     # site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'new/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'video/{0}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={0}&category_ids=&sort_by=&from_videos=1', 'Search', site.img_search)
     List(site.url + 'latest-updates/?mode=async&function=get_block&block_id=list_videos_latest_videos_list&sort_by=post_date&from=1', page=1)
     utils.eod()

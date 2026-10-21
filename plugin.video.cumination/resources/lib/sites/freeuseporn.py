@@ -26,7 +26,7 @@ site = AdultSite('freeuseporn', '[COLOR hotpink]Freeuse Porn[/COLOR]', 'https://
 
 @site.register(default_mode=True)
 def Main(url):
-    # site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + "tags/", 'Tags', site.img_cat)
+    # site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + "tags/", 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/videos/', 'Search', site.img_search)
     List(site.url + 'videos?o=mr&page=1')
     utils.eod()

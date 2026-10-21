@@ -34,7 +34,7 @@ ph_headers = {
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'porn-stars/', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'porn-stars/', 'Pornstars', site.img_star)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'porn-studios/', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url, 'Search', site.img_search)
     List(site.url + 'ajax_search.php')

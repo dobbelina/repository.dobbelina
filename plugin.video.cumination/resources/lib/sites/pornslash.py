@@ -39,7 +39,7 @@ _proxy_threads = {}
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink](Porn)Stars[/COLOR]', site.url + 'pornstars', 'Stars', site.img_models)
+    site.add_dir('[COLOR hotpink](Porn)Stars[/COLOR]', site.url + 'pornstars', 'Stars', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'videos/new?p=1')
 

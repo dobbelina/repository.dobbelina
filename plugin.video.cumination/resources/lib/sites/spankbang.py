@@ -29,8 +29,8 @@ filterL = utils.addon.getSetting("spankbang_length") or 'All'
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
-    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'pornstars_alphabet', 'Models_alphabet', site.img_cat)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_tags)
+    site.add_dir('[COLOR hotpink]Models[/COLOR]', site.url + 'pornstars_alphabet', 'Models_alphabet', site.img_models)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 's/', 'Search', site.img_search)
     site.add_dir('[COLOR hotpink]Quality: [/COLOR] [COLOR orange]{}[/COLOR]'.format(filterQ), '', 'FilterQ', '', Folder=False)
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{}[/COLOR]'.format(filterL), '', 'FilterL', '', Folder=False)

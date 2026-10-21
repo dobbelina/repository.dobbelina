@@ -48,7 +48,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Reducing Mosaic[/COLOR]', site.url + 'genre/reducing-mosaic/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Subtitle[/COLOR]', site.url + 'subtitle/pg-1', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Genres[/COLOR]', site.url + 'genres', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'list-actress/pg-1', 'Actress', site.img_star)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'list-studios', 'Studios', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'uncensored/pg-1')

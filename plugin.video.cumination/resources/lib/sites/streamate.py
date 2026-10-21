@@ -29,7 +29,7 @@ site = AdultSite('streamate', '[COLOR hotpink]streamate.com[/COLOR]', 'http://ww
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR red]Refresh streamate.com images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Refresh streamate.com images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     site.add_dir('[COLOR hotpink]Search + Fav add[/COLOR]', 'https://www.streamate.com/cam/', 'Search', site.img_search)
     List('https://member.naiadsystems.com/search/v3/performers?domain=streamate.com&from=0&size=100&filters=gender:f,ff,mf,tm2f,g%3Bonline:true&genderSetting=f')
     utils.eod()

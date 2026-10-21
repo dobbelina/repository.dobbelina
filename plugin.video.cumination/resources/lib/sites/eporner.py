@@ -34,7 +34,7 @@ eplength = utils.addon.getSetting("eplength") or 'All'
 def Main():
     site.add_dir('[COLOR hotpink]Length: [/COLOR] [COLOR orange]{0}[/COLOR]'.format(eplength), '', 'EPLength', '', Folder=False)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'cats/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstar-list/', 'Pornstars', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstar-list/', 'Pornstars', site.img_star)
     site.add_dir('[COLOR hotpink]Lists[/COLOR]', site.url, 'Lists', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     url = site.url + 'cat/all/'

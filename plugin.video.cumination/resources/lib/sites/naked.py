@@ -32,7 +32,7 @@ def Main():
     female = True if utils.addon.getSetting("chatfemale") == "true" else False
     male = True if utils.addon.getSetting("chatmale") == "true" else False
     trans = True if utils.addon.getSetting("chattrans") == "true" else False
-    site.add_dir('[COLOR red]Refresh naked.com images[/COLOR]', '', 'clean_database', '', Folder=False)
+    site.add_dir('[COLOR red]Refresh naked.com images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
     if female:
         site.add_dir('[COLOR hotpink]Females[/COLOR]', site.url + 'live/girls/', 'List', '', 1)
     if male:

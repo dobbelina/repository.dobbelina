@@ -37,8 +37,8 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + categories[category], 'Categories', site.img_cat)
     cat = 'trans/' if category == 'Trans' else categories[category]
     country = country.lower().replace(' ', '_').replace(',', '_') + '/'
-    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars-index/{}{}from/worldwide'.format(cat, country), 'Pornstars', site.img_cat)
-    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_cat)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'pornstars-index/{}{}from/worldwide'.format(cat, country), 'Pornstars', site.img_star)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags', 'Tags', site.img_tags)
     cat = 'straight' if category == 'Straight' else categories[category][:-1]
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?typef={}&k='.format(cat), 'Search', site.img_search)
     List(site.url + categories[category])

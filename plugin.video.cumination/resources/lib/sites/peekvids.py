@@ -26,7 +26,7 @@ site = AdultSite('peekvids', '[COLOR hotpink]PeekVids[/COLOR]', 'https://www.pee
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels', 'Channels', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'channels', 'Channels', site.img_channels)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'videos?q=', 'Search', site.img_search)
     List(site.url + 'Trending-Porn')
 

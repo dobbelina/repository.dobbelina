@@ -28,8 +28,8 @@ site = AdultSite('naughtyblog', '[COLOR hotpink]NaughtyBlog[/COLOR]  [COLOR red]
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Sites[/COLOR]', site.url + 'sites/?letter=', 'SitesABC', site.img_cat)
-    site.add_dir('[COLOR hotpink]Popular pornstars[/COLOR]', site.url + 'popular-pornstars/', 'PornstarsAndSites', site.img_cat)
-    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/movies/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Popular pornstars[/COLOR]', site.url + 'popular-pornstars/', 'PornstarsAndSites', site.img_star)
+    site.add_dir('[COLOR hotpink]Movies[/COLOR]', site.url + 'category/movies/', 'List', site.img_movies)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'category/clips/')
     utils.eod()
