@@ -105,7 +105,7 @@ Kodi is a registered trademark of the XBMC Foundation. We are not connected to o
     </extension>
 </addon>
 
-<addon id="script.cumination.image_reset" name="Images reset for Cumination" version="1.0.0" provider-name="Dobbelina">
+<addon id="script.cumination.image_reset" name="Thumbnails reset for Cumination" version="1.0.0" provider-name="Dobbelina">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="plugin.video.cumination" version="1.1.0" />
@@ -114,8 +114,8 @@ Kodi is a registered trademark of the XBMC Foundation. We are not connected to o
     <provides>executable</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">Repair images in Cumination</summary>
-    <description lang="en_GB">Updates Cumination images by removing old ones from cache</description>
+    <summary lang="en_GB">Repair thumbnails in Cumination</summary>
+    <description lang="en_GB">Updates Cumination thumbnails by removing old ones from cache</description>
     <platform>all</platform>
     <license>GPL-3.0-or-later</license>
     <assets><icon>icon.png</icon></assets>
