@@ -104,21 +104,4 @@ Kodi is a registered trademark of the XBMC Foundation. We are not connected to o
         <description lang="en">Use this addon to play F4m v1 and v2 streams</description>
     </extension>
 </addon>
-
-<addon id="script.cumination.image_reset" name="Images reset for Cumination" version="1.0.0" provider-name="Dobbelina">
-  <requires>
-    <import addon="xbmc.python" version="3.0.0" />
-    <import addon="plugin.video.cumination" version="1.1.0" />
-  </requires>
-  <extension point="xbmc.python.script" library="default.py">
-    <provides>executable</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">Repair images in Cumination</summary>
-    <description lang="en_GB">Updates Cumination images by removing old ones from cache</description>
-    <platform>all</platform>
-    <license>GPL-3.0-or-later</license>
-    <assets><icon>icon.png</icon></assets>
-  </extension>
-</addon>
 </addons>
