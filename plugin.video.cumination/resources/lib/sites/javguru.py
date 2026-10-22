@@ -29,7 +29,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url, 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'jav-tags-list/', 'Toplist', site.img_tags)
     site.add_dir('[COLOR hotpink]Series[/COLOR]', site.url + 'jav-series/', 'Cat', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'jav-actress-list/', 'Actress', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'jav-actress-list/', 'Actress', site.img_star)
     site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'jav-studio-list/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Uncensored[/COLOR]', site.url + 'category/jav-uncensored/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)

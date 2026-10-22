@@ -18,6 +18,8 @@
 
 import re
 from six.moves import urllib_parse
+import xbmc
+import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import requests
@@ -29,7 +31,7 @@ site = AdultSite('hdporn92', '[COLOR hotpink]Hdporn92[/COLOR]', 'https://hdporn9
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actors[/COLOR]', site.url + 'actors/', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Actors[/COLOR]', site.url + 'actors/', 'Categories', site.img_star)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + '?filter=latest')
@@ -58,11 +60,51 @@ def List(url):
 
         site.add_download_link(name, videopage, 'Playvid', img, name, contextm=contextmenu)
 
-    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'List', site.img_next)
+    add_next_page(listhtml, 'List')
     utils.eod()
+
+
+def add_next_page(listhtml, mode):
+    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
+    if not np:
+        return
+    next_url = np.group(1)
+    page_number = next_url.split('/')[-2]
+    cm_page = (utils.addon_sys
+               + "?mode=" + str('hdporn92.GotoPage')
+               + "&url=" + urllib_parse.quote_plus(next_url)
+               + "&np=" + page_number
+               + "&lp=0"
+               + "&listmode=" + mode)
+    cm = [('[COLOR deeppink]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+    site.add_dir('Next Page (' + page_number + ')', next_url, mode, site.img_next, contextm=cm)
+
+
+@site.register()
+def GotoPage(url, np, lp=0, listmode='List'):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        try:
+            pg_num = int(pg)
+            lp_num = int(lp)
+        except (TypeError, ValueError):
+            utils.notify(msg='Invalid page number!')
+            return
+        if pg_num < 1:
+            utils.notify(msg='Invalid page number!')
+            return
+        if lp_num > 0 and pg_num > lp_num:
+            utils.notify(msg='Out of range!')
+            return
+        if listmode not in ('List', 'Categories'):
+            listmode = 'List'
+        new_url = url.replace('/{}/'.format(np), '/{}/'.format(pg))
+        if new_url == url:
+            utils.notify(msg='Could not open that page')
+            return
+        contexturl = (utils.addon_sys + "?mode=" + "hdporn92." + listmode + "&url=" + urllib_parse.quote_plus(new_url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
 @site.register()
@@ -109,11 +151,7 @@ def Categories(url):
         name = utils.cleantext(name.strip())
         site.add_dir(name, catpage + '?filter=latest', 'List', img)
 
-    np = re.compile(r'class="pagination".+?class="current">\d+</a></li><li><a\s*href="([^"]+)', re.DOTALL | re.IGNORECASE).search(listhtml)
-    if np:
-        page_number = np.group(1).split('/')[-2]
-        site.add_dir('Next Page (' + page_number + ')', np.group(1), 'Categories', site.img_next)
-
+    add_next_page(listhtml, 'Categories')
     utils.eod()
 
 

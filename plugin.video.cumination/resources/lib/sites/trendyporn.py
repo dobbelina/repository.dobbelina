@@ -28,7 +28,7 @@ site = AdultSite('trendyporn', "[COLOR hotpink]TrendyPorn[/COLOR]", 'https://www
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'channels/', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'channels/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'most-recent/')
     utils.eod()

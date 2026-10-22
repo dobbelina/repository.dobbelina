@@ -196,7 +196,7 @@ def Main():
                     next_url = base + '?' + '&'.join(new_params) + f'&cursor={next_cursor}'
                 else:
                     next_url = f'{url}&cursor={next_cursor}'
-                site.add_dir('[COLOR hotpink]Next Page >>[/COLOR]', next_url, 'incesto69.ListVideos', '', '2')
+                site.add_dir('[COLOR hotpink]Next Page >>[/COLOR]', next_url, 'incesto69.ListVideos', site.img_next, '2')
     except Exception as e:
         log(f'Error loading latest videos: {str(e)}')
     

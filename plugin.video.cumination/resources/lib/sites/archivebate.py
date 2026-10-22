@@ -342,8 +342,8 @@ _scraper = ArchivebateScraper()
 @site.register(default_mode=True)
 def Main():
     utils.kodilog("Starting Main")
-    site.add_dir('[COLOR hotpink]Platforms[/COLOR]', "platforms", 'Categories', '', '')
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', _scraper.base_url + "/api/v1/search?query=", 'Search', '', '')
+    site.add_dir('[COLOR hotpink]Sites[/COLOR]', "platforms", 'Categories', '', '')
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', _scraper.base_url + "/api/v1/search?query=", 'Search', site.img_search, '')
     List(_scraper.base_url + "/")
     utils.eod()
 

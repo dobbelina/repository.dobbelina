@@ -43,7 +43,7 @@ def Main():
         site.add_dir('[COLOR hotpink]Login[/COLOR]', '', 'Login', site.img_login, Folder=False)
     else:
         xfuser = utils.addon.getSetting('xfuser')
-        site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', '', Folder=False)
+        site.add_dir('[COLOR hotpink]Logout [/COLOR][COLOR orange][{}][/COLOR]'.format(xfuser), '', 'Logout', site.img_logout, Folder=False)
     List(site.url + 'videos?o=mr')
 
 

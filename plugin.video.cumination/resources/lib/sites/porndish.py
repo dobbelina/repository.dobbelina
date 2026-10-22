@@ -28,7 +28,7 @@ site = AdultSite('porndish', '[COLOR hotpink]Porndish[/COLOR]', 'https://www.por
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Networks[/COLOR]', site.url, 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url, 'Categories', site.img_channels)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
     List(site.url + 'page/1/')
     utils.eod()

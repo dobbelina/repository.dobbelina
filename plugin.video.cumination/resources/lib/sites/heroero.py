@@ -29,7 +29,7 @@ site = AdultSite('heroero', "[COLOR hotpink]Heroero[/COLOR]", 'https://heroero.c
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'actress/', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Actress[/COLOR]', site.url + 'actress/', 'Categories', site.img_star)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'see/{}/?mode=async&function=get_block&block_id=list_videos_videos_list_search_result&q={}&category_ids=&sort_by=&from_videos=1&from_albums=1', 'Search', site.img_search)
 
     List(site.url + 'latest-updates/')

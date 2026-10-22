@@ -27,7 +27,7 @@ site = AdultSite('pornkai', "[COLOR hotpink]PornKai[/COLOR]", 'https://pornkai.c
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'all-categories', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'all-categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'api?query={}&sort=best&page=0&method=search', 'Search', site.img_search)
     List(site.url + 'api?query=&sort=new&page=0&method=search')
     utils.eod()

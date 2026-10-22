@@ -28,7 +28,7 @@ site = AdultSite('tubxporn', "[COLOR hotpink]TubXporn[/COLOR]", 'https://web.tub
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?q=', 'Search', site.img_search)
     List(site.url + 'latest-updates/')
     utils.eod()

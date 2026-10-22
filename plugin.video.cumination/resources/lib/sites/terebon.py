@@ -29,7 +29,7 @@ site = AdultSite('terebon', '[COLOR hotpink]Terebon[/COLOR]', 'https://b.terebon
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Sites[/COLOR]', site.url + 'sites/?mode=async&function=get_block&block_id=list_content_sources_sponsors_list&sort_by=title&_=' + str(int(time.time() * 1000)), 'Sites', site.img_cat)
+    site.add_dir('[COLOR hotpink]Channels[/COLOR]', site.url + 'sites/?mode=async&function=get_block&block_id=list_content_sources_sponsors_list&sort_by=title&_=' + str(int(time.time() * 1000)), 'Sites', site.img_channels)
     site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url + 'tags/', 'Tags', site.img_tags)
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Cat', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/?q=', 'Search', site.img_search)

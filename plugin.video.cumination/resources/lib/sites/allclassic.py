@@ -29,7 +29,7 @@ site = AdultSite('allclassic', '[COLOR hotpink]AllClassic.Porn[/COLOR]', 'https:
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_search)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/{0}/', 'Search', site.img_search)
     List(site.url + 'page/1/')
     utils.eod()
