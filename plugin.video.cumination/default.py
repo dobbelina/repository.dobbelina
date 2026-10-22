@@ -128,7 +128,11 @@ def change():
     version = addon.getAddonInfo('version')
     if addon.getSetting('changelog_seen_version') == version or not os.path.isfile(basics.changelog):
         return
-    addon.setSetting('changelog_seen_version', version)
+    addon.setSetting('changelog_seen_version', version)        
+    # Thumbnail cleanup start ------------------------    
+    script_path = xbmcvfs.translatePath('special://home/addons/plugin.video.cumination/resources/lib/thumbnail_clean.py')
+    xbmc.executebuiltin(f'RunScript({script_path})')
+    # Thumbnail cleanup end ------------------------ 
     heading = '[B][COLOR hotpink]Cumination[/COLOR] [COLOR white]Changelog[/COLOR][/B]'
     with open(basics.changelog) as f:
         cl_lines = f.readlines()
