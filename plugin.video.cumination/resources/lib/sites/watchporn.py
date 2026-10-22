@@ -44,11 +44,10 @@ def List(url):
     listhtml = utils.getHtml(url)
 
     delimiter = '<div class="thumb item'
-    re_videopage = '<a href="([^"]+)"'
+    re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-original="([^"]+)"'
-    re_duration = '"duration">([^<]+)<'
-    re_quality = 'class="is[^"]+">([^<]+)<'
+    re_img = 'data-webp="([^"]+)"'
+    re_duration = 'class="wp-dur">([^<]+)<'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('watchporn.Lookupinfo') + "&url=")
@@ -56,9 +55,9 @@ def List(url):
     cm_related = (utils.addon_sys + "?mode=" + str('watchporn.Related') + "&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'watchporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
+    utils.videos_list(site, 'watchporn.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
 
-    match = re.search(r'class="page-current"><span>(\d+)<.+?class="next">.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
+    match = re.search(r'aria-current="page">(\d+)<.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">', listhtml, re.DOTALL | re.IGNORECASE)
     if match:
         npage = int(match.group(1)) + 1
         block_id = match.group(2)
@@ -68,21 +67,30 @@ def List(url):
         nurl = nurl.replace('+from_albums', '')
         nurl = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(npage), nurl)
 
-        cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&listmode=watchporn.List")
+        lpnr = 0
+        lp = ''
+        match = re.search(r'data-total="(\d+)"', listhtml, re.DOTALL | re.IGNORECASE)
+        if match:
+            lpnr = match.group(1)
+            lp = '/' + str(lpnr)
+        cm_page = (utils.addon_sys + "?mode=watchporn.GotoPage" + "&url=" + urllib_parse.quote_plus(nurl) + "&np=" + str(npage) + "&lp=" + str(lpnr))
         cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
 
-        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + ')', nurl, 'List', site.img_next, contextm=cm)
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR] (' + str(npage) + lp + ')', nurl, 'List', site.img_next, contextm=cm)
 
     utils.eod()
 
 
 @site.register()
-def GotoPage(url, np, listmode):
+def GotoPage(url, np, lp=None):
     dialog = xbmcgui.Dialog()
     pg = dialog.numeric(0, 'Enter Page number')
     if pg:
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
         url = re.sub(r'&from([^=]*)=\d+', r'&from\1={}'.format(pg), url, re.IGNORECASE)
-        contexturl = (utils.addon_sys + "?mode=" + listmode + "&url=" + urllib_parse.quote_plus(url))
+        contexturl = (utils.addon_sys + "?mode=watchporn.List&url=" + urllib_parse.quote_plus(url))
         xbmc.executebuiltin('Container.Update(' + contexturl + ')')
 
 
@@ -128,7 +136,7 @@ def Lookupinfo(url):
     lookup_list = [
         ("Category", r'href="https://watchporn.to/(categories[^"]+)"\s*>([^<]+)<', ''),
         ("Tag", r'href="https://watchporn.to/(tags[^"]+)"\s*>([^<]+)<', ''),
-        ("Model", r'href="https://watchporn.to/(models[^"]+)"\s*>([^<]+)<', '')
+        ("Actor", r'href="https://watchporn.to/(models[^"]+)"\s*>([^<]+)<', '')
     ]
     lookupinfo = utils.LookupInfo(site.url, url, 'watchporn.List', lookup_list)
     lookupinfo.getinfo()
