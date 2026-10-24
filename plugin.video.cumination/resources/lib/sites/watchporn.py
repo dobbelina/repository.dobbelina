@@ -30,7 +30,8 @@ site = AdultSite('watchporn', '[COLOR hotpink]WatchPorn[/COLOR]', 'https://watch
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_=', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_=','Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'sites/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'latest-updates/')
     utils.eod()
