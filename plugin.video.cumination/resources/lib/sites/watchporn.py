@@ -30,8 +30,8 @@ site = AdultSite('watchporn', '[COLOR hotpink]WatchPorn[/COLOR]', 'https://watch
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_=','Categories', site.img_cat)
-    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'sites/', 'List', site.img_cat)
+    site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories/?mode=async&function=get_block&block_id=list_categories_categories_list&sort_by=title&_=', 'Categories', site.img_cat)
+    site.add_dir('[COLOR hotpink]Studios[/COLOR]', site.url + 'sites/', 'Studios', site.img_channels)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'search/', 'Search', site.img_search)
     List(site.url + 'latest-updates/')
     utils.eod()
@@ -103,6 +103,42 @@ def Search(url, keyword=None):
     else:
         searchUrl = '{}{}/'.format(searchUrl, keyword.replace(' ', '-'))
         List(searchUrl)
+
+
+@site.register()
+def Studios(url):
+    listhtml = utils.getHtml(url)
+
+    studio_re = re.compile(
+        r'<a\s+class="item\s+thumb"\s+href="([^"]+)"\s+title="([^"]+)">.*?'
+        r'<img\s+src="([^"]+)"[^>]*>.*?'
+        r'<div\s+class="thumb__info-item">.*?</svg>\s*(\d+)\s+videos.*?</div>.*?</a>',
+        re.DOTALL | re.IGNORECASE
+    )
+
+    matches = studio_re.findall(listhtml)
+    for studio_url, title_attr, img, videos in matches:
+        name = utils.cleantext(title_attr)
+        site.add_dir(
+            '[COLOR hotpink]' + name + '[/COLOR] [COLOR deeppink]' + videos + ' videos[/COLOR]',
+            studio_url,
+            'List',
+            img
+        )
+
+    # Next page support for /sites/2/, /sites/3/, etc.
+    if url.rstrip('/').endswith('/sites'):
+        next_url = url.rstrip('/') + '/2/'
+    elif re.search(r'/sites/(\d+)/?$', url):
+        page = int(re.search(r'/sites/(\d+)/?$', url).group(1))
+        next_url = re.sub(r'/sites/\d+/?$', '/sites/{}/'.format(page + 1), url)
+    else:
+        next_url = None
+
+    if next_url:
+        site.add_dir('[COLOR hotpink]Next Page...[/COLOR]', next_url, 'Studios', site.img_next)
+
+    utils.eod()
 
 
 @site.register()
