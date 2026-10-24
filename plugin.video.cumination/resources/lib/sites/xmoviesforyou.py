@@ -36,18 +36,18 @@ def Main():
 def List(url):
     listhtml = utils.getHtml(url, '')
 
-    delimiter = r' <a href="'
-    re_videopage = '^([^"]+)" class="group'
-    re_name = 'alt="([^"]+)"'
-    re_img = r'<img src="([^"]+)"'
-    re_quality = '">(HD)</span>'
+    delimiter = r'<a\s+href="'
+    re_videopage = r'([^"]+)"\s+class="(?:group|card)[^"]*"'
+    re_name = r'[^>]+alt="([^"]+)"'
+    re_img = r'.*?<img[^>]+src="([^"]+)"'
+    re_quality = r'.*?(?:<span[^>]*runtime[^>]*>\s*(HD)\s*</span>|>\s*(HD)\s*</div>)'
     skip = 'class="th-title"'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('xmoviesforyou.Lookupinfo') + "&url=")
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
 
-    utils.videos_list(site, 'xmoviesforyou.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_quality=re_quality, skip=skip, contextm=cm)
+    utils.videos_list(site, 'xmoviesforyou.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, skip=skip, contextm=cm)
 
     re_npurl = '<a href="([^"]+)"[^>]+>Next<'
     re_npnr = r'page[/=](\d+)"[^>]+>Next</a>'
