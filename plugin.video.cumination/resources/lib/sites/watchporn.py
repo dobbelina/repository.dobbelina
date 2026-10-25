@@ -110,21 +110,16 @@ def Studios(url):
     listhtml = utils.getHtml(url)
 
     studio_re = re.compile(
-        r'<a\s+class="item\s+thumb"\s+href="([^"]+)"\s+title="([^"]+)">.*?'
-        r'<img\s+src="([^"]+)"[^>]*>.*?'
-        r'<div\s+class="thumb__info-item">.*?</svg>\s*(\d+)\s+videos.*?</div>.*?</a>',
+        r'class="item\s+thumb"\s+href="([^"]+)"\s+title="([^"]+)">.*?'
+        r'<img\s+src="([^"]+)".*?'
+        r'</svg>\s*(\d+)\s+videos\s+</div>',
         re.DOTALL | re.IGNORECASE
     )
 
     matches = studio_re.findall(listhtml)
     for studio_url, title_attr, img, videos in matches:
         name = utils.cleantext(title_attr)
-        site.add_dir(
-            '[COLOR hotpink]' + name + '[/COLOR] [COLOR deeppink]' + videos + ' videos[/COLOR]',
-            studio_url,
-            'List',
-            img
-        )
+        site.add_dir(name + ' [COLOR deeppink] (' + videos + ' videos)[/COLOR]', studio_url, 'List', img)
 
     # Next page support for /sites/2/, /sites/3/, etc.
     if url.rstrip('/').endswith('/sites'):
