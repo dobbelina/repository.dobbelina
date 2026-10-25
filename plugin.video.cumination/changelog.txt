@@ -1,6 +1,2 @@
-[B]Version 1.1.205[/B]
-- new Cumination thumbnails
-- Hdporn92 added goto page context menu
-- watchporn - fix listing, playback
-- Xmoviesforyou fix
-- beeg - fix playback
+[B]Version 1.1.206[/B]
+- allclassic - fix playback

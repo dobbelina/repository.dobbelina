@@ -85,10 +85,19 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
 
-    vpage = utils.getHtml(url, site.url)
+    vpage = utils._getHtml(url, site.url)
     if "kt_player('kt_player'" in vpage:
         vp.progress.update(60, "[CR]{0}[CR]".format("kt_player detected"))
         vp.play_from_kt_player(vpage, url)
+    else:
+        match = re.search(r"videoUrl: '([^']+)'", vpage, re.DEBUG | re.IGNORECASE)
+        if match:
+            video_url = match.group(1)
+            video_url = utils.getVideoLink(video_url, url)
+
+            ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0"
+            video_url = video_url + '|Referer={}&User-Agent={}'.format(site.url, ua)
+            vp.play_from_direct_link(video_url)
 
 
 @site.register()
