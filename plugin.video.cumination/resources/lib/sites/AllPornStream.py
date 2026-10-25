@@ -30,7 +30,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'actors', 'Actors', site.img_star)
     site.add_dir('[COLOR hotpink]Producers[/COLOR]', site.url + 'producers', 'Producers', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'posts/?search=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'posts?search=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
 
