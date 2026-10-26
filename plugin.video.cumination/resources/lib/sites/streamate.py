@@ -65,7 +65,7 @@ def List(url, page=1):
 
 @site.register(clean_mode=True)
 def clean_database(showdialog=True):
-    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    conn = sqlite3.connect(utils.TEXTURESDB)
     try:
         with conn:
             list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % "m1.nsimg.net")

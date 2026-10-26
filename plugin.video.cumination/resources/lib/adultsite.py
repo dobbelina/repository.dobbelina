@@ -79,7 +79,8 @@ class AdultSite(URL_Dispatcher):
         if not self.extract_meta:
             return None
 
-        import re, requests
+        import re
+        import requests
 
         try:
             headers = {"Range": "bytes=0-4096"}

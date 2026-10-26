@@ -19,15 +19,13 @@ import os
 import sqlite3
 import json
 import re
-from six.moves import urllib_parse, urllib_error
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-import threading
-import socket
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlencode, urlparse
+
 
 site = AdultSite('bongacams', '[COLOR hotpink]BongaCams[/COLOR]', 'https://bongacams.com/', 'bongacams.png', 'bongacams', True)
+
 
 @site.register(default_mode=True)
 def Main():
@@ -81,7 +79,7 @@ def Main():
 def List(url):
     if utils.addon.getSetting("chaturbate") == "true":
         clean_database(False)
-    
+
     favorite = {}
     conn = sqlite3.connect(utils.favoritesdb)
     conn.text_factory = str
@@ -140,14 +138,14 @@ def List(url):
         if model.get('tags'):
             subject += u', '.join(model.get('tags'))
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(model['display_name']))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(model['display_name']), 'RunPlugin(' + contextrecord + ')'))]
+        contextmenu = [(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(model['display_name']), 'RunPlugin(' + contextrecord + ')'))]
         site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, fav=fav, noDownload=True)
     utils.eod()
 
 
 @site.register(clean_mode=True)
 def clean_database(showdialog=True):
-    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    conn = sqlite3.connect(utils.TEXTURESDB)
     try:
         with conn:
             list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % "bongacams.com")
@@ -162,6 +160,7 @@ def clean_database(showdialog=True):
                 utils.notify('Finished', 'bongacams.com images cleared')
     except:
         pass
+
 
 @site.register()
 def Playvid_change(url, name):
@@ -180,6 +179,7 @@ def Playvid_change(url, name):
 
     xbmc.executebuiltin('Container.Refresh')
 
+
 @site.register()
 def Playvid(url, name):
     if url == '':
@@ -194,7 +194,7 @@ def Playvid(url, name):
         return Playvid_classic(url, name)
 
 
-#@site.register()
+# @site.register()
 def Playvid_proxy(url, name):
     import json
     import time
@@ -498,6 +498,7 @@ def Playvid_proxy(url, name):
 
     xbmc.Player().play(proxy_url, li)
 
+
 def Playvid_Adaptive(url, name):
     if not url:
         utils.notify(name, "Model Offline", icon="thumb")
@@ -589,7 +590,8 @@ def Playvid_Adaptive(url, name):
 
     vp.progress.update(75, "[CR]Found Stream[CR]")
 
-    import xbmcgui, xbmc
+    import xbmcgui
+    import xbmc
 
     li = xbmcgui.ListItem(name)
     li.setPath(videourl)
@@ -603,7 +605,8 @@ def Playvid_Adaptive(url, name):
 
     xbmc.Player().play(videourl, li)
 
-#@site.register()
+
+# @site.register()
 def Playvid_classic(url, name):
     if url is None or url == '':
         utils.notify(name, 'Model Offline', icon='thumb')
@@ -629,9 +632,9 @@ def Playvid_classic(url, name):
     if amf_json['status'] == 'error':
         utils.notify('Oh oh', 'Couldn\'t find a playable webcam link', icon='thumb')
         return
-    # if amf_json.get('performerData', {}).get('is_Online') is None: 
+    # if amf_json.get('performerData', {}).get('is_Online') is None:
     #     utils.notify(name, 'Model Offline', icon='thumb')
-    #     return       
+    #     return
 
     if 'private' in amf_json.get('performerData', {}).get('showType'):
         utils.notify(name, 'Model in private chat', icon='thumb')
@@ -736,7 +739,6 @@ def List2(url):
             name, username, "Playvid", img, subject, noDownload=True
         )
     utils.eod()
-  
 
 
 @site.register()
@@ -752,7 +754,7 @@ def List3(url):
         clean_database(False)
     headers = {'X-Requested-With': 'XMLHttpRequest'}
     data = utils._getHtml(url, site.url, headers=headers)
-    #timePeriod = json.loads(data).get("data").get("topModels").get("content").get("winners").get("thumbs", [])   #.get("content").get("winners").get("timePeriod")
+    # timePeriod = json.loads(data).get("data").get("topModels").get("content").get("winners").get("thumbs", [])   #.get("content").get("winners").get("timePeriod")
     json_data = json.loads(data).get("data", {})
 
     top_winners_list = (
@@ -816,7 +818,6 @@ def List3(url):
             name, username, "Playvid", img, subject, noDownload=True
         )
     utils.eod()
-
 
 
 @site.register()
@@ -898,13 +899,12 @@ def onlineFav(url):
             subject += u'- Likes: {}\n'.format(info['turns_on'])
         if info['turns_off']:
             subject += u'- Dislikes: {}\n\n'.format(info['turns_off'])
-        chat_status = ''
-        if info['chat_status']:
-            if info['chat_status'] != 'public':
-                current_show = '[COLOR blue] {}[/COLOR]'.format(info['chat_status'])
+        # if info['chat_status']:
+        #     if info['chat_status'] != 'public':
+        #         current_show = '[COLOR blue] {}[/COLOR]'.format(info['chat_status'])
 
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
+        contextmenu = [(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
         site.add_download_link(name, username, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, fav='del', noDownload=True)
     model_off = {}
 
@@ -925,7 +925,7 @@ def onlineFav(url):
         img = info['db_image']
         url = info['db_url']
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(name))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
+        contextmenu = [(('[COLOR violet]Find recordings featuring [/COLOR]{}[COLOR violet] on Cloudbate[/COLOR]'.format(name), 'RunPlugin(' + contextrecord + ')'))]
         site.add_download_link(name_raw + ' [COLOR yellow]Offline[/COLOR]', url, 'Playvid', img, "Offline", contextm=contextmenu, fav='del', noDownload=True)
     utils.eod()
 
