@@ -4,7 +4,14 @@ import sqlite3
 import xbmc
 import xbmcaddon
 import xbmcgui
-import xbmcvfs
+
+# 1. Establish a universal TRANSLATEPATH handle across all Kodi versions
+try:
+    import xbmcvfs
+    TRANSLATEPATH = xbmcvfs.translatePath
+except ImportError:
+    # Safe fallback for legacy Kodi versions (like Kodi 18)
+    TRANSLATEPATH = xbmc.translatePath
 
 def clear_cumination_image_cache():
     target_images = [
@@ -15,16 +22,15 @@ def clear_cumination_image_cache():
         "cum-sites.png", "cum-star.png", "cum-tags.png", "cum-topcams.png"
     ]
     
-    # Dynamically find the main addon path by stepping up from resources/lib/
-    # This ensures perfect compatibility with your Kodi 21 Portable layout
-    current_dir = os.path.dirname(__file__)  # resources/lib
-    resources_dir = os.path.dirname(current_dir)  # resources
-    video_addon_path = os.path.dirname(resources_dir)  # plugin.video.cumination root
+    # 2. Get the active add-on path dynamically
+    video_addon = xbmcaddon.Addon('plugin.video.cumination')
+    video_addon_path = TRANSLATEPATH(video_addon.getAddonInfo('path'))
 
-    database_dir = xbmcvfs.translatePath('special://database')
-    thumbnails_dir = xbmcvfs.translatePath('special://thumbnails')
+    # 3. Locate environment directories universally
+    database_dir = TRANSLATEPATH('special://database')
+    thumbnails_dir = TRANSLATEPATH('special://thumbnails')
     
-    # Find all Textures database versions and isolate the HIGHEST numbered one
+    # 4. Find all Textures database versions and isolate the HIGHEST numbered one
     search_pattern = os.path.join(database_dir, 'Textures*.db')
     matching_databases = glob.glob(search_pattern)
     
@@ -41,7 +47,7 @@ def clear_cumination_image_cache():
         cleared_count = 0
         
         for image_name in target_images:
-            # Recreates the exact target path: ...\plugin.video.cumination\resources\images\filename.png
+            # Recreates your exact path down to the resources subfolder
             full_image_path = os.path.join(video_addon_path, "resources", "images", image_name)
             
             # Query the database mapping row
@@ -64,13 +70,12 @@ def clear_cumination_image_cache():
                 
         conn.commit()
         
-        # Fire off the upper corner toast completion notification
-        video_addon = xbmcaddon.Addon('plugin.video.cumination')
-        icon_path = xbmcvfs.translatePath(video_addon.getAddonInfo('icon'))
+        # 5. Fire off the upper corner toast completion notification
+        icon_path = TRANSLATEPATH(video_addon.getAddonInfo('icon'))
         
         xbmcgui.Dialog().notification(
             "Cumination Maintenance",
-            "Thumbnails cleared from Cumination",
+            "Images cleared from Cumination",
             icon_path,
             4000
         )
