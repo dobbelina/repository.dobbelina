@@ -148,14 +148,14 @@ def clean_database(showdialog=True):
     conn = sqlite3.connect(utils.TEXTURESDB)
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % "bongacams.com")
+            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".bgicdn.com")
             for row in list:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % "bongacams.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".bgicdn.com")
             if showdialog:
                 utils.notify('Finished', 'bongacams.com images cleared')
     except:

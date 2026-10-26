@@ -345,22 +345,26 @@ def List(url, page=1):
 
 
 @site.register(clean_mode=True)
-def clean_database(showdialog=True):
+def clean_database(search_terms=(".strpst.com", ".doppiocdn.com"), showdialog=True):
     try:
         conn = sqlite3.connect(utils.TEXTURESDB)
         with conn:
-            rows = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".stripst.com")
-            for row in rows:
-                conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
-                try:
-                    os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
-                except:
-                    pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".stripst.com")
+            for term in search_terms:
+                like_pattern = f"%{term}%"
+                rows = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE ?;", (like_pattern,)).fetchall()               
+                for row in rows:
+                    conn.execute("DELETE FROM sizes WHERE idtexture = ?;", (row[0],))
+                    try:
+                        os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
+                    except:
+                        pass                       
+                conn.execute("DELETE FROM texture WHERE url LIKE ?;", (like_pattern,))           
             if showdialog:
-                utils.notify('Finished', 'Stripchat images cleared')
-    except:
+                cleaned_sites = ", ".join(search_terms)
+                utils.notify('Finished', f'images cleared')
+    except Exception as e:
         pass
+
 
 
 @site.register()

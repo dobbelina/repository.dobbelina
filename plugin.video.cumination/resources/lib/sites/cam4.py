@@ -134,7 +134,7 @@ def clean_database(showdialog=True):
     try:
         with conn:
             rows = conn.execute(
-                "SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".cam4s.com"
+                "SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".xcdnpro.com"
             )
             for row in rows:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
@@ -142,7 +142,7 @@ def clean_database(showdialog=True):
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".cam4.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".xcdnpro.com")
             if showdialog:
                 utils.notify('Finished', 'Cam4 images cleared')
     except:
