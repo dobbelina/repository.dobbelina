@@ -130,8 +130,11 @@ def change():
         return
     addon.setSetting('changelog_seen_version', version)        
     # Thumbnail cleanup start ------------------------    
-    script_path = xbmcvfs.translatePath('special://home/addons/plugin.video.cumination/resources/lib/thumbnail_clean.py')
-    xbmc.executebuiltin(f'RunScript({script_path})')
+    try:
+        from resources.lib import thumbnail_clean
+        thumbnail_clean.clear_cumination_image_cache()
+    except Exception as e:
+        utils.kodilog('Failed to run thumbnail cleanup: {}'.format(e))
     # Thumbnail cleanup end ------------------------ 
     heading = '[B][COLOR hotpink]Cumination[/COLOR] [COLOR white]Changelog[/COLOR][/B]'
     with open(basics.changelog) as f:

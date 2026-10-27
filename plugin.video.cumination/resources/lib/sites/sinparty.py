@@ -16,43 +16,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
 import json
 import sqlite3
 import math
-import json
 import xbmcgui
 import urllib.request
+import os
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-from six.moves import urllib_parse, urllib_error
-
-
-try:
-    # Python 2
-    import BaseHTTPServer as httpserver
-    import SocketServer as socketserver
-    from BaseHTTPServer import BaseHTTPRequestHandler
-    from BaseHTTPServer import HTTPServer
-    import urllib2 as urlreq
-    from urlparse import urlparse, parse_qs
-except ImportError:
-    # Python 3
-    import http.server as httpserver
-    import socketserver
-    from http.server import BaseHTTPRequestHandler
-    from http.server import HTTPServer
-    import urllib.request as urlreq
-    from urllib.parse import urlparse, parse_qs
-
+from six.moves import urllib_parse
 
 site = AdultSite('sinparty', '[COLOR hotpink]Sinparty[/COLOR]', 'https://sinparty.com/', 'https://content.spmediacdn.com/resources/img/logos/logo-sinparty-1200x630.jpg', 'sinparty', True, extract_meta=True)
 # UA = "Mozilla/5.0 (iPad; CPU OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1"
 
 addon = utils.addon
-bu = 'https://api.sinparty.com/v2/web/live-cams/web-rtc/{}?gender%5B%5D={}&per_page=100&page=1'     #&ethnicity%5B%5D=asian'
+bu = 'https://api.sinparty.com/v2/web/live-cams/web-rtc/{}?gender%5B%5D={}&per_page=100&page=1'  # &ethnicity%5B%5D=asian'
 favorites = []
+
 
 @site.register(default_mode=True)
 def Main():
@@ -64,7 +45,7 @@ def Main():
     couple = utils.addon.getSetting("chatcouple") == "true"
     trans = utils.addon.getSetting("chattrans") == "true"
     site.add_dir('[COLOR red]Refresh Sinparty images[/COLOR]', '', 'clean_database', site.img_refresh, Folder=False)
-    if favorites:  
+    if favorites:
         site.add_dir('[COLOR yellow]Online Favorites[/COLOR]', '{}girls'.format(bu), 'onlineFav', site.img_favorites, 1)
 
     if female:
@@ -119,23 +100,23 @@ def List(url):
         utils.kodilog(str(e))
         return None
 
-    status = data.get("status", "Unknown")
+    # status = data.get("status", "Unknown")
 
     items = data.get("data", {}).get("items", [])
     if not items:
         utils.notify(filter_setting, "We're sorry, we could not find any live creators related to your search")
-    
+
     for item in items:
         name = item.get("title")
         subject = ''
-        if name == None:
+        if name is None:
             if any(item.get('Nickname') in name for name in favorites):
                 name = '[COLOR yellow]★ [/COLOR]'
                 fav = 'del'
             else:
                 name = ''
                 fav = 'add'
-            name += item.get("Nickname") 
+            name += item.get("Nickname")
             img = item.get("Snapshot")
             if item.get('Age'):
                 subject += u'[B][COLOR hotpink]Age:[/COLOR][/B] {}\n'.format(item.get('Age'))
@@ -145,7 +126,7 @@ def List(url):
                 subject += u'[B][COLOR hotpink]Topic:[/COLOR][/B] {}\n'.format(utils.cleantext(item.get('Headline')))
             if item.get('Languages'):
                 subject += u'[B][COLOR hotpink]Languages:[/COLOR][/B] '
-                subject += u', '.join(item.get('Languages'))                
+                subject += u', '.join(item.get('Languages'))
             api_url = 'https://manifest-server.naiadsystems.com/live/s:{}.json?'.format(item.get('Nickname'))
         else:
             # if not item.get("isLive"):
@@ -156,7 +137,7 @@ def List(url):
             else:
                 name = ''
                 fav = 'add'
-            name += item.get("title") 
+            name += item.get("title")
 
             if item.get('age'):
                 subject += u'[B][COLOR hotpink]Age:[/COLOR][/B] {}\n'.format(item.get('age'))
@@ -172,7 +153,7 @@ def List(url):
             api_url = 'https://api.sinparty.com/v2/web/live-cams/web-rtc/' + item.get('creator_user_hash')
 
         contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(name))
-        contextmenu=[(('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(name), 'RunPlugin(' + contextrecord + ')'))]
+        contextmenu = [(('[COLOR violet]Find recordings featuring [/COLOR]{}'.format(name), 'RunPlugin(' + contextrecord + ')'))]
         site.add_download_link(name, api_url, 'Playvid', img, subject.encode('utf-8') if utils.PY2 else subject, contextm=contextmenu, fav='add', noDownload=True)
     next_url, next_page, total_pages, is_last = sinparty_next_page(url, data)
     if not is_last and next_url:
@@ -207,7 +188,6 @@ def sinparty_next_page(url, json_data):
     ))
 
     return next_url, next_page, total_pages, False
-
 
 
 @site.register()
@@ -270,17 +250,17 @@ def Playvid(url, name, download=None):
 
 @site.register(clean_mode=True)
 def clean_database(showdialog=True):
-    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    conn = sqlite3.connect(utils.TEXTURESDB)
     try:
         with conn:
-            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % "sinparty.com")
+            list = conn.execute("SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".icfcdn.com")
             for row in list:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
                 try:
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % "sinparty.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".icfcdn.com")
             if showdialog:
                 utils.notify('Finished', 'sinparty.com images cleared')
     except:

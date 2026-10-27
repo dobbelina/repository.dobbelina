@@ -54,6 +54,8 @@ PY3 = six.PY3
 TRANSLATEPATH = xbmcvfs.translatePath if PY3 else xbmc.translatePath
 LOGINFO = xbmc.LOGINFO if PY3 else xbmc.LOGNOTICE
 KODIVER = float(xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')[:4])
+TEXTURESDB = os.path.join(TRANSLATEPATH('special://database'), 'Textures14.db') if KODIVER > 21.3 else os.path.join(TRANSLATEPATH('special://database'), 'Textures13.db')
+
 
 base_hdrs = {
     'User-Agent': USER_AGENT,

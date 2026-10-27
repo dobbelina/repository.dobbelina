@@ -61,7 +61,7 @@ def Refresh_images():
 
     connfav = sqlite3.connect(favoritesdb)
     connfav.text_factory = str
-    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    conn = sqlite3.connect(utils.TEXTURESDB)
     c = connfav.cursor()
     c.execute('SELECT * FROM favorites')
     for (name, url, mode, img, duration, quality) in c.fetchall():

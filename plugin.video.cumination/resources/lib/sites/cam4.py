@@ -20,19 +20,10 @@
 import os
 import sqlite3
 import json
-from six.moves import urllib_parse, urllib_error
+from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 import xbmcgui
-
-# Compatibilitate Py2/Py3 pentru urllib
-try:
-    # Python 3
-    from urllib.request import Request, urlopen
-    from urllib.error import URLError, HTTPError
-except ImportError:
-    # Python 2
-    from urllib2 import Request, urlopen, URLError, HTTPError
 
 try:
     # Python 3
@@ -47,9 +38,9 @@ IOS_UA = {
     'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_3 like Mac OS X) '
                   'AppleWebKit/605.1.15 (KHTML%2C like Gecko) Mobile/15E148'
 }
-STREAM_INFO  = "{0}rest/v1.0/profile/{1}/streamInfo".format(site.url, 0)
-INFO_URL     = "{0}rest/v1.0/search/performer/{1}".format(site.url, 0)
-PROFILE_URL  = "{0}rest/v1.0/profile/{1}/info".format(site.url, 0)
+STREAM_INFO = "{0}rest/v1.0/profile/{1}/streamInfo".format(site.url, 0)
+INFO_URL = "{0}rest/v1.0/search/performer/{1}".format(site.url, 0)
+PROFILE_URL = "{0}rest/v1.0/profile/{1}/info".format(site.url, 0)
 
 addon = utils.addon
 cam4logged = utils.addon.getSetting('cam4logged').lower() == 'true'
@@ -139,11 +130,11 @@ def Main():
 
 @site.register(clean_mode=True)
 def clean_database(showdialog=True):
-    conn = sqlite3.connect(utils.TRANSLATEPATH("special://database/Textures13.db"))
+    conn = sqlite3.connect(utils.TEXTURESDB)
     try:
         with conn:
             rows = conn.execute(
-                "SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".cam4s.com"
+                "SELECT id, cachedurl FROM texture WHERE url LIKE '%%%s%%';" % ".xcdnpro.com"
             )
             for row in rows:
                 conn.execute("DELETE FROM sizes WHERE idtexture LIKE '%s';" % row[0])
@@ -151,7 +142,7 @@ def clean_database(showdialog=True):
                     os.remove(utils.TRANSLATEPATH("special://thumbnails/" + row[1]))
                 except:
                     pass
-            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".cam4.com")
+            conn.execute("DELETE FROM texture WHERE url LIKE '%%%s%%';" % ".xcdnpro.com")
             if showdialog:
                 utils.notify('Finished', 'Cam4 images cleared')
     except:
@@ -225,7 +216,6 @@ def List(url, page=1, niche=''):
     if not country_setting:
         country_setting = ''
     utils.addon.setSetting("cam4country", country_setting)
-
 
     site.add_download_link(
         'Filter by country - currently: [COLOR fuchsia][B]' + ('All' if country_setting == '' else country_setting) + '[/B][/COLOR] - '
@@ -315,11 +305,7 @@ def List(url, page=1, niche=''):
                 )
             ))
 
-        contextrecord = (
-            utils.addon_sys +
-            "?mode=chaturbate.Record&id=" +
-            urllib_parse.quote_plus(username)
-        )
+        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username))
         context.append((
             '[COLOR violet]Find recordings featuring [/COLOR]{}'.format(username),
             'RunPlugin(' + contextrecord + ')'
@@ -341,6 +327,7 @@ def List(url, page=1, niche=''):
         site.add_dir('Next Page ({})'.format(page), url, 'List', site.img_next, page)
 
     utils.eod()
+
 
 @site.register()
 def Playvid(url, name):
@@ -424,10 +411,8 @@ def Playvid_proxy(url, name):
     import xbmc
     import xbmcgui
     import threading
-    import time
     import requests
     import sys
-    import traceback
 
     PY2 = sys.version_info[0] == 2
 
@@ -654,8 +639,7 @@ def Playvid_proxy(url, name):
             self.wfile.write(data)
 
     # ---------- START SERVER ----------
-    class ThreadedHTTPServer(socketserver.ThreadingMixIn,
-                             httpserver.HTTPServer if PY2 else HTTPServerBase):
+    class ThreadedHTTPServer(socketserver.ThreadingMixIn, httpserver.HTTPServer if PY2 else HTTPServerBase):
         daemon_threads = True
 
     server = ThreadedHTTPServer(('127.0.0.1', 0), ProxyHandler)
@@ -673,7 +657,6 @@ def Playvid_proxy(url, name):
     li.setProperty('inputstream.adaptive.manifest_type', 'hls')
 
     xbmc.Player().play(proxy_url, li)
-
 
 
 def Playvid_proxy_old(url, name):
@@ -930,6 +913,7 @@ def Playvid_classic(url, name):
     video = json.loads(html).get('cdnURL')
     vp.play_from_direct_link(video)
 
+
 @site.register()
 def onlineFav(url):
     listurl = (
@@ -991,11 +975,7 @@ def onlineFav(url):
             subject += tags.encode('utf8') if utils.PY2 else tags
 
         video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, username)
-        contextrecord = (
-            utils.addon_sys +
-            "?mode=chaturbate.Record&id=" +
-            urllib_parse.quote_plus(username)
-        )
+        contextrecord = (utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username))
         contextmenu = [(
             '[COLOR violet]Find recordings featuring [/COLOR]{}'
             '[COLOR violet] on Cloudbate[/COLOR]'.format(username),
@@ -1184,6 +1164,7 @@ def logout():
         print("Error on utils._postHtml for Logout Cam4: {e}".format(e=e))
         return False
 
+
 @site.register()
 def followedCams():
     import json
@@ -1291,9 +1272,7 @@ def list_followed():
 
         video = '{}rest/v1.0/profile/{}/streamInfo'.format(site.url, username)
         contextrecord = (
-            utils.addon_sys +
-            "?mode=chaturbate.Record&id=" +
-            urllib_parse.quote_plus(username)
+            utils.addon_sys + "?mode=chaturbate.Record&id=" + urllib_parse.quote_plus(username)
         )
         contextmenu = [(
             '[COLOR violet]Find recordings featuring [/COLOR]{}'
@@ -1457,6 +1436,7 @@ def get_cam4_AH():
             return c.value
     return ""
 
+
 def get_cookie_value(name):
     for c in cj:
         if c.name == name:
@@ -1589,7 +1569,6 @@ def list_niches():
             iconimage=thumb
         )
 
-
     utils.eod()
 
 
@@ -1628,6 +1607,7 @@ countries = {
     "ve": "Venezuela", "vn": "Viet Nam", "vg": "Virgin Islands,  British", "vi": "Virgin Islands,  U.S.", "wf": "Wallis & Futuna", "eh": "Western Sahara",
     "ye": "Yemen", "zm": "Zambia", "zw": "Zimbabwe"
 }
+
 
 @site.register()
 def select_country():

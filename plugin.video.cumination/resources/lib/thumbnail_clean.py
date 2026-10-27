@@ -1,10 +1,10 @@
-import glob
 import os
+import sys
 import sqlite3
 import xbmc
 import xbmcaddon
 import xbmcgui
-import xbmcvfs
+from resources.lib.utils import TRANSLATEPATH, TEXTURESDB
 
 def clear_cumination_image_cache():
     target_images = [
@@ -15,24 +15,10 @@ def clear_cumination_image_cache():
         "cum-sites.png", "cum-star.png", "cum-tags.png", "cum-topcams.png"
     ]
     
-    # Dynamically find the main addon path by stepping up from resources/lib/
-    # This ensures perfect compatibility with your Kodi 21 Portable layout
-    current_dir = os.path.dirname(__file__)  # resources/lib
-    resources_dir = os.path.dirname(current_dir)  # resources
-    video_addon_path = os.path.dirname(resources_dir)  # plugin.video.cumination root
-
-    database_dir = xbmcvfs.translatePath('special://database')
-    thumbnails_dir = xbmcvfs.translatePath('special://thumbnails')
-    
-    # Find all Textures database versions and isolate the HIGHEST numbered one
-    search_pattern = os.path.join(database_dir, 'Textures*.db')
-    matching_databases = glob.glob(search_pattern)
-    
-    if not matching_databases:
-        return
-        
-    matching_databases.sort()
-    db_path = matching_databases[-1] # Grabs the highest version (e.g. Textures14.db)
+    video_addon = xbmcaddon.Addon('plugin.video.cumination')
+    video_addon_path = TRANSLATEPATH(video_addon.getAddonInfo('path'))
+    thumbnails_dir = TRANSLATEPATH('special://thumbnails')
+    db_path = TEXTURESDB
 
     conn = None
     try:
@@ -41,42 +27,38 @@ def clear_cumination_image_cache():
         cleared_count = 0
         
         for image_name in target_images:
-            # Recreates the exact target path: ...\plugin.video.cumination\resources\images\filename.png
             full_image_path = os.path.join(video_addon_path, "resources", "images", image_name)
-            
-            # Query the database mapping row
             cursor.execute("SELECT url, cachedurl FROM texture WHERE url = ?;", (full_image_path,))
             rows = cursor.fetchall()
             
             for url, cached_filename in rows:
+                # UNIVERSAL SAFE CAST: Forces variables to standard strings depending on Python version
+                if sys.version_info[0] < 3:
+                    cached_filename = str(cached_filename)
+                    url = str(url)
+
                 cached_file_path = os.path.join(thumbnails_dir, cached_filename)
-                
-                # Delete physical cache file if it exists
                 if os.path.exists(cached_file_path):
                     try:
                         os.remove(cached_file_path)
                     except Exception:
                         pass
                 
-                # Wipe the database row tracking it
                 cursor.execute("DELETE FROM texture WHERE url = ?;", (url,))
                 cleared_count += 1
                 
         conn.commit()
         
-        # Fire off the upper corner toast completion notification
-        video_addon = xbmcaddon.Addon('plugin.video.cumination')
-        icon_path = xbmcvfs.translatePath(video_addon.getAddonInfo('icon'))
-        
+        icon_path = TRANSLATEPATH(video_addon.getAddonInfo('icon'))
         xbmcgui.Dialog().notification(
             "Cumination Maintenance",
-            "Thumbnails cleared from Cumination",
+            "Images cleared from Cumination",
             icon_path,
             4000
         )
             
     except Exception as e:
-        xbmc.log(f"[plugin.video.cumination] Cache clear error: {str(e)}", xbmc.LOGERROR)
+        xbmc.log("[plugin.video.cumination] Cache clear error: " + str(e), xbmc.LOGERROR)
     finally:
         if conn:
             conn.close()
