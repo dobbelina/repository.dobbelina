@@ -118,6 +118,11 @@ def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
     videohtml = utils.getHtml(url)
+    match = re.compile(r'"playlist":\s+"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
+    videohtml1 = utils.getHtml(match[0])
+    if ('error-video.mp4') in videohtml1:
+        utils.notify('This video is currently unavailable!')
+        return
     match = re.compile(r'"embedUrl":\s+"([^"]+)"', re.IGNORECASE | re.DOTALL).findall(videohtml)
     if match:
         embedhtml = utils.getHtml(match[0])
