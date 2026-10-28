@@ -37,9 +37,16 @@ def Main():
 @site.register()
 def List(url):
     listhtml = utils.getHtml(url, site.url)
-    match = re.compile(r'open-popup"\s+href="([^"]+)".*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)".*?(<div class="quality">.*?</div>)?.*?class="time">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
+    match = re.compile(
+        r'class="th js-open-popup"\s+href="([^"]+)"'
+        r'[^>]+title="([^"]+)"'
+        r'.*?<img[^>]+src="([^"]+)"'
+        r'.*?(<div class="quality">.*?</div>)?'
+        r'.*?class="time">([^<]+)<',
+        re.DOTALL | re.IGNORECASE
+    ).findall(listhtml)
 
-    for videopage, img, name, hd, duration in match:
+    for videopage, name, img, hd, duration in match:
         name = utils.cleantext(name.strip())
         hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
 
