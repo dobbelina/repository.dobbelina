@@ -67,12 +67,12 @@ def INDEX():
         url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('dnld_folder')), download_path, 'OpenDownloadFolder',
                                basics.cum_image('cum-downloads.png'), '', list_avail=False)
 
-    url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('custom_list')), '', 'favorites.create_custom_list', basics.cum_image('cum-custom.png'), Folder=False, list_avail=False)
+    url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('custom_list')), '', 'favorites.create_custom_list', basics.cum_image('cum-custom.png'), '', list_avail=False)
     for rowid, name in favorites.get_custom_lists():
         url_dispatcher.add_dir(name, str(rowid), 'favorites.load_custom_list', basics.cum_image('cum-mylist.png'), list_avail=False, custom_list=True)
     favorites.load_custom_list('main')
     url_dispatcher.add_dir('[COLOR white]{}[/COLOR]'.format(utils.i18n('clear_cache')), '', 'utils.clear_cache',
-                           basics.cum_image('cum-cache.png'), '', Folder=False, list_avail=False)
+                           basics.cum_image('cum-cache.png'), '', '', list_avail=False)
 
     utils.eod(basics.addon_handle, False)
 
