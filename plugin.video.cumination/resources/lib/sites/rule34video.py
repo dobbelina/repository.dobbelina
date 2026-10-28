@@ -39,8 +39,10 @@ def List(url):
     listhtml = utils.getHtml(url, site.url)
     match = re.compile(r'open-popup"\s+href="([^"]+)".*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)".*?(<div class="quality">.*?</div>)?.*?class="time">([^<]+)<', re.DOTALL | re.IGNORECASE).findall(listhtml)
 
+    thumbnails = utils.Thumbnails(site.name)
     for videopage, img, name, hd, duration in match:
         name = utils.cleantext(name.strip())
+        img = thumbnails.cache_img(img)
         hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
 
         cm = []
