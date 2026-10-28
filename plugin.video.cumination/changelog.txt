@@ -1,3 +1,4 @@
 [B]Version 1.1.206[/B]
 - allclassic - fix playback
 - AllPornStream fixed Search
+- "Don't ask for video host" setting - an attempt is made to resolve the first video host in the list; if this fails, it automatically tries the next available video host

@@ -41,7 +41,7 @@ def Main():
         site.add_dir(f'[COLOR hotpink]{title}[/COLOR]', site.url + path, 'Category', site.img_cat)
 
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
-    site.add_dir(f'[COLOR hotpink]Pornstars[/COLOR]', site.url + path, 'Category', site.img_star)
+    site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + path, 'Category', site.img_star)
     List(site.url + 'all-movies/')
     utils.eod()
 
@@ -112,7 +112,7 @@ def Related(url):
 
 @site.register()
 def Playvid(url, name, download=None):
-    links = {}
+    link_list = []
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, '[CR]Loading video page[CR]')
     videopage = utils.getHtml(url)
@@ -121,23 +121,13 @@ def Playvid(url, name, download=None):
     if match:
         servers = json.loads(html_lib.unescape(match.group(1)))
         for server in servers:
-            title = server.get('l', 'Server')
             src = server.get('u', '')
             if src:
-                links[title] = src
+                link_list.append(src)
 
-    if not links:
-        vp.progress.close()
-        utils.notify(msg='SpeedPorn: no server links found')
-        return
-
-    videourl = utils.selector('Select server', links, setting_valid=False)
-    if not videourl:
-        vp.progress.close()
-        return
-
-    vp.progress.update(90, '[CR]Loading video page[CR]')
-    vp.play_from_link_to_resolve(videourl)
+        vp.play_from_link_list(link_list)
+    else:
+        utils.notify('Oh Oh', 'No Videos found')
 
 
 @site.register()

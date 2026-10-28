@@ -1856,11 +1856,17 @@ class VideoPlayer():
         if not sources:
             notify(i18n('oh_oh'), i18n('not_found'))
             return
-        self._select_source(sources)
+        if addon.getSetting("dontask") == "true":
+            for src in sources:
+                if self.play_from_link_to_resolve(src):
+                    return
+            notify(i18n('rslv_fail'), '{0}'.format(i18n('not_rslv')))
+        else:
+            self._select_source(sources)
 
     @_cancellable
     def _select_source(self, sources):
-        if not len(sources) > 1 or addon.getSetting("dontask") == "true":
+        if len(sources) == 1:
             source = sources[0]
         else:
             source = self.resolveurl.choose_source(sources)
@@ -1878,10 +1884,13 @@ class VideoPlayer():
         except self.resolveurl.resolver.ResolverError:
             link = False  # ResolveURL returns False in some cases when resolving fails
         if not link:
-            notify(i18n('rslv_fail'), '{0} {1}'.format(source.title, i18n('not_rslv')))
+            if addon.getSetting("dontask") == "false":
+                notify(i18n('rslv_fail'), '{0} {1}'.format(source.title, i18n('not_rslv')))
+            return False
         else:
             self.progress.close()
             playvid(link, self.name, self.download, IA_check=self.IA_check)
+            return True
 
     @_cancellable
     def play_from_direct_link(self, direct_link):
