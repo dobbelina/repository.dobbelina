@@ -14,7 +14,9 @@ body:
           required: true
         - label: I have read the [documentation](https://github.com/dobbelina/repository.dobbelina/wiki/Cumination:-Debug-Logging-and-Uploading) on how to create a debug log file.
           required: true
-
+        - label: I have already tested the site functionality in the browser.
+          required: true
+          
   - type: textarea
     attributes:
       label: Description
