@@ -42,7 +42,7 @@ def List(url):
     thumbnails = utils.Thumbnails(site.name)
     for videopage, img, name, hd, duration in match:
         name = utils.cleantext(name.strip())
-        img = thumbnails.cache_img(img)
+        img = thumbnails.fix_img(img)
         hd = " [COLOR orange]HD[/COLOR]" if 'hd' in hd else ''
 
         cm = []

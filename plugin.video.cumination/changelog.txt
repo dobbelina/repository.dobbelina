@@ -3,3 +3,5 @@
 - AllPornStream fixed Search
 - "Don't ask for video host" setting - an attempt is made to resolve the first video host in the list; if this fails, it automatically tries the next available video host
 - Watchpornx replaces Netflixporno
+- rule34video - fix thumbnails (Kodi 21)
+

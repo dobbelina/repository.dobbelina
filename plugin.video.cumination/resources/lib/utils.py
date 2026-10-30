@@ -2250,7 +2250,7 @@ class Thumbnails:
             kodilog("Failed to download image {}: {}".format(img, e))
 
     def fix_img(self, img):
-        if KODIVER < 21:
+        if KODIVER < 21 or KODIVER > 21.3:
             return img
         thumbnail = urllib_parse.quote(urllib_parse.urlparse(img).path, safe='')
         img_path = os.path.join(self.path, thumbnail).replace('.jpg', '.webp')
