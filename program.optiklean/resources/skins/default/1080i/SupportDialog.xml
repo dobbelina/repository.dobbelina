@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <defaultcontrol always="true">9000</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <left>0</left>
+        <top>0</top>
+        <right>0</right>
+        <bottom>0</bottom>
+    </coordinates>
+    <include>Animation_DialogPopup</include>
+    <controls>
+        <!-- Sfondo principale trasparente -->
+        <control type="image">
+            <description>Background</description>
+            <left>0</left>
+            <top>0</top>
+            <right>0</right>
+            <bottom>0</bottom>
+            <texture colordiffuse="80000000">white.png</texture>
+        </control>
+        
+        <!-- Pannello principale centrato con coordinate relative -->
+        <control type="group">
+            <left>26%</left>
+            <top>36%</top>
+            <width>48%</width>
+            <height>28%</height>
+            
+            <!-- Sfondo del pannello principale -->
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <right>0</right>
+                <bottom>0</bottom>
+                <texture colordiffuse="FF0E1F2B">white.png</texture>
+            </control>
+            
+            <!-- Bordo del pannello -->
+            <control type="image">
+                <left>5</left>
+                <top>5</top>
+                <right>5</right>
+                <bottom>5</bottom>
+                <texture colordiffuse="FF1A2A35" border="5">white.png</texture>
+            </control>
+            
+            <!-- Sfondo scuro per l'intestazione -->
+            <control type="image">
+                <left>0</left>
+                <top>0</top>
+                <right>0</right>
+                <height>60</height>
+                <texture colordiffuse="FF071621">white.png</texture>
+            </control>
+            
+            <!-- Titolo Support -->
+            <control type="label">
+                <description>Title</description>
+                <left>30</left>
+                <top>15</top>
+                <width>70%</width>
+                <height>30</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font_title</font>
+                <label>30307</label>
+                <textcolor>FFFFFFFF</textcolor>
+            </control>
+            
+            <!-- Pulsante di chiusura (X) -->
+            <control type="button" id="9000">
+                <description>Close Button</description>
+                <right>20</right>
+                <top>15</top>
+                <width>40</width>
+                <height>40</height>
+                <texturefocus>close_focus.png</texturefocus>
+                <texturenofocus>close.png</texturenofocus>
+                <label></label>
+                <onup>9003</onup>
+                <ondown>9003</ondown>
+                <onleft>9003</onleft>
+                <onright>9003</onright>
+            </control>
+            
+            <!-- QR Code Image -->
+            <control type="image" id="9001">
+                <description>QR Code</description>
+                <left>30</left>
+                <top>90</top>
+                <width>180</width>
+                <height>180</height>
+                <aspectratio>keep</aspectratio>
+                <texture>telegram-qr-code.png</texture>
+            </control>
+            
+            <!-- Linea divisoria verticale -->
+            <control type="image">
+                <description>Vertical Divider</description>
+                <left>225</left>
+                <top>90</top>
+                <width>2</width>
+                <height>180</height>
+                <texture colordiffuse="FFF7901E">white.png</texture>
+            </control>
+            
+            <!-- Testo Telegram group -->
+            <control type="label" id="9002">
+                <description>Telegram Group Label</description>
+                <left>257</left>
+                <top>140</top>
+                <right>15</right>
+                <height>30</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font13</font>
+                <label>30807</label>
+                <textcolor>FFFFFFFF</textcolor>
+            </control>
+            
+            <!-- URL Telegram (button trasparente con focus arancione) -->
+            <control type="button" id="9003">
+                <description>Telegram URL Button</description>
+                <left>257</left>
+                <top>180</top>
+                <right>15</right>
+                <height>30</height>
+                <align>left</align>
+                <aligny>center</aligny>
+                <font>font13</font>
+                <label></label>
+                <textcolor>FF00AAFF</textcolor>
+                <focusedcolor>FFF7901E</focusedcolor>
+                <texturenofocus></texturenofocus>
+                <texturefocus></texturefocus>
+                <textoffsetx>0</textoffsetx>
+                <textoffsety>0</textoffsety>
+                <onup>9000</onup>
+                <ondown>9000</ondown>
+                <onleft>9000</onleft>
+                <onright>9000</onright>
+            </control>
+        </control>
+    </controls>
+</window>

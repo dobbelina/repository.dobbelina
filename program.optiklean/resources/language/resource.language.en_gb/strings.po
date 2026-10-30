@@ -1,0 +1,2111 @@
+# Kodi Media Center language file
+# Addon Name: OptiKlean
+# Addon id: program.optiklean
+# Addon Provider: DigiTalking
+msgid ""
+msgstr ""
+"Project-Id-Version: OptiKlean\n"
+"Report-Msgid-Bugs-To: https://gitlab.com/personal4143605/optiklean\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# settings.xml
+
+msgctxt "#30000"
+msgid "Cleaning Settings"
+msgstr "Cleaning Settings"
+
+msgctxt "#30001"
+msgid "Automatic Cleaning Settings"
+msgstr "Automatic Cleaning Settings"
+
+msgctxt "#30002"
+msgid "Enable clear cache/temp"
+msgstr "Enable clear cache/temp"
+
+msgctxt "#30003"
+msgid "Days between cache/temp cleaning"
+msgstr "Days between cache/temp cleaning"
+
+msgctxt "#30004"
+msgid "Enable clear thumbnails/artwork"
+msgstr "Enable clear thumbnails/artwork"
+
+msgctxt "#30005"
+msgid "Days between thumbnails/artwork cleaning"
+msgstr "Days between thumbnails/artwork cleaning"
+
+msgctxt "#30006"
+msgid "Enable clear addon leftovers"
+msgstr "Enable clear addon leftovers"
+
+msgctxt "#30007"
+msgid "Days between addon leftovers cleaning"
+msgstr "Days between addon leftovers cleaning"
+
+msgctxt "#30008"
+msgid "Enable clear packages"
+msgstr "Enable clear packages"
+
+msgctxt "#30009"
+msgid "Days between packages cleaning"
+msgstr "Days between packages cleaning"
+
+msgctxt "#30010"
+msgid "Enable databases optimization"
+msgstr "Enable databases optimization"
+
+msgctxt "#30011"
+msgid "Days between databases optimization"
+msgstr "Days between databases optimization"
+
+msgctxt "#30012"
+msgid "Delay on startup (min)"
+msgstr "Delay on startup (min)"
+
+msgctxt "#30013"
+msgid "Backup Settings"
+msgstr "Backup Settings"
+
+msgctxt "#30014"
+msgid "Default backup destination folder"
+msgstr "Default backup destination folder"
+
+msgctxt "#30015"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#30016"
+msgid "Backups are saved as ZIP files in the folder you select below."
+msgstr "Backups are saved as ZIP files in the folder you select below."
+
+msgctxt "#30017"
+msgid "If no folder is set, you will be asked where to save each backup."
+msgstr "If no folder is set, you will be asked where to save each backup."
+
+msgctxt "#30018"
+msgid "Files are auto-named with date/time. Restore via main menu."
+msgstr "Files are auto-named with date/time. Restore via main menu."
+
+msgctxt "#30019"
+msgid "Thumbnails/Artwork Age Threshold (days)"
+msgstr "Thumbnails/Artwork Age Threshold (days)"
+
+msgctxt "#30020"
+msgid "Auto-update"
+msgstr "Auto-update"
+
+msgctxt "#30021"
+msgid "Update check interval (hours)"
+msgstr "Update check interval (hours)"
+
+# default.py
+
+msgctxt "#30100"
+msgid "Clear cache and temp"
+msgstr "Clear cache and temp"
+
+msgctxt "#30101"
+msgid "Clear thumbnails and artwork"
+msgstr "Clear thumbnails and artwork"
+
+msgctxt "#30102"
+msgid "Clear addons leftovers"
+msgstr "Clear addons leftovers"
+
+msgctxt "#30103"
+msgid "Clear packages"
+msgstr "Clear packages"
+
+msgctxt "#30104"
+msgid "Optimize databases"
+msgstr "Optimize databases"
+
+msgctxt "#30105"
+msgid "Cleanup dashboard"
+msgstr "Cleanup dashboard"
+
+msgctxt "#30106"
+msgid "Backup and restore"
+msgstr "Backup and restore"
+
+msgctxt "#30107"
+msgid "View logs"
+msgstr "View logs"
+
+msgctxt "#30108"
+msgid "Support"
+msgstr "Support"
+
+msgctxt "#30109"
+msgid "Open addon settings"
+msgstr "Open addon settings"
+
+msgctxt "#30200"
+msgid "Error during cleanup, see log"
+msgstr "Error during cleanup, see log"
+
+msgctxt "#30201"
+msgid "Thumbnails folder not found."
+msgstr "Thumbnails folder not found."
+
+msgctxt "#30202"
+msgid "Texture database not found."
+msgstr "Texture database not found."
+
+msgctxt "#30203"
+msgid "No leftover or disabled addons found."
+msgstr "No leftover or disabled addons found."
+
+msgctxt "#30204"
+msgid "Packages folder not found"
+msgstr "Packages folder not found"
+
+msgctxt "#30205"
+msgid "No packages found"
+msgstr "No packages found"
+
+msgctxt "#30206"
+msgid "No databases found"
+msgstr "No databases found"
+
+msgctxt "#30300"
+msgid "OptiKlean - Database Optimization Warning"
+msgstr "OptiKlean - Database Optimization Warning"
+
+msgctxt "#30301"
+msgid "Select operation"
+msgstr "Select operation"
+
+msgctxt "#30302"
+msgid "Confirm Backup"
+msgstr "Confirm Backup"
+
+msgctxt "#30303"
+msgid "Select log to view"
+msgstr "Select log to view"
+
+msgctxt "#30400"
+msgid "WARNING: Database Optimization[CR][CR]Please ensure your device stays powered on during the optimization process.[CR][CR]Interrupting the database optimization could corrupt the databases and make Kodi unusable.[CR][CR]Do you want to proceed with the optimization?"
+msgstr "WARNING: Database Optimization[CR][CR]Please ensure your device stays powered on during the optimization process.[CR][CR]Interrupting the database optimization could corrupt the databases and make Kodi unusable.[CR][CR]Do you want to proceed with the optimization?"
+
+msgctxt "#30402"
+msgid "Visit support group:"
+msgstr "Visit support group:"
+
+msgctxt "#30600"
+msgid "Clear Kodi temp folder log"
+msgstr "Clear Kodi temp folder log"
+
+msgctxt "#30601"
+msgid "Clear cache files from addon data log"
+msgstr "Clear cache files from addon data log"
+
+msgctxt "#30602"
+msgid "Clear temp folders from addon data log"
+msgstr "Clear temp folders from addon data log"
+
+msgctxt "#30603"
+msgid "Clear temp folder from addons log"
+msgstr "Clear temp folder from addons log"
+
+msgctxt "#30604"
+msgid "Clear unused thumbnails log"
+msgstr "Clear unused thumbnails log"
+
+msgctxt "#30605"
+msgid "Clear older thumbnails log"
+msgstr "Clear older thumbnails log"
+
+msgctxt "#30606"
+msgid "Clear addon leftovers log"
+msgstr "Clear addon leftovers log"
+
+msgctxt "#30607"
+msgid "Clear Kodi packages log"
+msgstr "Clear Kodi packages log"
+
+msgctxt "#30608"
+msgid "Optimize databases log"
+msgstr "Optimize databases log"
+
+msgctxt "#30609"
+msgid "Automatic cleaning settings log"
+msgstr "Automatic cleaning settings log"
+
+msgctxt "#30622"
+msgid "Log file not found."
+msgstr "Log file not found."
+
+msgctxt "#30623"
+msgid "Empty content"
+msgstr "Empty content"
+
+msgctxt "#30624"
+msgid "Error reading log file:"
+msgstr "Error reading log file:"
+
+msgctxt "#30625"
+msgid "Log:"
+msgstr "Log:"
+
+msgctxt "#30626"
+msgid "Full backup log"
+msgstr "Full backup log"
+
+# backup_restore.py
+
+msgctxt "#30207"
+msgid "Backup cancelled"
+msgstr "Backup cancelled"
+
+msgctxt "#30208"
+msgid "No addons selected"
+msgstr "No addons selected"
+
+msgctxt "#30209"
+msgid "No advancedsettings.xml found"
+msgstr "No advancedsettings.xml found"
+
+msgctxt "#30210"
+msgid "No custom keymaps found"
+msgstr "No custom keymaps found"
+
+msgctxt "#30211"
+msgid "Unable to read keymaps folder"
+msgstr "Unable to read keymaps folder"
+
+msgctxt "#30212"
+msgid "No skin items found"
+msgstr "No skin items found"
+
+msgctxt "#30213"
+msgid "No custom playlists found"
+msgstr "No custom playlists found"
+
+msgctxt "#30214"
+msgid "Unable to read playlists folder"
+msgstr "Unable to read playlists folder"
+
+msgctxt "#30215"
+msgid "No playlists folder found"
+msgstr "No playlists folder found"
+
+msgctxt "#30216"
+msgid "No passwords.xml found"
+msgstr "No passwords.xml found"
+
+msgctxt "#30217"
+msgid "No valid items to backup"
+msgstr "No valid items to backup"
+
+msgctxt "#30218"
+msgid "Restore cancelled"
+msgstr "Restore cancelled"
+
+msgctxt "#30304"
+msgid "Select backup destination"
+msgstr "Select backup destination"
+
+msgctxt "#30305"
+msgid "Select backup file to restore"
+msgstr "Select backup file to restore"
+
+msgctxt "#30500"
+msgid "Full backup"
+msgstr "Full backup"
+
+msgctxt "#30501"
+msgid "Backup only addons"
+msgstr "Backup only addons"
+
+msgctxt "#30502"
+msgid "Backup only addon data"
+msgstr "Backup only addon data"
+
+msgctxt "#30503"
+msgid "Backup addons + data"
+msgstr "Backup addons + data"
+
+msgctxt "#30504"
+msgid "Backup skins"
+msgstr "Backup skins"
+
+msgctxt "#30505"
+msgid "Backup Kodi databases"
+msgstr "Backup Kodi databases"
+
+msgctxt "#30506"
+msgid "Backup sources"
+msgstr "Backup sources"
+
+msgctxt "#30507"
+msgid "Backup GUI settings"
+msgstr "Backup GUI settings"
+
+msgctxt "#30508"
+msgid "Backup profiles"
+msgstr "Backup profiles"
+
+msgctxt "#30509"
+msgid "Backup advanced settings"
+msgstr "Backup advanced settings"
+
+msgctxt "#30510"
+msgid "Backup keymaps"
+msgstr "Backup keymaps"
+
+msgctxt "#30511"
+msgid "Backup playlists"
+msgstr "Backup playlists"
+
+msgctxt "#30512"
+msgid "Backup network passwords"
+msgstr "Backup network passwords"
+
+msgctxt "#30513"
+msgid "Restore from backup"
+msgstr "Restore from backup"
+
+msgctxt "#30610"
+msgid "Backup addons log"
+msgstr "Backup addons log"
+
+msgctxt "#30611"
+msgid "Backup addon data log"
+msgstr "Backup addon data log"
+
+msgctxt "#30612"
+msgid "Backup addons and data log"
+msgstr "Backup addons and data log"
+
+msgctxt "#30613"
+msgid "Backup skins log"
+msgstr "Backup skins log"
+
+msgctxt "#30614"
+msgid "Backup databases log"
+msgstr "Backup databases log"
+
+msgctxt "#30615"
+msgid "Backup sources log"
+msgstr "Backup sources log"
+
+msgctxt "#30616"
+msgid "Backup GUI settings log"
+msgstr "Backup GUI settings log"
+
+msgctxt "#30617"
+msgid "Backup profiles log"
+msgstr "Backup profiles log"
+
+msgctxt "#30618"
+msgid "Backup advanced settings log"
+msgstr "Backup advanced settings log"
+
+msgctxt "#30619"
+msgid "Backup keymaps log"
+msgstr "Backup keymaps log"
+
+msgctxt "#30620"
+msgid "Backup playlists log"
+msgstr "Backup playlists log"
+
+msgctxt "#30621"
+msgid "Restore backup log"
+msgstr "Restore backup log"
+
+msgctxt "#30700"
+msgid "Creating backup..."
+msgstr "Creating backup..."
+
+msgctxt "#30701"
+msgid "Copying backup to destination..."
+msgstr "Copying backup to destination..."
+
+msgctxt "#30702"
+msgid "Insufficient Space"
+msgstr "Insufficient Space"
+
+msgctxt "#30703"
+msgid "Not enough space in temporary directory for backup creation.[CR]Required: ~{size_required} MB[CR]Available: {size_available} MB[CR][CR]Please free up space or choose a smaller backup."
+msgstr "Not enough space in temporary directory for backup creation.[CR]Required: ~{size_required} MB[CR]Available: {size_available} MB[CR][CR]Please free up space or choose a smaller backup."
+
+msgctxt "#30704"
+msgid "Backup Destination"
+msgstr "Backup Destination"
+
+msgctxt "#30705"
+msgid "No backup path set. Would you like to:[CR]• YES: Choose a custom folder[CR]• NO: Use Kodi home folder as default"
+msgstr "No backup path set. Would you like to:[CR]• YES: Choose a custom folder[CR]• NO: Use Kodi home folder as default"
+
+msgctxt "#30706"
+msgid "Backup Path Not Available"
+msgstr "Backup Path Not Available"
+
+msgctxt "#30900"
+msgid "Backup type:"
+msgstr "Backup type:"
+
+msgctxt "#30901"
+msgid "Estimated size (compressed):"
+msgstr "Estimated size (compressed):"
+
+msgctxt "#30902"
+msgid "Free space available:"
+msgstr "Free space available:"
+
+msgctxt "#30903"
+msgid "Do you want to proceed with the backup?"
+msgstr "Do you want to proceed with the backup?"
+
+msgctxt "#30904"
+msgid "Warning: Low disk space!"
+msgstr "Warning: Low disk space!"
+
+msgctxt "#30905"
+msgid "Unknown"
+msgstr "Unknown"
+
+msgctxt "#30906"
+msgid "Unable to determine available space on the device."
+msgstr "Unable to determine available space on the device."
+
+msgctxt "#30907"
+msgid "Proceed with the backup anyway?"
+msgstr "Proceed with the backup anyway?"
+
+msgctxt "#30908"
+msgid "item"
+msgstr "item"
+
+msgctxt "#30909"
+msgid "items"
+msgstr "items"
+
+msgctxt "#30910"
+msgid "Backup path is empty"
+msgstr "Backup path is empty"
+
+msgctxt "#30911"
+msgid "Cannot access network path"
+msgstr "Cannot access network path"
+
+msgctxt "#30912"
+msgid "Drive not available (disconnected/removed)"
+msgstr "Drive not available (disconnected/removed)"
+
+msgctxt "#30913"
+msgid "Drive not available (USB drive disconnected?)"
+msgstr "Drive not available (USB drive disconnected?)"
+
+msgctxt "#30914"
+msgid "Path not found"
+msgstr "Path not found"
+
+msgctxt "#30915"
+msgid "Parent directory not accessible"
+msgstr "Parent directory not accessible"
+
+msgctxt "#30916"
+msgid "Cannot access path"
+msgstr "Cannot access path"
+
+msgctxt "#30917"
+msgid "Cannot create local directory"
+msgstr "Cannot create local directory"
+
+msgctxt "#30918"
+msgid "Error accessing path"
+msgstr "Error accessing path"
+
+msgctxt "#30920"
+msgid "Select backup file to restore"
+msgstr "Select backup file to restore"
+
+msgctxt "#30921"
+msgid "Restore cancelled"
+msgstr "Restore cancelled"
+
+msgctxt "#30922"
+msgid "Backup file not found"
+msgstr "Backup file not found"
+
+msgctxt "#30923"
+msgid "Invalid backup file"
+msgstr "Invalid backup file"
+
+msgctxt "#30924"
+msgid "The selected ZIP file is not a valid OptiKlean backup. Please select a backup created with the OptiKlean addon."
+msgstr "The selected ZIP file is not a valid OptiKlean backup. Please select a backup created with the OptiKlean addon."
+
+msgctxt "#30925"
+msgid "Failed to copy backup file"
+msgstr "Failed to copy backup file"
+
+msgctxt "#30926"
+msgid "Architecture Incompatibility"
+msgstr "Architecture Incompatibility"
+
+msgctxt "#30927"
+msgid "Warning: This backup was created on a different CPU architecture.[CR][CR]Backup: {backup_info}[CR]Current System: {current_info}[CR][CR]Reason: {reason}[CR][CR]Some binary addons may not work correctly."
+msgstr "Warning: This backup was created on a different CPU architecture.[CR][CR]Backup: {backup_info}[CR]Current System: {current_info}[CR][CR]Reason: {reason}[CR][CR]Some binary addons may not work correctly."
+
+msgctxt "#30928"
+msgid "Backup Compatibility Warning"
+msgstr "Backup Compatibility Warning"
+
+msgctxt "#30929"
+msgid "Android Incompatibility"
+msgstr "Android Incompatibility"
+
+msgctxt "#30930"
+msgid "Android uses specific .so binaries that are not compatible with other ARM systems."
+msgstr "Android uses specific .so binaries that are not compatible with other ARM systems."
+
+msgctxt "#30931"
+msgid "Embedded OS Incompatibility"
+msgstr "Embedded OS Incompatibility"
+
+msgctxt "#30932"
+msgid "LibreELEC/CoreELEC/OSMC/OpenELEC use separate repositories and are only compatible within the same ecosystem."
+msgstr "LibreELEC/CoreELEC/OSMC/OpenELEC use separate repositories and are only compatible within the same ecosystem."
+
+msgctxt "#30933"
+msgid "iOS Incompatibility"
+msgstr "iOS Incompatibility"
+
+msgctxt "#30934"
+msgid "iOS binaries are not compatible with other ARM systems."
+msgstr "iOS binaries are not compatible with other ARM systems."
+
+msgctxt "#30935"
+msgid "ARM System Incompatibility"
+msgstr "ARM System Incompatibility"
+
+msgctxt "#30936"
+msgid "Different ARM variants use incompatible binary formats and system libraries."
+msgstr "Different ARM variants use incompatible binary formats and system libraries."
+
+msgctxt "#30937"
+msgid "This backup contains native addons from an incompatible system:[CR][CR]Backup: {backup_info}[CR]Current System: {current_info}[CR][CR]Native addons that will NOT work:"
+msgstr "This backup contains native addons from an incompatible system:[CR][CR]Backup: {backup_info}[CR]Current System: {current_info}[CR][CR]Native addons that will NOT work:"
+
+msgctxt "#30938"
+msgid "Cross-platform Restore Warning"
+msgstr "Cross-platform Restore Warning"
+
+msgctxt "#30939"
+msgid "Backup System: {backup_info}[CR]Current System: {current_info}[CR][CR]These native addons may not work:"
+msgstr "Backup System: {backup_info}[CR]Current System: {current_info}[CR][CR]These native addons may not work:"
+
+msgctxt "#30940"
+msgid "Reason: {reason}[CR][CR]What do you want to do?"
+msgstr "Reason: {reason}[CR][CR]What do you want to do?"
+
+msgctxt "#30941"
+msgid "Skip Native Addons"
+msgstr "Skip Native Addons"
+
+msgctxt "#30942"
+msgid "Restore All Anyway (May Cause Issues)"
+msgstr "Restore All Anyway (May Cause Issues)"
+
+msgctxt "#30943"
+msgid "Cross-platform Restore"
+msgstr "Cross-platform Restore"
+
+msgctxt "#30944"
+msgid "Restore type: {restore_type}[CR]Size: {size} MB[CR]Available free space: {free_space}[CR][CR]Unable to determine free space on this device.[CR]Do you want to proceed with the restore anyway?[CR][CR]This will overwrite existing files."
+msgstr "Restore type: {restore_type}[CR]Size: {size} MB[CR]Available free space: {free_space}[CR][CR]Unable to determine free space on this device.[CR]Do you want to proceed with the restore anyway?[CR][CR]This will overwrite existing files."
+
+msgctxt "#30945"
+msgid "Restore type: {restore_type}[CR]Size: {size} MB[CR]Available free space: {free_space}[CR][CR]This will overwrite existing files. Continue?"
+msgstr "Restore type: {restore_type}[CR]Size: {size} MB[CR]Available free space: {free_space}[CR][CR]This will overwrite existing files. Continue?"
+
+msgctxt "#30946"
+msgid "Confirm Restore"
+msgstr "Confirm Restore"
+
+msgctxt "#30947"
+msgid "Restoring backup..."
+msgstr "Restoring backup..."
+
+msgctxt "#30948"
+msgid "Restoring {current}/{total}: {filename}"
+msgstr "Restoring {current}/{total}: {filename}"
+
+msgctxt "#30949"
+msgid "Restore completed: {items} items ({size} MB)"
+msgstr "Restore completed: {items} items ({size} MB)"
+
+msgctxt "#30950"
+msgid "Restore completed: {items} items ({errors} errors) ({size} MB)"
+msgstr "Restore completed: {items} items ({errors} errors) ({size} MB)"
+
+msgctxt "#30951"
+msgid "Delete Backup File?"
+msgstr "Delete Backup File?"
+
+msgctxt "#30952"
+msgid "The backup has been successfully restored.[CR]Would you like to delete the backup file?[CR][CR]{filename}"
+msgstr "The backup has been successfully restored.[CR]Would you like to delete the backup file?[CR][CR]{filename}"
+
+msgctxt "#30953"
+msgid "Backup file {filename} deleted successfully"
+msgstr "Backup file {filename} deleted successfully"
+
+msgctxt "#30954"
+msgid "Failed to delete backup file: {error}"
+msgstr "Failed to delete backup file: {error}"
+
+msgctxt "#30955"
+msgid "Restore completed successfully![CR][CR]Skipped native addons (install from repository):"
+msgstr "Restore completed successfully![CR][CR]Skipped native addons (install from repository):"
+
+msgctxt "#30956"
+msgid "Go to System - Add-ons - Install from repository[CR]to add missing addons."
+msgstr "Go to System - Add-ons - Install from repository[CR]to add missing addons."
+
+msgctxt "#30957"
+msgid "Cross-platform Restore Complete"
+msgstr "Cross-platform Restore Complete"
+
+msgctxt "#30958"
+msgid "Some changes may require a Kodi restart to take effect.[CR]Would you like to restart Kodi now?"
+msgstr "Some changes may require a Kodi restart to take effect.[CR]Would you like to restart Kodi now?"
+
+msgctxt "#30959"
+msgid "Restart Kodi?"
+msgstr "Restart Kodi?"
+
+msgctxt "#30960"
+msgid "Invalid or corrupted backup file"
+msgstr "Invalid or corrupted backup file"
+
+msgctxt "#30961"
+msgid "Invalid backup file"
+msgstr "Invalid backup file"
+
+msgctxt "#30962"
+msgid "Restore failed: {error}"
+msgstr "Restore failed: {error}"
+
+msgctxt "#30963"
+msgid "Restore completed but encountered logging error"
+msgstr "Restore completed but encountered logging error"
+
+msgctxt "#30964"
+msgid "Backup failed: {error}"
+msgstr "Backup failed: {error}"
+
+# Log file labels
+
+msgctxt "#30965"
+msgid "Timestamp"
+msgstr "Timestamp"
+
+msgctxt "#30966"
+msgid "Backup type"
+msgstr "Backup type"
+
+msgctxt "#30967"
+msgid "Filename"
+msgstr "Filename"
+
+msgctxt "#30968"
+msgid "Destination path"
+msgstr "Destination path"
+
+msgctxt "#30969"
+msgid "Size"
+msgstr "Size"
+
+msgctxt "#30970"
+msgid "Result"
+msgstr "Result"
+
+msgctxt "#30971"
+msgid "Backup contents"
+msgstr "Backup contents"
+
+msgctxt "#30972"
+msgid "Restore type"
+msgstr "Restore type"
+
+msgctxt "#30973"
+msgid "Backup file"
+msgstr "Backup file"
+
+msgctxt "#30974"
+msgid "Source path"
+msgstr "Source path"
+
+msgctxt "#30975"
+msgid "Items restored"
+msgstr "Items restored"
+
+msgctxt "#30976"
+msgid "Errors encountered ({count} files)"
+msgstr "Errors encountered ({count} files)"
+
+msgctxt "#30977"
+msgid "Unknown"
+msgstr "Unknown"
+
+# Backup type labels
+
+msgctxt "#30978"
+msgid "Full backup"
+msgstr "Full backup"
+
+msgctxt "#30979"
+msgid "Addons only"
+msgstr "Addons only"
+
+msgctxt "#30980"
+msgid "Addon data only"
+msgstr "Addon data only"
+
+msgctxt "#30981"
+msgid "Addons + data"
+msgstr "Addons + data"
+
+msgctxt "#30982"
+msgid "Skins"
+msgstr "Skins"
+
+msgctxt "#30983"
+msgid "Kodi databases"
+msgstr "Kodi databases"
+
+msgctxt "#30984"
+msgid "Sources (sources.xml)"
+msgstr "Sources (sources.xml)"
+
+msgctxt "#30985"
+msgid "GUI settings (guisettings.xml)"
+msgstr "GUI settings (guisettings.xml)"
+
+msgctxt "#30986"
+msgid "Profiles (profiles.xml)"
+msgstr "Profiles (profiles.xml)"
+
+msgctxt "#30987"
+msgid "Advanced settings (advancedsettings.xml)"
+msgstr "Advanced settings (advancedsettings.xml)"
+
+msgctxt "#30988"
+msgid "Keymaps"
+msgstr "Keymaps"
+
+msgctxt "#30989"
+msgid "Playlists"
+msgstr "Playlists"
+
+msgctxt "#30990"
+msgid "Network passwords (passwords.xml)"
+msgstr "Network passwords (passwords.xml)"
+
+# Additional log strings
+
+msgctxt "#30991"
+msgid "Restore completed before restart"
+msgstr "Restore completed before restart"
+
+msgctxt "#30992"
+msgid "Items restored"
+msgstr "Items restored"
+
+msgctxt "#30993"
+msgid "Logging error"
+msgstr "Logging error"
+
+msgctxt "#30994"
+msgid "Error processing filename"
+msgstr "Error processing filename"
+
+msgctxt "#30995"
+msgid "Error processing path"
+msgstr "Error processing path"
+
+msgctxt "#30996"
+msgid "(backup file deleted after restore)"
+msgstr "(backup file deleted after restore)"
+
+msgctxt "#30997"
+msgid "Restore completed with error in logging"
+msgstr "Restore completed with error in logging"
+
+msgctxt "#30998"
+msgid "Error"
+msgstr "Error"
+
+msgctxt "#30999"
+msgid "Backup deleted"
+msgstr "Backup deleted"
+
+# Backup path error dialogs
+
+msgctxt "#31000"
+msgid "The network backup path is not available:[CR][CR]{path}[CR][CR]Please check:[CR]• Network connection[CR]• Server availability[CR]• Path access permissions[CR][CR]Update the backup path in addon settings."
+msgstr "The network backup path is not available:[CR][CR]{path}[CR][CR]Please check:[CR]• Network connection[CR]• Server availability[CR]• Path access permissions[CR][CR]Update the backup path in addon settings."
+
+msgctxt "#31001"
+msgid "The backup drive is not available:[CR][CR]{path}[CR][CR]Error: {error}[CR][CR]Please check:[CR]• USB drive is connected[CR]• External drive is powered on[CR]• Drive letter is assigned[CR][CR]Update the backup path in addon settings."
+msgstr "The backup drive is not available:[CR][CR]{path}[CR][CR]Error: {error}[CR][CR]Please check:[CR]• USB drive is connected[CR]• External drive is powered on[CR]• Drive letter is assigned[CR][CR]Update the backup path in addon settings."
+
+msgctxt "#31002"
+msgid "The backup path is not available:[CR][CR]{path}[CR][CR]Error: {error}[CR][CR]Please check the path in addon settings."
+msgstr "The backup path is not available:[CR][CR]{path}[CR][CR]Error: {error}[CR][CR]Please check the path in addon settings."
+
+# Dialog buttons
+
+msgctxt "#31003"
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "#31004"
+msgid "Open Settings"
+msgstr "Open Settings"
+
+# Addon selection
+
+msgctxt "#31005"
+msgid "Select addons to back up"
+msgstr "Select addons to back up"
+
+# Progress messages
+
+msgctxt "#31006"
+msgid "Backing up: {filename}"
+msgstr "Backing up: {filename}"
+
+# Item count strings
+
+msgctxt "#31007"
+msgid "item"
+msgstr "item"
+
+msgctxt "#31008"
+msgid "items"
+msgstr "items"
+
+# autoupdater.py
+
+msgctxt "#30219"
+msgid "Updated to commit"
+msgstr "Updated to commit"
+
+msgctxt "#30220"
+msgid "Download failed"
+msgstr "Download failed"
+
+msgctxt "#30221"
+msgid "Update failed"
+msgstr "Update failed"
+
+msgctxt "#30401"
+msgid "To apply the update, it is recommended to restart Kodi."
+msgstr "To apply the update, it is recommended to restart Kodi."
+
+msgctxt "#30800"
+msgid "Actual used space:"
+msgstr "Actual used space:"
+
+msgctxt "#30801"
+msgid "Addons data:"
+msgstr "Addons data:"
+
+msgctxt "#30805"
+msgid "Kodi packages:"
+msgstr "Kodi packages:"
+
+msgctxt "#30806"
+msgid "Thumbnails:"
+msgstr "Thumbnails:"
+
+msgctxt "#30808"
+msgid "Total used:"
+msgstr "Total used:"
+
+msgctxt "#30809"
+msgid "Estimated space savings if you run the clean-up tasks:"
+msgstr "Estimated space savings if you run the clean-up tasks:"
+
+msgctxt "#30810"
+msgid "Total recoverable:"
+msgstr "Total recoverable:"
+
+msgctxt "#30811"
+msgid "Clean all!"
+msgstr "Clean all!"
+
+msgctxt "#30812"
+msgid "Restart Kodi"
+msgstr "Restart Kodi"
+
+msgctxt "#30813"
+msgid "Addons:"
+msgstr "Addons:"
+
+# DetailsWindow.xml
+
+msgctxt "#30306"
+msgid "Folder Space Analysis"
+msgstr "Folder Space Analysis"
+
+msgctxt "#30802"
+msgid "Percentage"
+msgstr "Percentage"
+
+msgctxt "#30803"
+msgid "Size"
+msgstr "Size"
+
+msgctxt "#30804"
+msgid "Folder"
+msgstr "Folder"
+
+# SupportDialog.xml
+
+msgctxt "#30307"
+msgid "Support"
+msgstr "Support"
+
+msgctxt "#30807"
+msgid "Telegram group:"
+msgstr "Telegram group:"
+
+# Additional user-facing strings for logs and addon selection dialog
+
+msgctxt "#31009"
+msgid "Date and time:"
+msgstr "Date and time:"
+
+msgctxt "#31010"
+msgid "data"
+msgstr "data"
+
+msgctxt "#31011"
+msgid "no data"
+msgstr "no data"
+
+msgctxt "#31012"
+msgid "addon"
+msgstr "addon"
+
+msgctxt "#31013"
+msgid "KB"
+msgstr "KB"
+
+msgctxt "#31014"
+msgid "MB"
+msgstr "MB"
+
+msgctxt "#31015"
+msgid "Database:"
+msgstr "Database:"
+
+msgctxt "#31016"
+msgid "GB"
+msgstr "GB"
+
+# Backup/Restore result status strings (for log files)
+
+# Generic status
+msgctxt "#31017"
+msgid "Success"
+msgstr "Success"
+
+msgctxt "#31018"
+msgid "Error"
+msgstr "Error"
+
+# User cancellations
+msgctxt "#31019"
+msgid "Cancelled by user"
+msgstr "Cancelled by user"
+
+msgctxt "#31020"
+msgid "Cancelled by user - No path changes"
+msgstr "Cancelled by user - No path changes"
+
+msgctxt "#31021"
+msgid "Cancelled by user - Path not available"
+msgstr "Cancelled by user - Path not available"
+
+# Backup errors
+msgctxt "#31022"
+msgid "Error creating backup"
+msgstr "Error creating backup"
+
+msgctxt "#31023"
+msgid "Transfer failed: {error}"
+msgstr "Transfer failed: {error}"
+
+msgctxt "#31024"
+msgid "Backup file not found"
+msgstr "Backup file not found"
+
+msgctxt "#31025"
+msgid "Invalid OptiKlean backup file"
+msgstr "Invalid OptiKlean backup file"
+
+msgctxt "#31026"
+msgid "Error copying backup file from network location"
+msgstr "Error copying backup file from network location"
+
+msgctxt "#31027"
+msgid "Error: Invalid or corrupted backup file"
+msgstr "Error: Invalid or corrupted backup file"
+
+msgctxt "#31028"
+msgid "Network copy failed"
+msgstr "Network copy failed"
+
+msgctxt "#31029"
+msgid "Both shutil and xbmcvfs failed"
+msgstr "Both shutil and xbmcvfs failed"
+
+msgctxt "#31030"
+msgid "Proceed anyway?"
+msgstr "Proceed anyway?"
+
+msgctxt "#31031"
+msgid "Blocked - {reason}"
+msgstr "Blocked - {reason}"
+
+msgctxt "#31032"
+msgid "No advancedsettings.xml found"
+msgstr "No advancedsettings.xml found"
+
+msgctxt "#31033"
+msgid "No custom keymaps found"
+msgstr "No custom keymaps found"
+
+msgctxt "#31034"
+msgid "Unable to read keymaps folder"
+msgstr "Unable to read keymaps folder"
+
+msgctxt "#31035"
+msgid "No skin items found to backup"
+msgstr "No skin items found to backup"
+
+msgctxt "#31036"
+msgid "No custom playlists found"
+msgstr "No custom playlists found"
+
+msgctxt "#31037"
+msgid "Unable to read playlists folder"
+msgstr "Unable to read playlists folder"
+
+msgctxt "#31038"
+msgid "No playlists folder found"
+msgstr "No playlists folder found"
+
+msgctxt "#31039"
+msgid "No passwords.xml found"
+msgstr "No passwords.xml found"
+
+msgctxt "#31040"
+msgid "No valid items found"
+msgstr "No valid items found"
+
+# Partial success
+msgctxt "#31041"
+msgid "Partial success: {items_restored} restored, {failed_count} failed"
+msgstr "Partial success: {items_restored} restored, {failed_count} failed"
+
+msgctxt "#31042"
+msgid "Success (backup file deletion failed: {error})"
+msgstr "Success (backup file deletion failed: {error})"
+
+# default.py strings - Menu items
+
+msgctxt "#31043"
+msgid "Clear cache and temp"
+msgstr "Clear cache and temp"
+
+msgctxt "#31044"
+msgid "Clear thumbnails and artwork"
+msgstr "Clear thumbnails and artwork"
+
+msgctxt "#31045"
+msgid "Clear addons leftovers"
+msgstr "Clear addons leftovers"
+
+msgctxt "#31046"
+msgid "Clear packages"
+msgstr "Clear packages"
+
+msgctxt "#31047"
+msgid "Optimize databases"
+msgstr "Optimize databases"
+
+msgctxt "#31048"
+msgid "Cleanup dashboard"
+msgstr "Cleanup dashboard"
+
+msgctxt "#31049"
+msgid "Backup and restore"
+msgstr "Backup and restore"
+
+msgctxt "#31050"
+msgid "View logs"
+msgstr "View logs"
+
+msgctxt "#31051"
+msgid "Support"
+msgstr "Support"
+
+msgctxt "#31052"
+msgid "Open addon settings"
+msgstr "Open addon settings"
+
+# default.py strings - Dialog titles and messages
+
+msgctxt "#31053"
+msgid "Select cache/temp to clear"
+msgstr "Select cache/temp to clear"
+
+msgctxt "#31054"
+msgid "Select thumbnail cleaning options"
+msgstr "Select thumbnail cleaning options"
+
+msgctxt "#31055"
+msgid "Preparing to clear cache..."
+msgstr "Preparing to clear cache..."
+
+msgctxt "#31056"
+msgid "Clear cache and temp completed! ({total_mb:.2f} MB freed)"
+msgstr "Clear cache and temp completed! ({total_mb:.2f} MB freed)"
+
+msgctxt "#31057"
+msgid "Error during cleanup, see log"
+msgstr "Error during cleanup, see log"
+
+msgctxt "#31058"
+msgid "Thumbnails folder not found."
+msgstr "Thumbnails folder not found."
+
+msgctxt "#31059"
+msgid "Packages folder not found"
+msgstr "Packages folder not found"
+
+msgctxt "#31060"
+msgid "No packages found"
+msgstr "No packages found"
+
+msgctxt "#31061"
+msgid "No leftover or disabled addons found."
+msgstr "No leftover or disabled addons found."
+
+msgctxt "#31062"
+msgid "Select folders to remove:"
+msgstr "Select folders to remove:"
+
+msgctxt "#31063"
+msgid "No databases found"
+msgstr "No databases found"
+
+msgctxt "#31064"
+msgid "Select operation"
+msgstr "Select operation"
+
+msgctxt "#31065"
+msgid "Found {count} corrupted databases:"
+msgstr "Found {count} corrupted databases:"
+
+msgctxt "#31066"
+msgid "Would you like to restore them from the backup files?"
+msgstr "Would you like to restore them from the backup files?"
+
+msgctxt "#31067"
+msgid "This will replace the corrupted databases with their backup versions."
+msgstr "This will replace the corrupted databases with their backup versions."
+
+msgctxt "#31068"
+msgid "Database Integrity Issues"
+msgstr "Database Integrity Issues"
+
+msgctxt "#31069"
+msgid "Unable to load folder details"
+msgstr "Unable to load folder details"
+
+# default.py strings - Multiselect options
+
+msgctxt "#31070"
+msgid "Clear Kodi temp folder (preserving logs)"
+msgstr "Clear Kodi temp folder (preserving logs)"
+
+msgctxt "#31071"
+msgid "Clear cache files from addon data"
+msgstr "Clear cache files from addon data"
+
+msgctxt "#31072"
+msgid "Clear temp folders from addon data"
+msgstr "Clear temp folders from addon data"
+
+msgctxt "#31073"
+msgid "Clear temp folder from addons"
+msgstr "Clear temp folder from addons"
+
+msgctxt "#31074"
+msgid "Clear unused thumbnails"
+msgstr "Clear unused thumbnails"
+
+msgctxt "#31075"
+msgid "Clear thumbnails older than {days} days"
+msgstr "Clear thumbnails older than {days} days"
+
+# default.py strings - Progress messages
+
+msgctxt "#31076"
+msgid "Preparing thumbnails cleanup..."
+msgstr "Preparing thumbnails cleanup..."
+
+msgctxt "#31077"
+msgid "Scanning addon data..."
+msgstr "Scanning addon data..."
+
+msgctxt "#31078"
+msgid "Preparing to clear addon data temp folders..."
+msgstr "Preparing to clear addon data temp folders..."
+
+msgctxt "#31079"
+msgid "Preparing to clear addons temp folder..."
+msgstr "Preparing to clear addons temp folder..."
+
+msgctxt "#31080"
+msgid "No databases optimized"
+msgstr "No databases optimized"
+
+msgctxt "#31081"
+msgid "Removing selected addons..."
+msgstr "Removing selected addons..."
+
+msgctxt "#31082"
+msgid "Clearing Kodi temp folder (preserving log files)..."
+msgstr "Clearing Kodi temp folder (preserving log files)..."
+
+msgctxt "#31083"
+msgid "Mapping temp folder structure..."
+msgstr "Mapping temp folder structure..."
+
+msgctxt "#31084"
+msgid "Mapping addons temp folder structure..."
+msgstr "Mapping addons temp folder structure..."
+
+msgctxt "#31085"
+msgid "Restoring database backups..."
+msgstr "Restoring database backups..."
+
+msgctxt "#31086"
+msgid "Processing: {filename}"
+msgstr "Processing: {filename}"
+
+msgctxt "#31087"
+msgid "Deleting file: {file}"
+msgstr "Deleting file: {file}"
+
+msgctxt "#31088"
+msgid "Processing folder: {folder}"
+msgstr "Processing folder: {folder}"
+
+msgctxt "#31089"
+msgid "Processing file: {item}"
+msgstr "Processing file: {item}"
+
+msgctxt "#31090"
+msgid "Checking {addon_id}..."
+msgstr "Checking {addon_id}..."
+
+msgctxt "#31091"
+msgid "Deleting package ({index}/{total}): {package_file}"
+msgstr "Deleting package ({index}/{total}): {package_file}"
+
+msgctxt "#31092"
+msgid "Restoring: {db_name}"
+msgstr "Restoring: {db_name}"
+
+# default.py strings - Log file headers
+
+msgctxt "#31093"
+msgid "Kodi temp folder cleaning results:"
+msgstr "Kodi temp folder cleaning results:"
+
+msgctxt "#31094"
+msgid "Addon cache folders cleaning results:"
+msgstr "Addon cache folders cleaning results:"
+
+msgctxt "#31095"
+msgid "Addon temp folders cleaning results:"
+msgstr "Addon temp folders cleaning results:"
+
+msgctxt "#31096"
+msgid "Addons temp folder cleaning results:"
+msgstr "Addons temp folder cleaning results:"
+
+msgctxt "#31097"
+msgid "Kodi packages cleaning results:"
+msgstr "Kodi packages cleaning results:"
+
+# default.py strings - Log content labels
+
+msgctxt "#31098"
+msgid "Files deleted: {count} ({size:.3f} MB freed)"
+msgstr "Files deleted: {count} ({size:.3f} MB freed)"
+
+msgctxt "#31099"
+msgid "Folders deleted: {count}"
+msgstr "Folders deleted: {count}"
+
+msgctxt "#31100"
+msgid "Files in use (locked):"
+msgstr "Files in use (locked):"
+
+msgctxt "#31101"
+msgid "Errors:"
+msgstr "Errors:"
+
+msgctxt "#31102"
+msgid "Protected items (not deleted):"
+msgstr "Protected items (not deleted):"
+
+msgctxt "#31103"
+msgid "... and {count} more items"
+msgstr "... and {count} more items"
+
+msgctxt "#31104"
+msgid "Running time: {time}s"
+msgstr "Running time: {time}s"
+
+msgctxt "#31105"
+msgid "Date and time: {datetime}"
+msgstr "Date and time: {datetime}"
+
+msgctxt "#31106"
+msgid "No addon folders found"
+msgstr "No addon folders found"
+
+msgctxt "#31107"
+msgid "[SKIPPED] Critical addon: {addon_id}"
+msgstr "[SKIPPED] Critical addon: {addon_id}"
+
+msgctxt "#31108"
+msgid "Deleted {count} files ({size:.2f} KB freed):"
+msgstr "Deleted {count} files ({size:.2f} KB freed):"
+
+msgctxt "#31109"
+msgid "Protected files ({count}):"
+msgstr "Protected files ({count}):"
+
+msgctxt "#31110"
+msgid "Errors ({count}):"
+msgstr "Errors ({count}):"
+
+msgctxt "#31111"
+msgid "Total space freed: {size:.2f} MB"
+msgstr "Total space freed: {size:.2f} MB"
+
+msgctxt "#31112"
+msgid "No leftover or disabled addon folders found."
+msgstr "No leftover or disabled addon folders found."
+
+msgctxt "#31113"
+msgid "Successfully deleted addon folders:"
+msgstr "Successfully deleted addon folders:"
+
+msgctxt "#31114"
+msgid "  [Addons]:"
+msgstr "  [Addons]:"
+
+msgctxt "#31115"
+msgid "  [Addon Data]:"
+msgstr "  [Addon Data]:"
+
+msgctxt "#31116"
+msgid "Addon folders with locked files:"
+msgstr "Addon folders with locked files:"
+
+msgctxt "#31117"
+msgid "Locked files:"
+msgstr "Locked files:"
+
+msgctxt "#31118"
+msgid "No package files found to delete."
+msgstr "No package files found to delete."
+
+msgctxt "#31119"
+msgid "Operation cancelled by user."
+msgstr "Operation cancelled by user."
+
+msgctxt "#31120"
+msgid "Successfully deleted {count} packages ({size:.2f} MB freed):"
+msgstr "Successfully deleted {count} packages ({size:.2f} MB freed):"
+
+msgctxt "#31121"
+msgid "Packages in use (locked):"
+msgstr "Packages in use (locked):"
+
+msgctxt "#31122"
+msgid "Errors while deleting packages:"
+msgstr "Errors while deleting packages:"
+
+msgctxt "#31123"
+msgid "No databases found to process."
+msgstr "No databases found to process."
+
+msgctxt "#31124"
+msgid "DATABASE RESTORATION:"
+msgstr "DATABASE RESTORATION:"
+
+msgctxt "#31125"
+msgid "Successfully restored {count} corrupted databases:"
+msgstr "Successfully restored {count} corrupted databases:"
+
+msgctxt "#31126"
+msgid "RESTORATION ERRORS:"
+msgstr "RESTORATION ERRORS:"
+
+msgctxt "#31127"
+msgid "USER CHOICE: Corrupted databases NOT restored (user declined)"
+msgstr "USER CHOICE: Corrupted databases NOT restored (user declined)"
+
+msgctxt "#31128"
+msgid "Backup files retained for manual restoration if needed."
+msgstr "Backup files retained for manual restoration if needed."
+
+msgctxt "#31129"
+msgid "AUTO MODE - DATABASE RESTORATION:"
+msgstr "AUTO MODE - DATABASE RESTORATION:"
+
+msgctxt "#31130"
+msgid "Automatically restored {count} corrupted databases:"
+msgstr "Automatically restored {count} corrupted databases:"
+
+msgctxt "#31131"
+msgid "AUTO MODE - RESTORATION ERRORS:"
+msgstr "AUTO MODE - RESTORATION ERRORS:"
+
+msgctxt "#31132"
+msgid "AUTO MODE - PERSISTENT CORRUPTION:"
+msgstr "AUTO MODE - PERSISTENT CORRUPTION:"
+
+msgctxt "#31133"
+msgid "The following databases remain corrupted after auto-restore attempt:"
+msgstr "The following databases remain corrupted after auto-restore attempt:"
+
+msgctxt "#31134"
+msgid "Manual intervention may be required."
+msgstr "Manual intervention may be required."
+
+msgctxt "#31135"
+msgid "Total databases processed: {count}"
+msgstr "Total databases processed: {count}"
+
+msgctxt "#31136"
+msgid "SUCCESSFUL BACKUPS:"
+msgstr "SUCCESSFUL BACKUPS:"
+
+msgctxt "#31137"
+msgid "OPTIMIZED DATABASES:"
+msgstr "OPTIMIZED DATABASES:"
+
+msgctxt "#31138"
+msgid "INTEGRITY VERIFICATION:"
+msgstr "INTEGRITY VERIFICATION:"
+
+msgctxt "#31139"
+msgid "BACKUP CLEANUP (successful optimization):"
+msgstr "BACKUP CLEANUP (successful optimization):"
+
+msgctxt "#31140"
+msgid "LOCKED DATABASES (not optimized):"
+msgstr "LOCKED DATABASES (not optimized):"
+
+msgctxt "#31141"
+msgid "BACKUP FAILED:"
+msgstr "BACKUP FAILED:"
+
+msgctxt "#31142"
+msgid "OPTIMIZATION ERRORS:"
+msgstr "OPTIMIZATION ERRORS:"
+
+msgctxt "#31143"
+msgid "BACKUP CLEANUP FAILED:"
+msgstr "BACKUP CLEANUP FAILED:"
+
+msgctxt "#31144"
+msgid "CORRUPTED DATABASES (backups retained):"
+msgstr "CORRUPTED DATABASES (backups retained):"
+
+msgctxt "#31145"
+msgid "SUMMARY:"
+msgstr "SUMMARY:"
+
+msgctxt "#31146"
+msgid "• Databases optimized: {count}"
+msgstr "• Databases optimized: {count}"
+
+msgctxt "#31147"
+msgid "• Backups automatically cleaned: {count}"
+msgstr "• Backups automatically cleaned: {count}"
+
+msgctxt "#31148"
+msgid "• Backups retained (due to issues): {count}"
+msgstr "• Backups retained (due to issues): {count}"
+
+msgctxt "#31149"
+msgid "• Corrupted databases: {count}"
+msgstr "• Corrupted databases: {count}"
+
+msgctxt "#31150" 
+msgid "Optimized {count} databases"
+msgstr "Optimized {count} databases"
+
+msgctxt "#31151"
+msgid ", {count} corrupted databases auto-restored"
+msgstr ", {count} corrupted databases auto-restored"
+
+msgctxt "#31152"
+msgid ", {count} backups cleaned"
+msgstr ", {count} backups cleaned"
+
+msgctxt "#31153"
+msgid "Deleted {count} packages ({size:.2f} MB freed)"
+msgstr "Deleted {count} packages ({size:.2f} MB freed)"
+
+msgctxt "#31154"
+msgid "No packages deleted"
+msgstr "No packages deleted"
+
+# Thumbnails cleaning strings
+msgctxt "#31155"
+msgid "Unused thumbnails cleaning results:"
+msgstr "Unused thumbnails cleaning results:"
+
+msgctxt "#31156"
+msgid "Texture database not found."
+msgstr "Texture database not found."
+
+msgctxt "#31157"
+msgid "Reading texture database..."
+msgstr "Reading texture database..."
+
+msgctxt "#31158"
+msgid "Deleted files:"
+msgstr "Deleted files:"
+
+msgctxt "#31159"
+msgid "Locked files (not deleted):"
+msgstr "Locked files (not deleted):"
+
+msgctxt "#31160"
+msgid "Older thumbnails cleaning results (threshold: {days} days):"
+msgstr "Older thumbnails cleaning results (threshold: {days} days):"
+
+msgctxt "#31161"
+msgid "Thumbnails processed: Found old thumbnails in database"
+msgstr "Thumbnails processed: Found old thumbnails in database"
+
+msgctxt "#31162"
+msgid "Successfully deleted: {count} ({size:.2f} MB freed)"
+msgstr "Successfully deleted: {count} ({size:.2f} MB freed)"
+
+msgctxt "#31163"
+msgid "Database entries removed: {sizes} from sizes table, {texture} from texture table"
+msgstr "Database entries removed: {sizes} from sizes table, {texture} from texture table"
+
+msgctxt "#31164"
+msgid "Deleted files (older than {days} days):"
+msgstr "Deleted files (older than {days} days):"
+
+# Addon leftovers log header
+msgctxt "#31165"
+msgid "Disabled and leftovers addons cleaning results:"
+msgstr "Disabled and leftovers addons cleaning results:"
+
+# Automatic settings log header
+msgctxt "#31166"
+msgid "Automatic cleaning settings status:"
+msgstr "Automatic cleaning settings status:"
+
+# Database optimization log header
+msgctxt "#31167"
+msgid "Database optimization results:"
+msgstr "Database optimization results:"
+
+# UI dialogs (view_logs, all_in_one_panel)
+msgctxt "#31168"
+msgid "Error"
+msgstr "Error"
+
+msgctxt "#31169"
+msgid "Unable to load folder details"
+msgstr "Unable to load folder details"
+
+msgctxt "#31170"
+msgid "XML file not found"
+msgstr "XML file not found"
+
+msgctxt "#31171"
+msgid "Error: {error}"
+msgstr "Error: {error}"
+
+msgctxt "#31172"
+msgid "Confirmation"
+msgstr "Confirmation"
+
+msgctxt "#31173"
+msgid "Would you like to restart Kodi now?"
+msgstr "Would you like to restart Kodi now?"
+
+msgctxt "#31174"
+msgid "Cleanup failed (see log)"
+msgstr "Cleanup failed (see log)"
+
+msgctxt "#31175"
+msgid "Successfully deleted ({count} items, {size:.2f} MB freed):"
+msgstr "Successfully deleted ({count} items, {size:.2f} MB freed):"
+
+msgctxt "#31176"
+msgid "Locked items ({count}):"
+msgstr "Locked items ({count}):"
+
+msgctxt "#31177"
+msgid "Cleaned {total_deleted} thumbnails ({total_mb_combined:.2f} MB freed)"
+msgstr "Cleaned {total_deleted} thumbnails ({total_mb_combined:.2f} MB freed)"
+
+msgctxt "#31178"
+msgid "Deleted {len_deleted} unused thumbnails ({total_mb:.2f} MB freed)"
+msgstr "Deleted {len_deleted} unused thumbnails ({total_mb:.2f} MB freed)"
+
+msgctxt "#31179"
+msgid "Unused thumbnails cleanup completed"
+msgstr "Unused thumbnails cleanup completed"
+
+msgctxt "#31180"
+msgid "Deleted {len_deleted_older} old thumbnails ({total_mb_older:.2f} MB freed)"
+msgstr "Deleted {len_deleted_older} old thumbnails ({total_mb_older:.2f} MB freed)"
+
+msgctxt "#31181"
+msgid "Old thumbnails cleanup completed"
+msgstr "Old thumbnails cleanup completed"
+
+msgctxt "#31182"
+msgid "Thumbnails cleanup completed"
+msgstr "Thumbnails cleanup completed"
+
+msgctxt "#31183"
+msgid "Select operation"
+msgstr "Select operation"
+
+msgctxt "#31184"
+msgid "Full backup"
+msgstr "Full backup"
+
+msgctxt "#31185"
+msgid "Backup only addons"
+msgstr "Backup only addons"
+
+msgctxt "#31186"
+msgid "Backup only addon data"
+msgstr "Backup only addon data"
+
+msgctxt "#31187"
+msgid "Backup addons + data"
+msgstr "Backup addons + data"
+
+msgctxt "#31188"
+msgid "Backup skins"
+msgstr "Backup skins"
+
+msgctxt "#31189"
+msgid "Backup Kodi databases"
+msgstr "Backup Kodi databases"
+
+msgctxt "#31190"
+msgid "Backup sources"
+msgstr "Backup sources"
+
+msgctxt "#31191"
+msgid "Backup GUI settings"
+msgstr "Backup GUI settings"
+
+msgctxt "#31192"
+msgid "Backup profiles"
+msgstr "Backup profiles"
+
+msgctxt "#31193"
+msgid "Backup advanced settings"
+msgstr "Backup advanced settings"
+
+msgctxt "#31194"
+msgid "Backup keymaps"
+msgstr "Backup keymaps"
+
+msgctxt "#31195"
+msgid "Backup playlists"
+msgstr "Backup playlists"
+
+msgctxt "#31196"
+msgid "Select log to view"
+msgstr "Select log to view"
+
+msgctxt "#31197"
+msgid "Reading addon information..."
+msgstr "Reading addon information..."
+
+msgctxt "#31198"
+msgid "Removing selected addons..."
+msgstr "Removing selected addons..."
+
+msgctxt "#31199"
+msgid "Preparing to clear packages..."
+msgstr "Preparing to clear packages..."
+
+msgctxt "#31200"
+msgid "Preparing database optimization..."
+msgstr "Preparing database optimization..."
+
+msgctxt "#31201"
+msgid "Running full cleanup..."
+msgstr "Running full cleanup..."
+
+msgctxt "#31202"
+msgid "Refreshing data..."
+msgstr "Refreshing data..."
+
+msgctxt "#31203"
+msgid "Texture database not found."
+msgstr "Texture database not found."
+
+msgctxt "#31204"
+msgid "Counting thumbnails..."
+msgstr "Counting thumbnails..."
+
+msgctxt "#31205"
+msgid "Deleting unused thumbnails..."
+msgstr "Deleting unused thumbnails..."
+
+msgctxt "#31206"
+msgid "Deleting thumbnails older than {days} days..."
+msgstr "Deleting thumbnails older than {days} days..."
+
+msgctxt "#31207"
+msgid "Finishing..."
+msgstr "Finishing..."
+
+msgctxt "#31208"
+msgid "Reading enabled addons list..."
+msgstr "Reading enabled addons list..."
+
+msgctxt "#31209"
+msgid "Reading disabled addons list..."
+msgstr "Reading disabled addons list..."
+
+msgctxt "#31210"
+msgid "Finding addon folders..."
+msgstr "Finding addon folders..."
+
+msgctxt "#31211"
+msgid "Checking addon data folders..."
+msgstr "Checking addon data folders..."
+
+msgctxt "#31212"
+msgid "Removing addon ({index}/{total}): {path}"
+msgstr "Removing addon ({index}/{total}): {path}"
+
+msgctxt "#31213"
+msgid "Verifying database integrity..."
+msgstr "Verifying database integrity..."
+
+msgctxt "#31214"
+msgid "Verifying: {db_name}"
+msgstr "Verifying: {db_name}"
+
+msgctxt "#31215"
+msgid "Preparing to recalculate sizes..."
+msgstr "Preparing to recalculate sizes..."
+
+msgctxt "#31216"
+msgid "Calculating updated sizes..."
+msgstr "Calculating updated sizes..."
+
+msgctxt "#31217"
+msgid "Data refresh completed!"
+msgstr "Data refresh completed!"
+
+msgctxt "#31218"
+msgid "Error"
+msgstr "Error"
+
+msgctxt "#31219"
+msgid "Errors:"
+msgstr "Errors:"
+
+msgctxt "#31220"
+msgid "Empty content"
+msgstr "Empty content"
+
+msgctxt "#31221"
+msgid "Log file not found."
+msgstr "Log file not found."
+
+msgctxt "#31222"
+msgid "Error reading log file: {error}"
+msgstr "Error reading log file: {error}"
+
+msgctxt "#31223"
+msgid "Log: {log_name}"
+msgstr "Log: {log_name}"
+
+msgctxt "#31224"
+msgid "Folder Details"
+msgstr "Folder Details"
+
+msgctxt "#31225"
+msgid "Loading..."
+msgstr "Loading..."
+
+msgctxt "#31226"
+msgid "[Disabled]"
+msgstr "[Disabled]"
+
+msgctxt "#31227"
+msgid "[Leftover]"
+msgstr "[Leftover]"
+
+msgctxt "#31228"
+msgid "Backup network passwords"
+msgstr "Backup network passwords"
+
+msgctxt "#31229"
+msgid "Restore from backup"
+msgstr "Restore from backup"
+
+msgctxt "#31230"
+msgid "Warning: Databases in backup are from Kodi {backup_version}, but current system uses Kodi {current_version}.[CR][CR]Database restore is not supported between different major Kodi versions."
+msgstr "Warning: Databases in backup are from Kodi {backup_version}, but current system uses Kodi {current_version}.[CR][CR]Database restore is not supported between different major Kodi versions."
+
+msgctxt "#31231"
+msgid "Database Version Incompatibility"
+msgstr "Database Version Incompatibility"
+
+msgctxt "#31232"
+msgid "Blocked - Incompatible Kodi versions for databases"
+msgstr "Blocked - Incompatible Kodi versions for databases"
+
+msgctxt "#31233"
+msgid "The following native addons may not work:"
+msgstr "The following native addons may not work:"
+
+msgctxt "#31234"
+msgid "Other Python addons (without native libraries) will work normally."
+msgstr "Other Python addons (without native libraries) will work normally."
+
+msgctxt "#31235"
+msgid "Warning: Different architectures detected.[CR][CR]Backup: {backup_info}[CR]Current system: {current_info}[CR][CR]No native addons detected in backup - restore should work without issues."
+msgstr "Warning: Different architectures detected.[CR][CR]Backup: {backup_info}[CR]Current system: {current_info}[CR][CR]No native addons detected in backup - restore should work without issues."
+
+msgctxt "#31236"
+msgid "OptiKlean update"
+msgstr "OptiKlean update"
+
+msgctxt "#31239"
+msgid "SUCCESS"
+msgstr "SUCCESS"
+
+msgctxt "#31240"
+msgid "FAILED"
+msgstr "FAILED"
+
+msgctxt "#31241"
+msgid "Database restore sequence completed."
+msgstr "Database restore sequence completed."
+
+msgctxt "#31242"
+msgid "Error during delayed database restore"
+msgstr "Error during delayed database restore"
+
+msgctxt "#31243"
+msgid "Installing {addon_id}..."
+msgstr "Installing {addon_id}..."
+
+msgctxt "#31244"
+msgid "Waiting for {addon_id}..."
+msgstr "Waiting for {addon_id}..."
+
+msgctxt "#31245"
+msgid "Native addon installation complete"
+msgstr "Native addon installation complete"
+
+msgctxt "#31246"
+msgid "Skip and reinstall from repository"
+msgstr "Skip and reinstall from repository"
+
+msgctxt "#31247"
+msgid "Installing native addons from repository..."
+msgstr "Installing native addons from repository..."
+
+msgctxt "#31248"
+msgid "Installation complete: {success} installed, {failed} failed, {already} already present"
+msgstr "Installation complete: {success} installed, {failed} failed, {already} already present"
+
+msgctxt "#31249"
+msgid "Successfully installed:"
+msgstr "Successfully installed:"
+
+msgctxt "#31250"
+msgid "Already installed:"
+msgstr "Already installed:"
+
+msgctxt "#31251"
+msgid "Failed to install:"
+msgstr "Failed to install:"
+
+msgctxt "#31252"
+msgid "Failed addons may need to be installed manually from the Kodi addon browser."
+msgstr "Failed addons may need to be installed manually from the Kodi addon browser."
+
+msgctxt "#31253"
+msgid "Native Addon Installation Results"
+msgstr "Native Addon Installation Results"
+
+msgctxt "#31254"
+msgid "Native addons: {installed} installed, {failed} failed"
+msgstr "Native addons: {installed} installed, {failed} failed"
+
+msgctxt "#31255"
+msgid "Not available in repository:"
+msgstr "Not available in repository:"
+
+msgctxt "#31256"
+msgid "These addons are not in the official Kodi repository and must be installed manually from their original source."
+msgstr "These addons are not in the official Kodi repository and must be installed manually from their original source."
+
+msgctxt "#31257"
+msgid "timeout"
+msgstr "timeout"
+
+msgctxt "#31258"
+msgid "Native addons reinstallation:"
+msgstr "Native addons reinstallation:"
+
+msgctxt "#31259"
+msgid "cancelled"
+msgstr "cancelled"
+
+msgctxt "#31260"
+msgid "Database Restore Complete"
+msgstr "Database Restore Complete"
+
+msgctxt "#31261"
+msgid "Databases have been restored successfully.[CR][CR]A Kodi restart is required for addons to appear correctly.[CR][CR]Do you want to restart Kodi now?"
+msgstr "Databases have been restored successfully.[CR][CR]A Kodi restart is required for addons to appear correctly.[CR][CR]Do you want to restart Kodi now?"
+
+msgctxt "#31262"
+msgid "Database Restore Failed"
+msgstr "Database Restore Failed"
+
+msgctxt "#31263"
+msgid "An error occurred while restoring the databases.[CR][CR]Error: {error}[CR][CR]Please check the restore log for details."
+msgstr "An error occurred while restoring the databases.[CR][CR]Error: {error}[CR][CR]Please check the restore log for details."
+
+msgctxt "#31264"
+msgid "Files restored"
+msgstr "Files restored"
+
+msgctxt "#31265"
+msgid "Files failed"
+msgstr "Files failed"
+
+msgctxt "#31266"
+msgid "Database Restore Partial"
+msgstr "Database Restore Partial"
+
+msgctxt "#31267"
+msgid "Some databases could not be restored.[CR][CR]Restored: {restored}[CR]Failed: {failed}[CR][CR]Please check the restore log for details."
+msgstr "Some databases could not be restored.[CR][CR]Restored: {restored}[CR]Failed: {failed}[CR][CR]Please check the restore log for details."
+
+msgctxt "#31268"
+msgid "Clear orphan artwork (Kodi 22+)"
+msgstr "Clear orphan artwork (Kodi 22+)"
+
+msgctxt "#31269"
+msgid "Orphan artwork cleaning results:"
+msgstr "Orphan artwork cleaning results:"
+
+msgctxt "#31270"
+msgid "Scanning video database for orphan artwork..."
+msgstr "Scanning video database for orphan artwork..."
+
+msgctxt "#31271"
+msgid "Deleting orphan artwork from cache..."
+msgstr "Deleting orphan artwork from cache..."
+
+msgctxt "#31272"
+msgid "Video database not found."
+msgstr "Video database not found."
+
+msgctxt "#31273"
+msgid "Orphan artwork deleted: {count} ({size:.2f} MB freed)"
+msgstr "Orphan artwork deleted: {count} ({size:.2f} MB freed)"
+
+msgctxt "#31274"
+msgid "Database entries removed: {count}"
+msgstr "Database entries removed: {count}"
+
+msgctxt "#31275"
+msgid "Deleted orphan artwork files:"
+msgstr "Deleted orphan artwork files:"
+
+msgctxt "#31276"
+msgid "Orphan artwork cleanup completed. Deleted {count} files, freed {size:.2f} MB"
+msgstr "Orphan artwork cleanup completed. Deleted {count} files, freed {size:.2f} MB"
+
+msgctxt "#31277"
+msgid "Feature available only on Kodi 22 or later"
+msgstr "Feature available only on Kodi 22 or later"
+
+msgctxt "#31278"
+msgid "Orphan artwork: {deleted} files ({size:.2f} MB)"
+msgstr "Orphan artwork: {deleted} files ({size:.2f} MB)"
+
+msgctxt "#31279"
+msgid "Scanning music database..."
+msgstr "Scanning music database..."
+
+msgctxt "#31280"
+msgid "Orphan artwork cleanup (video + music)"
+msgstr "Orphan artwork cleanup (video + music)"
+
+msgctxt "#31281"
+msgid "Deleted {count} folders ({total_mb:.2f} MB freed)"
+msgstr "Deleted {count} folders ({total_mb:.2f} MB freed)"
+
+msgctxt "#31282"
+msgid "Restart required"
+msgstr "Restart required"
+
+msgctxt "#31283"
+msgid "OptiKlean has been updated. Restart Kodi before using the addon."
+msgstr "OptiKlean has been updated. Restart Kodi before using the addon."
+
+msgctxt "#31284"
+msgid "Restart postponed. OptiKlean will stay unavailable until Kodi is restarted."
+msgstr "Restart postponed. OptiKlean will stay unavailable until Kodi is restarted."
+
+msgctxt "#31285"
+msgid "Installed update: {summary}"
+msgstr "Installed update: {summary}"
+

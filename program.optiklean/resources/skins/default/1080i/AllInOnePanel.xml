@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="13001">
+    <defaultcontrol>201</defaultcontrol>
+    <controls>
+        <!-- SFONDO PRINCIPALE -->
+        <control type="image" id="1000">
+            <left>0</left>
+            <top>0</top>
+            <right>0</right>
+            <bottom>0</bottom>
+            <texture colordiffuse="FF0E1F2B">white.png</texture>
+        </control>
+
+        <!-- BORDO FINESTRA -->
+        <control type="image" id="1001">
+            <left>5</left>
+            <top>5</top>
+            <right>5</right>
+            <bottom>5</bottom>
+            <texture colordiffuse="FF1A2A35" border="5">white.png</texture>
+        </control>
+
+        <!-- CONTAINER PRINCIPALE -->
+        <control type="group" id="2000">
+            <left>50</left>
+            <top>90</top>
+            <right>50</right>
+            <bottom>150</bottom>
+            
+            <!-- SEZIONE 1: SPAZIO UTILIZZATO -->
+            <control type="group" id="2001">
+                <left>0</left>
+                <top>0</top>
+                <right>0</right>
+                <bottom>50%</bottom>
+                
+                <!-- TITOLO SEZIONE 1 -->
+                <control type="group" id="2002">
+                    <left>10</left>
+                    <top>0</top>
+                    <right>10</right>
+                    <height>60</height>
+                    <control type="label" id="1">
+                        <left>10</left>
+                        <top>10</top>
+                        <right>10</right>
+                        <bottom>10</bottom>
+                        <label>30800</label>
+                        <font>font_title</font>
+                        <textcolor>FF1CA5D1</textcolor>
+                    </control>
+                </control>
+
+                <!-- AREA DATI CON SFONDO SCURO -->
+                <control type="group" id="2020">
+                    <left>10</left>
+                    <top>70</top>
+                    <right>10</right>
+                    <height>290</height>
+                    
+                    <!-- SFONDO SCURO -->
+                    <control type="image" id="1020">
+                        <left>0</left>
+                        <top>0</top>
+                        <right>0</right>
+                        <bottom>0</bottom>
+                        <texture colordiffuse="FF071621">white.png</texture>
+                    </control>
+
+                    <!-- RIGA ADDONS -->
+                    <control type="group" id="2003">
+                        <left>15</left>
+                        <top>20</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="10">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>30%</width>
+                            <bottom>5</bottom>
+                            <label>30100</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="110">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                        <control type="button" id="101">
+                            <right>10</right>
+                            <top>5</top>
+                            <width>40</width>
+                            <height>35</height>
+                            <texturefocus>details_focus.png</texturefocus>
+                            <texturenofocus>details.png</texturenofocus>
+                            <onup>9000</onup>
+                            <ondown>102</ondown>
+                            <onleft>201</onleft>
+                            <onright>201</onright>
+                        </control>
+                    </control>
+
+                    <!-- RIGA ADDONS DATA -->
+                    <control type="group" id="2004">
+                        <left>15</left>
+                        <top>70</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="11">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>30%</width>
+                            <bottom>5</bottom>
+                            <label>30801</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="111">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                        <control type="button" id="102">
+                            <right>10</right>
+                            <top>5</top>
+                            <width>40</width>
+                            <height>35</height>
+                            <texturefocus>details_focus.png</texturefocus>
+                            <texturenofocus>details.png</texturenofocus>
+                            <onup>101</onup>
+                            <ondown>103</ondown>
+                            <onleft>201</onleft>
+                            <onright>201</onright>
+                        </control>
+                    </control>
+
+                    <!-- RIGA KODI PACKAGES -->
+                    <control type="group" id="2005">
+                        <left>15</left>
+                        <top>120</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="12">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>30%</width>
+                            <bottom>5</bottom>
+                            <label>30805</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="112">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                        <control type="button" id="103">
+                            <right>10</right>
+                            <top>5</top>
+                            <width>40</width>
+                            <height>35</height>
+                            <texturefocus>details_focus.png</texturefocus>
+                            <texturenofocus>details.png</texturenofocus>
+                            <onup>102</onup>
+                            <ondown>201</ondown>
+                            <onleft>201</onleft>
+                            <onright>201</onright>
+                        </control>
+                    </control>
+
+                    <!-- RIGA THUMBNAILS -->
+                    <control type="group" id="2006">
+                        <left>15</left>
+                        <top>170</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="13">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>30%</width>
+                            <bottom>5</bottom>
+                            <label>30806</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="113">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+
+                    <!-- RIGA TOTALE -->
+                    <control type="group" id="2007">
+                        <left>15</left>
+                        <top>220</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="14">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>30%</width>
+                            <bottom>5</bottom>
+                            <label>30808</label>
+                            <font>font13</font>
+                            <textcolor>FFF7901E</textcolor>
+                        </control>
+                        <control type="label" id="114">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>FFF7901E</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+                </control>
+            </control>
+
+            <!-- SEZIONE 2: RISPARMIO SPAZIO -->
+            <control type="group" id="2008">
+                <left>0</left>
+                <top>50%</top>
+                <right>0</right>
+                <bottom>0</bottom>
+                
+                <!-- TITOLO SEZIONE 2 -->
+                <control type="group" id="2009">
+                    <left>10</left>
+                    <top>0</top>
+                    <right>10</right>
+                    <height>60</height>
+                    <control type="label" id="2">
+                        <left>10</left>
+                        <top>10</top>
+                        <right>10</right>
+                        <bottom>10</bottom>
+                        <label>30809</label>
+                        <font>font_title</font>
+                        <textcolor>FF1CA5D1</textcolor>
+                    </control>
+                </control>
+
+                <!-- AREA DATI CON SFONDO SCURO -->
+                <control type="group" id="2021">
+                    <left>10</left>
+                    <top>70</top>
+                    <right>10</right>
+                    <height>290</height>
+                    
+                    <!-- SFONDO SCURO -->
+                    <control type="image" id="1021">
+                        <left>0</left>
+                        <top>0</top>
+                        <right>0</right>
+                        <bottom>0</bottom>
+                        <texture colordiffuse="FF071621">white.png</texture>
+                    </control>
+
+                    <!-- RIGA CLEAR CACHE -->
+                    <control type="group" id="2010">
+                        <left>15</left>
+                        <top>20</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="21">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>70%</width>
+                            <bottom>5</bottom>
+                            <label>30100</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="121">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+
+                    <!-- RIGA CLEAR THUMBNAILS -->
+                    <control type="group" id="2011">
+                        <left>15</left>
+                        <top>70</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="22">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>70%</width>
+                            <bottom>5</bottom>
+                            <label>30101</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="122">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+
+                    <!-- RIGA CLEAR LEFTOVERS -->
+                    <control type="group" id="2012">
+                        <left>15</left>
+                        <top>120</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="23">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>70%</width>
+                            <bottom>5</bottom>
+                            <label>30102</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="123">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+
+                    <!-- RIGA CLEAR PACKAGES -->
+                    <control type="group" id="2013">
+                        <left>15</left>
+                        <top>170</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="24">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>70%</width>
+                            <bottom>5</bottom>
+                            <label>30103</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                        </control>
+                        <control type="label" id="124">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>white</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+                    
+                    <!-- RIGA TOTALE RISPARMIO -->
+                    <control type="group" id="2014">
+                        <left>15</left>
+                        <top>220</top>
+                        <right>15</right>
+                        <height>45</height>
+                        <control type="label" id="25">
+                            <left>10</left>
+                            <top>5</top>
+                            <width>70%</width>
+                            <bottom>5</bottom>
+                            <label>30810</label>
+                            <font>font13</font>
+                            <textcolor>FFF7901E</textcolor>
+                        </control>
+                        <control type="label" id="125">
+                            <left>30%</left>
+                            <top>5</top>
+                            <width>40%</width>
+                            <bottom>5</bottom>
+                            <label>31225</label>
+                            <font>font13</font>
+                            <textcolor>FFF7901E</textcolor>
+                            <align>right</align>
+                        </control>
+                    </control>
+                </control>
+            </control>
+        </control>
+
+        <!-- PULSANTI FINALI -->
+        <control type="group" id="2015">
+            <left>0</left>
+            <bottom>90</bottom>
+            <right>0</right>
+            <height>60</height>
+            
+            <!-- Pulsante sinistro -->
+            <control type="button" id="201">
+                <left>35%</left>
+                <top>5</top>
+                <width>250</width>
+                <bottom>5</bottom>
+                <label>30811</label>
+                <align>center</align>
+                <textcolor>white</textcolor>
+                <texturenofocus colordiffuse="FF4A5A65">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFF7901E">white.png</texturefocus>
+                <onup>103</onup>
+                <ondown>9000</ondown>
+                <onleft>202</onleft>
+                <onright>202</onright>
+            </control>
+            
+            <!-- Pulsante destro -->
+            <control type="button" id="202">
+                <right>35%</right>
+                <top>5</top>
+                <width>250</width>
+                <bottom>5</bottom>
+                <label>30812</label>
+                <align>center</align>
+                <textcolor>white</textcolor>
+                <texturenofocus colordiffuse="FF4A5A65">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFF7901E">white.png</texturefocus>
+                <onup>103</onup>
+                <ondown>9000</ondown>
+                <onleft>201</onleft>
+                <onright>201</onright>
+            </control>
+        </control>
+
+        <!-- X CHIUDI -->
+        <control type="button" id="9000">
+            <right>20</right>
+            <top>20</top>
+            <width>60</width>
+            <height>60</height>
+            <texturefocus>close_focus.png</texturefocus>
+            <texturenofocus>close.png</texturenofocus>
+            <onup>201</onup>
+            <ondown>101</ondown>
+            <onleft>201</onleft>
+            <onright>201</onright>
+        </control>
+    </controls>
+</window>

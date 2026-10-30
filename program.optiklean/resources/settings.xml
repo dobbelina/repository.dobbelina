@@ -1,0 +1,43 @@
+<settings>
+    <category label="30000">
+
+        <setting type="lsep" label="30001" />
+        
+        <!-- Cache and Temp -->
+        <setting id="clear_cache_and_temp_enable" type="bool" label="30002" default="false" />
+        <setting id="clear_cache_and_temp_interval" type="slider" label="30003" default="7" range="1,1,90" option="int" subsetting="true" visible="eq(-1,true)" enable="eq(-1,true)" />
+        
+        <!-- Thumbnails -->
+        <setting id="clear_unused_thumbnails_enable" type="bool" label="30004" default="false" />
+        <setting id="clear_unused_thumbnails_interval" type="slider" label="30005" default="7" range="1,1,90" option="int" subsetting="true" visible="eq(-1,true)" enable="eq(-1,true)" />
+        <setting id="thumbnail_age_threshold" type="slider" label="30019" default="30" range="1,1,365" option="int" />
+        
+        <!-- Addon Leftovers -->
+        <setting id="clear_addon_leftovers_enable" type="bool" label="30006" default="false" />
+        <setting id="clear_addon_leftovers_interval" type="slider" label="30007" default="7" range="1,1,90" option="int" subsetting="true" visible="eq(-1,true)" enable="eq(-1,true)" />
+        
+        <!-- Packages -->
+        <setting id="clear_kodi_packages_enable" type="bool" label="30008" default="false" />
+        <setting id="clear_kodi_packages_interval" type="slider" label="30009" default="7" range="1,1,90" option="int" subsetting="true" visible="eq(-1,true)" enable="eq(-1,true)" />
+        
+        <!-- Databases -->
+        <setting id="optimize_databases_enable" type="bool" label="30010" default="false" />
+        <setting id="optimize_databases_interval" type="slider" label="30011" default="7" range="1,1,90" option="int" subsetting="true" visible="eq(-1,true)" enable="eq(-1,true)" />
+        
+        <!-- Autostart Delay - visible only if ANY automatic cleaning is enabled -->
+        <setting id="autostart_delay" type="slider" label="30012" default="0" range="0,1,30" option="int" visible="eq(-2,true) + eq(-4,true) + eq(-6,true) + eq(-8,true) + eq(-10,true)" />
+
+    </category>
+
+    <category label="30013">
+
+        <!-- Backup Settings -->
+        <setting type="lsep" label="30013" />
+        <setting id="backup_path" type="folder" label="30014" default="" />
+
+        <setting type="lsep" label="30015" />
+        <setting type="label" label="30016" />
+        <setting type="label" label="30017" />
+        <setting type="label" label="30018" />
+    </category>
+</settings>

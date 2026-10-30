@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="13002">
+    <defaultcontrol>5000</defaultcontrol>
+    <controls>
+        <!-- SFONDO PRINCIPALE -->
+        <control type="image" id="1000">
+            <left>0</left>
+            <top>0</top>
+            <right>0</right>
+            <bottom>0</bottom>
+            <texture colordiffuse="FF0E1F2B">white.png</texture>
+        </control>
+
+        <!-- BORDO FINESTRA -->
+        <control type="image" id="1001">
+            <left>5</left>
+            <top>5</top>
+            <right>5</right>
+            <bottom>5</bottom>
+            <texture colordiffuse="FF1A2A35" border="5">white.png</texture>
+        </control>
+
+        <!-- TITOLO -->
+        <control type="label" id="1">
+            <left>0</left>
+            <top>20</top>
+            <right>0</right>
+            <height>50</height>
+            <label>30306</label>
+            <font>font_title</font>
+            <textcolor>FF1CA5D1</textcolor>
+            <align>center</align>
+        </control>
+
+        <!-- INTESTAZIONI COLONNE -->
+        <control type="group" id="3000">
+            <left>5%</left>
+            <top>90</top>
+            <right>5%</right>
+            <height>40</height>
+            
+            <control type="label" id="10">
+                <left>0</left>
+                <top>0</top>
+                <width>15%</width>
+                <height>40</height>
+                <label>30802</label>
+                <font>font_title</font>
+                <textcolor>FFF7901E</textcolor>
+                <align>center</align>
+            </control>
+            
+            <control type="label" id="11">
+                <left>15%</left>
+                <top>0</top>
+                <width>15%</width>
+                <height>40</height>
+                <label>30803</label>
+                <font>font_title</font>
+                <textcolor>FFF7901E</textcolor>
+                <align>center</align>
+            </control>
+            
+            <control type="label" id="12">
+                <left>35%</left>
+                <top>0</top>
+                <width>65%</width>
+                <height>40</height>
+                <label>30804</label>
+                <font>font_title</font>
+                <textcolor>FFF7901E</textcolor>
+                <align>left</align>
+            </control>
+        </control>
+
+        <!-- LINEA SEPARATRICE -->
+        <control type="image" id="3001">
+            <left>5%</left>
+            <top>145</top>
+            <right>5%</right>
+            <height>2</height>
+            <texture colordiffuse="FFF7901E">white.png</texture>
+        </control>
+
+        <!-- LISTA DINAMICA PER I DATI DEGLI ADDON -->
+        <control type="list" id="5000">
+            <left>5%</left>
+            <top>165</top>
+            <right>5%</right>
+            <bottom>100</bottom>
+            <onup>9000</onup>
+            <ondown>9000</ondown>
+            <onleft>9000</onleft>
+            <onright>9000</onright>
+            <pagecontrol>-</pagecontrol>
+            <scrolltime>200</scrolltime>
+            <itemlayout height="35">
+                <control type="label">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>15%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>FFF7901E</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Property(percentage)</info>
+                </control>
+                <control type="label">
+                    <left>15%</left>
+                    <top>0</top>
+                    <width>15%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Property(size)</info>
+                </control>
+                <control type="label">
+                    <left>35%</left>
+                    <top>0</top>
+                    <width>65%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Label</info>
+                </control>
+            </itemlayout>
+            <focusedlayout height="35">
+                <control type="image">
+                    <left>0</left>
+                    <top>0</top>
+                    <right>0</right>
+                    <height>35</height>
+                    <texture colordiffuse="33FFFFFF">white.png</texture>
+                </control>
+                <control type="label">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>15%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>FFF7901E</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Property(percentage)</info>
+                </control>
+                <control type="label">
+                    <left>15%</left>
+                    <top>0</top>
+                    <width>15%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Property(size)</info>
+                </control>
+                <control type="label">
+                    <left>35%</left>
+                    <top>0</top>
+                    <width>65%</width>
+                    <height>35</height>
+                    <font>font13</font>
+                    <textcolor>white</textcolor>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <info>ListItem.Label</info>
+                </control>
+            </focusedlayout>
+        </control>
+
+        <!-- PULSANTE CHIUDI (X) -->
+        <control type="button" id="9000">
+            <right>20</right>
+            <top>20</top>
+            <width>60</width>
+            <height>60</height>
+            <texturefocus>close_focus.png</texturefocus>
+            <texturenofocus>close.png</texturenofocus>
+            <label></label>
+            <onup>5000</onup>
+            <ondown>5000</ondown>
+            <onleft>5000</onleft>
+            <onright>5000</onright>
+        </control>
+    </controls>
+</window>
