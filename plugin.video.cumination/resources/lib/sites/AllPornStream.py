@@ -18,6 +18,7 @@
 import re
 import json
 import html
+import xbmcgui
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 from six.moves import urllib_parse
@@ -30,7 +31,7 @@ def Main():
     site.add_dir('[COLOR hotpink]Categories[/COLOR]', site.url + 'categories', 'Categories', site.img_cat)
     site.add_dir('[COLOR hotpink]Pornstars[/COLOR]', site.url + 'actors', 'Actors', site.img_star)
     site.add_dir('[COLOR hotpink]Producers[/COLOR]', site.url + 'producers', 'Producers', site.img_cat)
-    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'posts?search=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'posts/?search=', 'Search', site.img_search)
     List(site.url)
     utils.eod()
 
@@ -430,12 +431,10 @@ def Playvid(url, name, download=None):
             if url_found and url_found not in seen:
                 seen.add(url_found)
                 links.append(url_found)
-    
     if not links:
         vp.progress.close()
         utils.notify('Oh oh', 'No video host found')
-        return
-    
+        return 
     vp.play_from_link_list(links)
 
 
