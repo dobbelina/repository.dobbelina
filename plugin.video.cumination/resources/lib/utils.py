@@ -40,6 +40,7 @@ from resources.lib.basics import (
     cookiePath, cum_image, cuminationicon, eod,
     favoritesdb, keys, searchDir, profileDir
 )
+from urllib.parse import urlparse
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
 from resources.lib.jsonrpc import toggle_debug
@@ -54,8 +55,6 @@ PY3 = six.PY3
 TRANSLATEPATH = xbmcvfs.translatePath if PY3 else xbmc.translatePath
 LOGINFO = xbmc.LOGINFO if PY3 else xbmc.LOGNOTICE
 KODIVER = float(xbmcaddon.Addon('xbmc.addon').getAddonInfo('version')[:4])
-TEXTURESDB = os.path.join(TRANSLATEPATH('special://database'), 'Textures14.db') if KODIVER > 21.3 else os.path.join(TRANSLATEPATH('special://database'), 'Textures13.db')
-
 
 base_hdrs = {
     'User-Agent': USER_AGENT,
@@ -756,7 +755,6 @@ def PlayStream(name, url):
 
 def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
     return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data, error, ignoreCertificateErrors)
-
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
     # Reuse a valid FlareSolverr browser identity before entering the stock
@@ -1848,49 +1846,128 @@ class VideoPlayer():
         self.progress.update(90, "[CR]{0}[CR]".format(i18n('play_dlink')))
         self.play_from_direct_link(videourl)
 
+
     @_cancellable
     def play_from_link_list(self, links):
         use_universal = addon.getSetting("universal_resolvers") == "true"
+
         links = self.bypass_hosters(links)
-        sources = self._clean_urls([self.resolveurl.HostedMediaFile(x, title=x.split('/')[2], include_universal=use_universal) for x in links])
+
+        sources = self._clean_urls([
+            self.resolveurl.HostedMediaFile(
+                x,
+                title=urlparse(x).netloc,
+                include_universal=use_universal
+            )
+            for x in links
+        ])
+
         if not sources:
             notify(i18n('oh_oh'), i18n('not_found'))
             return
-        if addon.getSetting("dontask") == "true":
-            for src in sources:
-                if self.play_from_link_to_resolve(src):
-                    return
-            notify(i18n('rslv_fail'), '{0}'.format(i18n('not_rslv')))
-        else:
-            self._select_source(sources)
+
+        self._select_source(sources)
+
 
     @_cancellable
     def _select_source(self, sources):
-        if len(sources) == 1:
-            source = sources[0]
+        if not sources:
+            return
+
+        dontask = addon.getSetting("dontask") == "true"
+
+        if dontask or len(sources) == 1:
+            start_idx = 0
         else:
             source = self.resolveurl.choose_source(sources)
-        if source:
-            self.play_from_link_to_resolve(source)
+
+            if not source:
+                return
+
+            try:
+                start_idx = sources.index(source)
+            except ValueError:
+                start_idx = 0
+
+        # Fallback circular:
+        ordered_sources = (
+            sources[start_idx:] +
+            sources[:start_idx]
+        )
+
+        for pos, source in enumerate(ordered_sources, 1):
+            kodilog(
+                "Trying server {}/{}: {}".format(
+                    pos,
+                    len(ordered_sources),
+                    source.title
+                )
+            )
+
+            if self.play_from_link_to_resolve(source):
+                kodilog(
+                    "Server OK: {}".format(source.title)
+                )
+                return
+
+        notify(i18n('oh_oh'), i18n('not_found'))
+
 
     @_cancellable
     def play_from_link_to_resolve(self, source):
         if isinstance(source, six.string_types):
             self.play_from_link_list([source])
-            return
-        self.progress.update(80, "[CR]{0}[CR]{1} {2}".format(i18n('to_smr'), i18n('play_from'), source.title))
+            return False
+
+        self.progress.update(
+            80,
+            "[CR]{0}[CR]{1} {2}".format(
+                i18n('to_smr'),
+                i18n('play_from'),
+                source.title
+            )
+        )
+
         try:
             link = source.resolve()
         except self.resolveurl.resolver.ResolverError:
-            link = False  # ResolveURL returns False in some cases when resolving fails
+            link = False
+        except Exception as exc:
+            kodilog(
+                "Resolve exception on {}: {}".format(
+                    source.title,
+                    exc
+                )
+            )
+            link = False
+
         if not link:
-            if addon.getSetting("dontask") == "false":
-                notify(i18n('rslv_fail'), '{0} {1}'.format(source.title, i18n('not_rslv')))
+            kodilog(
+                "Resolver failed: {}".format(
+                    source.title
+                )
+            )
+
+            notify(
+                i18n('rslv_fail'),
+                '{} {}'.format(
+                    source.title,
+                    i18n('not_rslv')
+                )
+            )
+
             return False
-        else:
-            self.progress.close()
-            playvid(link, self.name, self.download, IA_check=self.IA_check)
-            return True
+
+        self.progress.close()
+
+        playvid(
+            link,
+            self.name,
+            self.download,
+            IA_check=self.IA_check
+        )
+
+        return True
 
     @_cancellable
     def play_from_direct_link(self, direct_link):
@@ -2250,7 +2327,7 @@ class Thumbnails:
             kodilog("Failed to download image {}: {}".format(img, e))
 
     def fix_img(self, img):
-        if KODIVER < 21 or KODIVER > 21.3:
+        if KODIVER < 21:
             return img
         thumbnail = urllib_parse.quote(urllib_parse.urlparse(img).path, safe='')
         img_path = os.path.join(self.path, thumbnail).replace('.jpg', '.webp')
