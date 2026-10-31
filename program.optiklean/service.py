@@ -12,11 +12,11 @@ import xbmcvfs
 try:
     from default import run_automatic_maintenance, monitor_settings_changes
 except ImportError as e:
-    xbmc.log(f"OptiKlean: Errore nell'importare da default.py: {str(e)}", xbmc.LOGERROR)
+    xbmc.log(f"OptiKlean: Error importing from default.py: {str(e)}", xbmc.LOGERROR)
     run_automatic_maintenance = None
     monitor_settings_changes = None
 
-# Ottieni il percorso dell'addon e aggiungilo ai percorsi di sistema
+# Get the addon path and add it to the system paths
 addon = xbmcaddon.Addon()
 addon_id = addon.getAddonInfo('id')
 addon_path = xbmcvfs.translatePath(addon.getAddonInfo('path'))
@@ -67,7 +67,7 @@ class OptiKleanMonitor(xbmc.Monitor):
         self.check_first_run()
 
     def check_first_run(self):
-        """Controlla se qualsiasi opzione attiva non ha file JSON e attiva la manutenzione automatica se necessaria"""
+        """Check if any enabled option has no JSON file and trigger automatic maintenance if needed"""
         try:
             if run_automatic_maintenance is None:
                 return
@@ -75,14 +75,14 @@ class OptiKleanMonitor(xbmc.Monitor):
             if not self._needs_first_run():
                 return
 
-            xbmc.log("OptiKlean: rilevato primo avvio per le opzioni abilitate", xbmc.LOGINFO)
+            xbmc.log("OptiKlean: first run detected for enabled options", xbmc.LOGINFO)
             if self._wait_for_startup_complete():
-                xbmc.log("OptiKlean: avvio prima manutenzione automatica", xbmc.LOGINFO)
+                xbmc.log("OptiKlean: starting first automatic maintenance", xbmc.LOGINFO)
                 if run_scheduled_maintenance(self):
                     self.maintenance_executed = True
 
         except Exception as e:
-            xbmc.log(f"OptiKlean: Errore in check_first_run: {str(e)}", xbmc.LOGERROR)
+            xbmc.log(f"OptiKlean: Error in check_first_run: {str(e)}", xbmc.LOGERROR)
 
     def _needs_first_run(self):
         profile_path = xbmcvfs.translatePath(self.addon.getAddonInfo('profile'))
@@ -92,7 +92,7 @@ class OptiKleanMonitor(xbmc.Monitor):
 
             last_run_file = os.path.join(profile_path, f"last_{cleaning}.json")
             if not xbmcvfs.exists(last_run_file):
-                xbmc.log(f"OptiKlean: Primo avvio rilevato per '{cleaning}' abilitato ma senza file JSON", xbmc.LOGINFO)
+                xbmc.log(f"OptiKlean: First run detected for '{cleaning}' enabled but without JSON file", xbmc.LOGINFO)
                 return True
         return False
 
@@ -103,51 +103,51 @@ class OptiKleanMonitor(xbmc.Monitor):
         return not self.abortRequested()
 
     def onSettingsChanged(self):
-        """Gestisci cambio impostazioni"""
+        """Handle settings change"""
         try:
-            xbmc.log("OptiKlean: impostazioni cambiate", xbmc.LOGINFO)
+            xbmc.log("OptiKlean: settings changed", xbmc.LOGINFO)
 
-            # Assicurati che la cartella del profilo esista
+            # Make sure the profile folder exists
             if not xbmcvfs.exists(addon_data_folder):
                 xbmcvfs.mkdirs(addon_data_folder)
 
-            # Aggiorna subito lo stato delle impostazioni automatiche
+            # Immediately update the automatic settings state
             if monitor_settings_changes:
                 monitor_settings_changes()
             else:
-                xbmc.log("OptiKlean: monitor_settings_changes non disponibile", xbmc.LOGWARNING)
+                xbmc.log("OptiKlean: monitor_settings_changes not available", xbmc.LOGWARNING)
 
             # Check if first run needed for newly enabled cleanings
             self.check_first_run()
 
         except Exception as e:
-            xbmc.log(f"OptiKlean: Errore gestione impostazioni cambiate: {str(e)}", xbmc.LOGERROR)
+            xbmc.log(f"OptiKlean: Error handling settings changed: {str(e)}", xbmc.LOGERROR)
 
     def onNotification(self, sender, method, data):
-        xbmc.log(f"OptiKlean: Notifica ricevuta - {method}", xbmc.LOGDEBUG)
+        xbmc.log(f"OptiKlean: Notification received - {method}", xbmc.LOGDEBUG)
 
         if method == "GUI.OnScreensaverDeactivated" or method == "Player.OnPlay":
             self.startup_complete = True
-            xbmc.log("OptiKlean: Avvio di Kodi completato", xbmc.LOGINFO)
+            xbmc.log("OptiKlean: Kodi startup completed", xbmc.LOGINFO)
 
         if method in ["VideoLibrary.OnScanFinished", "AudioLibrary.OnScanFinished"]:
             self.startup_complete = True
-            xbmc.log("OptiKlean: Scansione libreria completata, Kodi è pronto", xbmc.LOGINFO)
+            xbmc.log("OptiKlean: Library scan completed, Kodi is ready", xbmc.LOGINFO)
 
         if method.startswith("VideoLibrary") or method.startswith("AudioLibrary"):
             self.startup_complete = True
-            xbmc.log("OptiKlean: Attività database rilevata, Kodi è attivo", xbmc.LOGINFO)
+            xbmc.log("OptiKlean: Database activity detected, Kodi is active", xbmc.LOGINFO)
 
         if method.startswith("Input") or method.startswith("GUI"):
             self.startup_complete = True
-            xbmc.log("OptiKlean: Interazione utente rilevata", xbmc.LOGDEBUG)
+            xbmc.log("OptiKlean: User interaction detected", xbmc.LOGDEBUG)
 
 
-# Funzione principale del servizio
+# Main service function
 if __name__ == '__main__':
-    xbmc.log("OptiKlean: Servizio avviato", xbmc.LOGINFO)
+    xbmc.log("OptiKlean: Service started", xbmc.LOGINFO)
 
-    # Pulizia di sicurezza per la cartella temp_restore all'avvio di Kodi
+    # Safety cleanup for the temp_restore folder at Kodi startup
     try:
         from resources.lib.backup_restore import _cleanup_temp_restore
 
@@ -157,51 +157,51 @@ if __name__ == '__main__':
         xbmc.log(f"OptiKlean: Error during startup safety cleanup: {str(e)}", xbmc.LOGWARNING)
 
     monitor = OptiKleanMonitor()
-    xbmc.sleep(5000)  # 5 secondi di attesa iniziale
+    xbmc.sleep(5000)  # 5 seconds initial wait
 
     wait_time = 3
     idle_counter = 0
-    settings_check_counter = 0  # Contatore per monitoraggio impostazioni (ogni 10 minuti)
+    settings_check_counter = 0  # Counter for settings monitoring (every 10 minutes)
 
     while not monitor.abortRequested():
         xbmc.log(
-            f"OptiKlean: Avvio completo: {monitor.startup_complete}, "
-            f"Manutenzione automatica eseguita: {monitor.maintenance_executed}",
+            f"OptiKlean: Startup complete: {monitor.startup_complete}, "
+            f"Automatic maintenance executed: {monitor.maintenance_executed}",
             xbmc.LOGDEBUG,
         )
         if monitor.waitForAbort(wait_time):
             break
 
-        # Monitoraggio impostazioni in background ogni 10 minuti (600 secondi)
+        # Background settings monitoring every 10 minutes (600 seconds)
         settings_check_counter += wait_time
         if settings_check_counter >= 600:
             try:
                 if monitor_settings_changes:
                     monitor_settings_changes()
-                    xbmc.log("OptiKlean: Controllo periodico impostazioni completato", xbmc.LOGDEBUG)
+                    xbmc.log("OptiKlean: Periodic settings check completed", xbmc.LOGDEBUG)
             except Exception as e:
-                xbmc.log(f"OptiKlean: Errore controllo periodico impostazioni: {str(e)}", xbmc.LOGERROR)
+                xbmc.log(f"OptiKlean: Error in periodic settings check: {str(e)}", xbmc.LOGERROR)
             settings_check_counter = 0
 
         if not monitor.maintenance_executed:
             try:
                 xbmc.sleep(2000)
                 if not xbmc.Player().isPlaying():
-                    xbmc.log("OptiKlean: Kodi è pronto, controllo intervalli giorni per manutenzione automatica", xbmc.LOGINFO)
+                    xbmc.log("OptiKlean: Kodi is ready, checking day intervals for automatic maintenance", xbmc.LOGINFO)
                     if run_scheduled_maintenance(monitor):
                         monitor.maintenance_executed = True
                         wait_time = 60
                 else:
-                    xbmc.log("OptiKlean: Riproduzione in corso, riprogrammo la pulizia", xbmc.LOGINFO)
+                    xbmc.log("OptiKlean: Playback in progress, rescheduling cleanup", xbmc.LOGINFO)
                     idle_counter += 1
                     if idle_counter > 10:
-                        xbmc.log("OptiKlean: Timeout attesa inattività, controllo intervalli", xbmc.LOGINFO)
+                        xbmc.log("OptiKlean: Idle wait timeout, checking intervals", xbmc.LOGINFO)
                         if run_scheduled_maintenance(monitor):
                             monitor.maintenance_executed = True
                             wait_time = 60
             except Exception as e:
-                xbmc.log(f"OptiKlean: Errore durante la manutenzione automatica: {str(e)}", xbmc.LOGERROR)
+                xbmc.log(f"OptiKlean: Error during automatic maintenance: {str(e)}", xbmc.LOGERROR)
                 monitor.maintenance_executed = True
                 wait_time = 60
 
-    xbmc.log("OptiKlean: Servizio terminato", xbmc.LOGINFO)
+    xbmc.log("OptiKlean: Service terminated", xbmc.LOGINFO)
