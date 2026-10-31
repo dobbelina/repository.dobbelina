@@ -83,8 +83,8 @@ msgid "Info"
 msgstr "Info"
 
 msgctxt "#30016"
-msgid "Backups are saved as ZIP files in the folder you select below."
-msgstr "Backups are saved as ZIP files in the folder you select below."
+msgid "Backups are saved as ZIP files in the folder you select above."
+msgstr "Backups are saved as ZIP files in the folder you select above."
 
 msgctxt "#30017"
 msgid "If no folder is set, you will be asked where to save each backup."
