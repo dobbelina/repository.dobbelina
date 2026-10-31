@@ -13,8 +13,8 @@
         <source>https://gitlab.com/personal4143605/optiklean</source>
         <summary lang="en_GB">Clean and optimize Kodi utility.</summary>
         <summary lang="it_IT">Utilità di pulizia e ottimizzazione Kodi.</summary>
-        <description lang="en_GB">Advanced tool to perform various types of Kodi cleaning and optimization.</description>
-        <description lang="it_IT">Strumento avanzato che permette di eseguire vari tipi di pulizie e ottimizzazione Kodi.</description>
+        <description lang="en_GB">Advanced tool to perform various types of Kodi cleaning and optimization.[CR][CR]For auto-updates, add:[CR] https://dobbelina.github.io/ [CR]to your file manager and download + install repository.dobbelina-*.*.*.zip </description>
+        <description lang="it_IT">Strumento avanzato che permette di eseguire vari tipi di pulizie e ottimizzazione Kodi.[CR][CR]Per aggiornamenti automatici, aggiungere:[CR] https://dobbelina.github.io/ [CR]al tuo file manager, quindi scaricare e installare il repository.dobbelina-*. *. *.zip file.</description>
         <assets>
             <icon>resources/media/icon.jpg</icon>
             <fanart>resources/media/fanart.jpg</fanart>
