@@ -30,7 +30,7 @@ site = AdultSite('85po', '[COLOR hotpink]85po[/COLOR]', 'https://85po.com/', '85
 
 @site.register(default_mode=True)
 def Main():
-    site.add_dir('[COLOR hotpink]4K[/COLOR]', site.url + '4k/', 'List', site.img_cat)
+    # site.add_dir('[COLOR hotpink]4K[/COLOR]', site.url + '4k/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + 'en/search/{}/', 'Search', site.img_search)
     List(site.url + 'en/latest-updates/')
     utils.eod()
@@ -45,12 +45,12 @@ def List(url):
     listhtml = listhtml.replace('<div class="k4">', '<div class="FHD">')
     listhtml = listhtml.replace('>1K<', '>720p<').replace('>2K<', '>1080p<').replace('>4K<', '>2060p<')
 
-    delimiter = 'class="thumb thumb_rel item'
+    delimiter = 'class="item '
     re_videopage = '<a href="([^"]+)"'
     re_name = 'title="([^"]+)"'
     re_img = 'data-original="([^"]+)"'
-    re_duration = r'fa-clock"></span>\s*([^<]+)<'
-    re_quality = r'class="quality \d+k">([^<]+)<'
+    re_duration = r'class="duration">([^<]+)<'
+    re_quality = r'class="is-([^"]+)">([^<]+)<'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=" + str('85po.Lookupinfo') + "&url=")
@@ -60,7 +60,7 @@ def List(url):
 
     utils.videos_list(site, '85po.Playvid', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm)
 
-    match = re.search(r'''<a class="active[^"]+">(\d+)<.+?class='next'.+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">''', listhtml, re.DOTALL | re.IGNORECASE)
+    match = re.search(r'''class="page-current"\D+>(\d+)<.+?class="next".+?data-block-id="([^"]+)"\s+data-parameters="([^"]+)">''', listhtml, re.DOTALL | re.IGNORECASE)
     if match:
         npage = int(match.group(1)) + 1
         block_id = match.group(2)
@@ -68,7 +68,7 @@ def List(url):
         ts = int(time.time() * 1000)
         nurl = url.split('?')[0] + '?mode=async&function=get_block&block_id={0}&{1}&_={2}'.format(block_id, params, ts)
         lpnr, lastp = 0, ''
-        match = re.search(r">(\d+)</a>\s*<a\s+class='next'", listhtml, re.DOTALL | re.IGNORECASE)
+        match = re.search(r':(\d+)"[^"]+?class="next"', listhtml, re.DOTALL | re.IGNORECASE)
         if match:
             lpnr = match.group(1)
             lastp = '/{}'.format(lpnr)

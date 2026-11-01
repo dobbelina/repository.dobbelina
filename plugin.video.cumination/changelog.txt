@@ -5,3 +5,4 @@
 - Watchpornx replaces Netflixporno
 - rule34video - fix thumbnails (Kodi 21)
 - wowxxx - fix playback (requires Flaresolverr)
+- 85po - fix listing
