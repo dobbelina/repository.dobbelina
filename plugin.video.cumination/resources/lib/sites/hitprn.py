@@ -18,6 +18,7 @@
 
 import xbmc
 import xbmcgui
+import re
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -30,6 +31,7 @@ addon = utils.addon
 @site.register(default_mode=True)
 def Main():
     site.add_dir('[COLOR hotpink]Search[/COLOR]', site.url + '?s=', 'Search', site.img_search)
+    site.add_dir('[COLOR hotpink]Tags[/COLOR]', site.url, 'Tags', site.img_tags)
     List(site.url + 'page/1/?filter=latest')
 
 
@@ -106,3 +108,13 @@ def Lookupinfo(url):
     ]
     lookupinfo = utils.LookupInfo(site.url, url, 'hitprn.List', lookup_list)
     lookupinfo.getinfo()
+
+
+@site.register()
+def Tags():
+    tagshtml = utils.getHtml(site.url)
+    tags = re.compile(r'class="menu-item\smenu-item-type-custom.+?a\shref="([^"]+)">([^>]+)</a', re.DOTALL | re.IGNORECASE).findall(tagshtml)
+    for tagurl, name in tags:
+        if 'Contact' in name: continue
+        site.add_dir(name, tagurl, 'List')
+    utils.eod()
