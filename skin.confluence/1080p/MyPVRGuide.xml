@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">10</defaultcontrol>
+	<menucontrol>9000</menucontrol>
+	<views>10,12</views>
+	<controls>
+		<include>CommonBackground</include>
+		<control type="image">
+			<left>0</left>
+			<top>150r</top>
+			<width>1920</width>
+			<height>150</height>
+			<texture>floor.png</texture>
+			<animation effect="fade" time="200" condition="Window.Previous(Home)">WindowOpen</animation>
+			<animation effect="fade" time="200" condition="Window.Next(Home)">WindowClose</animation>
+		</control>
+		<control type="group">
+			<include>Window_OpenClose_Animation</include>
+			<control type="image">
+				<left>0</left>
+				<top>150r</top>
+				<width>1920</width>
+				<height>150</height>
+				<texture>floor.png</texture>
+				<animation effect="fade" time="200" condition="Window.Previous(Home)">WindowOpen</animation>
+				<animation effect="fade" time="200" condition="Window.Next(Home)">WindowClose</animation>
+			</control>
+			<control type="group">
+				<include>Window_OpenClose_Animation</include>
+				<control type="group">
+					<include>VisibleFadeEffect</include>
+					<control type="image">
+						<left>83</left>
+						<top>90</top>
+						<width>1755</width>
+						<height>900</height>
+						<texture border="15">ContentPanel.png</texture>
+					</control>
+					<control type="image">
+						<left>83</left>
+						<top>978</top>
+						<width>1755</width>
+						<height>96</height>
+						<texture border="15">ContentPanelMirror.png</texture>
+					</control>
+				</control>
+			</control>
+		</control>
+		<include>MainWindowMouseButtons</include>
+		<include>PVRHeader</include>
+		<control type="group" id="50">
+			<include>Window_OpenClose_Animation</include>
+			<include>PVRGuideViewTimeline</include>
+			<include>PVRGuideViewNext</include>
+		</control>
+		<control type="group">
+			<depth>DepthFooter</depth>
+			<include>CommonNowPlaying</include>
+		</control>
+		<include>BehindDialogFadeOut</include>
+		<include>ScrollOffsetLabel</include>
+		<control type="image">
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture>black-back.png</texture>
+			<animation effect="fade" time="300">Visible</animation>
+			<animation effect="fade" time="150">Hidden</animation>
+			<visible>Window.IsActive(FileBrowser) | Window.IsActive(PVRGuideInfo) | Window.IsActive(PVRRecordingInfo) | Window.IsActive(PVRTimerSetting) | Window.IsActive(PVRGroupManager) | Window.IsActive(PVRGuideSearch)</visible>
+		</control>
+		<include>PVRSideBlade</include>
+	</controls>
+</window>

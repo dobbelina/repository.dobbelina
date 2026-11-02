@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>1000</defaultcontrol>
+	<include>dialogeffect</include>
+	<coordinates>
+		<left>0</left>
+		<top>0</top>
+	</coordinates>
+	<controls>
+		<control type="image" id="999">
+			<description>background image</description>
+			<left>0</left>
+			<top>0</top>
+			<width>510</width>
+			<height>1080</height>
+			<texture border="20">DialogBack.png</texture>
+		</control>
+		<control type="grouplist" id="996">
+			<description>grouplist for context buttons</description>
+			<left>30</left>
+			<top>45</top>
+			<width>450</width>
+			<height max="1005">auto</height>
+			<itemgap>3</itemgap>
+		</control>
+		<control type="button">
+			<description>Close Window button</description>
+			<left>390</left>
+			<top>8</top>
+			<width>96</width>
+			<height>48</height>
+			<label />
+			<font />
+			<onclick>PreviousMenu</onclick>
+			<texturefocus>DialogCloseButton-focus.png</texturefocus>
+			<texturenofocus>DialogCloseButton.png</texturenofocus>
+			<onleft>2</onleft>
+			<onright>2</onright>
+			<onup>2</onup>
+			<ondown>2</ondown>
+			<visible>system.getbool(input.enablemouse)</visible>
+		</control>
+		<control type="button" id="1000">
+			<description>button template</description>
+			<left />
+			<top />
+			<width>450</width>
+			<height>57</height>
+			<font>fontContextMenu</font>
+			<align>center</align>
+			<textcolor>grey2</textcolor>
+			<focusedcolor>white</focusedcolor>
+			<texturefocus border="5">button-focus.png</texturefocus>
+		</control>
+	</controls>
+</window>

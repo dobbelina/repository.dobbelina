@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+	<include name="VideoCodecFlaggingConditions">
+		<control type="image">
+			<description>Video rez Image</description>
+			<width>83</width>
+			<height>53</height>
+			<aspectratio align="right">keep</aspectratio>
+			<texture>$INFO[ListItem.VideoResolution,flagging/video/,.png]</texture>
+		</control>
+		<control type="image">
+			<description>Codec Image</description>
+			<width>110</width>
+			<height>53</height>
+			<aspectratio align="left">keep</aspectratio>
+			<texture>$INFO[ListItem.HdrType,flagging/video/,.png]</texture>
+			<visible>!String.IsEmpty(ListItem.HdrType)</visible>
+		</control>
+		<control type="image">
+			<description>Codec Image</description>
+			<width>120</width>
+			<height>53</height>
+			<aspectratio align="left">keep</aspectratio>
+			<texture>$VAR[videocodec,flagging/video/,.png]</texture>
+		</control>
+	</include>
+	<include name="VideoStereoscopicsFlaggingConditions">
+		<control type="image">
+			<description>Video stereoscopics flagging image</description>
+			<width>83</width>
+			<height>53</height>
+			<aspectratio align="right">keep</aspectratio>
+			<texture>flagging/video/3D.png</texture>
+			<visible>ListItem.IsStereoscopic</visible>
+		</control>
+	</include>
+	<include name="VideoTypeHackFlaggingConditions">
+		<control type="image" id="666">
+			<description>Video Type Image</description>
+			<width>120</width>
+			<height>53</height>
+			<aspectratio align="left">keep</aspectratio>
+			<texture>$VAR[typehackflagging,flagging/video/,.png]</texture>
+			<visible>!Skin.HasSetting(HideFilenameFlagging) + !String.IsEqual(Control.GetLabel(666),none)</visible>
+		</control>
+	</include>
+	<include name="VideoMPAAFlaggingConditions">
+		<control type="image">
+			<description>Rating image</description>
+			<width>120</width>
+			<height>53</height>
+			<aspectratio>keep</aspectratio>
+			<texture>$VAR[rating,flagging/ratings/,.png]</texture>
+		</control>
+	</include>
+	<include name="AudioCodecFlaggingConditions">
+		<control type="image">
+			<description>Audio Codec Image</description>
+			<width>120</width>
+			<height>53</height>
+			<aspectratio align="right">keep</aspectratio>
+			<texture>$INFO[ListItem.AudioCodec,flagging/audio/,.png]</texture>
+		</control>
+	</include>
+	<include name="AudioChannelsFlaggingConditions">
+		<control type="image">
+			<description>Audio Codec Image</description>
+			<width>83</width>
+			<height>53</height>
+			<aspectratio align="left">keep</aspectratio>
+			<texture>$INFO[ListItem.AudioChannels,flagging/audio/,.png]</texture>
+		</control>
+	</include>
+	<include name="AspectCodecFlaggingConditions">
+		<control type="image">
+			<description>Aspectratio Image</description>
+			<width>83</width>
+			<height>53</height>
+			<aspectratio align="right">keep</aspectratio>
+			<texture>$INFO[ListItem.VideoAspect,flagging/aspectratio/,.png]</texture>
+		</control>
+	</include>
+	
+<variable name="VideoPlayerAudioCodecTexture">
+
+    <!-- AAC -->
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_lc)">flagging/audio/aac.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac)">flagging/audio/aac.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac_v2)">flagging/audio/aac.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ssr)">flagging/audio/aac.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ltp)">flagging/audio/aac.png</value>
+
+    <!-- DTS -->
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_96_24)">flagging/audio/dts.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_es)">flagging/audio/dts.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_express)">flagging/audio/dts.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x)">flagging/audio/dtshd_ma.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x_imax)">flagging/audio/dtshd_ma.png</value>
+
+    <!-- Dolby -->
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3_ddp_atmos)">flagging/audio/eac3.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,truehd_atmos)">flagging/audio/truehd.png</value>
+
+    <!-- PCM -->
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_s16be)">flagging/audio/pcm.png</value>
+    <value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_u8)">flagging/audio/pcm.png</value>
+
+    <!-- All original codec filenames -->
+    <value>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</value>
+
+</variable>
+
+</includes>

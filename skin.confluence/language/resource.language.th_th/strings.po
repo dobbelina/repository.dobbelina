@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:31+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Thai <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/th_th/>\n"
+"Language: th_th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "ชุดตกแต่ง Confluence โดย Jezz_X (สกินเริ่มต้นของ Kodi)"
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluenceเป็นสกินเริ่มต้นสำหรับ Kodi 9.11 หรือสูงกว่า มันเป็นส่วนผสมของแนวคิดจากสกินที่ได้รับความนิยมและพยายามที่จะยอมรับและบูรณาการส่วนที่ดีของมันเข้าไปในสกิน ซึ่งน่าจะง่ายสำหรับผู้ใช้ Kodiใหม่ ที่จะเข้าใจและใช้งานได้ดี"
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "ปรับเปลี่ยน"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr ""
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr ""
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "ตัวเลือกด้านพลังงาน"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "ทำงานอยู่..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "ซ่อนรายละเอียดข้อมูล"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "ตัวเลือกการดู"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "ข้อมูลการประมวลผลวิดีโอ"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "เต็มจอ"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "รวมระยะเวลา"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "การถอดรหัสด้วยฮาร์ดแวร์"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "ไม่ถูกใช้งาน"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "ตัวถอดรหัส"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "ข้อมูลการประมวลผลเสียง"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "หน่วยความจำที่ใช้"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr ""
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr ""
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "ไม่สามารถใช้ได้"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "ความเร็วการเล่น"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "กำลังเล่น"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "หน้า"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "รายการ"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "ตัวเลือกอื่นๆ"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "ที่ตั้ง"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "ย่อโปสเตอร์"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "แฟนอาร์ต"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "รูปย่อของภาพ"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "ย่อส่วนภาพ"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "ข้อมูล"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "การกระทำ"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "ขณะนี้กำลังเล่น"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "กำลังเล่น"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "หยุดชั่วขณะ"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "ไปหน้าแบบเร็ว"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "ย้อนกลับเร็ว"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "ค้นหา"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "ชุดรูปแบบการแสดงแสงสี"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "เวลาสิ้นสุด"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "เรียง: มากไปน้อย"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "เรียง: น้อยไปมาก"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "เปิด รายการเล่น"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "บันทึก รายการเล่น"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "ปิด รายการเล่น"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "แฟ้มเพลงของระบบ"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "รายการเล่น ปัจจุบัน"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "ที่เลือกในปัจจุบัน"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "ตัวเลือก หน้าจอหลัก"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "พื้นหลัง"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "แสดง \"หยุดชั่วขณะ\" ในการนำเสนอภาพนิ่ง"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "เล่นตัวอย่างภาพยนตร์ในหน้าต่าง [COLOR=grey3](กล่องโต้ตอบข้อมูลวิดีโอเท่านั้น)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "ตัวเลือก อื่นๆ"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "ซ่อนป้ายกำกับ ที่อ่านได้จากชื่อแฟ้มวิดีโอ [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "ซ่อนปุ่มเมนูหลัก"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "เปิดใช้งานปรับแต่งพื้นหลัง"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "เส้นทางของพื้นหลัง:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "ซ่อน"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "ตัวเลือก"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr ""
+
+msgctxt "#31114"
+msgid "System"
+msgstr "ระบบ"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr ""
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "แสดงอัลบัมที่เพิ่งเพิ่ม"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "แสดงวิดีโอที่เพิ่งเพิ่ม"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr ""
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "ซ่อนพื้นหลังแฟนอาร์ต"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr ""
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "ซ่อน EPG ถ้า RDS ถูกนำเสนอบนหน้าต่างช่องรายการ"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "แสดงพื้นหลังวิดีโอ \"ที่กำลังเล่น\""
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "แสดงพื้นหลังแสงสีประกอบเพลง \"ที่กำลังเล่น\""
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "เนื้อเพลง"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "ซ่อนแฟนอาร์ตในการแสดงแสงสีแบบเต็มจอ"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "ส่วนเสริมเนื้อเพลง"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "หน้าหลัก เมนูย่อย \"วิดีโอ\""
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "หน้าหลัก เมนูย่อย \"เพลง\""
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "หน้าหลัก เมนูย่อย \"รูปภาพ\""
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "OSD เพลง"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "ระดับของการตั้งค่า"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "ใช้"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr ""
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr ""
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr ""
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr ""
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr ""
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "ปุ่มลัด"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "เลือกเพลงของคุณ"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "แหล่งเนื้อเพลง"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "ค้นพบ"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "ค้นหารายการเพิ่มเติม"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "ตอนที่กำลังจะมา"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr ""
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "อุณหภูมิปัจจุบัน"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "ปรับปรุงล่าสุด"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "ผู้ให้บริการข้อมูล"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "รายละเอียดภาพยนตร์"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "หน่วยความจำที่ใช้:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "หมายเลขแทรค"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "โปรไฟล์ที่เลือก"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "เข้าระบบล่าสุด"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "ออกอากาศ"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "ตัวเลือกของรายการเล่น"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "สร้างเมื่อ"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "ความละเอียดจอ"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "ที่เพิ่งเพิ่ม"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]ตั้งค่า ตัวจับเวลา![/B] [COLOR=grey2] - ระบบจะปิดอัตโนมัติ ใน[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "คลิกปุ่มเพื่อเล่น[CR][CR]ตัวอย่างภาพยนตร์"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "รายละเอียดอัลบั้ม"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "หยุดชั่วขณะ"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "หยุด"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "ไปหน้าแบบเร็ว"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "ย้อนกลับเร็ว"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "เมนู ภาพยนตร์"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "ดาวน์โหลดคำบรรยาย"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "ชมแบบ 2 มิติ"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "เปลี่ยนโหมด"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "ใช้งาน"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "หน้าตาพื้นฐาน"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "ค่าเริ่มต้นของสกินโดยไม่ใช้ caps"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "ใช้ฟ้อนท์ Arial"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "ช่วยเหลือในการเริ่มใช้งาน..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "แท็บนี้มีเครื่องหมายที่แสดงว่า มีเมนูหลบอยู่ข้างของหน้าต่าง ซึ่งมีเมนูการปรับแต่งพิเศษสำหรับส่วนนี้ ในการเข้าถึงเมนูนี้, ให้เลื่อนลูกศรซ้ายด้วยรีโมทหรือคีย์บอร์ด หรือวางตัวชี้ของเมาท์เหนือแท็บ [CR][CR]กด \"ตกลง\" เพื่อปิดกล่องโต้ตอบนี้ ซึ่งจะไม่แสดงขึ้นมาอีก"
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "พบคำบรรยายภายใน"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "ลงชื่อเข้าใช้"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "เลือกโปรไฟล์ผู้ใช้ Kodi ของคุณ[CR]เพื่อเข้าสู่ระบบและดำเนินการต่อไป"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "แสดงหรือซ่อน หน้าจอลงชื่อเข้าใช้เมื่อเริ่มต้น"
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "เลือกโปรไฟล์ที่จะใช้ในตอนเริ่มต้น เมื่อหน้าจอลงชื่อเข้าใช้ถูกปิดการใช้งาน"
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]การตั้วค่าตัวเล่น[/B][CR][CR]ปรับแต่งการทำงานที่สามารถใช้ได้ขณะทำการเล่น · ปรับแต่งวิธีการที่เนื้อหาสื่อจะถูกเล่น"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]การตั้งค่าคลังข้อมูล[/B][CR][CR]ปรับแต่งวิธีการที่ มุมมอง คลังข้อมูล/แฟ้ม จะแสดงเนื้อหาของสื่อ ·  ปรับแต่งวิธีการที่ รายการ/มุมมอง จะถูกค้นหา · ปรับแต่งตัวเลือกฐานข้อมูลสื่อ"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]การตั้งค่า PVR[/B][CR][CR]ปรับแต่งวิธีการที่ ช่อง & ผังรายการ จะถูกจัดการ  · ปรับแต่งวิธีที่ ทีวี สด และการบันทึก จะถูกจัดการ"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]การตั้งค่าส่วนเสริม[/B][CR][CR]ปรับแต่งส่วนเสริมที่คุณติดตั้งแล้ว · เรียกดูและติดตั้ง ส่วนเสริม จาก kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]การตั้งค่าส่วนบริการ[/B][CR][CR]ปรับแต่ง & จัดการ ส่วนบริการการแบ่งปันสื่อ · ปรับแต่งแม่ข่ายเว็บ · ปรับแต่ง & จัดการ ส่วนบริการสภาพอากาศ"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]การตั้งค่าระบบ[/B][CR][CR]ปรับแต่งการแสดงผล · ปรับแต่งเสียง · ปรับแต่งการเข้าถึงอินเตอร์เน็ต · ปรับแต่งการประหยัดพลังงาน· ปรับแต่งบันทึกระบบ"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]การตั้งค่าส่วนติดต่อผู้ใช้[/B][CR][CR]ปรับแต่งหน้าตา · ปรับแต่งภูมิภาค · ปรับแต่งการควบคุม · ปรับแต่งรักษาหน้าจอ · ปรับแต่งมาสเตอร์ล็อค"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "เวลาที่กำหนด"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "ทีวี"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "เพิ่มกลุ่ม"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "เปลี่ยนชื่อกลุ่ม"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "ลบกลุ่ม"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "กลุ่มทีมีอยู่"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "กลุ่มช่องสัญญาณ"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "กำหนดตัวตั้งเวลา"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "ตัวเลือกของช่อง"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "พยากรณ์ใน 36 ชั่วโมง"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "พยากรณ์รายชั่วโมง"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "พยากรณ์สุดสัปดาห์"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "พยากรณ์ประจำวัน"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "พยากรณ์"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "กำลังเรียกข้อมูลการพยากรณ์ ..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "แผนที่"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "สภาพอากาศ"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "รูปภาพ"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "ทีวี"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "วิดีโอ"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "ภาพยนตร์"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "รายการทีวี"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "เพลง"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr ""
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "เล่นแผ่น"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "ระบบ"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "วิทยุ"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr ""
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr ""
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "ชื่อ ข้อมูลส่วนตัว"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr ""

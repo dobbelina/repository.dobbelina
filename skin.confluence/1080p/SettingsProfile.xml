@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">9000</defaultcontrol>
+	<controls>
+		<include>CommonBackground</include>
+		<control type="image">
+			<left>0</left>
+			<top>150r</top>
+			<width>1920</width>
+			<height>150</height>
+			<texture>floor.png</texture>
+			<animation effect="slide" start="0,15" end="0,0" time="150" condition="Window.Previous(Home)">WindowOpen</animation>
+			<animation effect="slide" start="0,0" end="0,15" time="150" condition="Window.Next(Home)">WindowClose</animation>
+		</control>
+		<control type="group">
+			<left>135</left>
+			<top>45</top>
+			<animation type="WindowOpen" reversible="false">
+				<effect type="zoom" start="80" end="100" center="960,540" easing="out" tween="back" time="225" />
+				<effect type="fade" start="0" end="100" time="225" />
+			</animation>
+			<animation type="WindowClose" reversible="false">
+				<effect type="zoom" start="100" end="80" center="960,540" easing="in" tween="back" time="225" />
+				<effect type="fade" start="100" end="0" time="225" />
+			</animation>
+			<control type="image">
+				<left>8</left>
+				<top>8</top>
+				<width>1635</width>
+				<height>945</height>
+				<texture border="15">ContentPanel.png</texture>
+			</control>
+			<control type="image">
+				<left>8</left>
+				<top>938</top>
+				<width>1635</width>
+				<height>96</height>
+				<texture border="15">ContentPanelMirror.png</texture>
+			</control>
+			<control type="button">
+				<description>Close Window button</description>
+				<left>1470</left>
+				<top>17</top>
+				<width>96</width>
+				<height>48</height>
+				<label />
+				<font />
+				<onclick>PreviousMenu</onclick>
+				<texturefocus>DialogCloseButton-focus.png</texturefocus>
+				<texturenofocus>DialogCloseButton.png</texturenofocus>
+				<onleft>1</onleft>
+				<onright>1</onright>
+				<onup>1</onup>
+				<ondown>1</ondown>
+				<visible>system.getbool(input.enablemouse)</visible>
+			</control>
+			<control type="image">
+				<description>LOGO</description>
+				<left>45</left>
+				<top>23</top>
+				<width>330</width>
+				<height>120</height>
+				<aspectratio>keep</aspectratio>
+				<texture>Confluence_Logo.png</texture>
+			</control>
+			<control type="list" id="9000">
+				<left>15</left>
+				<top>123</top>
+				<width>390</width>
+				<height>812</height>
+				<onleft>9010</onleft>
+				<onright>9010</onright>
+				<onup>9000</onup>
+				<ondown>9000</ondown>
+				<pagecontrol />
+				<scrolltime>300</scrolltime>
+				<itemlayout height="81" width="390">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>390</width>
+						<height>83</height>
+						<texture border="5">MenuItemNF.png</texture>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>360</width>
+						<height>83</height>
+						<font>font24_title</font>
+						<textcolor>grey3</textcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout height="81" width="390">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>390</width>
+						<height>83</height>
+						<texture border="5">MenuItemFO.png</texture>
+						<animation effect="fade" start="100" end="30" time="75" condition="!Control.HasFocus(9000)">Conditional</animation>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>360</width>
+						<height>83</height>
+						<font>font24_title</font>
+						<textcolor>white</textcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</focusedlayout>
+				<content>
+					<item id="1">
+						<label>31420</label>
+						<icon />
+					</item>
+					<item id="2">
+						<label>13200</label>
+						<icon />
+					</item>
+				</content>
+			</control>
+			<control type="group">
+				<visible>Container(9000).Hasfocus(2)</visible>
+				<left>30</left>
+				<top>390</top>
+				<control type="image">
+					<left>0</left>
+					<top>0</top>
+					<width>360</width>
+					<height>300</height>
+					<aspectratio>keep</aspectratio>
+					<bordertexture infill="false" border="12">ThumbBorder.png</bordertexture>
+					<bordersize>10</bordersize>
+					<texture fallback="DefaultUser.png">$INFO[Container(2).Listitem.Icon]</texture>
+				</control>
+				<control type="label">
+					<left>0</left>
+					<top>315</top>
+					<width>360</width>
+					<height>30</height>
+					<font>font12_title</font>
+					<textcolor>blue</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[31319]</label>
+				</control>
+				<control type="label">
+					<left>0</left>
+					<top>353</top>
+					<width>360</width>
+					<height>30</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$INFO[Container(2).ListItem.Label]</label>
+				</control>
+				<control type="label">
+					<left>0</left>
+					<top>398</top>
+					<width>360</width>
+					<height>45</height>
+					<font>font12_title</font>
+					<textcolor>blue</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$LOCALIZE[31320]</label>
+				</control>
+				<control type="label">
+					<left>0</left>
+					<top>435</top>
+					<width>360</width>
+					<height>45</height>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label fallback="13170">$INFO[Container(2).ListItem.Label2]</label>
+				</control>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1185</width>
+				<height>927</height>
+				<texture border="5">black-back2.png</texture>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1185</width>
+				<height>78</height>
+				<texture>dialogheader.png</texture>
+			</control>
+			<control type="label">
+				<description>header label</description>
+				<left>450</left>
+				<top>30</top>
+				<width>1089</width>
+				<height>45</height>
+				<font>font16</font>
+				<label>$LOCALIZE[13200] - $LOCALIZE[5]</label>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+			</control>
+			<control type="group" id="9010">
+				<control type="grouplist" id="9001">
+					<visible>Container(9000).Hasfocus(1)</visible>
+					<left>435</left>
+					<top>90</top>
+					<width>1125</width>
+					<height>660</height>
+					<itemgap>-2</itemgap>
+					<pagecontrol>60</pagecontrol>
+					<onleft>9000</onleft>
+					<onright>9000</onright>
+					<onup>9001</onup>
+					<ondown>9001</ondown>
+					<control type="radiobutton" id="4">
+						<description>enable login screen</description>
+						<width>1125</width>
+						<height>60</height>
+						<font>font13</font>
+						<label>20096</label>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+					</control>
+					<control type="button" id="5">
+						<description>auto login</description>
+						<width>1125</width>
+						<height>60</height>
+						<font>font13</font>
+						<label>33084</label>
+						<label2>$INFO[System.ProfileAutoLogin]</label2>
+						<textcolor>grey2</textcolor>
+						<focusedcolor>white</focusedcolor>
+						<texturefocus>MenuItemFO.png</texturefocus>
+						<texturenofocus>MenuItemNF.png</texturenofocus>
+						<enable>!System.HasLoginScreen</enable>
+					</control>
+				</control>
+				<control type="group">
+					<visible>Container(9000).Hasfocus(1)</visible>
+					<left>435</left>
+					<top>750</top>
+					<width>1125</width>
+					<height>60</height>
+					<control type="image">
+						<description>separator image</description>
+						<left>0</left>
+						<top>38</top>
+						<width>1125</width>
+						<height>3</height>
+						<texture>separator2.png</texture>
+						<colordiffuse>40FFFFFF</colordiffuse>
+					</control>
+					<control type="textbox">
+						<description>description area</description>
+						<left>11</left>
+						<top>48</top>
+						<width>1104</width>
+						<height>125</height>
+						<font>font12</font>
+						<label>$LOCALIZE[31422]</label>
+						<align>justify</align>
+						<textcolor>white</textcolor>
+						<autoscroll time="3000" delay="4000" repeat="5000">true</autoscroll>
+						<visible>Control.Hasfocus(4)</visible>
+					</control>
+					<control type="textbox">
+						<description>description area</description>
+						<left>11</left>
+						<top>48</top>
+						<width>1104</width>
+						<height>125</height>
+						<font>font12</font>
+						<label>$LOCALIZE[31423]</label>
+						<align>justify</align>
+						<textcolor>white</textcolor>
+						<autoscroll time="3000" delay="4000" repeat="5000">true</autoscroll>
+						<visible>Control.Hasfocus(5)</visible>
+					</control>
+				</control>
+				<control type="panel" id="2">
+					<visible>Container(9000).Hasfocus(2)</visible>
+					<left>435</left>
+					<top>108</top>
+					<width>1140</width>
+					<height>810</height>
+					<onleft>9000</onleft>
+					<onright>60</onright>
+					<onup>9010</onup>
+					<ondown>9010</ondown>
+					<viewtype label="21371">list</viewtype>
+					<pagecontrol>60</pagecontrol>
+					<scrolltime>200</scrolltime>
+					<itemlayout height="270" width="285">
+						<control type="image">
+							<left>1</left>
+							<top>0</top>
+							<width>282</width>
+							<height>218</height>
+							<bordertexture infill="false" border="5">button-nofocus.png</bordertexture>
+							<bordersize>5</bordersize>
+							<texture fallback="DefaultUser.png">$INFO[Listitem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
+						</control>
+						<control type="label">
+							<left>9</left>
+							<top>218</top>
+							<width>267</width>
+							<height>38</height>
+							<font>font13</font>
+							<textcolor>grey2</textcolor>
+							<selectedcolor>selected</selectedcolor>
+							<align>center</align>
+							<aligny>center</aligny>
+							<info>ListItem.Label</info>
+						</control>
+					</itemlayout>
+					<focusedlayout height="270" width="285">
+						<control type="image">
+							<left>1</left>
+							<top>0</top>
+							<width>282</width>
+							<height>218</height>
+							<bordertexture infill="false" border="5">folder-focus.png</bordertexture>
+							<bordersize>5</bordersize>
+							<texture fallback="DefaultUser.png">$INFO[Listitem.Icon]</texture>
+							<aspectratio>keep</aspectratio>
+						</control>
+						<control type="label">
+							<left>9</left>
+							<top>218</top>
+							<width>267</width>
+							<height>38</height>
+							<font>font13</font>
+							<textcolor>white</textcolor>
+							<selectedcolor>selected</selectedcolor>
+							<align>center</align>
+							<aligny>center</aligny>
+							<info>ListItem.Label</info>
+						</control>
+					</focusedlayout>
+				</control>
+				<control type="scrollbar" id="60">
+					<left>1590</left>
+					<top>90</top>
+					<width>38</width>
+					<height>795</height>
+					<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+					<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+					<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+					<textureslidernib>ScrollBarNib.png</textureslidernib>
+					<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+					<onleft>2</onleft>
+					<onright>9000</onright>
+					<showonepage>false</showonepage>
+					<orientation>vertical</orientation>
+				</control>
+			</control>
+		</control>
+		<control type="group">
+			<depth>DepthFooter</depth>
+			<include>CommonNowPlaying</include>
+		</control>
+		<include>MainWindowMouseButtons</include>
+		<include>BehindDialogFadeOut</include>
+		<include content="CommonWindowHeader">
+			<param name="Icon" value="icon_system" />
+			<param name="Label" value="$LOCALIZE[13200]" />
+		</include>
+	</controls>
+</window>

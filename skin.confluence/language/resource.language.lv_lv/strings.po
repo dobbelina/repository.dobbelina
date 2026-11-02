@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Latvian <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/lv_lv/>\n"
+"Language: lv_lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluence apvalks no Jeez_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence ir apvienota daudzu populāru apvalku koncepcija un centieni pieņemt un integrēt labākās idejas, lai jaunajiem Kodi ietotājiem to būtu viegli izprast un lietot."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Nomainiet jūsu"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr ""
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr ""
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Enerģijas opcijas"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Darbojas..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Slēpt informāciju"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Skata opcijas"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Video procesa informācija"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Pilnekrāns"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Kopējais ilgums"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Aparatūras dekodēšana"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Neaktīvs"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Dekoderis"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Audio procesa informācija"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Aizņemtā atmiņa"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr ""
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr ""
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Nav pieejams"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Atskaņošanas ātrums"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Atskaņo"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Lapa"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Ieraksti"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Dažādas opcijas"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Atrašanās vieta"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Plakāta ietvars"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Fanumāksla"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Sīktēli"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Attēla ietvars"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Darbības"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Pašreiz atskaņo"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "ATSKAŅO"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "IEPAUZĒTS"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "TĪT UZ PRIEKŠU"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "ATTĪT ATPAKAĻ"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "MEKLĒŠANA"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Vizualizācijas sagataves"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Beigu laiks"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Kārtot: augošā secībā"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Kārtot: dilstošā secībā"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Atvērt atskaņošanas sarakstu"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Saglabāt atskaņošanas sarakstu"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Aizvērt atskaņošanas sarakstu"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Sistēmas mūzikas faili"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Pašreizējais atskaņošanas saraksts"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Pašreizējais atlasīts"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Mājas ekrāna opcijas"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Fons"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Rādīt \"Iepauzēts\" attēlu slaidrādē"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Atskaņot rullīšus logā [COLOR=grey3](Tikai video informācijas dialogs)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Dažādas opcijas"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Paslēpt karogus, kas nolasīti no video failu nosaukumiem [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Slēpt galvenās izvēlnes pogas"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Ieslēgt pielāgotu fonu"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Fona ceļš:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Slēpt"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Opcijas"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr ""
+
+msgctxt "#31114"
+msgid "System"
+msgstr "Sistēma"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr ""
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Rādīt nesen pievienotos albumus"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Rādīt nesen pievienotos video"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr ""
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Slēpt fona fanumākslu"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr ""
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "Slēpt EPG, ja kanāla logā ir pieejams RDS"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Rādīt fonā \"Šobrīd atskaņo\" video"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Rādīt fonā \"Šobrīd atskaņo\" vizualizāciju"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Dziesmu vārdi"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Slēpt fanumākslu pilnekrāna vizualizācijā"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Dziesmu vārdu pielikums"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Sākumlapas video apakšizvēlne"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Sākumlapas mūzikas apakšizvēlne"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Sākumlapas attēlu apakšizvēlne"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "Mūzikas OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Iestatījumu līmenis"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr ""
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr ""
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr ""
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr ""
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr ""
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr ""
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Saīsnes"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Izvēlieties savu dziesmu"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Dziesmu vārdu avots"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Atrada"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Atrast vairāk ierakstu"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Gaidāmās sērijas"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr ""
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Pašreizējā temperatūra"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Pēdējo reizi atjaunināts"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Datu piegādātājs"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Filmas detaļas"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Aizņemtā atmiņa:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Celiņa numurs"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Atlasītais profils"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Pēdējoreiz pieslēdzies"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Ēterā"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Atskaņošanas saraksta opcijas"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Izveidots"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Izšķirtspēja"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Nesen pievienots"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Taimeris iestatīts![/B] [COLOR=grey2] - Sistēmas auto izslēgšana pēc[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Spiediet pogu, lai atskaņotu[CR][CR]filmas rullīti"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Albuma detaļas"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Pauze"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Apturēt"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Patīt uz priekšu"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Attīt atpakaļ"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Filmas izvēlne"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Lejupielādēt subtitrus"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Skatīties 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Mainīt režīmu"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Ieslēgts"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Apvalka noklusējums"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Apvalka noklusējums ar maziem burtiem"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Balstīts uz Arial"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Palīdzība pirmajā reizē..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Šī cilne nozīmē, ka aiz loga malas ir izvēlne, kas satur sekcijas papildus opcijas. Lai piekļūtu izvēlnei, navigējiet ar tālvadības pulti vai tastatūru pa kreisi, vai novietojiet peles kursoru virs cilnes. [CR][CR]Spiediet \"OK\", lai aizvērtu šo dialogu. Tas vairs neparādīsies."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Pieejami lokālie subtitri"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Pieteikšanās"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Atlasiet savu Kodi lietotāja profilu,[CR]lai pieslēgtos un turpinātu"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Uzsākot rādīt vai paslēpt pieteikšanās logu."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Atlasīt profilu, ko izmantot uzsākot, ja pieteikšanās logs ir izslēgts."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]ATSKAŅOTĀJA IESTATĪJUMI[/B][CR][CR]Pārvaldiet atskaņošanas laikā pieejamās darbības · Pārvaldiet, kā mediju saturs tiek atskaņots"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]BIBLIOTĒKAS IESTATĪJUMI[/B][CR][CR]Pārvaldiet, kā bibliotēkas un failu skatos tiek attēlots mediju saturs ·  Pārvaldiet navigāciju pa bibliotēkas sarakstiem un skatiem · Pārvaldiet mediju datubāzes opcijas"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR IESTATĪJUMI[/B][CR][CR]Pārvaldiet kanālu un gida iespējas  · Pārvaldiet Live TV un ierakstu veikšanu"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]PIELIKUMU IESTATĪJUMI[/B][CR][CR]Pārvaldiet savus instalētos pielikumus · Pārlūkojiet un instalējiet pielikumus no kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]SERVISU IESTATĪJUMI[/B][CR][CR]Pārvaldiet un pielāgojiet mediju koplietošanas servisus · Pārvadiet tīmekļa serveri · Pārvaldiet un pielāgojiet laikapstākļu serveri"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]SISTĒMAS IESTATĪJUMI[/B][CR][CR]Pārvaldiet ekrānu · Pārvaldiet skaņu · Pārvaldiet piekļuvi Internetam · Pārvaldiet elektrības patēriņu· Pārvaldiet reģistrēšanu"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]SASKARNES IESTATĪJUMI[/B][CR][CR]Pārvaldiet apvalku · Pārvaldiet reģionu · Pārvaldiet kontroli · Pārvaldiet ekrānsaudzētāju · Pārvaldiet galveno slēdzeni"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Ieplānotais laiks"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Pievienot grupu"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Pārsaukt grupu"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Dzēst grupu"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Pieejamās[CR]grupas"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kanāla grupa"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Taimeris iestatīts"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Kanāla opcijas"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36 stundu prognoze"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Prognoze pa stundām"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Prognoze nedēļas nogalei"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Prognoze pa dienām"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Prognoze"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Uzmeklēju laikaprognozi..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Kartes"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "LAIKAPSTĀKĻI"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "ATTĒLI"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEO"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "FILMAS"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "TV PĀRRAIDES"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MŪZIKA"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr ""
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "ATSKAŅOT DISKU"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "SISTĒMA"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr ""
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr ""
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Profila vārds"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr ""

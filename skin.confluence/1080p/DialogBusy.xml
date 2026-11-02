@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<animation effect="fade" time="75">WindowOpen</animation>
+	<animation effect="fade" time="150">WindowClose</animation>
+	<coordinates>
+		<left>0</left>
+		<top>0</top>
+	</coordinates>
+	<controls>
+		<control type="group">
+			<depth>DepthDialog+</depth>
+			<left>1605</left>
+			<top>960</top>
+			<control type="image">
+				<description>background image</description>
+				<left>0</left>
+				<top>0</top>
+				<width>300</width>
+				<height>105</height>
+				<texture border="20">OverlayDialogBackground.png</texture>
+			</control>
+			<control type="image">
+				<description>Busy animation</description>
+				<left>30</left>
+				<top>30</top>
+				<width>48</width>
+				<height>48</height>
+				<texture>busy.png</texture>
+				<aspectratio>keep</aspectratio>
+				<animation effect="rotate" start="0" end="360" center="54,54" time="900" loop="true" condition="true">conditional</animation>
+			</control>
+			<control type="label">
+				<description>Busy label</description>
+				<left>90</left>
+				<top>30</top>
+				<width>180</width>
+				<height>48</height>
+				<align>left</align>
+				<aligny>center</aligny>
+				<label>$LOCALIZE[31004]</label>
+				<font>font12</font>
+			</control>
+			<control type="progress" id="10">
+				<description>Progressbar</description>
+				<left>30</left>
+				<top>80</top>
+				<width>240</width>
+				<height>12</height>
+				<texturebg border="4,5,4,5">ProgressBack.png</texturebg>
+				<midtexture border="4,5,4,5">ProgressMid.png</midtexture>
+			</control>
+		</control>
+	</controls>
+</window>

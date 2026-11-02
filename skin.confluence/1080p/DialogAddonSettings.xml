@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">3</defaultcontrol>
+	<coordinates>
+		<left>323</left>
+		<top>90</top>
+	</coordinates>
+	<include>dialogeffect</include>
+	<controls>
+		<control type="group">
+			<animation effect="fade" start="100" end="0" time="150" condition="Window.Is(contentsettings) + Window.IsActive(AddonSettings)">Conditional</animation>
+			<animation effect="fade" start="100" end="0" time="300" condition="[Window.Is(osdaudiosettings) | Window.Is(osdvideosettings)] + [Window.IsVisible(SliderDialog) |  Window.IsVisible(FileBrowser)]">Conditional</animation>
+			<include content="DialogBackgroundCommons">
+				<param name="DialogBackgroundWidth" value="1275" />
+				<param name="DialogBackgroundHeight" value="900" />
+				<param name="DialogHeaderWidth" value="1080" />
+				<param name="DialogHeaderId" value="2" />
+				<param name="CloseButtonLeft" value="1140" />
+				<param name="CloseButtonNav" value="10" />
+			</include>
+			<control type="grouplist" id="3">
+				<description>Categories Area</description>
+				<left>68</left>
+				<top>105</top>
+				<width>1139</width>
+				<height>60</height>
+				<itemgap>8</itemgap>
+				<align>center</align>
+				<orientation>horizontal</orientation>
+				<onleft>3</onleft>
+				<onright>3</onright>
+				<onup>9001</onup>
+				<ondown>5</ondown>
+			</control>
+			<control type="button" id="10">
+				<description>Default Category Button</description>
+				<width>279</width>
+				<height>60</height>
+				<textoffsetx>30</textoffsetx>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font12_title</font>
+				<pulseonselect>false</pulseonselect>
+			</control>
+			<control type="image">
+				<description>Has Previous</description>
+				<left>38</left>
+				<top>120</top>
+				<width>30</width>
+				<height>30</height>
+				<texture>scroll-left-focus.png</texture>
+				<visible>Container(3).HasPrevious</visible>
+			</control>
+			<control type="image">
+				<description>Has Next</description>
+				<left>1208</left>
+				<top>120</top>
+				<width>30</width>
+				<height>30</height>
+				<texture>scroll-right-focus.png</texture>
+				<visible>Container(3).HasNext</visible>
+			</control>
+			<control type="grouplist" id="5">
+				<description>control area</description>
+				<left>60</left>
+				<top>180</top>
+				<width>1155</width>
+				<height>570</height>
+				<itemgap>8</itemgap>
+				<pagecontrol>60</pagecontrol>
+				<onup>3</onup>
+				<ondown>9001</ondown>
+				<onleft>5</onleft>
+				<onright>60</onright>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>1223</left>
+				<top>180</top>
+				<width>38</width>
+				<height>570</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>5</onleft>
+				<onright>5</onright>
+				<showonepage>false</showonepage>
+				<orientation>vertical</orientation>
+			</control>
+			<control type="button" id="7">
+				<description>Default Button</description>
+				<height>60</height>
+				<font>font13</font>
+				<texturefocus border="5">button-focus2.png</texturefocus>
+			</control>
+			<control type="radiobutton" id="8">
+				<description>Default RadioButton</description>
+				<height>60</height>
+				<font>font13</font>
+				<textwidth>1043</textwidth>
+				<texturefocus border="5">button-focus2.png</texturefocus>
+			</control>
+			<control type="spincontrolex" id="9">
+				<description>Default SpinControlex</description>
+				<height>60</height>
+				<font>font13</font>
+				<textcolor>grey2</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="5">button-nofocus.png</texturenofocus>
+				<texturefocus border="5">button-focus2.png</texturefocus>
+				<aligny>center</aligny>
+			</control>
+			<control type="image" id="11">
+				<description>separator image</description>
+				<height>3</height>
+				<texture>separator2.png</texture>
+			</control>
+			<control type="edit" id="12">
+				<description>Default Edit</description>
+				<height>60</height>
+				<font>font13</font>
+				<textcolor>grey2</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<texturenofocus border="5">button-nofocus.png</texturenofocus>
+				<texturefocus border="5">button-focus2.png</texturefocus>
+			</control>
+			<control type="sliderex" id="13">
+				<description>Default Slider</description>
+				<height>60</height>
+				<texturenofocus border="5">button-nofocus.png</texturenofocus>
+				<texturefocus border="5">button-focus2.png</texturefocus>
+				<font>font13</font>
+				<textcolor>grey2</textcolor>
+				<focusedcolor>white</focusedcolor>
+			</control>
+			<control type="label" id="14">
+				<description>Default Heading</description>
+				<height>53</height>
+				<font>font13_title</font>
+				<align>left</align>
+				<aligny>center</aligny>
+				<textcolor>blue</textcolor>
+				<shadowcolor>black</shadowcolor>
+			</control>
+			<control type="colorbutton" id="15">
+				<description>Default ColorButton</description>
+				<top>0</top>
+				<height>60</height>
+				<aligny>center</aligny>
+				<textcolor>grey2</textcolor>
+				<focusedcolor>white</focusedcolor>
+				<invalidcolor>invalid</invalidcolor>
+				<texturefocus border="0,2,0,2">MenuItemFO.png</texturefocus>
+				<texturenofocus border="0,2,0,2">MenuItemNF.png</texturenofocus>
+			</control>
+			<control type="grouplist" id="9001">
+				<top>803</top>
+				<left>60</left>
+				<width>1155</width>
+				<align>center</align>
+				<itemgap>8</itemgap>
+				<orientation>horizontal</orientation>
+				<control type="button" id="28">
+					<description>OK Button</description>
+					<top>0</top>
+					<width>279</width>
+					<height>60</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<onup>5</onup>
+					<ondown>5</ondown>
+				</control>
+				<control type="button" id="29">
+					<description>Cancel Button</description>
+					<top>0</top>
+					<width>279</width>
+					<height>60</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<label />
+					<onup>5</onup>
+					<ondown>5</ondown>
+				</control>
+				<control type="button" id="30">
+					<description>Defaults Button</description>
+					<top>0</top>
+					<width>279</width>
+					<height>60</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<onup>5</onup>
+					<ondown>5</ondown>
+				</control>
+				<control type="button" id="20">
+					<description>Settings Level Button</description>
+					<top>0</top>
+					<width>279</width>
+					<height>60</height>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font12_title</font>
+					<onclick>SettingsLevelChange</onclick>
+					<onup>5</onup>
+					<ondown>5</ondown>
+				</control>
+			</control>
+		</control>
+	</controls>
+</window>

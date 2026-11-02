@@ -1,0 +1,764 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Maltese <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/mt_mt/>\n"
+"Language: mt_mt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Dehra Confluence magħmula minn Jezz_X. (Id-dehra normali ta' Kodi)"
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence hija d-dehra normali ta' Kodi 14.0 il-fuq. Hija taħlita ta' kunċetti minn ħafna dehriet popolari, u tipporva tgħaqqad u tintegra l-aqwa ideat tagħhom f'dehra li għandha tkun faċli biex jifmuha u jużawha dawk l-utenti li qed jużaw Kodi għall-ewwel darba."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Ibdel il-"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr ""
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr ""
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr ""
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Qed jaħdem..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Aħbi l-informazzjoni"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Ara l-għażliet"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr ""
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Skrin sħiħ"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Tul totali"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr ""
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr ""
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr ""
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr ""
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr ""
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr ""
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr ""
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Mhux Disponibbli"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr ""
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Qed jindaqq"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Paġna"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Affarijiet"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Għażliet mixxelanji"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Post"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Tgeżwira tal-powster"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Fanart"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Thumbs tal-istampi"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Tgeżwir tal-istampi"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Azzjonijiet"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Qed jindaqq bħalissa"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "IDOQQ"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "IPPAWŻAT"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "GĦAĠĠEL QUDDIEM"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "B'LURA"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "IFITTEX"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Viżwalizzazjoni ssetjata minn qabel"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Ħin tat-tmiem"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Qassam: Jikbru"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Qassam: Jiċkienu"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Iftaħ il-playlist"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Żomm il-playlist"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Għalaq il-playlist"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Fajls tal-mużika tas-sistema"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Playlist kurrenti"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Magħżul bħalissa"
+
+# empty strings from id 31062 to 31100
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr ""
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Wara l-kwinti"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr ""
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr ""
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Għażliet varji"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr ""
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr ""
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Attiva l-isfond preferut"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Path tal-isfond"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Aħbi"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Għażliet"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr ""
+
+msgctxt "#31114"
+msgid "System"
+msgstr "Sistema"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr ""
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Uri l-albums li ġew miżjuda dan l-aħħar"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Uri vidjos li ġew miżjuda dan l-aħħar"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr ""
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Aħbi l-fanart fl-isfond"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr ""
+
+# empty string with id 31121
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr ""
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Uri l-vidjo li qed jindaqq bħalissa fl-isfond"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Uri l-viżwalizzazjoni fl-isfond"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Liriċi"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Aħbi l-fanart f'viżwalizzazjonijiet fuq l-iskrin kollu"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Add-on tal-lirika"
+
+# empty string with id 31133
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr ""
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr ""
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr ""
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "OSD tal-Mużika"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Livell ta' settings"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr ""
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr ""
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr ""
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr ""
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr ""
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr ""
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Shortcuts"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "AGħżel id-diska tiegħek"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Sors ta' lirika"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Misjub"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Sib aktar affarijiet"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Episodji li jmiss"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr ""
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Temperatura kurrenti"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "L-aħħar li ġġedded"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Fornitur ta' informazzjoni"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Dettalji tal-film"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Memorja użata:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Numru tad-diska"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Profil magħżul"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "L-aħħar login"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Intwera"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Għażliet tal-playlist"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Maħluq"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Reżoluzzjoni"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Miżjud dan l-aħħar"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Arloġġ issetjat![/B] [COLOR=grey2] - Sistema se tintefa' waħedha f'[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Għafas il-buttuna biex iddoqq it-trejler tal-film[CR][CR]"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Dettalji dwar l-album"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Ippawża"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Waqqaf"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Għaġġel quddiem"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Lura"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Menu tal-film"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Niżżel is-sottotitoli"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Ara bħala 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Ibdel il-modalita'"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Attivat"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Qoxra Default"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Id-derha normal mingħajr ittri kapitali"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Ibbażat fuq l-Arial"
+
+# empty strings from id 31393 to 31410
+msgctxt "#31411"
+msgid "First run help..."
+msgstr ""
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr ""
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr ""
+
+# empty strings from id 31414 to 31419
+msgctxt "#31420"
+msgid "Login"
+msgstr ""
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr ""
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr ""
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr ""
+
+# empty strings from id 31424 to 31429
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr ""
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr ""
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr ""
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr ""
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr ""
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr ""
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr ""
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Ħin skedat"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "Televixin"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Żid grupp"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Ibdel l-isem ta' grupp"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Ħassar grupp"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Gruppi[CR]Disponibbli"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Grupp ta' stazzjonijiet"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Issettja l-arloġġ"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Għażliet tal-istazzjon"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "Tbassir ta' 36 siegħa"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Tbassir siegħa b'siegħa"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Tbassir għal tmiem il-ġimgħa"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Tbassir ġurnata b'ġurnata"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Tbassir tat-temp"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Qed tinstab l-informazzjoni tat-tbassir..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Mappep"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "TEMP"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "STAMPI"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "Televixin"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDJOS"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "FILMS"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "XOWS TELEVIŻIVI"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUŻIKA"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr ""
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "DOQQ CD"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "SISTEMA"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADJU"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr ""
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr ""
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Isem tal-Profil"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr ""

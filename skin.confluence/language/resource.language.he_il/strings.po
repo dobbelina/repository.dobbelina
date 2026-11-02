@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Hebrew (Israel) <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/he_il/>\n"
+"Language: he_il\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "המעטפת Confluence של Jezz_X. (ברירת המחדל של Kodi)"
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "המעטפת Confluence היא מעטפת ברירת המחדל של Kodi. המעטפת הינה תוצר של אימוץ מאפיינים ממעטפות פופולריות רבות תוך רצון לשלב מאפיינים אלה למעטפת פשוטה לשימוש ולהכרה ראשונית ע\\\"י משתמשי Kodi חדשים."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "שינוי"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "משחקים"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]הגדרות משחק[/B][CR][CR]הגדר חזרה לאחור תמיכה ואפשרויות · קביעת תצורה של לוח המקשים ומספר נגני המקלדת"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "אפשרויות חשמל"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "עסוק..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "הסתר פרטים"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "אפשרויות תצוגה"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "פרטי עיבוד וידאו"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "מסך מלא"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "אורך כולל"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "פיענוח חומרתי"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "לא פעיל"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "מפענח"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "פרטי עיבוד קול"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "זיכרון בשימוש"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "דקה"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "זמן שחלף"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "לא זמין"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "מהירות ניגון"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "מנגן"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "עמוד"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "פריטים"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "אפשרויות שונות"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "מיקום"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "רצועת פוסטרים"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "פאנארט"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "תמונות ממוזערות"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "רצועת תמונות"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "פרטים"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "פעולות"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "מנגן כעת"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "מנגן"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "מושהה"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "הרצה קדימה"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "הרצה אחורה"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "מעביר"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "קביעוני חיזוי"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "זמן סיום"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "סדר מיון: עולה"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "סדר מיון: יורד"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "פתיחת רשימת ניגון"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "שמירת רשימת ניגון"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "סגירת רשימת ניגון"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "קבצי מוזיקת מערכת"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "רשימת ניגון נוכחית"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "כרגע מסומנים"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "אפשרויות מסך הבית"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "רקע"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "הצג \"מושהה\" במצגת תמונות"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "נגן קדימונים בחלון [COLOR=grey3](דיאלוג פרטי וידאו בלבד)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "אפשרויות שונות"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "הסתר סימון \"נצפה\" משמות קבצי וידאו [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "הסתר כפתורי תפריט ראשי"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "אפשר רקע מותאם אישית"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "נתיב תמונת רקע:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "הסתר"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "אפשרויות"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "נתיב לרקע של הראשי:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "מערכת"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "רשימות נגינה כפתור ראשי"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "הצג אלבומים שנוספו לאחרונה"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "הצג וידאו שנוסף לאחרונה"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "תת־תפריט „הרחבות” בדף הבית"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "נטרל הצגת פאנארט כרקע"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "תת־תפריט „משחקים” בדף הבית"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "הסתר לוח שידורים מחלון ערוץ אם זמין מידע RDS"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "הצג וידאו \"מנגן כעת\" כרקע"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "הצג חיזוי \"מנגן כעת\" כרקע"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "מילות שיר"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "הסתר פאנארט כאשר חיזוי מוצג במסך מלא"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "הרחבת מילות שירים"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "תת תפריט וידאו במסך הבית"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "תת תפריט מוזיקה במסך הבית"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "תת תפריט תמונות במסך הבית"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "מוזיקה - תפריט צף (OSD)"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "רמת הגדרות"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "שימוש"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "רשימת נגינה"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "נתיב רשימת נגינה"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "הסתר כפתורי מסך בית"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "הסתר - מועדפים"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "הסתר - חיפוש"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "קיצורי דרך"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "בחירת השיר"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "מקור מילות שיר"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "נמצא"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "מציאת פריטים נוספים"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "הפרקים הקרובים"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "הסתרת כפתורי התפריט הראשי בפרופיל הראשי"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "טמפ' נוכחית"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "עודכן לאחרונה"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "ספק מידע"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "פרטי סרט"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "זכרון בשימוש:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "מספר רצועה"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "משתמש נבחר"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "חובר לאחרונה"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "שודר"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "אפשרויות רשימת ניגון"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "נוצר"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "אבחנה"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "נוסף לאחרונה"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]התזמון נקבע![/B] [COLOR=grey2] - כיבוי מערכת אוטומטי בעוד[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "יש ללחוץ הכפתור ע\"מ לנגן[CR][CR]את הקדימון"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "פרטי אלבום"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "השהיה"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "עצירה"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "הרצה קדימה"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "הרצה אחורה"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "תפריט סרט"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "הורדת כתוביות"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "צפייה כ־2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "שינוי מצב"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "פעיל"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "ברירת מחדל של המעטפת"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "ברירת מחדל של המעטפת ללא רישיות"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "מבוסס Arial"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "סיוע היכרות..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "לשונית זו מציינת שיש תפריט נוסף לצד חלון זה המכיל הגדרות נוספות עבור מדור זה. לשם גישה לתפריט, יש לנווט שמאלה בעזרת השלט או המקלדת או הצבת סמן העכבר מעל הלשונית . [CR][CR] יש ללחוץ על \"אישור\" לשם סגירת דיאלוג זה. הודעה זו לא תוצג שנית."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "כתובית מקומית זמינה"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "כניסה"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "יש לבחור חשבון משתמש Kodi[CR]להתחברות והמשך"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "הצג או הסתר מסך כניסה בעת ההפעלה."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "יש לבחור משתמש שיחובר כברירת מחדל בעת ההפעלה כאשר מסך כניסה מנוטרל."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]הגדרות נגן[/B][CR][CR] הגדרת פעולות שיכולות להיות בשימוש במהלך ניגון · הגדר איך תוכן מדיה מנוגן"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]הגדרות ספריה[/B][CR][CR]הגדר איך מוצג תוכן של ספריה/קובץ · הגדרך איך רשימה/תצוגה של ספרייה מנווטת · הגדר אפשרויות של מאגר המידע של המדיה"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]הגדרות מקליט וידאו אישי[/B][CR][CR]הגדר איך מנוהלים ערוצים ולוח שידורים · הגדר איך מנוהלים טלוויזיה חיה והקלטות"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]הגדרת הרחבות[/B][CR][CR]הגדר את ההרחבות המותקנות שלך · נווט והתקן הרחבות מ kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]הגדרות שירותים[/B][CR][CR]הגדר ונהל שרותי שיתוף מדיה · הגדר שרת אינטרנט · הגדר ונהל שרות מזג אוויר"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]הגדרות מערכת[/B][CR][CR]הגדר מסכים · הגדר אודיו · הגדר גישה לאינטרנט · הגדר חיסכון בחשמל · הגדר רישום"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]הגדרות ממשק[/B][CR][CR]הגדרת מעטפת · הגדרת אזור · הגדרת בקרה · הגדרת שומר מסך · הגדרת נעילה מרכזית"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "זמן מתוכנן"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "טלוויזיה"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "הוספת קבוצה"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "שינוי שם קבוצה"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "מחיקת קבוצה"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "קבוצות[CR]זמינות"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "קבוצת ערוצים"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "תזמון נקבע"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "אפשרויות ערוץ"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "תחזית ל־36 שעות"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "תחזית לפי שעה"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "תחזית לסופ\"ש"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "תחזית יומית"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "תחזית"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "משיג פרטי תחזית..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "מפות"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "מזג אוויר"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "תמונות"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "טלוויזיה"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "וידאו"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "סרטים"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "סדרות"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "מוזיקה"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "הרחבות"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "נגן דיסק"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "מערכת"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "רדיו"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "הסט זמן"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "לבחור סוג של זיהוי פרופיל"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "שם משתמש"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "דמות מייצגת לפרופיל"

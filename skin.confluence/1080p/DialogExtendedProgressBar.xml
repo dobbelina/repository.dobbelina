@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol />
+	<animation effect="slide" start="0,-105" end="0,0" time="75">WindowOpen</animation>
+	<animation effect="slide" start="0,0" end="0,-105" delay="300" time="75">WindowClose</animation>
+	<controls>
+		<control type="group">
+			<depth>DepthHeader</depth>
+			<left>1080</left>
+			<top>0</top>
+			<animation effect="slide" end="0,-120" time="150" condition="Window.IsVisible(FullscreenVideo) | Window.IsVisible(Visualisation)">conditional</animation>
+			<control type="image">
+				<left>0</left>
+				<top>-15</top>
+				<width>600</width>
+				<height>105</height>
+				<texture flipy="true" border="12,2,12,12">InfoMessagePanel.png</texture>
+			</control>
+			<control type="label" id="30">
+				<description>Header Label</description>
+				<left>23</left>
+				<top>6</top>
+				<width>555</width>
+				<height>27</height>
+				<font>font10_title</font>
+				<textcolor>selected</textcolor>
+				<align>left</align>
+				<aligny>center</aligny>
+			</control>
+			<control type="label" id="31">
+				<description>Title Label</description>
+				<left>23</left>
+				<top>30</top>
+				<width>555</width>
+				<height>30</height>
+				<font>font10</font>
+				<align>left</align>
+				<aligny>center</aligny>
+			</control>
+			<control type="progress" id="32">
+				<description>progress control</description>
+				<left>23</left>
+				<top>63</top>
+				<width>555</width>
+				<height>12</height>
+				<texturebg border="4,5,4,5">ProgressBack.png</texturebg>
+				<midtexture border="4,5,4,5">ProgressMid.png</midtexture>
+			</control>
+		</control>
+	</controls>
+</window>

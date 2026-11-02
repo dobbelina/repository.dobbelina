@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">2</defaultcontrol>
+	<coordinates>
+		<left>360</left>
+		<top>90</top>
+	</coordinates>
+	<include>dialogeffect</include>
+	<controls>
+		<control type="image">
+			<description>background image</description>
+			<left>0</left>
+			<top>0</top>
+			<width>1200</width>
+			<height>900</height>
+			<texture border="40">DialogBack2.png</texture>
+		</control>
+		<control type="image">
+			<description>Dialog Header image</description>
+			<left>60</left>
+			<top>24</top>
+			<width>1080</width>
+			<height>60</height>
+			<texture>dialogheader.png</texture>
+		</control>
+		<control type="label">
+			<description>header label</description>
+			<left>60</left>
+			<top>30</top>
+			<width>1080</width>
+			<height>45</height>
+			<font>font13_title</font>
+			<label>$LOCALIZE[298]</label>
+			<align>center</align>
+			<aligny>center</aligny>
+			<textcolor>selected</textcolor>
+			<shadowcolor>black</shadowcolor>
+		</control>
+		<control type="button">
+			<description>Close Window button</description>
+			<left>1065</left>
+			<top>23</top>
+			<width>96</width>
+			<height>48</height>
+			<label />
+			<font />
+			<onclick>PreviousMenu</onclick>
+			<texturefocus>DialogCloseButton-focus.png</texturefocus>
+			<texturenofocus>DialogCloseButton.png</texturenofocus>
+			<onleft>3</onleft>
+			<onright>3</onright>
+			<onup>3</onup>
+			<ondown>3</ondown>
+			<visible>system.getbool(input.enablemouse)</visible>
+		</control>
+		<control type="label">
+			<description>number of files/pages in list text label</description>
+			<left>690</left>
+			<top>743</top>
+			<width>450</width>
+			<height>53</height>
+			<font>font12</font>
+			<align>right</align>
+			<aligny>center</aligny>
+			<scroll>true</scroll>
+			<textcolor>grey</textcolor>
+			<label>([COLOR=blue]$INFO[Container(11).NumItems][/COLOR]) $LOCALIZE[31025] - $LOCALIZE[31024] ([COLOR=blue]$INFO[Container(11).CurrentPage]/$INFO[Container(11).NumPages][/COLOR])</label>
+		</control>
+		<control type="panel" id="11">
+			<left>60</left>
+			<top>98</top>
+			<width>1080</width>
+			<height>645</height>
+			<onleft>2</onleft>
+			<onright>3</onright>
+			<ondown>2</ondown>
+			<onup>2</onup>
+			<scrolltime>200</scrolltime>
+			<viewtype label="536">icon</viewtype>
+			<pagecontrol />
+			<orientation>vertical</orientation>
+			<itemlayout height="323" width="360">
+				<control type="image">
+					<left>3</left>
+					<top>3</top>
+					<width>353</width>
+					<height>317</height>
+					<texture border="3">button-nofocus.png</texture>
+				</control>
+				<control type="image">
+					<left>11</left>
+					<top>30</top>
+					<width>330</width>
+					<height>225</height>
+					<aspectratio>scale</aspectratio>
+					<texture background="true">$INFO[ListItem.Icon]</texture>
+				</control>
+				<control type="label">
+					<left>11</left>
+					<top>278</top>
+					<width>339</width>
+					<height>23</height>
+					<font>font12</font>
+					<selectedcolor>selected</selectedcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$INFO[ListItem.Label]$INFO[ListItem.Label2, (,)]</label>
+				</control>
+			</itemlayout>
+			<focusedlayout height="323" width="360">
+				<control type="image">
+					<left>3</left>
+					<top>3</top>
+					<width>353</width>
+					<height>317</height>
+					<texture border="3">folder-focus.png</texture>
+				</control>
+				<control type="image">
+					<left>11</left>
+					<top>30</top>
+					<width>330</width>
+					<height>225</height>
+					<aspectratio>scale</aspectratio>
+					<texture background="true">$INFO[ListItem.Icon]</texture>
+				</control>
+				<control type="label">
+					<left>11</left>
+					<top>278</top>
+					<width>339</width>
+					<height>23</height>
+					<font>font12</font>
+					<selectedcolor>selected</selectedcolor>
+					<align>center</align>
+					<aligny>center</aligny>
+					<label>$INFO[ListItem.Label]$INFO[ListItem.Label2, (,)]</label>
+				</control>
+			</focusedlayout>
+		</control>
+		<control type="grouplist" id="9000">
+			<left>30</left>
+			<top>803</top>
+			<width>1140</width>
+			<height>60</height>
+			<itemgap>8</itemgap>
+			<align>center</align>
+			<orientation>horizontal</orientation>
+			<onleft>9000</onleft>
+			<onright>9000</onright>
+			<onup>11</onup>
+			<ondown>11</ondown>
+			<control type="button" id="2">
+				<description>Create Bookmark button</description>
+				<label>294</label>
+				<width>360</width>
+				<include>ButtonInfoDialogsCommonValues</include>
+			</control>
+			<control type="button" id="3">
+				<description>Clear Bookmark button</description>
+				<label>296</label>
+				<width>360</width>
+				<include>ButtonInfoDialogsCommonValues</include>
+			</control>
+			<control type="button" id="4">
+				<description>Clear Bookmark button</description>
+				<label>20406</label>
+				<width>360</width>
+				<include>ButtonInfoDialogsCommonValues</include>
+				<visible>videoplayer.content(episodes)</visible>
+			</control>
+		</control>
+	</controls>
+</window>

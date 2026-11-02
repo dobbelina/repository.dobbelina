@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Finnish <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/fi_fi/>\n"
+"Language: fi_fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluence-ulkoasu. Tekijä Jezz_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence on yhdistelmä useiden suosittujen ulkoasujen konsepteista, ja yritys omaksua ja integroida heidän hyvät ideat ulkoasuun, jonka pitäisi olla helppokäyttöinen ja -tajuinen kaikille Kodin käyttäjille."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Määritä"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "PELIT"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]PELIASETUKSET[/B][CR][CR]Muokkaa kelausasetuksia · Muokkaa näppäimistöasetuksia ja näppäimistöpelaajien määrää"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Virtavalinnat"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Suoritetaan..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Piilota tiedot"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Näkymäasetukset"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Videon tekniset tiedot"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Koko ruutu"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Kokonaiskesto"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Laitteistopurku"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Ei käytössä"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Purkutapa"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Äänen tekniset tiedot"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Keskusmuistin varaus"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "Minuutti"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "Kulunut aika"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Ei käytettävissä"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Toistonopeus"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Toistetaan"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Sivu"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Kohdetta"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Muut asetukset"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Sijainti"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Julistekierto"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Fanitaide"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Kuvien pienoiskuvat"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Kuvakierto"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Tiedot"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr "Valinta + X"
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr "Valinta + Aloita"
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Toiminnot"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Toistetaan parhaillaan"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "TOISTETAAN"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "TAUOTETTU"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "ETEENPÄIN"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "TAAKSEPÄIN"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "SIIRRYTÄÄN"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Visualisoinnin esiasetukset"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Päättyy"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Suunta: Nouseva"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Suunta: Laskeva"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Avaa toistolista"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Tallenna toistolista"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Sulje toistolista"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Järjestelmän musiikkitiedostot"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Nykyinen toistolista"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Nyt valittuna"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Aloitusnäytön asetukset"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Tausta"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Näytä \"Tauko\" kuvaesityksessä"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Toista trailerit ikkunassa [COLOR=grey3](Vain videotietoikkuna)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Yleiset asetukset"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Piilota tiedostojen nimistä luetut merkinnät [COLOR=grey3](Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Piilota päävalikon painikkeita"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Käytä omaa taustakuvaa"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Taustakuvan sijainti:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Piilota"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Asetukset"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr ""
+
+msgctxt "#31114"
+msgid "System"
+msgstr "Järjestelmä"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "Pääpainikkeen toistolista"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Näytä viimeksi lisätyt albumit"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Näytä viimeksi lisätyt videot"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "Aloitusnäytön \"Lisäosat\"-alivalikko"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Piilota fanitaide"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "Aloitusnäytön \"Pelit\"-alivalikko"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "Piilota ohjelmatiedot kanavaikkunassa, jos RDS-tietoja on tarjolla"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Näytä toistettava video taustalla"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Näytä visualisointi taustalla"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Näytä musiikkivideoille pienoiskuvien sijaan julisteet"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Sanoitukset"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Piilot fanitaide, kun visualisointi toistetaan koko ruudussa"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Sanoitukset-lisäosa"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Aloitusnäytön \"Videot\"-alivalikko"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Aloitusnäytön \"Musiikki\"-alivalikko"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Aloitusnäytön \"Kuvat\"-alivalikko"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "Musiikin kuvaruutuvalikko"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Asetusten laajuus"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "Käytä"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "toistolista"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "soittolistan polku"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "Piilota aloitusnäytön painikkeet"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "Piilota - Suosikit"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "Piilota - Haku"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Pikavalinnat"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Valitse kappale"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Sanoitusten lähde"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Löytyi"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Etsi lisää kohteita"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Tulevat jaksot"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "Piilota päävalikon Pääkäyttäjä-painikkeet"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Tämänhetkinen lämpötila"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Viimeksi päivitetty"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Tietolähde"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Elokuvan tiedot"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Käytetty muisti:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Kappalenumero"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Valittu profiili"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Viimeksi kirjauduttu"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Esitetty"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Toistolistavalinnat"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Luotu"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Resoluutio"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Viimeksi lisätyt"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Ajastus[/B] [COLOR=grey2] - Aikaa järjestelmän sammuttamiseen[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Paina painiketta katsoaksesi[CR][CR]elokuvan trailerin"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Albumin tiedot"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Tauota"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Pysäytä"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Eteenpäin"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Taaksepäin"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Elokuvavalikko"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Lataa tekstityksiä"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Katsele 2D-tilassa"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Vaihda tilaa"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Käytössä"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Ulkoasun oletus"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Ulkoasun oletus ilman isoja kirjaimia"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Arial-pohjainen"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Ensimmäisen käynnistyksen apu..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Tämä merkki tarkoittaa, että ruudun reunassa on lisäasetuksia sisältävä valikko. Avataksesi valikon siirry merkin kohdalle kaukosäädintä, näppäimistöä tai hiiren kursoria käyttäen. [CR][CR]Valitse \"Ok\" sulkeaksesi tämän ilmoituksen. Sitä ei näytetä enää tämän jälkeen."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Paikallinen tekstitys on käytettävissä"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Kirjautuminen"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Jatka kirjatumalla[CR]Kodi-käyttäjäprofiilillesi"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Näytä tai piilota kirjautumisruutu käynnistyksessä."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Valitse käynnistyksessä käytettävä profiili kirjautumisruudun ollessa pois käytöstä."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]SOITTIMEN ASETUKSET[/B][CR][CR]Muokkaa toiston aikana käytettävissä olevia asetuksia · Muokkaa mediatoiston asetuksia"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]KIRJASTON ASETUKSET[/B][CR][CR]Muokkaa kirjaston/tiedostonäkymän asetuksia ·  Muokkaa tiedostolistojen/kirjaston ohjaustapaa · Muokkaa mediatietokantojen asetuksia"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR-ASETUKSET[/B][CR][CR]Muokkaa kanavien ja ohjelmaoppaan asetuksia · Muokkaa suorien tv-lähetysten ja tallentamisen asetuksia"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]LISÄOSIEN ASETUKSET[/B][CR][CR]Muokkaa asennettuja lisäosia · Selaa ja asenna lisäosia osoitteesta kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]PALVELUIDEN ASETUKSET[/B][CR][CR]Muokkaa mediajakoasetuksia · Muokkaa web-palvelimen asetuksia · Muokkaa sääpalvelun asetuksia"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]JÄRJESTELMÄASETUKSET[/B][CR][CR]Muokkaa näyttö- ja ääniasetuksia · Muokkaa internetasetuksia · Muokkaa virransäästöasetuksia · Muokkaa suorituslokin asetuksia"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]KÄYTTÖLIITTYMÄN ASETUKSET[/B][CR][CR]Muokkaa ulkoasua · Muokkaa alueasetuksia · Muokkaa ohjauslaiteasetuksia · Muokkaa näytönsäästäjän asetuksia · Muokkaa lukitusasetuksia"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Kellonaika"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "Tv"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Lisää ryhmä"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Nimeä ryhmä uudelleen"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Poista ryhmä"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Saatavilla olevat[CR]ryhmät"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kanavaryhmä"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Ajastettu"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Kanavan asetukset"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36 tunnin ennuste"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Tuntiennuste"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Viikonlopun ennuste"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Päivittäinen ennuste"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Ennuste"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Noudetaan ennustetietoja..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Kartat"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "SÄÄ"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "KUVAT"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEOT"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "ELOKUVAT"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "SARJAT"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUSIIKKI"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "LISÄOSAT"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "TOISTA LEVY"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "JÄRJESTELMÄ"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "Ajansiirto"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "Valitse profiilin esitystapa"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Profiilin nimi"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "Profiilin kuva"

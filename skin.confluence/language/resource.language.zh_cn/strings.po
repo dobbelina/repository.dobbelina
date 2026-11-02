@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:31+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Chinese (China) <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/zh_cn/>\n"
+"Language: zh_cn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Jezz_X 开发的 Confluence 皮肤。"
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence 集合了许多流行皮肤的创意，力求把这些优点融合到一个皮肤中，使得首次[CR]使用 Kodi 的用户能更容易上手。"
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "修改您的"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "游戏"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]游戏设置[/B][CR][CR]配置倒带支持和选项 · 配置键盘和玩家数"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "电源选项"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "工作中..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "隐藏信息"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "视图选项"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "视频处理信息"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "全屏"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "总时长"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "硬件解码"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "非活动"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "解码器"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "音频处理信息"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "已用内存"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "分"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "运行时间"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "无效的"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "播放速度"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "播放"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "页"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "项目"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "其他选项"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "所在地"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "海报卷动"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "同人画"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "图片缩略图"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "图片卷动"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "信息"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "动作"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "正在播放"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "播放"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "暂停"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "快进"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "回退"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "搜索中"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "可视化效果预设"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "结束时间"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "排序：升序"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "排序：降序"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "打开播放列表"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "保存播放列表"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "关闭播放列表"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "系统音乐文件"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "当前播放列表"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "当前选择"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "主界面选项"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "背景"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "图片幻灯片播放时显示“暂停”状态"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "窗口播放预告片[COLOR=grey3]（仅在视频信息显示画面）[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "其他选项"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "隐藏视频文件名的媒体标识[COLOR=grey3]（Blu-ray, HD-DVD）[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "隐藏主菜单按钮"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "启用自定义背景"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "背景图路径："
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "隐藏"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "选项"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "背景图路径主配置："
+
+msgctxt "#31114"
+msgid "System"
+msgstr "系统"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "主按钮播放列表"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "显示最新加入专辑"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "显示最新加入视频"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "主界面插件子菜单"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "隐藏同人画背景"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "主界面游戏子菜单"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "频道窗口使用 RDS 时隐藏电子节目单"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "在背景显示“正在播放”视频"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "在背景显示“正在播放”可视化效果"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "对于音乐电视，显示海报而不是缩略图"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "歌词"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "全屏可视化效果隐藏同人画"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "歌词插件"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "主界面视频子菜单"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "主界面音乐子菜单"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "主界面图片子菜单"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "音乐 OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "设置级别"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "使用"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "播放列表"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "播放列表路径"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "隐藏主界面按钮"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "隐藏 - 收藏"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "隐藏 - 搜索"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "快捷方式"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "选择歌曲"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "歌词来源"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "找到"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "查找更多项目"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "即将播出的分集"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "隐藏主配置文件主菜单按钮"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "当前温度"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "最近修改"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "数据来源"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "电影详细资料"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "己用内存："
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "音轨号"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "选定用户配置文件"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "最近登录"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "首播"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "播放列表选项"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "创建"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "分辨率"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "最近加入"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]时钟设置！[/B] [COLOR=grey2] - 系统自动关闭于[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "点此按钮播放预告片"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "专辑详情"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "暂停"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "停止"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "快进"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "回退"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "电影菜单"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "下载字幕"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "按2D模式观看"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "改变模式"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "开启"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "皮肤默认"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "皮肤默认无 Caps"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "基于 Arial 字体"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "首次运行帮助...."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "此选项卡表示有一个提供本功能模块特殊设置选项的菜单隐藏在窗口侧边。你可以通过按遥控器或键盘左键、或将鼠标指针移动到选项卡范围来开启此菜单。[CR] [CR]点“确定”关闭此对话框，本提示不会再次出现。"
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "本地字幕可用"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "登录"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "选择您的 Kodi 用户配置文件[CR]登录并继续"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "启动时显示或隐藏登录界面。"
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "选择禁用登录界面时使用的用户配置文件。"
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]播放器设置[/B][CR][CR]设置播放时使用的动作 · 设置媒体内容播放方式"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]资料库设置[/B][CR][CR]设置资料库/文件视图如何显示媒体内容 · 设置资料库列表/视图导航方式 · 设置媒体数据库选项"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR 设置[/B][CR][CR]设置频道和指南管理方式 · 设置直播电视和录像管理方式"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]插件设置[/B][CR][CR]设置已安装的插件 · 在 kodi.tv 浏览并安装插件"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]服务设置[/B][CR][CR]设置和管理媒体共享服务 · 设置 Web 服务器 · 设备和管理天气服务"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]系统设置[/B][CR][CR]设置显示 · 设置音频 · 设置互联网访问 · 设置节电 · 设置日志"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]界面设置[/B][CR][CR]设置皮肤 · 设置区域 · 设置控制 ·设置屏幕保护 · 设置管理员锁定"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "预定时间"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "电视"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "增加组"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "更名组"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "删除组"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "可用组"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "频道组"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "定时器设定"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "频道选项"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36小时预报"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "每小时预报"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "周末预报"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "每日预报"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "天气预报"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "获取天气信息..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "地图"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "天气"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "图片"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "电视"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "视频"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "电影"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "剧集"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "音乐"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "插件"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "播放光盘"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "系统"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "电台"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "时光平移"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "选择用户配置标识种类"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "用户配置名称"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "用户配置头像"

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">95</defaultcontrol>
+	<controls>
+		<include>CommonBackground</include>
+		<control type="image">
+			<left>0</left>
+			<top>150r</top>
+			<width>1920</width>
+			<height>150</height>
+			<texture>floor.png</texture>
+			<animation effect="slide" start="0,15" end="0,0" time="150" condition="Window.Previous(Home)">WindowOpen</animation>
+			<animation effect="slide" start="0,0" end="0,15" time="150" condition="Window.Next(Home)">WindowClose</animation>
+		</control>
+		<control type="group">
+			<left>135</left>
+			<top>45</top>
+			<animation type="WindowOpen" reversible="false">
+				<effect type="zoom" start="80" end="100" center="960,540" easing="out" tween="back" time="225" />
+				<effect type="fade" start="0" end="100" time="225" />
+			</animation>
+			<animation type="WindowClose" reversible="false">
+				<effect type="zoom" start="100" end="80" center="960,540" easing="in" tween="back" time="225" />
+				<effect type="fade" start="100" end="0" time="225" />
+			</animation>
+			<control type="image">
+				<left>8</left>
+				<top>8</top>
+				<width>1635</width>
+				<height>945</height>
+				<texture border="15">ContentPanel.png</texture>
+			</control>
+			<control type="image">
+				<left>8</left>
+				<top>938</top>
+				<width>1635</width>
+				<height>96</height>
+				<texture border="15">ContentPanelMirror.png</texture>
+			</control>
+			<control type="button">
+				<description>Close Window button</description>
+				<left>1470</left>
+				<top>17</top>
+				<width>96</width>
+				<height>48</height>
+				<label />
+				<font />
+				<onclick>PreviousMenu</onclick>
+				<texturefocus>DialogCloseButton-focus.png</texturefocus>
+				<texturenofocus>DialogCloseButton.png</texturenofocus>
+				<onleft>1</onleft>
+				<onright>1</onright>
+				<onup>1</onup>
+				<ondown>1</ondown>
+				<visible>system.getbool(input.enablemouse)</visible>
+			</control>
+			<control type="image">
+				<description>LOGO</description>
+				<left>45</left>
+				<top>23</top>
+				<width>330</width>
+				<height>120</height>
+				<aspectratio>keep</aspectratio>
+				<texture>Confluence_Logo.png</texture>
+			</control>
+			<control type="grouplist" id="9000">
+				<left>15</left>
+				<top>135</top>
+				<width>390</width>
+				<height>722</height>
+				<itemgap>-2</itemgap>
+				<onup>9000</onup>
+				<ondown>9000</ondown>
+				<control type="button" id="95">
+					<description>Button Summary Values</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>20037</label>
+				</control>
+				<control type="button" id="94">
+					<description>Button Storage</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>13277</label>
+				</control>
+				<control type="button" id="96">
+					<description>Button Network</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>13279</label>
+				</control>
+				<control type="button" id="97">
+					<description>Button Video</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>13280</label>
+				</control>
+				<control type="button" id="98">
+					<description>Button Hardware</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>13281</label>
+				</control>
+				<control type="button" id="99">
+					<description>Button PVR</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>19191</label>
+				</control>
+				<control type="button" id="100">
+					<description>Button Privacy Policy</description>
+					<height>90</height>
+					<width>362</width>
+					<textoffsetx>0</textoffsetx>
+					<align>right</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>grey2</textcolor>
+					<focusedcolor>white</focusedcolor>
+					<texturefocus border="5">MenuItemFO.png</texturefocus>
+					<texturenofocus border="5">MenuItemNF.png</texturenofocus>
+					<pulseonselect>false</pulseonselect>
+					<label>12389</label>
+					<onright>61</onright>
+				</control>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1185</width>
+				<height>927</height>
+				<texture border="5">black-back2.png</texture>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1185</width>
+				<height>78</height>
+				<texture>dialogheader.png</texture>
+			</control>
+			<control type="label" id="40">
+				<description>header label</description>
+				<left>450</left>
+				<top>30</top>
+				<width>1089</width>
+				<height>45</height>
+				<font>font16</font>
+				<label />
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+			</control>
+			<control type="group">
+				<left>435</left>
+				<top>150</top>
+				<control type="label" id="2">
+					<description>Label 2</description>
+					<left>0</left>
+					<top>0</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="3">
+					<description>Label 3</description>
+					<left>0</left>
+					<top>53</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="4">
+					<description>Label 4</description>
+					<left>0</left>
+					<top>105</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="5">
+					<description>Label 5</description>
+					<left>0</left>
+					<top>158</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="6">
+					<description>Label 6</description>
+					<left>0</left>
+					<top>210</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="7">
+					<description>Label 7</description>
+					<left>0</left>
+					<top>263</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="8">
+					<description>Label 8</description>
+					<left>0</left>
+					<top>315</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="9">
+					<description>Label 9</description>
+					<left>0</left>
+					<top>368</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="10">
+					<description>Label 10</description>
+					<left>0</left>
+					<top>420</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="label" id="11">
+					<description>Label 11</description>
+					<left>0</left>
+					<top>473</top>
+					<width>1125</width>
+					<label />
+					<font>font13</font>
+				</control>
+				<control type="textbox" id="30">
+					<description>Privacy Policy</description>
+					<left>0</left>
+					<top>0</top>
+					<width>1080</width>
+					<height>525</height>
+					<font>font13</font>
+					<align>justify</align>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<pagecontrol>61</pagecontrol>
+				</control>
+				<control type="scrollbar" id="61">
+					<left>1095</left>
+					<top>0</top>
+					<width>38</width>
+					<height>525</height>
+					<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+					<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+					<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+					<textureslidernib>ScrollBarNib.png</textureslidernib>
+					<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+					<onleft>100</onleft>
+					<onright>100</onright>
+					<ondown>61</ondown>
+					<onup>61</onup>
+					<showonepage>true</showonepage>
+					<orientation>vertical</orientation>
+					<visible>Control.HasFocus(100) | Control.HasFocus(61)</visible>
+				</control>
+				<control type="label">
+					<description>CPU Text</description>
+					<left>0</left>
+					<top>525</top>
+					<width>1125</width>
+					<height>38</height>
+					<label>$LOCALIZE[13271] $INFO[System.CPUUsage]</label>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<font>font12_title</font>
+				</control>
+				<control type="progress">
+					<description>CPU BAR</description>
+					<left>0</left>
+					<top>563</top>
+					<width>1125</width>
+					<height>24</height>
+					<info>System.CPUUsage</info>
+				</control>
+				<control type="label">
+					<description>Memory Text</description>
+					<left>0</left>
+					<top>593</top>
+					<width>auto</width>
+					<height>38</height>
+					<label>$LOCALIZE[31309] $INFO[system.memory(used)] [B]/[/B] $INFO[system.memory(total)] [B]-[/B] $INFO[system.memory(used.percent)]</label>
+					<align>left</align>
+					<aligny>center</aligny>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<font>font12_title</font>
+				</control>
+				<control type="progress">
+					<description>Memory BAR</description>
+					<left>0</left>
+					<top>630</top>
+					<width>1125</width>
+					<height>24</height>
+					<info>system.memory(used)</info>
+				</control>
+				<control type="grouplist">
+					<description>Kodi build version</description>
+					<itemgap>75</itemgap>
+					<top>675</top>
+					<left>0</left>
+					<align>left</align>
+					<orientation>horizontal</orientation>
+					<control type="label">
+						<description>Build label</description>
+						<width>auto</width>
+						<height>38</height>
+						<label>$LOCALIZE[144]</label>
+						<textcolor>white</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<font>font13_title</font>
+					</control>
+					<control type="label" id="52">
+						<description>Kodi Build Version</description>
+						<left>135</left>
+						<top>675</top>
+						<width>auto</width>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<font>font13_title</font>
+					</control>
+				</control>
+				<control type="grouplist">
+					<description>Build date</description>
+					<itemgap>15</itemgap>
+					<top>720</top>
+					<align>left</align>
+					<left>0</left>
+					<orientation>horizontal</orientation>
+					<control type="label">
+						<description>kodi Compiled Text</description>
+						<width>auto</width>
+						<height>38</height>
+						<label>$LOCALIZE[174]</label>
+						<textcolor>white</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<font>font13_title</font>
+					</control>
+					<control type="label" id="53">
+						<description>Kodi Build Date</description>
+						<width>auto</width>
+						<textcolor>blue</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<font>font13_title</font>
+					</control>
+				</control>
+			</control>
+		</control>
+		<include>CommonNowPlaying</include>
+		<include>MainWindowMouseButtons</include>
+		<include content="CommonWindowHeader">
+			<param name="Icon" value="icon_system" />
+			<param name="Label" value="$LOCALIZE[130]" />
+		</include>
+	</controls>
+</window>

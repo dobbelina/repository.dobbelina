@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Afrikaans (South Africa) <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/af_za/>\n"
+"Language: af_za\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluence oortreksel deur Jezz_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence is 'n kombinasie van konsepte van 'n klomp gewilde oortreksels, en 'n poging om hulle goeie idees te omvat en te integreer in 'n oortreksel wat maklik behoort te wees vir eerste keer Kodi gebruikers om te verstaan en te gebruik."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Verander jou"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "SPELETJIES"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]SPELETJIE VERSTELLINGS[/B][CR][CR]Stel rewind ondersteuning & opsies op · Stel sleutelbord gebruik en hoeveelheid sleutelbord spelers op"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Krag opsies"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Werk..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Versteek inligting"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Aansig opsies"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Video proses inligting"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Volskerm"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Totale tydsduur"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Hardeware dekodering"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Onaktief"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Dekodeerder"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Oudio proses inligting"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Geheue gebruik"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "Minuut"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "Tyd verloop"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Onbeskikbaar"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Speel spoed"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Speel"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Bladsy"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Items"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Diverse opsies"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Ligging"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Plakkaat omvouing"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Ondersteunerkuns"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Prent naeldrukke"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Prent omvouing"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Aksies"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Speel nou"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "SPEEL"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "GEPOUSEER"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "VINNIG VORENTOE"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "TERUGDRAAI"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "SOEK"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Visualisering voorafinstellings"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Eind tyd"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Sorteer: Stygende orde"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Sorteer: Dalende orde"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Maak speellys oop"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Stoor speellys"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Maak speellys toe"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Stelsel musiek lêers"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Huidige speellys"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Huidiglik geselekteer"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Tuis skerm opsies"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Agtergrond"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Wys \"Gepouseer\" in prent skyfievertoning"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Speel lokprente in 'n venster [COLOR=grey3](Video inligting dialoog alleenlik)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Diverse opsies"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Versteek vlae gelees van video lêername [COLOR=grey3](bv. Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Versteek hoof kieslys knoppies"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Stel pasgemaakte agtergrond in staat"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Agtergrond pad:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Versteek"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Opsies"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "Agtergrond pad Meester:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "Stelsel"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "Hoof knoppie speellyste"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Wys onlangs bygevoegde albums"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Wys onlangs bygevoegde videos"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "Tuis bladsy \"Byvoegsels\" subkieslys"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Versteek agtergrond ondersteunerkuns"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "Tuis bladsy \"Speletjies\" subkieslys"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "Versteek EPG as RDS teenwoordig is op kanaal venster"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Wys agtergrond \"Speel nou\" video"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Wys agtergrond \"Speel nou\" visualisering"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Wys plakkate in plaas van duimnaelsketse vir musiekvideos"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Lirieke"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Versteek ondersteunerkuns in vol skerm visualisering"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Lirieke byvoegsel"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Tuis bladsy \"Videos\" subkieslys"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Tuis bladsy \"Musiek\" subkieslys"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Tuis bladsy \"Prente\" subkieslys"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "Musiek OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Verstellings vlak"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "Gebruik"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "speellys"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "speellys pad"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "Versteek tuis skerm knoppies"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "Versteek - Gunstelinge"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "Versteek - Soek"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Kortpaaie"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Kies jou liedjie"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Lirieke bron"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Gevind"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Vind meer items"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Opkomende episodes"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "Versteek Meester profiel hoof kieslys knoppies"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Huidige temperatuur"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Laas opgedateer"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Data verskaffer"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Fliek besonderhede"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Geheue gebruik:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Snit nommer"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Geselekteerde profiel"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Laas ingeteken"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Uitgesaai"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Speellys opsies"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Geskep"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Resolusie"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Onlangs bygevoeg"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Tydhouer gestel![/B] [COLOR=grey2] - Outomatiese stelsel afskakeling in[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Kliek knoppie om[CR][CR]lokprent te speel"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Album besonderhede"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Pouseer"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Stop"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Vinnig vorentoe"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Terugdraai"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Fliek kieslys"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Laai onderskrifte af"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Kyk as 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Verander modus"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "In staat gestel"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Bestek omslag"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Verstek oortreksel met geen hoofletters"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Antenna gebasseer"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Eerste lopie hulp..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Hierdie duimgids beteken dat daar 'n kieslys af na die kant van hierdie venster is wat ekstra opsies vir hierdie seksie bevat. Vir toegang tot die kieslys, navigeer na links met jou afstandbeheer of sleutelbord, of plaas jou muis aanwyser oor die duimgids.[CR][CR]Kliek \"OK\" om hierdie dialoog toe te maak. Dit sal nie weer verskyn nie."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Lokale onderskrif beskikbaar"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Teken In"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Selekteer jou Kodi gebruikers profiel[CR]om in te teken en voort te gaan"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Wys of versteek die inteken bladsy wanneer die program begin"
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Kies die profiel wat gebriuk moet word met program begin wanneer die inteken skerm nie in staat gestel is nie."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]SPELER VERSTELLINGS[/B][CR][CR]Stel aksies op wat gedurende terugspeel gebruik kan word · Stel op hoe media inhoud gespeel word"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]BIBLIOTEEK VERSTELLINGS[/B][CR][CR]Stel op hoe die biblioteek/lêer aansigte media inhoud vertoon · Stel op hoe biblioteek lyste/aansigte navigeer word · Stel die media databasis opsies op"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR VERSTELLINGS[/B][CR][CR]Stel op hoe die kanale & gids bestuur word · Stel op hoe Lewendige TV en opnames bestuur word"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]BYVOEGSELS VERSTELLINGS[/B][CR][CR]Stel jou geinstalleerde byvoegsels op · Soek vir en installeer byvoegsels vanaf kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]DIENSTE VERSTELLINGS[/B][CR][CR]Stel op & bestuur media deel dienste · Stel web bediener op · Stel op & bestuur die weer diens"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]STELSEL VERSTELLINGS[/B][CR][CR]Stel vertoon op · Stel oudio op · Stel internet toegang op · Stel krag spaar op · Stel loghouding op"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]KOPPELVLAK VERSTELLINGS[/B][CR][CR]Stel oortreksel op · Stel streek op · Stel beheer op · Stel skermskut op · Stel meester slot op"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Geskeduleerde tyd"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Voeg groep by"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Hernoem groep"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Wis groep uit"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Beskikbare[CR]Groepe"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kanaal groep"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Tydhouer gestel"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Kanaal opsies"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36-uur voorspelling"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Uurlikse voorspelling"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Naweek voorspelling"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Daaglikse voorspelling"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Voorspelling"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Gaan haal voorspelling info..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Kaarte"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "WEER"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "PRENTE"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEOS"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "FLIEKS"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "TV VERTONINGS"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUSIEK"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "BYVOEGSELS"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "SPEEL SKYF"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "STELSEL"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "Tydskuif"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "Kies tipe profiel identifikasie"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Profiel naam"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "Profiel avatar"

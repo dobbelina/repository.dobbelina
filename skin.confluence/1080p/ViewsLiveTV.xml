@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+	<include name="LiveTVView1">
+		<control type="group">
+			<visible>Control.IsVisible(560)</visible>
+			<include>VisibleFadeEffect</include>
+			<control type="list" id="560">
+				<left>105</left>
+				<top>113</top>
+				<width>1140</width>
+				<height>842</height>
+				<onleft>2</onleft>
+				<onright>60</onright>
+				<onup>560</onup>
+				<ondown>560</ondown>
+				<viewtype label="$LOCALIZE[4]">list</viewtype>
+				<pagecontrol>60</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<visible>Container.Content(LiveTV)</visible>
+				<itemlayout height="60" width="1140">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemNF.png</texture>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>1095</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>75</left>
+						<top>0</top>
+						<width>1050</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label2]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout height="60" width="1140">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemNF.png</texture>
+						<visible>!Control.HasFocus(560)</visible>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemFO.png</texture>
+						<visible>Control.HasFocus(560)</visible>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>840</left>
+						<top>8</top>
+						<width>300</width>
+						<height>47</height>
+						<texture border="0,0,14,0">MediaItemDetailBG.png</texture>
+						<visible>Control.HasFocus(560) + !String.IsEmpty(ListItem.Label2)</visible>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>1095</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>75</left>
+						<top>0</top>
+						<width>1050</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label2]</label>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>1275</left>
+				<top>117</top>
+				<width>38</width>
+				<height>840</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>560</onleft>
+				<onright>2</onright>
+				<showonepage>false</showonepage>
+				<orientation>vertical</orientation>
+				<visible>Control.IsVisible(560)</visible>
+			</control>
+			<control type="group">
+				<visible>Control.IsVisible(560)</visible>
+				<left>1365</left>
+				<top>120</top>
+				<control type="image">
+					<left>15</left>
+					<top>0</top>
+					<width>435</width>
+					<height>435</height>
+					<aspectratio aligny="bottom">keep</aspectratio>
+					<fadetime>IconCrossfadeTime</fadetime>
+					<texture background="true">$INFO[ListItem.Icon]</texture>
+					<bordertexture infill="false" border="8">ThumbShadow.png</bordertexture>
+					<bordersize>8</bordersize>
+				</control>
+				<control type="fadelabel">
+					<left>15</left>
+					<top>450</top>
+					<width>435</width>
+					<height>38</height>
+					<label>$INFO[ListItem.Label2]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font13</font>
+					<textcolor>blue</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<scrollout>false</scrollout>
+					<pauseatend>1000</pauseatend>
+				</control>
+				<control type="textbox">
+					<description>Description Value for TV Show</description>
+					<left>15</left>
+					<top>498</top>
+					<width>435</width>
+					<height>327</height>
+					<font>font13</font>
+					<align>justify</align>
+					<textcolor>white</textcolor>
+					<label>$INFO[ListItem.Plot]</label>
+					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				</control>
+			</control>
+		</control>
+	</include>
+</includes>

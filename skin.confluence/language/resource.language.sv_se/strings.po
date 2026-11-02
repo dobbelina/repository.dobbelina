@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:31+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Swedish <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/sv_se/>\n"
+"Language: sv_se\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluence, ett skal av Jezz_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence kombinerar koncept från många populära skal och försöker återanvända och integrera goda idéer för att skapa ett skal som är enkelt att förstå och använda för nya Kodi-användare."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Ändra dina"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "SPEL"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]SPELINSTÄLLNINGAR[/B][CR][CR]Konfigurera support för tillbakaspolning & alternativ ·  Konfigurera tangentbordsanvändning och antalet tangentbordsspelare"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Strömalternativ"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Arbetar..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Dölj information"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Vyalternativ"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Videoprocess information"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Helskärm"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Total längd"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Hårdvaruavkodning"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Inaktiv"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Avkodare"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Ljudprocess information"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Använt minne"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "Minut"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "Förfluten tid"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Inte tillgänglig"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Uppspelningshastighet"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Spelar"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Sida"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Objekt"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Övriga alternativ"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Plats"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Affischomslag"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Fanart"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Bildminiatyrer"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Bildomslag"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Åtgärder"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Nu spelas"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "SPELAR"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "PAUSAD"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "SPOLA FRAMÅT"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "SPOLA BAKÅT"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "SÖKER"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Visualiseringsval"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Sluttid"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Sortering: Stigande"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Sortering: Fallande"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Öppna spellista"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Spara spellista"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Stäng spellista"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Systemmusikfiler"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Nuvarande spellista"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "För närvarande vald"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Hemskärmsalternativ"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Bakgrund"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Visa \"Pausat\" i bildspel"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Visa trailers i ett fönster [COLOR=grey3](Endast videoinformationsdialog)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Övriga alternativ"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Dölj flaggläsning från videofilnamn [COLOR=grey3](t.ex Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Dölj huvudmenyknappar"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Aktivera anpassad bakgrund"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Bakgrundsökväg:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Dölj"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Alternativ"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "Bakgrundssökväg Master:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "System"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "Huvudknappspellistor"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Visa nyligen tillagda album"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Visa nyligen tillagda videos"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "Hemskärmens \"Tillägg\"-undermeny"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Dölj bakgrundsfanart"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "Hemskärmens \"Spel\"-undermeny"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "Dölj EPG när RDS finns i kanalfönstret"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Visa \"Nu spelas\"-bakgrundsvideo"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Visa \"Spelas nu\"-bakgrundsvisualisering"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Visa affischer istället för miniatyrbilder för musikvideor"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Sångtexter"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Dölj fanart i helskärmsvisualisering"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Tillägg för sångtexter"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Hemskärmens \"Videor\"-undermeny"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Hemskärmens \"Musik\"-undermeny"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Hemskärmens \"Bilder\"-undermeny"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "Musik-OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Inställningsnivå"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "Använd"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "spellista"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "spellistans sökväg"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "Dölj knapparna på startskärmen"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "Dölj - Favoriter"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "Dölj - Sök"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Genvägar"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Välj din låt"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Källa för sångtexter"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Hittade"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Hitta fler objekt"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Kommande episoder"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "Dölj huvudprofilens huvudmenyknappar"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Nuvarande temperatur"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Senast uppdaterad"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Dataleverantör"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Filmdetaljer"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Använt minne:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Spårnummer"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Vald profil"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Senast inloggad"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Sänt"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Alternativ för spellista"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Skapad"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Upplösning"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Nyligen tillagda"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Timer inställd![/B] [COLOR=grey2] - Automatisk avstängning av systemet om[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Klicka på knappen för att spela[CR][CR]filmtrailern"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Albumdetaljer"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Paus"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Stopp"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Spola framåt"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Spola bakåt"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Filmmeny"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Hämta undertexter"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Se i 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Ändra läge"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Aktiverad"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Skalets standardvärde"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Skalets standard utan versaler"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Arialbaserad"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Förstagångshjälp..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Denna flik visar att det finns en meny till sidan om detta fönster som innehåller extra inställningar för denna sektion. För att nå menyn, navigera till vänster med din fjärrkontroll eller tangentbord eller placera din mus ovanför fliken. [CR][CR]Klicka på \"OK\" för att stänga denna dialogruta. Den kommer inte att visas igen."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Lokal undertext tillgänglig"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Logga in"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Välj din Kodi-användarprofil[CR]för att logga in och fortsätta"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Visa eller dölj inloggningsskärmen vid uppstart."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Välj den profil som skall användas vid uppstart när inloggningsskärmen är inaktiverad."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]SPELAREINSTÄLLNINGAR[/B][CR][CR]Konfigurera inställningar för vad du kan göra under uppspelning · Konfigurera hur mediainnehåll spelas upp"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]BIBLIOTEKINSTÄLLNINGAR[/B][CR][CR]Konfigurera hur biblioteket/filer-vy presenterar medieinnehåll · Konfigurera hur bibliotekets listor/vyer navigeras · Konfigurera mediadatabasens alternativ"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR-INSTÄLLNINGAR[/B][CR][CR]Konfigurera hur kanaler och guider hanteras · Konfigurera hur Live-TV och inspelningar hanteras"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]TILLÄGGSINSTÄLLNINGAR[/B][CR][CR]Konfigurera dina installerade tillägg · Bläddra och installera tillägg från kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]TJÄNSTINSTÄLLNINGAR[/B][CR][CR]Konfigurera och hantera media delningstjänster · Konfigurera webbserver · Konfigurera och hantera vädertjänsten"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]SYSTEMINSTÄLLNINGAR[/B][CR][CR]Konfigurera skärmen · Konfigurera ljud · Konfigurera internetaccess · Konfigurera energialternativ · Konfigurera loggning"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]GRÄNSSNITTS INSTÄLLNINGAR[/B][CR][CR]Konfigurera skal · Konfigurera plats · Konfigurera kontroll · Konfigurera skärmsläckare · Konfigurera huvudlås"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Schemalagd tid"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Lägg till grupp"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Byt namn på grupp"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Ta bort grupp"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Tillgängliga[CR]grupper"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kanalgrupp"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Tidtagare satt"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Kanalalternativ"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36-timmarsprognos"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Timprognos"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Veckoprognos"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Dygnsprognos"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Prognos"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Hämtar prognosinfo..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Kartor"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "VÄDER"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "BILDER"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEOR"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "FILMER"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "TV-SERIER"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUSIK"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "TILLÄGG"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "SPELA SKIVA"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "SYSTEM"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "Tidsförskjutning"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "Välj typ av profilidentifiering"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Profilnamn"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "Profilbild"

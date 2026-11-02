@@ -1,0 +1,759 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:07+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Danish <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/da_dk/>\n"
+"Language: da_dk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluence skin af Jezz_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluence er en kombination af koncepter fra mange populære skins, og det forsøger at omfavne og integrere de gode ideer i et skin, der er let for førstegangsbrugere af Kodi at forstå og bruge."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Skift din"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "SPIL"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]INDSTILLINGER FOR SPIL[/B][CR][CR]Konfigurer tilbagespolingsunderstøttelse og muligheder · Konfigurer tastaturbrug og antal tastaturspillere"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Strømstyring"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Arbejder..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Skjul information"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Visningsindstillinger"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Information om videoproces"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Fuld skærm"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Samlet varighed"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Hardwareafkodning"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Inaktiv"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Afkoder"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Information om lydproces"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Anvendt hukommelse"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "Minut"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "Forløbet tid"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Ikke tilgængelig"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr "Indstil standard opstartsemne"
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Afspilningshastighed"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Afspiller"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Side"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Emner"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Andre indstillinger"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Placering"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Plakatvæg"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Fankunst"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Miniaturebilleder"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Billedvæg"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Info"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr "Select + X"
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr "Select + Start"
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Handlinger"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Afspiller nu"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "AFSPILLER"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "PAUSE"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "SPOL FREM"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "SPOL TILBAGE"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "SØGER"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Forudindstillinger til visualisering"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Sluttidspunkt"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Sorter: Stigende"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Sorter: Faldende"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Åbn playliste"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Gem playliste"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Luk playliste"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Systemmusikfiler"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Nuværende playliste"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Aktuelt valg"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Indstillinger til hjemmeskærmen"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Baggrund"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Vis \"PAUSE\" i billeddiasshow"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Afspil trailere i et vindue [COLOR=grey3](kun videoinformationsdialog)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Diverse indstillinger"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Skjul læsning af mærker fra videoers filnavne [COLOR=grey3](f.eks. Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Skjul knapper i hovedmenu"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Aktiver brugerdefineret baggrund"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Sti til baggrund:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Skjul"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Indstillinger"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "Master sti til baggrund:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "System"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "Playlister til hovedknapper"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Vis nyligt tilføjede albummer"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Vis nyligt tilføjede videoer"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "Undermenu til \"Add-ons\" på hjemmeskærmen"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Skjul baggrundsfankunst"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "Undermenu til \"Spil\" på hjemmeskærmen"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "Skjul EPG hvis RDS er til stede på kanalvindue"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Vis \"Spiller nu\" i baggrunden for videoer"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Vis \"Spiller nu\" visualisering i baggrunden"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "Vis plakater i stedet for miniaturebilleder for musikvideoer"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Sangtekster"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Skjul fankunst i fuldskærmsvisning"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Add-on til sangtekster"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Undermenu til \"Videoer\" på hjemmeskærmen"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Undermenu til \"Musik\" på hjemmeskærmen"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Undermenu til \"Billeder\" på hjemmeskærmen"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "Musik OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Indstillingsniveau"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "Anvend"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "playliste"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "sti til playliste"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "Skjul hovedskærmens knapper"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "Skjul - Favoritter"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "Skjul - Søg"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Genveje"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Vælg din sang"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Kilde til sangtekster"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Fundet"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Find flere emner"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Kommende afsnit"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "Skjul hovedprofilens knapper til hovedmenuen"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Nuværende temperatur"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Sidst opdateret"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Dataleverandør"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Filmdetaljer"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Anvendt hukommelse:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Spornummer"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Valgt profil"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Sidst logget ind"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Sendt"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Playlisteindstillinger"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Oprettet"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Opløsning"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Senest tilføjede"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Timer aktiveret![/B] [COLOR=grey2] - Systemet lukker automatisk ned om[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Klik på en knap for at afspille[CR][CR]filmtrailer"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Albumdetaljer"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Pause"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Stop"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Spol frem"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Spol tilbage"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Filmmenu"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Hent undertekster"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Se i 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Skift tilstand"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Aktiveret"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Skinnets standard"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Skinnets standard uden store bogstaver"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Baseret på Arial"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Hjælp ved første kørsel..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Dette faneblad indikerer, at der er en menu i siden af dette vindue, som indeholder ekstra indstillinger til denne sektion. For at få adgang til denne menu, skal du navigere til venstre med din fjernbetjening eller dit tastatur. Du kan også placere din musemarkør over fanebladet. [CR][CR]Tryk \"Ok\" for at lukke denne dialog. Den dukker ikke op igen."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Lokal undertekst tilgængelig"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Login"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Vælg din Kodi brugerprofil[CR]for at logge ind og fortsætte"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Vis eller skjul login-skærmen ved opstart."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Vælg den profil, der skal bruges ved opstart, når login-skærmen er deaktiveret."
+
+# empty strings from id 31424 to 31429
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]INDSTILLINGER FOR AFSPILLER[/B][CR][CR]Konfigurer handlinger, der kan bruges under afspilning · Konfigurer hvordan medieindhold afspilles"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]INDSTILLINGER FOR BIBLIOTEK[/B][CR][CR]Konfigurer hvordan biblioteket/filvisninger viser medieindhold · Konfigurer hvordan biblioteklister/-visninger navigeres · Konfigurer mediedatabasens indstillinger"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]INDSTILLINGER FOR PVR[/B][CR][CR]Konfigurer hvordan kanalerne og guiden administreres · Konfigurer hvordan direkte tv og optagelser administreres"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]INDSTILLINGER FOR ADD-ONS[/B][CR][CR]Konfigurer dine installerede add-ons · Gennemse og installer add-ons fra kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]INDSTILLINGER FOR TJENESTER[/B][CR][CR]Konfigurer og administrer mediedelingstjenester · Konfigurer webserver · Konfigurer og administrer vejretjenesten"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]INDSTILLINGER FOR SYSTEM[/B][CR][CR]Konfigurer skærm · Konfigurer lyd · Konfigurer internetadgang · Konfigurer strømbesparelse · Konfigurer logføring"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]INDSTILLINGER FOR BRUGERFLADE[/B][CR][CR]Konfigurer skin · Konfigurer område · Konfigurer kontrol · Konfigurer pauseskærm · Konfigurer hovedlås"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Planlagt tid"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "Tv"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Tilføj gruppe"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Omdøb gruppe"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Slet gruppe"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Tilgængelige[CR]grupper"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kanalgruppe"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Timer aktiveret"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Kanalindstillinger"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36 timers vejrudsigt"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Vejrudsigt de næste timer"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Vejrudsigt for weekenden"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Vejrudsigten for i dag"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Vejrudsigt"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Henter vejrudsigt..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Kort"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "VEJR"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "BILLEDER"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEOER"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "FILM"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "TV-SERIER"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUSIK"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "ADD-ONS"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "AFSPIL DISC"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "SYSTEM"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "Tidsforskydning"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "Vælg typen af profilidentifikation"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Profilnavn"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "Profilavatar"

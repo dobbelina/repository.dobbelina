@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="1113" type="dialog">
+	<visible>[Window.IsActive(fullscreenvideo) | Window.IsActive(visualisation)] + !Window.IsActive(pvrosdchannels) + !String.IsEmpty(PVR.ChannelNumberInput)</visible>
+	<controls>
+		<control type="label">
+			<left>0</left>
+			<top>0</top>
+			<width>75%</width>
+			<height>75%</height>
+			<label>$INFO[PVR.ChannelNumberInput]</label>
+			<shadowcolor>black</shadowcolor>
+			<align>center</align>
+			<font>WeatherTemp</font>
+			<aligny>center</aligny>
+			<visible>!String.IsEmpty(PVR.ChannelNumberInput)</visible>
+		</control>
+	</controls>
+</window>

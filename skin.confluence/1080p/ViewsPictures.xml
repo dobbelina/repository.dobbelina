@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+	<include name="PictureWrapView">
+		<control type="group">
+			<visible>Control.IsVisible(510)</visible>
+			<include>VisibleFadeEffect</include>
+			<left>0</left>
+			<top>660</top>
+			<control type="wraplist" id="510">
+				<depth>DepthContent+</depth>
+				<left>-38</left>
+				<top>8</top>
+				<width>1995</width>
+				<height>375</height>
+				<onleft>510</onleft>
+				<onright>510</onright>
+				<onup>2</onup>
+				<ondown>60</ondown>
+				<viewtype label="31032">wrap</viewtype>
+				<pagecontrol>60</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<focusposition>3</focusposition>
+				<orientation>horizontal</orientation>
+				<preloaditems>4</preloaditems>
+				<itemlayout height="300" width="285">
+					<control type="image">
+						<left>23</left>
+						<top>60</top>
+						<width>240</width>
+						<height>240</height>
+						<aspectratio>stretch</aspectratio>
+						<bordertexture infill="false" border="10">ThumbShadow.png</bordertexture>
+						<bordersize>8</bordersize>
+						<fadetime>200</fadetime>
+						<texture border="2">ThumbBG.png</texture>
+					</control>
+					<control type="image">
+						<left>38</left>
+						<top>75</top>
+						<width>210</width>
+						<height>210</height>
+						<aspectratio>keep</aspectratio>
+						<texture background="true">$INFO[ListItem.Icon]</texture>
+					</control>
+				</itemlayout>
+				<focusedlayout height="300" width="285">
+					<control type="image">
+						<depth>DepthContentPopout</depth>
+						<left>23</left>
+						<top>60</top>
+						<width>240</width>
+						<height>240</height>
+						<aspectratio>stretch</aspectratio>
+						<bordertexture infill="false" border="10">ThumbShadow.png</bordertexture>
+						<bordersize>8</bordersize>
+						<fadetime>200</fadetime>
+						<texture border="2">ThumbBG.png</texture>
+						<animation reversible="false" effect="zoom" start="23,60,240,240" end="-15,-8,315,315" time="150">focus</animation>
+						<animation reversible="false" effect="zoom" end="23,60,240,240" start="-15,-8,315,315" time="150">unfocus</animation>
+					</control>
+					<control type="image">
+						<depth>DepthContentPopout</depth>
+						<left>38</left>
+						<top>75</top>
+						<width>210</width>
+						<height>210</height>
+						<aspectratio>keep</aspectratio>
+						<texture background="true">$INFO[ListItem.Icon]</texture>
+						<animation reversible="false" effect="zoom" start="38,75,210,210" end="8,15,270,270" time="150">focus</animation>
+						<animation reversible="false" effect="zoom" end="38,75,210,210" start="8,15,270,270" time="150">unfocus</animation>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>465</left>
+				<top>300</top>
+				<width>990</width>
+				<height>38</height>
+				<texturesliderbackground border="28,0,28,0">ScrollBarH.png</texturesliderbackground>
+				<texturesliderbar border="28,0,28,0">ScrollBarH_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="28,0,28,0">ScrollBarH_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onup>510</onup>
+				<ondown>2</ondown>
+				<showonepage>false</showonepage>
+				<orientation>horizontal</orientation>
+				<visible>Control.IsVisible(510)</visible>
+			</control>
+		</control>
+	</include>
+	<include name="PictureThumbView">
+		<control type="group">
+			<visible>Control.IsVisible(514)</visible>
+			<control type="panel" id="514">
+				<left>90</left>
+				<top>113</top>
+				<width>648</width>
+				<height>864</height>
+				<onleft>2</onleft>
+				<onright>60</onright>
+				<onup>514</onup>
+				<ondown>514</ondown>
+				<viewtype label="$LOCALIZE[31031]">list</viewtype>
+				<pagecontrol>60</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<preloaditems>2</preloaditems>
+				<itemlayout height="216" width="216">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>216</width>
+						<height>216</height>
+						<aspectratio>stretch</aspectratio>
+						<bordertexture infill="false" border="10">ThumbShadow.png</bordertexture>
+						<bordersize>8</bordersize>
+						<fadetime>200</fadetime>
+						<texture border="2">ThumbBG.png</texture>
+					</control>
+					<control type="image">
+						<left>15</left>
+						<top>15</top>
+						<width>186</width>
+						<height>186</height>
+						<aspectratio>keep</aspectratio>
+						<texture background="true">$INFO[ListItem.Icon]</texture>
+					</control>
+				</itemlayout>
+				<focusedlayout height="216" width="216">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>216</width>
+						<height>216</height>
+						<aspectratio>stretch</aspectratio>
+						<bordertexture infill="false" border="10">folder-Focus.png</bordertexture>
+						<bordersize>8</bordersize>
+						<fadetime>200</fadetime>
+						<texture border="2">ThumbBG.png</texture>
+					</control>
+					<control type="image">
+						<left>15</left>
+						<top>15</top>
+						<width>186</width>
+						<height>186</height>
+						<aspectratio>keep</aspectratio>
+						<texture background="true">$INFO[ListItem.Icon]</texture>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>750</left>
+				<top>105</top>
+				<width>38</width>
+				<height>864</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>514</onleft>
+				<onright>2</onright>
+				<showonepage>false</showonepage>
+				<orientation>vertical</orientation>
+				<visible>Control.IsVisible(514)</visible>
+			</control>
+			<control type="group">
+				<left>855</left>
+				<top>120</top>
+				<control type="label">
+					<description>Title txt</description>
+					<left>0</left>
+					<top>0</top>
+					<width>960</width>
+					<height>23</height>
+					<label>$INFO[ListItem.Label]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font24_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+				</control>
+				<control type="image">
+					<left>0</left>
+					<top>45</top>
+					<width>960</width>
+					<height>705</height>
+					<texture background="true">$INFO[ListItem.FilenameAndPath]</texture>
+					<fadetime>600</fadetime>
+					<aspectratio>keep</aspectratio>
+					<bordertexture infill="false" border="8">ThumbShadow.png</bordertexture>
+					<bordersize>9</bordersize>
+				</control>
+				<control type="label">
+					<description>Date time txt</description>
+					<left>0</left>
+					<top>765</top>
+					<width>960</width>
+					<height>23</height>
+					<label>$INFO[ListItem.PictureDateTime,[COLOR=blue]$LOCALIZE[31326][/COLOR] - ]</label>
+					<align>left</align>
+					<aligny>center</aligny>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+				</control>
+				<control type="label">
+					<description>Resolution txt</description>
+					<left>0</left>
+					<top>803</top>
+					<width>960</width>
+					<height>23</height>
+					<label>$INFO[ListItem.PictureResolution,[COLOR=blue]$LOCALIZE[31327][/COLOR] - ]</label>
+					<align>left</align>
+					<aligny>center</aligny>
+					<font>font13</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+				</control>
+			</control>
+		</control>
+	</include>
+</includes>

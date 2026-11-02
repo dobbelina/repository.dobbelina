@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<animation effect="fade" start="0" end="100" time="150">WindowOpen</animation>
+	<animation effect="fade" start="100" end="0" time="150">WindowClose</animation>
+	<coordinates>
+		<left>1290</left>
+		<top>960</top>
+	</coordinates>
+	<controls>
+		<control type="group">
+			<depth>DepthMax</depth>
+			<animation effect="slide" start="0,0" end="-285,0" time="150" condition="Window.IsVisible(BusyDialog)">conditional</animation>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>600</width>
+				<height>105</height>
+				<colordiffuse>EEFFFFFF</colordiffuse>
+				<texture border="12">OverlayDialogBackground.png</texture>
+			</control>
+			<control type="image" id="400">
+				<description>avatar</description>
+				<left>30</left>
+				<top>15</top>
+				<width>75</width>
+				<height>75</height>
+				<aspectratio>keep</aspectratio>
+			</control>
+			<control type="fadelabel" id="401">
+				<description>Line 1 Label</description>
+				<left>113</left>
+				<top>23</top>
+				<width>465</width>
+				<height>27</height>
+				<font>font12_title</font>
+				<textcolor>white</textcolor>
+				<align>left</align>
+				<aligny>center</aligny>
+				<scrollout>false</scrollout>
+				<pauseatend>2000</pauseatend>
+			</control>
+			<control type="fadelabel" id="402">
+				<description>Line 2 Label</description>
+				<left>113</left>
+				<top>53</top>
+				<width>465</width>
+				<height>30</height>
+				<font>font12_title</font>
+				<textcolor>grey2</textcolor>
+				<align>left</align>
+				<aligny>center</aligny>
+				<scrollout>false</scrollout>
+				<pauseatend>2000</pauseatend>
+			</control>
+		</control>
+	</controls>
+</window>

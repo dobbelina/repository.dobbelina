@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>3</defaultcontrol>
+	<coordinates>
+		<left>120</left>
+		<top>90</top>
+	</coordinates>
+	<include>dialogeffect</include>
+	<controls>
+		<include condition="Window.IsActive(gamecontrollers)">DialogGameControllers</include>
+		<include condition="Window.IsActive(gameports)">DialogGamePorts</include>
+		<include condition="Window.IsDialogTopMost(gameagents)">DialogGameAgents</include>
+	</controls>
+</window>

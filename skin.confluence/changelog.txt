@@ -1,0 +1,635 @@
+[B]5.0.9[/B]
+
+- Teletext button fix
+
+[B]5.0.8[/B]
+
+- Add new Options menu and move play speed
+
+[B]5.0.7[/B]
+
+- Fix mouse issue with subtitles dialog
+- Fix debug grid not displaying
+
+[B]5.0.6[/B]
+
+- Fix video player media info alignment
+- Increase list width in video version dialog
+
+[B]5.0.5[/B]
+
+- Fix wrong header id
+
+[B]5.0.4[/B]
+
+- Add 'Check Previous Episode' addon layout
+
+[B]5.0.3[/B]
+
+- Add video version/extra select dialog
+- Fix panel height
+
+[B]5.0.2[/B]
+
+- Fix Original/Localised title
+- Fix 'Movie' and 'TV Shows' buttons visible condition
+- Fix addon focus issue
+- Fix Formed/Born overlap issue
+- Fix exiting from settings focus problem
+- Fix missing label in view id=50
+- Fix broken bool in PosterThumb variable
+- Fix default home item selection issue
+- Remove unneeded code
+- Fix default select item when using login
+- Remove unneeded close button
+
+[B]5.0.1[/B]
+
+- Rework versions/extras textures
+
+[B]5.0.0[/B]
+
+- Add Video version support
+- Convert skin from 720p to 1080p
+- Update scrollbars
+- Add grid overlay
+- Add game agents
+- Add disabled slider texture
+
+[B]4.8.0[/B]
+
+- Bump skin version and update changelog
+- Add movie title format option
+- Bump xbmc.gui for Nexus
+- Add Nexus game changes
+- Add show password button to keyboard
+- Add Player.Process(videoscantype) infolabel
+- Add Cuts, Scene Markers, and Editlist
+- Add missing aspect ratios
+- Add 'infill' attribute to border textures
+- Add HDR flagging
+- Delete DialogFavourites.xml
+- Fix home episode thumbs not using spoiler settings
+- Add default start item selection
+
+[B]4.7.15[/B]
+
+- Fix image in select dialog
+
+[B]4.7.14[/B]
+
+- Add PVR guide controls dialog
+
+[B]4.7.13[/B]
+
+- Updated language files from Transifex
+
+[B]4.7.12[/B]
+
+- Updated language files from Transifex
+
+[B]4.7.11[/B]
+
+- Fix PVR radio record button
+- Fix PVR recording label
+- Fix posters
+- Add "Versions" button to add-on information dialog
+
+[B]4.7.10[/B]
+
+- Updated language files from Transifex
+
+[B]4.7.9[/B]
+
+- Fix season posters
+
+[B]4.7.6[/B]
+
+- Switch to dynamic content for home screen widgets
+- Home screen widgets show only unwatched items
+
+[B]4.7.5[/B]
+
+- Bump xbmc.gui
+- Add support for enabled add-ons
+
+[B]4.7.1[/B]
+
+- Add support for PVR reminders
+- Fix / add new buttons in PVR information window
+- Update PVR group manager dialog with latest changes
+
+[B]4.7.0[/B]
+
+- Added chapter markers to progress bar
+- Uppercase Season and Episode indicators on home Recently Added Episodes
+
+[B]4.6.9[/B]
+
+- Media flagging updates
+- Language updates
+
+[B]4.6.8[/B]
+
+- Add HasArchive indicator to channels and programs
+- Add CoreELEC compatibility
+
+[B]4.6.7[/B]
+
+- Language updates
+
+[B]4.6.6[/B]
+
+- Language updates
+- Fix comments in strings.po
+- Fix addon.xml
+
+[B]4.6.5[/B]
+
+- Language updates
+- Fix endtime visibility for video info screen
+- Add video duration into view
+
+[B]4.6.4[/B]
+
+- Add "End time" for video playback
+- Add add-ons submenu
+- Music artist info updated
+- Power/Favourites buttons updated
+
+[B]4.6.3[/B]
+
+- Fix now playing issue
+
+[B]4.6.2[/B]
+
+- Tags fixed
+
+[B]4.6.1[/B]
+
+- Language updates
+
+[B]4.6.0[/B]
+
+- Added "Kids profile" option
+
+[B]4.5.15[/B]
+
+- Fix game stretch mode
+
+[B]4.5.14[/B]
+
+- Unused include removed (NowPlaying)
+
+[B]4.5.13[/B]
+
+- Fixed missing labels
+- Removed audio dsp references
+
+[B]4.5.12[/B]
+
+- Language updates
+
+[B]4.5.11[/B]
+
+- Add "Rip CD" button to home sub menu
+
+[B]4.5.10[/B]
+
+- Language updates
+
+[B]4.5.9[/B]
+
+- Fix menu visibility when offsetting subtitles
+
+[B[4.5.8[/B]
+
+- Language updates
+
+[B]4.5.7[/B]
+
+- Language updates
+
+[B]4.5.6[/B]
+
+- Refactor media info/now playing views
+- Support for hide plot/thumb (OverlaySpoiler.png)
+
+[B]4.5.5[/B]
+
+- GUI version bump to 5.14.0
+- Fonts updates
+- Language updates
+
+[B]4.5.4[/B]
+
+- Fix missing video and audio codec flags
+
+[B]4.5.3[/B]
+
+- Fix album start rating
+- Fix missing localisation
+
+[B]4.5.2[/B]
+
+- Added 8K support
+- Add setting for profile identification
+
+[B]4.5.1[/B]
+
+- Audio DSP support removed 
+
+[B]4.5.0[/B]
+
+- Added 'Game' shortcuts to home menu
+- Fixed hiding 'Games' home menu item
+
+[B]4.4.7[/B]
+
+- Updated GameOSD dialog
+
+[B]4.1.41[/B]
+
+- Added GameOSD dialog
+
+[B]4.1.4[/B]
+
+- Added path to music info dialog
+- Updated language files from Transifex
+
+[B]4.0.4[/B]
+
+- Added fallbacks for home screen Recently Added items
+- Updated addon settings dialog
+
+[B]4.0.1[/B]
+
+- Updated addon settings dialog
+
+[B]4.0.0[/B]
+
+* Leia (v18) updates
+- Bumped xbmc.gui to 5.13.0
+- Removed hyphens as a none value
+- Added Game sections
+- Changed DialogPVRGuideOSD.xml to DialogPVRChannelGuide.xml
+- Updated duration labels
+- Removed 'noop' values
+- Added 'TV/Radio toggle' button to DialogPVRGroupManager.xml
+- Removed views 11 and 13 from MyPVRGuide.xml
+- Added 'All/Watched/Unwatched' to MyPVRRecordings.xml 
+
+[B]3.0.39[/B]
+
+- Fixed home Weather item
+- Added 'Privacy Policy' to system info
+- Updated background video conditions
+
+[B]3.0.38[/B]
+
+- Fix using DefaultUser.png added in v3.0.6 and remove unknown-user.png
+
+[B]3.0.36[/B]
+
+- Added customisable home submenus that use library nodes
+- Added news feature
+
+[B]3.0.35[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.34[/B]
+
+- Added player speed controls (tempo) and on-screen indicator
+
+[B]3.0.33[/B]
+
+- Changed LibrarySettings to MediaSettings
+
+[B]3.0.32[/B]
+
+- Added DialogPlayerProcessInfo.xml
+- Removed player process info from video OSD
+- Added 'assets' to addon.xml
+
+[B]3.0.31[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.30[/B]
+
+- Updated DialogSelect.xml
+
+[B]3.0.29[/B]
+
+- Updated video osd player process info
+
+[B]3.0.28[/B]
+
+- Added player processing info to video osd
+
+[B]3.0.27[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.26[/B]
+
+- Show addon status if available, instead of size
+
+[B]3.0.25[/B]
+
+- Added size label to addon browser
+
+[B]3.0.24[/B]
+
+- Removed changelog button from addon info dialog
+
+[B]3.0.23[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.22[/B]
+
+- Cleanup after removal of Player.ShowCodec
+
+[B]3.0.21[/B]
+
+- Remove startup window heading
+
+[B]3.0.20[/B]
+
+- Fix case issue with Defaults.xml
+
+[B]3.0.19[/B]
+
+- Fix include problem
+- Case change for Defaults.xml and Includes.xml
+
+[B]3.0.18[/B]
+
+- Fix text width for buttons in addon settings
+
+[B]3.0.17[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.16[/B]
+
+- Fixed PVR OSD guide label problem
+
+[B]3.0.15[/B]
+
+- Added horizontal orientation tag to default slider control
+
+[B]3.0.14[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.13[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.12[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.11[/B]
+
+- Updated settings layout
+- Remove the set of ADSP manager dialog list types, becomes done from Kodi itself
+
+[B]3.0.10[/B]
+
+- Updated global search
+- Updated music and video info
+- Added DefaultAddonsRecentlyUpdated.png and DefaultMusicRoles.png
+
+[B]3.0.9[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.8[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.7[/B]
+
+- Updated include calls
+
+[B]3.0.6[/B]
+
+- Added game controller support
+- Added DefaultAddonInputstream.png and DefaultAddonLookAndFeel.png
+- Changed unknown-user.png to DefaultUser.png
+- Removed obsolete fanart code from DialogVideoInfo.xml
+- Updated boolean conditions
+
+[B]3.0.5[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.4[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.3[/B]
+
+- Removed Player.ShowCodec
+
+[B]3.0.2[/B]
+
+- Merged setting dialogs into DialogSettings
+
+[B]3.0.1[/B]
+
+- Updated language files from Transifex
+
+[B]3.0.0[/B]
+
+- Move skin to repository
+
+[B]2.8.2[/B]
+
+- Updated language files from Transifex
+
+[B]2.8.1[/B]
+
+- Updated language files from Transifex
+
+[B]2.7.3[/B]
+
+- Updated language files from Transifex
+
+[B]2.7.2[/B]
+
+- Updated language files from Transifex
+
+[B]2.7.1[/B]
+
+- Updated language files from Transifex
+
+[B]2.7.0[/B]
+
+- Removed new/edit/delete buttons from the channel manager dialog
+
+[B]2.6.0[/B]
+
+- Moved some context menu functionality for PVR channels to the sideblade
+
+[B]2.5.8[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.7[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.6[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.5[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.4[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.3[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.2[/B]
+
+- Updated language files from Transifex
+
+[B]2.5.0[/B]
+- Kodi name change
+
+[B]2.4.0[/B]
+- Set minimum GUI version to 5.2.0
+- Rewrite of the PVR section
+
+[B]2.2.14[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.13[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.12[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.11[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.10[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.9[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.8[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.7[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.6[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.5[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.4[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.3[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.2[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.1[/B]
+
+- Updated language files from Transifex
+
+[B]2.2.0[/B]
+- Set minimum GUI version to 5.0.0
+- Adjusted to Gotham code changes
+
+[B]2.1.7[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.6[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.5[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.4[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.3[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.2[/B]
+
+- Updated language files from Transifex
+
+[B]2.1.0[/B]
+
+- Changed the home menu to Horizontal Layout instead of Vertical
+- Added support for the TvTunes Addon enable it in skin settings\General (if you have it installed)
+- Added support for the Weather+ script (install it and select it in weather settings)
+- Updated translation files
+- Added some more codec flagging images (eg: pcm_bluray, wav files, etc)
+- Added Visual notification in Add-on Thumbnail view if an add-on is broken
+
+[B]2.0.0[/B]
+
+- Bumped the skin version up for the major change to eden branch
+
+[B]1.2.0[/B]
+
+- All media views now follow a similar layout off File List on the Left hand side and icons/data on the right
+- Views are all now in content panels (no fullscreen black)
+- Added a thumb view for addons
+- Non full screen Now Playing Media info (Bottom left) has more info
+- Full screen Now Playing Media info trimmed down
+- Fullscreen Player controls changed
+- Media windows side menu is completely redesigned (and also lower case)
+- Added a "filter" button to all media windows
+- Added Filter (BLAH) text to the item/page count bottom right
+- Removed the Disc Play button from home (which relies on !System.HasMediaDVD to appear)
+- Repositioned the seekbar from lower right to upper right
+
+[B]1.1.0[/B]
+
+- Redesigned the video and Music OSD Info and controls
+- Added more images for codec flagging on videos and audio
+- Added all the windows needed for the new Addon Browser
+- Removed the right hand side bar graphic from all windows and only made the left hand one visible if a menu is there
+- Lots of other little changes
+
+[B]1.0.0[/B]
+
+- Initial Commit to the SVN

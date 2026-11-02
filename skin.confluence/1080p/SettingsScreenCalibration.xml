@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>8</defaultcontrol>
+	<controls>
+		<control type="videowindow" id="20">
+			<description>videowindow</description>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<visible>Player.HasVideo</visible>
+		</control>
+		<control type="group">
+			<visible>!Player.HasVideo</visible>
+			<include>CommonBackground</include>
+		</control>
+		<control type="image">
+			<description>Overlay</description>
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture>black-back.png</texture>
+			<include>dialogeffect</include>
+		</control>
+		<control type="button">
+			<description>Close Window button</description>
+			<left>150r</left>
+			<top>0</top>
+			<width>96</width>
+			<height>48</height>
+			<label />
+			<font />
+			<onclick>PreviousMenu</onclick>
+			<texturefocus>DialogCloseButton-focus.png</texturefocus>
+			<texturenofocus>DialogCloseButton.png</texturenofocus>
+			<onleft>1</onleft>
+			<onright>1</onright>
+			<onup>1</onup>
+			<ondown>1</ondown>
+			<visible>system.getbool(input.enablemouse)</visible>
+		</control>
+		<control type="mover" id="8">
+			<description>top left mover</description>
+			<left>0</left>
+			<top>0</top>
+			<width>192</width>
+			<height>192</height>
+			<texturefocus>CalibrateTopLeft.png</texturefocus>
+			<texturenofocus />
+			<movingspeed acceleration="180" maxvelocity="300" resettimeout="200" delta="1">
+				<eventconfig type="up" />
+				<eventconfig type="down" />
+				<eventconfig type="left" />
+				<eventconfig type="right" />
+			</movingspeed>
+		</control>
+		<control type="mover" id="9">
+			<description>right bottom mover</description>
+			<left>1050</left>
+			<top>750</top>
+			<width>192</width>
+			<height>192</height>
+			<texturefocus>CalibrateBottomRight.png</texturefocus>
+			<texturenofocus />
+			<movingspeed acceleration="180" maxvelocity="300" resettimeout="200" delta="1">
+				<eventconfig type="up" />
+				<eventconfig type="down" />
+				<eventconfig type="left" />
+				<eventconfig type="right" />
+			</movingspeed>
+		</control>
+		<control type="mover" id="10">
+			<description>subtitle position mover</description>
+			<left>300</left>
+			<top>750</top>
+			<width>768</width>
+			<height>192</height>
+			<texturefocus>CalibrateSubtitles.png</texturefocus>
+			<texturenofocus />
+			<movingspeed acceleration="180" maxvelocity="300" resettimeout="200" delta="1">
+				<eventconfig type="up" />
+				<eventconfig type="down" />
+				<eventconfig type="left" />
+				<eventconfig type="right" />
+			</movingspeed>
+		</control>
+		<control type="resize" id="11">
+			<description>pixel aspect ratio box</description>
+			<left>0</left>
+			<top>348</top>
+			<width>384</width>
+			<height>384</height>
+			<texturefocus>CalibratePixelRatio.png</texturefocus>
+			<texturenofocus />
+			<movingspeed acceleration="140" maxvelocity="300" resettimeout="180" delta="1">
+				<eventconfig type="left" />
+				<eventconfig type="right" />
+			</movingspeed>
+		</control>
+		<control type="mover" id="12">
+			<description>reset calibration</description>
+			<posx>0</posx>
+			<posy>1350</posy>
+			<width>150</width>
+			<height>150</height>
+			<texturefocus colordiffuse="FF04a7d2">icon_reset.png</texturefocus>
+			<texturenofocus>icon_reset.png</texturenofocus>
+		</control>
+		<control type="group">
+			<left>30</left>
+			<top>60</top>
+			<control type="label" id="2">
+				<description>coordinates label</description>
+				<left>0</left>
+				<top>15</top>
+				<width>1860</width>
+				<label />
+				<align>center</align>
+				<font>font13</font>
+			</control>
+			<control type="label" id="3">
+				<description>help information</description>
+				<left>0</left>
+				<top>60</top>
+				<width>1860</width>
+				<label />
+				<align>center</align>
+				<font>font13</font>
+			</control>
+			<control type="label" id="4">
+				<description>calibration value</description>
+				<posx>0</posx>
+				<posy>135</posy>
+				<width>75%</width>
+				<label></label>
+				<align>center</align>
+				<font>font13</font>
+			</control>
+		</control>
+	</controls>
+</window>

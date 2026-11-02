@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>1</defaultcontrol>
+	<animation effect="slide" start="0,-60" end="0,0" time="75">WindowOpen</animation>
+	<animation effect="slide" start="0,0" end="0,-60" delay="300" time="75">WindowClose</animation>
+	<controls>
+		<control type="group">
+			<depth>DepthOSD</depth>
+			<left>1230</left>
+			<top>0</top>
+			<include>VisibleFadeEffect</include>
+			<visible>!Player.Muted</visible>
+			<control type="image">
+				<left>0</left>
+				<top>-15</top>
+				<width>450</width>
+				<height>75</height>
+				<texture flipy="true" border="12,2,12,12">InfoMessagePanel.png</texture>
+			</control>
+			<control type="group">
+				<visible>!player.passthrough</visible>
+				<control type="image">
+					<description>Lite Volume Logo</description>
+					<left>15</left>
+					<top>0</top>
+					<width>60</width>
+					<height>53</height>
+					<aspectratio>keep</aspectratio>
+					<texture>VolumeIcon.png</texture>
+				</control>
+				<control type="progress" id="1">
+					<description>progress control</description>
+					<left>75</left>
+					<top>12</top>
+					<width>345</width>
+					<height>27</height>
+					<info>Player.Volume</info>
+				</control>
+			</control>
+			<control type="group">
+				<visible>player.passthrough</visible>
+				<control type="image">
+					<description>Lite Volume Logo</description>
+					<left>15</left>
+					<top>0</top>
+					<width>60</width>
+					<height>53</height>
+					<aspectratio>keep</aspectratio>
+					<colordiffuse>CCFF0000</colordiffuse>
+					<texture>VolumeIcon.png</texture>
+				</control>
+				<control type="label">
+					<description>Passthrough Label</description>
+					<left>75</left>
+					<top>9</top>
+					<width>345</width>
+					<height>30</height>
+					<label>$LOCALIZE[29802]</label>
+					<font>font10_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<align>left</align>
+					<aligny>center</aligny>
+				</control>
+			</control>
+		</control>
+		<control type="image">
+			<left>75r</left>
+			<top>3</top>
+			<width>68</width>
+			<height>68</height>
+			<aspectratio>keep</aspectratio>
+			<texture>icon-mute.png</texture>
+			<include>VisibleFadeEffect</include>
+			<visible>Player.Muted</visible>
+		</control>
+	</controls>
+</window>

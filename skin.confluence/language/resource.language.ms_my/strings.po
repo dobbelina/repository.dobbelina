@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Malay <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/ms_my/>\n"
+"Language: ms_my\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Penyatuan, kulit daripada Jezz_X. (Kulit lalai Kodi)"
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Penyatuan ialah kulit lalai untuk Kodi 9.11 dan ke atas. Ia merupakan gabungan konsep dari pelbagai kulit terkenal, dan berusaha untuk merangkumkan dan menyepadukan idea baik kulit-kulit tersebut menjadi satu kulit yang mudah difahami dan digunakan oleh pengguna baru Kodi ."
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Ubah"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "GAMES"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]TETAPAN GAME[/B][CR][CR]Konfigurasi sokongon & pilihan gulung semula · Konfigurasi kegunaan papan kekunci dan nombor pemain"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "Pilihan kuasa"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "Bekerja..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "Sembunyi maklumat"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "Pilihan paparan"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "Maklumat proses video"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "Skrin Penuh"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "Tempoh keseluruhan"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "Penyahkodan perkakasan"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "Tidak Aktif"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "Penyahkod"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "Maklumat proses audio"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "Memori diguna"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "Minit"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "Masa berlalu"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "Tidak tersedia"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "Kelajuan main"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "Bermain"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "Mukasurat"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "Item"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "Pilihan lain"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "Kedudukan"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "Lilit poster"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "Hasil Seni Peminat"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "Lakaran kecil gambar"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "Lilit imej"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "Maklumat"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "Tindakan"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "Kini dimainkan"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "BERMAIN"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "TERHENTI SEJENAK"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "MARA LAJU"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "PUTAR SEMULA"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "MENCARI"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "Praset pengvisualan"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "Masa tamat"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "Isih: Menaik"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "Isih: Menurun"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "Buka senarai main"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "Simpan senarai main"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "Tutup senarai main"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "Fail muzik sistem"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "Senarai main semasa"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "Terkini dipilih"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "Pilihan skrin utama"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "Latar Belakang"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "Tunjuk \"Dijeda\" dalam paparan slaid gambar"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "Main treler dalam tetingkap [COLOR=grey3](Dialog maklumat video sahaja)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "Pilihan pelbagai"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "Sembunyi penanda bacaan dari nama fail video [COLOR=grey3](contoh Blu-ray, HD-DVD)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "Sembunyi butang menu utama"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "Benarkan latar belakang suai"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "Laluan latar belakang:"
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "Sembunyikan"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "Pilihan"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "Master laluan latar belakang:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "Sistem"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "Senarai main butang utama"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "Tunjuk album ditambah baru-baru ini"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "Tunjuk video ditambah baru-baru ini"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "Submenu \"Tambahan\" laman utama"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "Sembunyikan latar belakang seni peminat"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "Submenu \"Permainan\" laman utama"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "sembunyi EPG jika RDS hadir pada tetingkap saluran"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "Tunjuk video latar belakang \"Kini dimainkan\""
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "Tunjuk pengvisualan latar belakang \"Kini dimainkan\""
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr ""
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "Lirik"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "Sembunyi seni peminat dalam pengvisualan skrin penuh"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "Tambahan lirik"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "Sub-menu \"Video\" laman rumah"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "Sub-menu \"Muzik\" laman rumah"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "Sub-menu \"Gambar\" laman rumah"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "OSD Muzik"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "Aras tetapan"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "Guna"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "senarai main"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "laluan senarai main"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr ""
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr ""
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr ""
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "Pintasan"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "Pilih lagu anda"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "Sumber lirik"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "Ditemui"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "Cari lagi item"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "Episod akan datang"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "Sembunyi butang menu utama profil Master"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "Suhu semasa"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "Kemaskini terakhir"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "Penyedia data"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "Perincian cereka"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "Ingatan digunakan:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "Nombor trek"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "Profil terpilih"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "Daftar masuk terakhir"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "Disiarkan"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "Pilihan senarai main"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "Dicipta"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "Resolusi"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "Ditambah baru-baru ini"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]Pemasa ditetapkan![/B] [COLOR=grey2] - Sistem dimatikan sendiri dalam tempoh[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "Klik butang untuk main[CR][CR]treler cereka"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "Perincian album"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "Jeda"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "Henti"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "Maju pantas"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "Undur"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "Menu cereka"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "Muat turun sari kata"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "Tonton menggunakan 2D"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "Ubah mod"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "Dibenarkan"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "Lalai Kulit"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Lalai kulit tanpa penutup"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Berasaskan Arial"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "Bantuan kali pertama..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "Tab ini menjelaskan terdapat menu di luar sisi tetingkap ini yang mengandungi pilihan tambahan untuk seksyen. Untuk mencapai menu, navigasi ke kiri dengan kawalan jauh atau papan kekunci atau letak penuding tetikus anda diatas tab. [CR][CR]Klik \"Ok\" untuk tutup dialog ini. Ia tidak akan muncul lagi."
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "Sarikata setempat tersedia"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "Daftar Masuk"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Pilih Profil pengguna Kodi anda[CR]untuk daftar masuk dan teruskan"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "Tunjuk atau sembunyi skrin daftar masuk ketika permulaan."
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "Pilih profil yang akan digunakan ketika permulaan bila skrin daftar masuk dilumpuhkan."
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]TETAPAN PEMAIN[/B][CR][CR]Konfigur tindakan yang digunakan semasa main balik · Konfigur bagaimana kandungan media dimainkan"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]TETAPAN PUSTAKA[/B][CR][CR]Konfigur bagaimana paparan pustaka/fail memaparkan kandungan ·  Konfigur bagaimana paparan/senarai pustaka dinavigasi · Konfigur pilihan pangkalan data media"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]TETAPAN PVR[/B][CR][CR]Konfigur bagaimana saluran & panduan diurus · Konfigur bagaimana TV Langsung dan rakaman diurus"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]TETAPAN TAMBAHAN[/B][CR][CR]Konfigur tambahan terpasang anda · Layar dan pasang tambahan dari Kodi.tv"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]TETAPAN PERKHIDMATAN[/B][CR][CR]Konfigur & urus perkhidmatan perkongsian media · Konfigur pelayan sesawang · Konfigur & urus perkhidmatan cuaca"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]TETAPAN SISTEM[/B][CR][CR]Konfigur paparan · Konfigur audio · Konfigur capaian internet · Konfigur penjimatan kuasa· Konfigur pengelogan"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]TETAPAN ANTARAMUKA[/B][CR][CR]Konfigur kulit · Konfigur wilayah · Konfigur kawalan · Konfigur penyelamat skrin · Konfigur kunci induk"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "Masa terjadual"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "Tambah kumpulan"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "Namakan semula kumpulan"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "Padam kumpulan"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "Kumpulan[CR]Tersedia"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "Kumpulan saluran"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "Pemasa ditetapkan"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "Pilihan saluran"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "Ramalan 36-jam"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "Ramalan sejam"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "Ramalan mingguan"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "Ramalan harian"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "Ramalan"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "Mendapatkan maklumat ramalan..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "Peta"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "CUACA"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "GAMBAR"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "TV"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "VIDEO"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "CEREKA"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "RANCANGAN TV"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "MUZIK"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "TAMBAHAN"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "MAIN CAKERA"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "SISTEM"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "RADIO"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "Anjak Masa"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "Pilih jenis pengenalpastian profil"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "Nama profil"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "Avatar profil"

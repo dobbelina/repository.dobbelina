@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">9000</defaultcontrol>
+	<controls>
+		<include>CommonBackground</include>
+		<control type="image">
+			<left>0</left>
+			<top>150r</top>
+			<width>1920</width>
+			<height>150</height>
+			<texture>floor.png</texture>
+			<animation effect="slide" start="0,15" end="0,0" time="150" condition="Window.Previous(Home)">WindowOpen</animation>
+			<animation effect="slide" start="0,0" end="0,15" time="150" condition="Window.Next(Home)">WindowClose</animation>
+		</control>
+		<control type="group">
+			<left>135</left>
+			<top>45</top>
+			<animation type="WindowOpen" reversible="false">
+				<effect type="zoom" start="80" end="100" center="960,540" easing="out" tween="back" time="225" />
+				<effect type="fade" start="0" end="100" time="225" />
+			</animation>
+			<animation type="WindowClose" reversible="false">
+				<effect type="zoom" start="100" end="80" center="960,540" easing="in" tween="back" time="225" />
+				<effect type="fade" start="100" end="0" time="225" />
+			</animation>
+			<control type="image">
+				<left>8</left>
+				<top>8</top>
+				<width>1635</width>
+				<height>945</height>
+				<texture border="15">ContentPanel.png</texture>
+			</control>
+			<control type="image">
+				<left>8</left>
+				<top>938</top>
+				<width>1635</width>
+				<height>96</height>
+				<texture border="15">ContentPanelMirror.png</texture>
+			</control>
+			<control type="button">
+				<description>Close Window button</description>
+				<left>1470</left>
+				<top>17</top>
+				<width>96</width>
+				<height>48</height>
+				<label />
+				<font />
+				<onclick>PreviousMenu</onclick>
+				<texturefocus>DialogCloseButton-focus.png</texturefocus>
+				<texturenofocus>DialogCloseButton.png</texturenofocus>
+				<onleft>1</onleft>
+				<onright>1</onright>
+				<onup>1</onup>
+				<ondown>1</ondown>
+				<visible>system.getbool(input.enablemouse)</visible>
+			</control>
+			<control type="image">
+				<description>LOGO</description>
+				<left>45</left>
+				<top>23</top>
+				<width>330</width>
+				<height>120</height>
+				<aspectratio>keep</aspectratio>
+				<texture>Confluence_Logo.png</texture>
+			</control>
+			<control type="list" id="9000">
+				<left>15</left>
+				<top>123</top>
+				<width>390</width>
+				<height>812</height>
+				<onleft>9000</onleft>
+				<onright>9001</onright>
+				<onup>9000</onup>
+				<ondown>9000</ondown>
+				<pagecontrol />
+				<scrolltime>300</scrolltime>
+				<itemlayout height="81" width="390">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>390</width>
+						<height>83</height>
+						<texture border="5">MenuItemNF.png</texture>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>360</width>
+						<height>83</height>
+						<font>font24_title</font>
+						<textcolor>grey3</textcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout height="81" width="390">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>390</width>
+						<height>83</height>
+						<texture border="5">MenuItemFO.png</texture>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>360</width>
+						<height>83</height>
+						<font>font24_title</font>
+						<textcolor>white</textcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+				</focusedlayout>
+				<content>
+					<item id="1">
+						<label>14200</label>
+						<label2>31430</label2>
+						<onclick>ActivateWindow(PlayerSettings)</onclick>
+						<icon />
+					</item>
+					<item id="2">
+						<label>14211</label>
+						<label2>31431</label2>
+						<onclick>ActivateWindow(MediaSettings)</onclick>
+						<icon />
+					</item>
+					<item id="8">
+						<label>15016</label>
+						<label2>31002</label2>
+						<onclick>ActivateWindow(GameSettings)</onclick>
+						<visible>System.GetBool(gamesgeneral.enable)</visible>
+						<icon />
+					</item>
+					<item id="3">
+						<label>14204</label>
+						<label2>31432</label2>
+						<onclick>ActivateWindow(PVRSettings)</onclick>
+						<icon>special://skin/backgrounds/tv.jpg</icon>
+					</item>
+					<item id="4">
+						<label>24001</label>
+						<label2>31433</label2>
+						<onclick>ActivateWindow(AddonBrowser)</onclick>
+						<icon />
+					</item>
+					<item id="5">
+						<label>14036</label>
+						<label2>31434</label2>
+						<onclick>ActivateWindow(ServiceSettings)</onclick>
+						<icon />
+					</item>
+					<item id="6">
+						<label>14206</label>
+						<label2>31436</label2>
+						<onclick>ActivateWindow(InterfaceSettings)</onclick>
+						<icon />
+					</item>
+					<item id="7">
+						<label>13000</label>
+						<label2>31435</label2>
+						<onclick>ActivateWindow(SystemSettings)</onclick>
+						<icon />
+					</item>
+				</content>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1206</width>
+				<height>75</height>
+				<texture border="5">black-back2.png</texture>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>15</top>
+				<width>1206</width>
+				<height>81</height>
+				<texture>dialogheader.png</texture>
+			</control>
+			<control type="label">
+				<description>header label</description>
+				<left>450</left>
+				<top>30</top>
+				<width>1110</width>
+				<height>45</height>
+				<font>font16</font>
+				<label>$LOCALIZE[31000] $LOCALIZE[5]</label>
+				<align>center</align>
+				<aligny>center</aligny>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+			</control>
+			<control type="image">
+				<left>405</left>
+				<top>90</top>
+				<width>1200</width>
+				<height>675</height>
+				<texture border="5">button-nofocus.png</texture>
+			</control>
+			<control type="image">
+				<left>408</left>
+				<top>93</top>
+				<width>1194</width>
+				<height>669</height>
+				<aspectratio>stretch</aspectratio>
+				<fadetime>600</fadetime>
+				<texture background="true">special://skin/backgrounds/settings.jpg</texture>
+			</control>
+			<control type="image">
+				<left>408</left>
+				<top>93</top>
+				<width>900</width>
+				<height>510</height>
+				<aspectratio>stretch</aspectratio>
+				<texture>GlassOverlay.png</texture>
+				<colordiffuse>AAFFFFFF</colordiffuse>
+			</control>
+			<control type="image">
+				<left>402</left>
+				<top>765</top>
+				<width>1206</width>
+				<height>177</height>
+				<texture border="5">black-back2.png</texture>
+			</control>
+			<control type="textbox">
+				<description>Appearance Description</description>
+				<left>450</left>
+				<top>783</top>
+				<width>1110</width>
+				<height>147</height>
+				<font>font12</font>
+				<label>$INFO[Container(9000).ListItem.Label2]</label>
+				<align>left</align>
+				<textcolor>white</textcolor>
+				<shadowcolor>black</shadowcolor>
+			</control>
+		</control>
+		<control type="group">
+			<depth>DepthFooter</depth>
+			<include>CommonNowPlaying</include>
+		</control>
+		<include>MainWindowMouseButtons</include>
+		<include>BehindDialogFadeOut</include>
+		<include content="CommonWindowHeader">
+			<param name="Icon" value="icon_system" />
+			<param name="Label" value="$LOCALIZE[5]" />
+		</include>
+	</controls>
+</window>

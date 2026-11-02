@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+	<include name="AddonInfoListView1">
+		<control type="group">
+			<visible>Control.IsVisible(550)</visible>
+			<include>VisibleFadeEffect</include>
+			<control type="list" id="550">
+				<left>105</left>
+				<top>117</top>
+				<width>870</width>
+				<height>842</height>
+				<onleft>2</onleft>
+				<onright>60</onright>
+				<onup>550</onup>
+				<ondown>550</ondown>
+				<viewtype label="$LOCALIZE[31033]">info</viewtype>
+				<visible>Window.IsVisible(AddonBrowser) | Container.Content(Addons)</visible>
+				<pagecontrol>60</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<itemlayout height="60" width="870">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>870</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemNF.png</texture>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>780</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>83</left>
+						<top>0</top>
+						<width>750</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$VAR[AddonLabel2]</label>
+					</control>
+				</itemlayout>
+				<focusedlayout height="60" width="870">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>870</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemNF.png</texture>
+						<visible>!Control.HasFocus(550)</visible>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>870</width>
+						<height>62</height>
+						<texture border="0,2,0,2">MenuItemFO.png</texture>
+						<visible>Control.HasFocus(550)</visible>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>555</left>
+						<top>8</top>
+						<width>300</width>
+						<height>47</height>
+						<texture border="0,0,14,0">MediaItemDetailBG.png</texture>
+						<visible>Control.HasFocus(550) + !String.IsEmpty(ListItem.Property(Addon.Status))</visible>
+					</control>
+					<control type="label">
+						<left>15</left>
+						<top>0</top>
+						<width>780</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label]</label>
+					</control>
+					<control type="label">
+						<left>83</left>
+						<top>0</top>
+						<width>750</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$VAR[AddonLabel2]</label>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>975</left>
+				<top>117</top>
+				<width>38</width>
+				<height>840</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>550</onleft>
+				<onright>2</onright>
+				<showonepage>false</showonepage>
+				<orientation>vertical</orientation>
+				<visible>Control.IsVisible(550)</visible>
+			</control>
+			<control type="group">
+				<left>1065</left>
+				<top>120</top>
+				<visible>Control.IsVisible(550)</visible>
+				<control type="label">
+					<description>Show Title txt</description>
+					<left>0</left>
+					<top>0</top>
+					<width>765</width>
+					<height>23</height>
+					<label>$INFO[ListItem.AddonName]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<wrapmultiline>true</wrapmultiline>
+				</control>
+				<control type="image">
+					<left>15</left>
+					<top>45</top>
+					<width>735</width>
+					<height>360</height>
+					<aspectratio>keep</aspectratio>
+					<fadetime>200</fadetime>
+					<texture background="true">$INFO[ListItem.Icon]</texture>
+					<bordertexture infill="false" border="8">ThumbShadow.png</bordertexture>
+					<bordersize>8</bordersize>
+				</control>
+				<control type="group">
+					<top>420</top>
+					<control type="label">
+						<description>Author txt</description>
+						<left>15</left>
+						<top>0</top>
+						<width>210</width>
+						<height>38</height>
+						<label>$LOCALIZE[21863]:</label>
+						<align>right</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<textcolor>blue</textcolor>
+					</control>
+					<control type="fadelabel">
+						<description>Author Value</description>
+						<left>240</left>
+						<top>0</top>
+						<width>525</width>
+						<height>38</height>
+						<label fallback="10005">$INFO[ListItem.AddonCreator]</label>
+						<align>left</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<scrollout>false</scrollout>
+						<pauseatend>1000</pauseatend>
+					</control>
+					<control type="label">
+						<description>Version txt</description>
+						<left>15</left>
+						<top>45</top>
+						<width>210</width>
+						<height>38</height>
+						<label>$LOCALIZE[24051]</label>
+						<align>right</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<textcolor>blue</textcolor>
+					</control>
+					<control type="label">
+						<description>Version Value</description>
+						<left>240</left>
+						<top>45</top>
+						<width>525</width>
+						<height>38</height>
+						<label fallback="10005">$INFO[ListItem.AddonVersion]</label>
+						<align>left</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<scroll>true</scroll>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>90</top>
+						<width>735</width>
+						<height>6</height>
+						<texture>separator.png</texture>
+					</control>
+					<control type="textbox">
+						<description>Description</description>
+						<left>15</left>
+						<top>101</top>
+						<width>735</width>
+						<height>320</height>
+						<font>font13</font>
+						<align>left</align>
+						<textcolor>white</textcolor>
+						<label>$INFO[ListItem.AddonDescription]</label>
+						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					</control>
+				</control>
+			</control>
+		</control>
+	</include>
+	<include name="AddonInfoThumbView1">
+		<control type="group">
+			<visible>Control.IsVisible(551)</visible>
+			<include>VisibleFadeEffect</include>
+			<control type="panel" id="551">
+				<left>105</left>
+				<top>117</top>
+				<width>1158</width>
+				<height>837</height>
+				<onleft>2</onleft>
+				<onright>60</onright>
+				<onup>551</onup>
+				<ondown>551</ondown>
+				<viewtype label="$LOCALIZE[31033] 2">biginfo</viewtype>
+				<visible>Window.IsVisible(AddonBrowser) | Container.Content(Addons)</visible>
+				<pagecontrol>60</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<itemlayout height="279" width="290">
+					<control type="image">
+						<left>1</left>
+						<top>0</top>
+						<width>287</width>
+						<height>240</height>
+						<bordertexture infill="false" border="5">button-nofocus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<fadetime>100</fadetime>
+						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+					<control type="image">
+						<left>1</left>
+						<top>0</top>
+						<width>287</width>
+						<height>240</height>
+						<bordertexture infill="false" border="5">button-nofocus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<fadetime>100</fadetime>
+						<colordiffuse>ff333333</colordiffuse>
+						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
+						<visible>!String.IsEmpty(ListItem.AddonBroken)</visible>
+					</control>
+					<control type="label">
+						<left>0</left>
+						<top>0</top>
+						<width>290</width>
+						<height>279</height>
+						<font>font13_title</font>
+						<textcolor>ffaa0000</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<selectedcolor>red</selectedcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<animation effect="rotate" start="0" end="45" center="auto" time="0" condition="true">Conditional</animation>
+						<label>24098</label>
+						<visible>!String.IsEmpty(ListItem.AddonBroken)</visible>
+					</control>
+					<control type="label">
+						<left>1</left>
+						<top>240</top>
+						<width>287</width>
+						<height>38</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<info>ListItem.Label</info>
+					</control>
+				</itemlayout>
+				<focusedlayout height="279" width="290">
+					<control type="image">
+						<left>1</left>
+						<top>0</top>
+						<width>287</width>
+						<height>240</height>
+						<bordertexture infill="false" border="5">folder-focus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<fadetime>100</fadetime>
+						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+					<control type="image">
+						<left>1</left>
+						<top>0</top>
+						<width>287</width>
+						<height>240</height>
+						<bordertexture infill="false" border="5">button-nofocus.png</bordertexture>
+						<bordersize>5</bordersize>
+						<fadetime>100</fadetime>
+						<colordiffuse>ff333333</colordiffuse>
+						<texture background="true">$INFO[Listitem.Icon]</texture>
+						<aspectratio>keep</aspectratio>
+						<visible>!String.IsEmpty(ListItem.AddonBroken)</visible>
+					</control>
+					<control type="label">
+						<left>0</left>
+						<top>0</top>
+						<width>290</width>
+						<height>279</height>
+						<font>font13_title</font>
+						<textcolor>ffaa0000</textcolor>
+						<shadowcolor>black</shadowcolor>
+						<selectedcolor>red</selectedcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<animation effect="rotate" start="0" end="45" center="auto" time="0" condition="true">Conditional</animation>
+						<label>24098</label>
+						<visible>!String.IsEmpty(ListItem.AddonBroken)</visible>
+					</control>
+					<control type="label">
+						<left>1</left>
+						<top>240</top>
+						<width>287</width>
+						<height>38</height>
+						<font>font12</font>
+						<textcolor>white</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>center</align>
+						<aligny>center</aligny>
+						<info>ListItem.Label</info>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="60">
+				<left>1275</left>
+				<top>117</top>
+				<width>38</width>
+				<height>840</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>551</onleft>
+				<onright>2</onright>
+				<showonepage>true</showonepage>
+				<orientation>vertical</orientation>
+				<visible>Control.IsVisible(551)</visible>
+			</control>
+			<control type="group">
+				<left>1365</left>
+				<top>135</top>
+				<visible>Control.IsVisible(551)</visible>
+				<control type="label">
+					<description>Show Title txt</description>
+					<left>15</left>
+					<top>0</top>
+					<width>435</width>
+					<height>23</height>
+					<label>$INFO[ListItem.AddonName]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font13_title</font>
+					<textcolor>white</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<wrapmultiline>true</wrapmultiline>
+				</control>
+				<control type="group">
+					<top>60</top>
+					<control type="label">
+						<description>Author txt</description>
+						<left>15</left>
+						<top>0</top>
+						<width>180</width>
+						<height>38</height>
+						<label>$LOCALIZE[21863]:</label>
+						<align>right</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<textcolor>blue</textcolor>
+					</control>
+					<control type="fadelabel">
+						<description>Author Value</description>
+						<left>210</left>
+						<top>0</top>
+						<width>233</width>
+						<height>38</height>
+						<label fallback="10005">$INFO[ListItem.AddonCreator]</label>
+						<align>left</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<scrollout>false</scrollout>
+						<pauseatend>1000</pauseatend>
+					</control>
+					<control type="label">
+						<description>Version txt</description>
+						<left>15</left>
+						<top>45</top>
+						<width>180</width>
+						<height>38</height>
+						<label>$LOCALIZE[24051]</label>
+						<align>right</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<textcolor>blue</textcolor>
+					</control>
+					<control type="label">
+						<description>Version Value</description>
+						<left>210</left>
+						<top>45</top>
+						<width>233</width>
+						<height>38</height>
+						<label fallback="10005">$INFO[ListItem.AddonVersion]</label>
+						<align>left</align>
+						<aligny>center</aligny>
+						<font>font13</font>
+						<scroll>true</scroll>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>105</top>
+						<width>435</width>
+						<height>6</height>
+						<texture>separator.png</texture>
+					</control>
+					<control type="textbox">
+						<description>Description</description>
+						<left>15</left>
+						<top>116</top>
+						<width>435</width>
+						<height>665</height>
+						<font>font13</font>
+						<align>left</align>
+						<textcolor>white</textcolor>
+						<label>$INFO[ListItem.AddonDescription]</label>
+						<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+					</control>
+				</control>
+			</control>
+		</control>
+	</include>
+</includes>

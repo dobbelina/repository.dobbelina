@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>2</defaultcontrol>
+	<controls>
+		<control type="group" id="13">
+			<left>195r</left>
+			<top>15</top>
+			<visible>!Skin.HasSetting(Show_SlideShow_Paused)</visible>
+			<control type="image">
+				<left>0</left>
+				<top>0</top>
+				<width>180</width>
+				<height>53</height>
+				<texture>black-back.png</texture>
+			</control>
+			<control type="label">
+				<description>paused label</description>
+				<left>15</left>
+				<top>0</top>
+				<width>150</width>
+				<height>53</height>
+				<align>center</align>
+				<aligny>center</aligny>
+				<font>font10</font>
+				<textcolor>white</textcolor>
+				<label>31043</label>
+			</control>
+		</control>
+		<!-- media infos -->
+		<control type="group">
+			<left>30</left>
+			<top>270r</top>
+			<visible>Player.ShowInfo + Player.HasMedia</visible>
+			<include>VisibleFadeEffect</include>
+			<include>SmallMusicInfo</include>
+		</control>
+		<control type="button">
+			<visible>SlideShow.IsVideo + [![Player.Playing + Player.HasVideo] | SlideShow.IsPaused]</visible>
+			<description>Video Play Button</description>
+			<left>810</left>
+			<top>390</top>
+			<width>300</width>
+			<height>300</height>
+			<font />
+			<onclick>play</onclick>
+			<texturefocus>arrow-big-right.png</texturefocus>
+			<texturenofocus>arrow-big-right.png</texturenofocus>
+		</control>
+	</controls>
+</window>

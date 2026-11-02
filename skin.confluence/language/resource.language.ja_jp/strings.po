@@ -1,0 +1,758 @@
+# Kodi Media Center language file
+# Addon Name: Confluence
+# Addon id: skin.confluence
+# Addon Provider: Jezz_X, Team Kodi
+msgid ""
+msgstr ""
+"Project-Id-Version: KODI Main\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2024-04-12 17:30+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Japanese <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-confluence/ja_jp/>\n"
+"Language: ja_jp\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.4.3\n"
+
+msgctxt "Addon Summary"
+msgid "Confluence skin by Jezz_X."
+msgstr "Confluenceスキン by Jezz_X."
+
+msgctxt "Addon Description"
+msgid "Confluence is a combination of concepts from many popular skins, and attempts to embrace and integrate their good ideas into a skin that should be easy for first time Kodi users to understand and use."
+msgstr "Confluenceは、さまざまな人気のあるスキンのコンセプトを組み合わせ、ユーザが初めて Kodi に触れる際、使い勝手が良いようにアイデアを盛り込み、簡単で分かり易くユーザーが使用できるようにしてあります。"
+
+msgctxt "#31000"
+msgid "Change your"
+msgstr "Kodi"
+
+msgctxt "#31001"
+msgid "GAMES"
+msgstr "ゲーム"
+
+msgctxt "#31002"
+msgid ""
+"[B]GAME SETTINGS[/B][CR][CR]Configure rewind support & options ·  Configure "
+"keyboard use and number of keyboard players"
+msgstr "[B]ゲームの設定[/B][CR][CR]巻き戻しサポートとオプションの設定 · キーボードの使用とキーボードプレイヤー数の設定"
+
+msgctxt "#31003"
+msgid "Power options"
+msgstr "電源オプション"
+
+msgctxt "#31004"
+msgid "Working..."
+msgstr "処理中..."
+
+msgctxt "#31005"
+msgid "Hide information"
+msgstr "情報を隠す"
+
+msgctxt "#31006"
+msgid "View options"
+msgstr "表示オプション"
+
+msgctxt "#31007"
+msgid "Video process information"
+msgstr "ビデオプロセス情報"
+
+msgctxt "#31008"
+msgid "Full screen"
+msgstr "フルスクリーン"
+
+msgctxt "#31009"
+msgid "Total duration"
+msgstr "総時間"
+
+msgctxt "#31010"
+msgid "Hardware decoding"
+msgstr "ハードウェア デコーディング"
+
+msgctxt "#31011"
+msgid "Inactive"
+msgstr "非アクティブ"
+
+msgctxt "#31012"
+msgid "Decoder"
+msgstr "デコーダー"
+
+msgctxt "#31013"
+msgid "Audio process information"
+msgstr "オーディオプロセス情報"
+
+msgctxt "#31014"
+msgid "Memory used"
+msgstr "メモリ使用量"
+
+msgctxt "#31015"
+msgid "Minute"
+msgstr "分"
+
+msgctxt "#31016"
+msgid "Elapsed time"
+msgstr "経過時間"
+
+msgctxt "#31017"
+msgid "Unavailable"
+msgstr "利用不可"
+
+msgctxt "#31018"
+msgid "Set default startup item"
+msgstr ""
+
+msgctxt "#31019"
+msgid "Press 'Up' to set this item as default"
+msgstr ""
+
+msgctxt "#31020"
+msgid "Game saves"
+msgstr ""
+
+msgctxt "#31021"
+msgid "Movie title format"
+msgstr ""
+
+# empty strings from id 31018 to 31021
+msgctxt "#31022"
+msgid "Play speed"
+msgstr "再生速度"
+
+msgctxt "#31023"
+msgid "Playing"
+msgstr "再生中"
+
+msgctxt "#31024"
+msgid "Page"
+msgstr "ページ"
+
+msgctxt "#31025"
+msgid "Items"
+msgstr "アイテム"
+
+msgctxt "#31026"
+msgid "Misc options"
+msgstr "その他オプション"
+
+msgctxt "#31027"
+msgid "Location"
+msgstr "地域"
+
+msgctxt "#31028"
+msgid "Poster wrap"
+msgstr "ポスターラップ"
+
+msgctxt "#31029"
+msgid "Fanart"
+msgstr "ファンアート"
+
+msgctxt "#31030"
+msgid "No changes"
+msgstr ""
+
+msgctxt "#31031"
+msgid "Pic thumbs"
+msgstr "写真サムネイル"
+
+msgctxt "#31032"
+msgid "Image wrap"
+msgstr "イメージラップ"
+
+msgctxt "#31033"
+msgid "Info"
+msgstr "インフォ"
+
+msgctxt "#31034"
+msgid "Original title (Localised title)"
+msgstr ""
+
+msgctxt "#31035"
+msgid "Localised title (Original title)"
+msgstr ""
+
+msgctxt "#31036"
+msgid "Just Original title"
+msgstr ""
+
+msgctxt "#31037"
+msgid "Select + X"
+msgstr ""
+
+msgctxt "#31038"
+msgid "Select + Start"
+msgstr ""
+
+msgctxt "#31039"
+msgid "Actions"
+msgstr "アクション"
+
+msgctxt "#31040"
+msgid "Now playing"
+msgstr "再生中"
+
+msgctxt "#31041"
+msgid "Select + Right Stick"
+msgstr ""
+
+msgctxt "#31042"
+msgid "PLAYING"
+msgstr "再生中"
+
+msgctxt "#31043"
+msgid "PAUSED"
+msgstr "静止中"
+
+msgctxt "#31044"
+msgid "FAST FORWARD"
+msgstr "早送り"
+
+msgctxt "#31045"
+msgid "REWIND"
+msgstr "巻戻し"
+
+msgctxt "#31046"
+msgid "SEEKING"
+msgstr "シーク中"
+
+msgctxt "#31048"
+msgid "Visualisation presets"
+msgstr "ビジュアライザープリセット"
+
+msgctxt "#31049"
+msgid "End time"
+msgstr "終了時刻"
+
+msgctxt "#31050"
+msgid "Sort: Ascending"
+msgstr "ソート: 昇順"
+
+msgctxt "#31051"
+msgid "Sort: Descending"
+msgstr "ソート: 降順"
+
+msgctxt "#31055"
+msgid "Open playlist"
+msgstr "プレイリストを開く"
+
+msgctxt "#31056"
+msgid "Save playlist"
+msgstr "プレイリストを保存"
+
+msgctxt "#31057"
+msgid "Close playlist"
+msgstr "プレイリストを閉じる"
+
+msgctxt "#31058"
+msgid "System music files"
+msgstr "システム音楽ファイル"
+
+msgctxt "#31059"
+msgid "Current playlist"
+msgstr "現在のプレイリスト"
+
+msgctxt "#31061"
+msgid "Current selected"
+msgstr "現在選択中"
+
+msgctxt "#31101"
+msgid "Home screen options"
+msgstr "ホーム画面オプション"
+
+msgctxt "#31102"
+msgid "Background"
+msgstr "背景"
+
+msgctxt "#31103"
+msgid "Show \"Paused\" in picture slideshow"
+msgstr "ピクチャスライドショーで「停止中」と表示"
+
+msgctxt "#31104"
+msgid ""
+"Play trailers in a window [COLOR=grey3](Video information dialogue only)[/"
+"COLOR]"
+msgstr "ウィンドウ内で予告を再生 [COLOR=grey3](ビデオ情報ダイアログのみ)[/COLOR]"
+
+msgctxt "#31106"
+msgid "Miscellaneous options"
+msgstr "その他の設定"
+
+msgctxt "#31107"
+msgid ""
+"Hide flagging read from video filenames [COLOR=grey3](e.g. Blu-ray, HD-DVD)[/"
+"COLOR]"
+msgstr "ビデオファイル名から読み取りフラグを隠す [COLOR=grey3](Blu-ray, HD-DVD等)[/COLOR]"
+
+msgctxt "#31108"
+msgid "Hide main menu buttons"
+msgstr "「メインメニュー」ボタンを隠す"
+
+msgctxt "#31109"
+msgid "Enable custom background"
+msgstr "カスタムの背景を有効にする"
+
+msgctxt "#31110"
+msgid "Background path:"
+msgstr "背景のパス："
+
+msgctxt "#31111"
+msgid "Hide"
+msgstr "隠す"
+
+msgctxt "#31112"
+msgid "Options"
+msgstr "オプション"
+
+msgctxt "#31113"
+msgid "Background path Master:"
+msgstr "マスター用の背景のパス:"
+
+msgctxt "#31114"
+msgid "System"
+msgstr "システム"
+
+msgctxt "#31115"
+msgid "Main button playlists"
+msgstr "メインボタンプレイリスト"
+
+msgctxt "#31116"
+msgid "Show recently added albums"
+msgstr "最近追加されたアルバムを表示"
+
+msgctxt "#31117"
+msgid "Show recently added videos"
+msgstr "最近追加されたビデオを表示"
+
+#. In main language strings its used as submenu
+msgctxt "#31118"
+msgid "Home page \"Add-ons\" submenu"
+msgstr "ホーム画面\"アドオン\"のサブメニュー"
+
+msgctxt "#31119"
+msgid "Hide background fanart"
+msgstr "背景のファンアートを隠す"
+
+#. In main language strings its used as submenu
+msgctxt "#31120"
+msgid "Home page \"Games\" submenu"
+msgstr "ホーム画面\"ゲーム\"のサブメニュー"
+
+#. Boolean settings value
+msgctxt "#31122"
+msgid "Hide EPG if RDS is present on channel window"
+msgstr "チャンネルウインドウ上にRDSがある場合はEPGを隠す"
+
+msgctxt "#31124"
+msgid "Show background \"Now playing\" video"
+msgstr "背景に再生中のビデオを表示"
+
+msgctxt "#31125"
+msgid "Show background \"Now playing\" visualisation"
+msgstr "背景に再生中のビジュアライゼーションを表示"
+
+msgctxt "#31126"
+msgid "Show posters instead of thumbs for musicvideos"
+msgstr "ミュージックビデオのサムネイルの代わりにポスターを表示する"
+
+msgctxt "#31128"
+msgid "Lyrics"
+msgstr "歌詞"
+
+msgctxt "#31129"
+msgid "Hide fanart in full screen visualisation"
+msgstr "フルスクリーンビジュアライゼーションではファンアートを非表示"
+
+msgctxt "#31132"
+msgid "Lyrics add-on"
+msgstr "歌詞アドオン"
+
+#. In main language strings its used as submenu
+msgctxt "#31134"
+msgid "Home page \"Videos\" submenu"
+msgstr "ホーム画面「ビデオ」のサブメニュー"
+
+msgctxt "#31135"
+msgid "Home page \"Music\" submenu"
+msgstr "ホーム画面「ミュージック」のサブメニュー"
+
+msgctxt "#31136"
+msgid "Home page \"Pictures\" submenu"
+msgstr "ホーム画面「ピクチャ」のサブメニュー"
+
+msgctxt "#31140"
+msgid "Music OSD"
+msgstr "ミュージック OSD"
+
+msgctxt "#31142"
+msgid "Settings level"
+msgstr "設定レベル"
+
+msgctxt "#31143"
+msgid "Use"
+msgstr "使用"
+
+msgctxt "#31144"
+msgid "playlist"
+msgstr "プレイリスト"
+
+msgctxt "#31145"
+msgid "playlist path"
+msgstr "プレイリストのパス"
+
+msgctxt "#31146"
+msgid "Hide home screen buttons"
+msgstr "ホーム画面のボタンを非表示にする"
+
+msgctxt "#31147"
+msgid "Hide - Favourites"
+msgstr "非表示 - お気に入り"
+
+msgctxt "#31148"
+msgid "Hide - Search"
+msgstr "非表示 - 検索"
+
+msgctxt "#31200"
+msgid "Shortcuts"
+msgstr "ショートカット"
+
+msgctxt "#31203"
+msgid "Choose your song"
+msgstr "曲を選択"
+
+msgctxt "#31205"
+msgid "Lyrics source"
+msgstr "歌詞ソース"
+
+msgctxt "#31206"
+msgid "Found"
+msgstr "見つかりました"
+
+msgctxt "#31207"
+msgid "Find more items"
+msgstr "もっと見つける"
+
+msgctxt "#31208"
+msgid "Upcoming episodes"
+msgstr "今後のエピソード"
+
+msgctxt "#31209"
+msgid "Hide Master profile main menu buttons"
+msgstr "\"マスタープロファイル\"をメインメニューのボタンから隠す"
+
+msgctxt "#31300"
+msgid "Current temperature"
+msgstr "現在の気温"
+
+msgctxt "#31301"
+msgid "Last updated"
+msgstr "最終更新"
+
+msgctxt "#31303"
+msgid "Data provider"
+msgstr "データの提供元"
+
+msgctxt "#31308"
+msgid "Movie details"
+msgstr "映画の詳細"
+
+msgctxt "#31309"
+msgid "Memory used:"
+msgstr "メモリ使用量:"
+
+msgctxt "#31310"
+msgid "Track number"
+msgstr "トラック番号"
+
+msgctxt "#31319"
+msgid "Selected profile"
+msgstr "選択中のプロファイル"
+
+msgctxt "#31320"
+msgid "Last logged in"
+msgstr "最終ログイン"
+
+msgctxt "#31322"
+msgid "Aired"
+msgstr "放映日"
+
+msgctxt "#31325"
+msgid "Playlist options"
+msgstr "プレイリストオプション"
+
+msgctxt "#31326"
+msgid "Created"
+msgstr "制作日"
+
+msgctxt "#31327"
+msgid "Resolution"
+msgstr "解像度"
+
+msgctxt "#31328"
+msgid "Recently added"
+msgstr "最近追加"
+
+msgctxt "#31329"
+msgid "[B]Timer set![/B] [COLOR=grey2] - System auto shutdown in[/COLOR]"
+msgstr "[B]タイマーセット完了![/B] [COLOR=grey2] - システムがシャットダウンします[/COLOR]"
+
+msgctxt "#31330"
+msgid "Click button to play[CR][CR]movie trailer"
+msgstr "ボタンを押して再生[CR][CR]映画予告編"
+
+msgctxt "#31331"
+msgid "Album details"
+msgstr "アルバム詳細"
+
+msgctxt "#31351"
+msgid "Pause"
+msgstr "一時停止"
+
+msgctxt "#31352"
+msgid "Stop"
+msgstr "停止"
+
+msgctxt "#31353"
+msgid "Fast forward"
+msgstr "早送り"
+
+msgctxt "#31354"
+msgid "Rewind"
+msgstr "巻き戻し"
+
+msgctxt "#31355"
+msgid "Movie menu"
+msgstr "ムービーメニュー"
+
+msgctxt "#31356"
+msgid "Download subtitles"
+msgstr "字幕をダウンロード"
+
+msgctxt "#31360"
+msgid "Watch as 2D"
+msgstr "2D で観る"
+
+msgctxt "#31361"
+msgid "Change mode"
+msgstr "モードを変更"
+
+msgctxt "#31362"
+msgid "Enabled"
+msgstr "LCD有効"
+
+msgctxt "#31390"
+msgid "Skin default"
+msgstr "スキンデフォルト"
+
+msgctxt "#31391"
+msgid "Skin default with no caps"
+msgstr "Skin default with no caps"
+
+msgctxt "#31392"
+msgid "Arial based"
+msgstr "Arial based"
+
+msgctxt "#31411"
+msgid "First run help..."
+msgstr "初回起動時のヘルプ..."
+
+msgctxt "#31412"
+msgid ""
+"This tab signifies that there is a menu off to the side of this window that "
+"contains extra options for this section. To access the menu, navigate to the "
+"left with your remote control or keyboard or place your mouse pointer over "
+"the tab. [CR][CR]Click \"OK\" to close this dialogue. It will not appear "
+"again."
+msgstr "このタブはウィンドウの端に追加オプションメニューがある事を示しています。このメニューにアクセスするには、リモコンやキーボードで左端に移動するか、マウスポインターをタブの上にのせます。[CR][CR]このダイアログを閉じるには、「OK」を選択してください。このメッセージは再び表示されません。"
+
+msgctxt "#31413"
+msgid "Local subtitle available"
+msgstr "ローカルの字幕が利用可能"
+
+msgctxt "#31420"
+msgid "Login"
+msgstr "ログイン"
+
+msgctxt "#31421"
+msgid "Select your Kodi user profile[CR]to login and continue"
+msgstr "Kodi ユーザープロファイルを選択して[CR]ログインしてください"
+
+msgctxt "#31422"
+msgid "Show or hide the login screen at startup."
+msgstr "起動時にログイン画面を表示または非表示にする。"
+
+msgctxt "#31423"
+msgid ""
+"Select the profile that will be used at startup when the login screen is "
+"disabled."
+msgstr "ログイン画面が無効になっている状態の時、起動時に使用されるプロファイルを選択してください。"
+
+msgctxt "#31430"
+msgid ""
+"[B]PLAYER SETTINGS[/B][CR][CR]Configure actions that can be used during "
+"playback · Configure how media content is played"
+msgstr "[B]プレイヤー設定[/B][CR][CR]再生時に使用できるアクションを設定・メディアコンテンツを再生する方法を設定"
+
+msgctxt "#31431"
+msgid ""
+"[B]LIBRARY SETTINGS[/B][CR][CR]Configure how the library/file views display "
+"media content ·  Configure how library lists/views are navigated · Configure "
+"the media database options"
+msgstr "[B]ライブラリ設定[/B][CR][CR]ライブラリ/ファイルやメディアコンテンツの設定・ライブラリの表示に関する設定・メディアデータベースの設定"
+
+msgctxt "#31432"
+msgid ""
+"[B]PVR SETTINGS[/B][CR][CR]Configure how the channels & guide are managed  · "
+"Configure how Live TV and recordings are managed"
+msgstr "[B]PVR設定[/B][CR][CR]チャンネルや番組表の管理設定・Live TVや録画番組の管理設定"
+
+msgctxt "#31433"
+msgid ""
+"[B]ADD-ONS SETTINGS[/B][CR][CR]Configure your installed add-ons · Browse for "
+"and install add-ons from kodi.tv"
+msgstr "[B]アドオン設定[/B][CR][CR]インストール済のアドオン設定・kodi.tvからアドオンのブラウズやインストール"
+
+msgctxt "#31434"
+msgid ""
+"[B]SERVICES SETTINGS[/B][CR][CR]Configure & manage media sharing services · "
+"Configure web server · Configure & manage the weather service"
+msgstr "[B]サービス設定[/B][CR][CR]メディア共有サービスの管理と設定・Webサーバー設定・天気サービスの管理と設定"
+
+msgctxt "#31435"
+msgid ""
+"[B]SYSTEM SETTINGS[/B][CR][CR]Configure display · Configure audio · "
+"Configure internet access · Configure power saving· Configure logging"
+msgstr "[B]システム設定[/B][CR][CR]ディスプレイ設定・オーディオ設定・インターネットアクセス設定・省電力設定・ログイン設定"
+
+msgctxt "#31436"
+msgid ""
+"[B]INTERFACE SETTINGS[/B][CR][CR]Configure skin · Configure region · "
+"Configure control · Configure screensaver · Configure master lock"
+msgstr "[B]インターフェース設定[/B][CR][CR]スキン設定・地域設定・コントロール設定・スクリーンセーバー設定・マスターロック設定"
+
+msgctxt "#31501"
+msgid "Scheduled time"
+msgstr "スケジュール時刻"
+
+msgctxt "#31502"
+msgid "TV"
+msgstr "テレビ"
+
+msgctxt "#31503"
+msgid "Add group"
+msgstr "グループの追加"
+
+msgctxt "#31504"
+msgid "Rename group"
+msgstr "グループの名称変更"
+
+msgctxt "#31505"
+msgid "Delete group"
+msgstr "グループの削除"
+
+msgctxt "#31506"
+msgid "Available[CR]Groups"
+msgstr "利用可能な[CR]グループ"
+
+msgctxt "#31509"
+msgid "Channel group"
+msgstr "チャンネルグループ"
+
+msgctxt "#31510"
+msgid "Timer set"
+msgstr "タイマーの設定"
+
+msgctxt "#31511"
+msgid "Channel options"
+msgstr "チャンネルオプション"
+
+msgctxt "#31901"
+msgid "36-hour forecast"
+msgstr "36時間予報"
+
+msgctxt "#31902"
+msgid "Hourly forecast"
+msgstr "1時間ごとの予報"
+
+msgctxt "#31903"
+msgid "Weekend forecast"
+msgstr "週末の予報"
+
+msgctxt "#31904"
+msgid "Daily forecast"
+msgstr "1日ごとの予報"
+
+msgctxt "#31905"
+msgid "Forecast"
+msgstr "予報"
+
+msgctxt "#31909"
+msgid "Fetching forecast info..."
+msgstr "天気予報データ取得中..."
+
+msgctxt "#31910"
+msgid "Maps"
+msgstr "マップ"
+
+msgctxt "#31950"
+msgid "WEATHER"
+msgstr "天気"
+
+msgctxt "#31951"
+msgid "PICTURES"
+msgstr "ピクチャ"
+
+msgctxt "#31952"
+msgid "TV"
+msgstr "テレビ"
+
+msgctxt "#31953"
+msgid "VIDEOS"
+msgstr "ビデオ"
+
+msgctxt "#31954"
+msgid "MOVIES"
+msgstr "映画"
+
+msgctxt "#31955"
+msgid "TV SHOWS"
+msgstr "テレビ番組"
+
+msgctxt "#31956"
+msgid "MUSIC"
+msgstr "ミュージック"
+
+msgctxt "#31957"
+msgid "ADD-ONS"
+msgstr "アドオン"
+
+msgctxt "#31958"
+msgid "PLAY DISC"
+msgstr "ディスク再生"
+
+msgctxt "#31959"
+msgid "SYSTEM"
+msgstr "システム"
+
+msgctxt "#31960"
+msgid "RADIO"
+msgstr "ラジオ"
+
+msgctxt "#31961"
+msgid "Timeshift"
+msgstr "タイムシフト"
+
+#. Choose profile identifier
+msgctxt "#31962"
+msgid "Choose kind of profile identification"
+msgstr "プロファイルの確認と種類を選択"
+
+#. Label for the kind of profile identification
+msgctxt "#31963"
+msgid "Profile name"
+msgstr "プロファイル名"
+
+#. Label for the kind of profile identification
+msgctxt "#31964"
+msgid "Profile avatar"
+msgstr "プロファイルのアバター"

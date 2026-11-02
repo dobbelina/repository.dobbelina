@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol always="true">50</defaultcontrol>
+	<menucontrol>9000</menucontrol>
+	<views>50</views>
+	<controls>
+		<include>CommonBackground</include>
+		<control type="image">
+			<left>0</left>
+			<top>150r</top>
+			<width>1920</width>
+			<height>150</height>
+			<texture>floor.png</texture>
+			<animation effect="fade" time="200" condition="Window.Previous(Home)">WindowOpen</animation>
+			<animation effect="fade" time="200" condition="Window.Next(Home)">WindowClose</animation>
+		</control>
+		<control type="group">
+			<include>Window_OpenClose_Animation</include>
+			<control type="group">
+				<include>VisibleFadeEffect</include>
+				<visible>Control.IsVisible(50)</visible>
+				<control type="image">
+					<left>75</left>
+					<top>90</top>
+					<width>1260</width>
+					<height>900</height>
+					<texture border="15">ContentPanel.png</texture>
+				</control>
+				<control type="image">
+					<left>75</left>
+					<top>978</top>
+					<width>1260</width>
+					<height>96</height>
+					<texture border="15">ContentPanelMirror.png</texture>
+				</control>
+				<control type="image">
+					<left>1350</left>
+					<top>90</top>
+					<width>495</width>
+					<height>900</height>
+					<texture border="15">ContentPanel.png</texture>
+				</control>
+				<control type="image">
+					<left>1350</left>
+					<top>978</top>
+					<width>495</width>
+					<height>96</height>
+					<texture border="15">ContentPanelMirror.png</texture>
+				</control>
+			</control>
+		</control>
+		<include>MainWindowMouseButtons</include>
+		<include>PVRHeader</include>
+		<control type="group">
+			<include>Window_OpenClose_Animation</include>
+			<description>Recordings group</description>
+			<visible>Control.IsVisible(50)</visible>
+			<include>VisibleFadeEffect</include>
+			<control type="list" id="50">
+				<left>105</left>
+				<top>113</top>
+				<width>1140</width>
+				<height>842</height>
+				<onleft>102</onleft>
+				<onright>72</onright>
+				<onup>50</onup>
+				<ondown>50</ondown>
+				<viewtype label="535">list</viewtype>
+				<pagecontrol>72</pagecontrol>
+				<scrolltime>200</scrolltime>
+				<itemlayout height="60" width="1140">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="2">MenuItemNF.png</texture>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>15</left>
+						<top>8</top>
+						<width>45</width>
+						<height>45</height>
+						<texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.ActualIcon]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+					<control type="label">
+						<left>75</left>
+						<top>0</top>
+						<width>908</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label,, ]$INFO[ListItem.EpisodeName,(,) ]$INFO[Listitem.Season,,.]$INFO[Listitem.Episode]</label>
+					</control>
+					<control type="label">
+						<left>338</left>
+						<top>0</top>
+						<width>750</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Date]</label>
+					</control>
+					<control type="image">
+						<left>1095</left>
+						<top>21</top>
+						<width>24</width>
+						<height>24</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<left>1095</left>
+						<top>21</top>
+						<width>30</width>
+						<height>24</height>
+						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+				</itemlayout>
+				<focusedlayout height="60" width="1140">
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="2">MenuItemFO.png</texture>
+						<visible>Control.HasFocus(50)</visible>
+						<include>VisibleFadeEffect</include>
+					</control>
+					<control type="image">
+						<left>0</left>
+						<top>0</top>
+						<width>1140</width>
+						<height>62</height>
+						<texture border="2">MenuItemNF.png</texture>
+						<include>VisibleFadeEffect</include>
+						<visible>!Control.HasFocus(50)</visible>
+					</control>
+					<control type="image">
+						<left>840</left>
+						<top>8</top>
+						<width>300</width>
+						<height>47</height>
+						<texture border="0,0,14,0">MediaItemDetailBG.png</texture>
+						<visible>Control.HasFocus(50) + !String.IsEmpty(ListItem.Date)</visible>
+					</control>
+					<control type="image">
+						<left>15</left>
+						<top>8</top>
+						<width>45</width>
+						<height>45</height>
+						<texture background="true" fallback="DefaultVideoCover.png">$INFO[ListItem.ActualIcon]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+					<control type="label">
+						<left>75</left>
+						<top>0</top>
+						<width>945</width>
+						<height>60</height>
+						<font>font13</font>
+						<textcolor>white</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>left</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Label,, ]$INFO[ListItem.EpisodeName,(,) ]$INFO[Listitem.Season,,.]$INFO[Listitem.Episode]</label>
+					</control>
+					<control type="label">
+						<left>338</left>
+						<top>0</top>
+						<width>750</width>
+						<height>60</height>
+						<font>font12</font>
+						<textcolor>grey2</textcolor>
+						<selectedcolor>selected</selectedcolor>
+						<align>right</align>
+						<aligny>center</aligny>
+						<label>$INFO[ListItem.Date]</label>
+					</control>
+					<control type="image">
+						<left>1095</left>
+						<top>21</top>
+						<width>24</width>
+						<height>24</height>
+						<texture>OverlayWatching.png</texture>
+						<visible>ListItem.IsResumable</visible>
+					</control>
+					<control type="image">
+						<left>1095</left>
+						<top>21</top>
+						<width>30</width>
+						<height>24</height>
+						<texture>$INFO[ListItem.Overlay]</texture>
+						<aspectratio>keep</aspectratio>
+					</control>
+				</focusedlayout>
+			</control>
+			<control type="scrollbar" id="72">
+				<left>1275</left>
+				<top>117</top>
+				<width>38</width>
+				<height>840</height>
+				<texturesliderbackground border="0,28,0,28">ScrollBarV.png</texturesliderbackground>
+				<texturesliderbar border="0,28,0,28">ScrollBarV_bar.png</texturesliderbar>
+				<texturesliderbarfocus border="0,28,0,28">ScrollBarV_bar_focus.png</texturesliderbarfocus>
+				<textureslidernib>ScrollBarNib.png</textureslidernib>
+				<textureslidernibfocus>ScrollBarNib.png</textureslidernibfocus>
+				<onleft>50</onleft>
+				<onright>102</onright>
+				<showonepage>false</showonepage>
+				<orientation>vertical</orientation>
+			</control>
+			<control type="label">
+				<depth>DepthFooter</depth>
+				<animation effect="slide" start="0,0" end="-135,0" time="0" condition="system.getbool(input.enablemouse)">Conditional</animation>
+				<description>Page Count Label</description>
+				<right>60</right>
+				<top>80r</top>
+				<width>750</width>
+				<height>30</height>
+				<font>font12</font>
+				<textcolor>grey</textcolor>
+				<scroll>false</scroll>
+				<align>right</align>
+				<aligny>center</aligny>
+				<label>([COLOR=blue]$INFO[Container(50).NumItems][/COLOR]) $LOCALIZE[19163] - $LOCALIZE[31024] ([COLOR=blue]$INFO[Container(50).CurrentPage]/$INFO[Container(50).NumPages][/COLOR])</label>
+				<include>Window_OpenClose_Animation</include>
+			</control>
+			<control type="group">
+				<left>1365</left>
+				<top>120</top>
+				<control type="fadelabel">
+					<left>15</left>
+					<top>0</top>
+					<width>435</width>
+					<height>38</height>
+					<label>$INFO[Container(50).ListItem.Title]$INFO[ListItem.EpisodeName, (,)]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<font>font13</font>
+					<textcolor>blue</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<scrollout>false</scrollout>
+					<pauseatend>1000</pauseatend>
+				</control>
+				<control type="textbox">
+					<description>Description Value for TV Show</description>
+					<left>15</left>
+					<top>60</top>
+					<width>435</width>
+					<height>683</height>
+					<font>font13</font>
+					<align>justify</align>
+					<textcolor>white</textcolor>
+					<label>$INFO[Container(50).ListItem.Plot]</label>
+					<autoscroll time="2000" delay="3000" repeat="5000">Skin.HasSetting(AutoScroll)</autoscroll>
+				</control>
+				<control type="label">
+					<description>Disk usage text</description>
+					<left>15</left>
+					<top>788</top>
+					<width>435</width>
+					<height>30</height>
+					<label>$INFO[PVR.backenddiskspace]</label>
+					<align>center</align>
+					<aligny>center</aligny>
+					<textcolor>grey</textcolor>
+					<shadowcolor>black</shadowcolor>
+					<font>font12</font>
+					<visible>!Integer.IsGreater(PVR.backenddiskspaceprogr,100)</visible>
+				</control>
+				<control type="progress">
+					<description>Disk usage bar</description>
+					<left>15</left>
+					<top>822</top>
+					<width>435</width>
+					<height>18</height>
+					<info>PVR.backenddiskspaceprogr</info>
+					<visible>!Integer.IsGreater(PVR.backenddiskspaceprogr,100)</visible>
+				</control>
+			</control>
+		</control>
+		<control type="group">
+			<depth>DepthFooter</depth>
+			<include>CommonNowPlaying</include>
+		</control>
+		<include>BehindDialogFadeOut</include>
+		<include>ScrollOffsetLabel</include>
+		<control type="image">
+			<left>0</left>
+			<top>0</top>
+			<width>1920</width>
+			<height>1080</height>
+			<texture>black-back.png</texture>
+			<animation effect="fade" time="300">Visible</animation>
+			<animation effect="fade" time="150">Hidden</animation>
+			<visible>Window.IsActive(FileBrowser) | Window.IsActive(PVRGuideInfo) | Window.IsActive(PVRRecordingInfo) | Window.IsActive(PVRTimerSetting) | Window.IsActive(PVRGroupManager) | Window.IsActive(PVRGuideSearch)</visible>
+		</control>
+		<include>PVRSideBlade</include>
+	</controls>
+</window>
