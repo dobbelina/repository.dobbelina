@@ -83,30 +83,61 @@
 	
 <variable name="VideoPlayerAudioCodecTexture">
 
-    <!-- AAC -->
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_lc)">flagging/audio/aac.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac)">flagging/audio/aac.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac_v2)">flagging/audio/aac.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ssr)">flagging/audio/aac.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ltp)">flagging/audio/aac.png</value>
+	<!-- AAC -->
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_lc)">flagging/audio/aac.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac)">flagging/audio/aac.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,he_aac_v2)">flagging/audio/aac.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ssr)">flagging/audio/aac.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,aac_ltp)">flagging/audio/aac.png</value>
 
-    <!-- DTS -->
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_96_24)">flagging/audio/dts.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_es)">flagging/audio/dts.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_express)">flagging/audio/dts.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x)">flagging/audio/dtshd_ma.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x_imax)">flagging/audio/dtshd_ma.png</value>
+	<!-- DTS -->
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_96_24)">flagging/audio/dts.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_es)">flagging/audio/dts.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,dts_express)">flagging/audio/dts.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x)">flagging/audio/dtshd_ma.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,dtshd_ma_x_imax)">flagging/audio/dtshd_ma.png</value>
 
-    <!-- Dolby -->
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3_ddp_atmos)">flagging/audio/eac3.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,truehd_atmos)">flagging/audio/truehd.png</value>
+	<!-- Dolby -->
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3_ddp_atmos)">flagging/audio/eac3.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,truehd_atmos)">flagging/audio/truehd.png</value>
 
-    <!-- PCM -->
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_s16be)">flagging/audio/pcm.png</value>
-    <value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_u8)">flagging/audio/pcm.png</value>
+	<!-- PCM -->
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_s16be)">flagging/audio/pcm.png</value>
+	<value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_u8)">flagging/audio/pcm.png</value>
 
-    <!-- All original codec filenames -->
-    <value>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</value>
+	<!-- All original codec filenames -->
+	<value>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</value>
+
+</variable>
+
+<variable name="VideoPlayerVideoCodecTexture">
+
+	<!-- MPEG-1 and MPEG-2 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpeg1)">flagging/video/mpeg1video.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpeg2)">flagging/video/mpeg2video.png</value>
+
+	<!-- MPEG-4 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp4v)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,3iv2)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp42)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp43)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpg4)">flagging/video/mpeg4.png</value>
+	
+
+	<!-- VC-1 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,vc1)">flagging/video/vc-1.png</value>
+
+	<!-- DivX variants -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,div2)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,div3)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,divx 4)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,dx50)">flagging/video/divx.png</value>
+
+	<!-- WMV family -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,wmv2)">flagging/video/wmv.png</value>
+
+	<!-- Automatic filename lookup for all other codecs -->
+	<value>$INFO[VideoPlayer.VideoCodec,flagging/video/,.png]</value>
 
 </variable>
 

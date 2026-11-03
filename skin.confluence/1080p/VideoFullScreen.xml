@@ -267,6 +267,14 @@
 						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.VideoResolution)</visible>
 					</control>
 					<control type="image" id="1">
+						<description>Video Codec Image</description>
+						<width>110</width>
+						<height>53</height>
+						<aspectratio align="center">keep</aspectratio>
+						<texture>$VAR[VideoPlayerVideoCodecTexture]</texture>
+						<visible>!Player.ChannelPreviewActive + [String.IsEqual(VideoPlayer.VideoCodec,av1) | String.IsEqual(VideoPlayer.VideoCodec,avc1) | String.IsEqual(VideoPlayer.VideoCodec,divx) | String.IsEqual(VideoPlayer.VideoCodec,div2) | String.IsEqual(VideoPlayer.VideoCodec,div3) | String.IsEqual(VideoPlayer.VideoCodec,divx 4) | String.IsEqual(VideoPlayer.VideoCodec,dx50) | String.IsEqual(VideoPlayer.VideoCodec,flv) | String.IsEqual(VideoPlayer.VideoCodec,h264) | String.IsEqual(VideoPlayer.VideoCodec,hev1) | String.IsEqual(VideoPlayer.VideoCodec,hevc) | String.IsEqual(VideoPlayer.VideoCodec,hvc1) | String.IsEqual(VideoPlayer.VideoCodec,mpeg1) | String.IsEqual(VideoPlayer.VideoCodec,mpeg1video) | String.IsEqual(VideoPlayer.VideoCodec,mpeg2) | String.IsEqual(VideoPlayer.VideoCodec,mpeg2video) | String.IsEqual(VideoPlayer.VideoCodec,mpeg4) | String.IsEqual(VideoPlayer.VideoCodec,mp4v) | String.IsEqual(VideoPlayer.VideoCodec,3iv2) | String.IsEqual(VideoPlayer.VideoCodec,mp42) | String.IsEqual(VideoPlayer.VideoCodec,mp43) | String.IsEqual(VideoPlayer.VideoCodec,mpg4) | String.IsEqual(VideoPlayer.VideoCodec,theora) | String.IsEqual(VideoPlayer.VideoCodec,vc-1) | String.IsEqual(VideoPlayer.VideoCodec,vc1) | String.IsEqual(VideoPlayer.VideoCodec,vp8) | String.IsEqual(VideoPlayer.VideoCodec,vp9) | String.IsEqual(VideoPlayer.VideoCodec,wmv) | String.IsEqual(VideoPlayer.VideoCodec,wmv2) | String.IsEqual(VideoPlayer.VideoCodec,wmv3) | String.IsEqual(VideoPlayer.VideoCodec,wvc1) | String.IsEqual(VideoPlayer.VideoCodec,xvid)]</visible>
+					</control>
+					<control type="image" id="1">
 						<description>Codec Image</description>
 						<width>110</width>
 						<height>53</height>
