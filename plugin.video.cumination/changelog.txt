@@ -1,8 +1,2 @@
-[B]Version 1.1.206[/B]
-- allclassic - fix playback
-- AllPornStream fixed Search
-- "Don't ask for video host" setting - an attempt is made to resolve the first video host in the list; if this fails, it automatically tries the next available video host
-- Watchpornx replaces Netflixporno
-- rule34video - fix thumbnails (Kodi 21)
-- wowxxx - fix playback (requires Flaresolverr)
-- 85po - fix listing
+[B]Version 1.1.207[/B]
+- sextb - fix listing
