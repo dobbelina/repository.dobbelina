@@ -301,7 +301,7 @@
 					<control type="group" id="1">
 						<width>110</width>
 						<height>53</height>
-						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.AudioLanguage)</visible>
+						<visible>!Player.ChannelPreviewActive</visible>
 						<control type="image" id="1">
 							<top>0</top>
 							<description>Audio Language Image</description>
@@ -316,7 +316,7 @@
 							<height>53</height>
 							<font>font13</font>
 							<align>left</align>
-							<label>$INFO[VideoPlayer.AudioLanguage]</label>
+							<label>$VAR[ActiveVideoPlayerAudioLanguage]</label>
 							<textcolor>grey</textcolor>
 						</control>
 					</control>

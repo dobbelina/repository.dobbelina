@@ -141,4 +141,9 @@
 
 </variable>
 
+<variable name="ActiveVideoPlayerAudioLanguage">
+	<value condition="!String.IsEmpty(VideoPlayer.AudioLanguage)">$INFO[VideoPlayer.AudioLanguage]</value>
+	<value>unk</value>
+</variable>
+
 </includes>
