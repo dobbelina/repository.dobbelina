@@ -1,2 +1,6 @@
 [B]Version 1.1.207[/B]
 - sextb - fix listing
+- HomeMovies Tube search pagination fixed
+- Hitprn added tags
+
+
