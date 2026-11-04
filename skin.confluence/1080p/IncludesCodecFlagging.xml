@@ -101,10 +101,6 @@
 	<value condition="String.IsEqual(VideoPlayer.AudioCodec,eac3_ddp_atmos)">flagging/audio/eac3.png</value>
 	<value condition="String.IsEqual(VideoPlayer.AudioCodec,truehd_atmos)">flagging/audio/truehd.png</value>
 
-	<!-- PCM -->
-	<value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_s16be)">flagging/audio/pcm.png</value>
-	<value condition="String.IsEqual(VideoPlayer.AudioCodec,pcm_u8)">flagging/audio/pcm.png</value>
-
 	<!-- All original codec filenames -->
 	<value>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</value>
 
@@ -117,6 +113,17 @@
 	<value condition="String.IsEqual(ListItem.AudioCodec,aac_ssr)">aac</value>
 	<value condition="String.IsEqual(ListItem.AudioCodec,he_aac)">aac</value>
 	<value condition="String.IsEqual(ListItem.AudioCodec,he_aac_v2)">aac</value>
+	
+		<!-- DTS -->
+	<value condition="String.IsEqual(ListItem.AudioCodec,dts_96_24)">dts</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,dts_es)">dts</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,dts_express)">dts</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,dtshd_ma_x)">dtshd_ma</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,dtshd_ma_x_imax)">dtshd_ma</value>
+
+	<!-- Dolby -->
+	<value condition="String.IsEqual(ListItem.AudioCodec,eac3_ddp_atmos)">eac3</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,truehd_atmos)">truehd</value>
 
 	<!-- Default codec lookup -->
 	<value>$INFO[ListItem.AudioCodec]</value>
