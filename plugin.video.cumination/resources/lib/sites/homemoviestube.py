@@ -82,7 +82,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = url + keyword.replace(' ', '-') + '/page1.html'
+        url = url + urllib_parse.quote_plus(keyword.replace(' ', '-'))
         List(url)
 
 
