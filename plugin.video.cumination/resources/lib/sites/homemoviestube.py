@@ -37,13 +37,15 @@ def List(url):
     html = utils.getHtml(url, site.url)
 
     # match = re.compile(r'class="vidItem">.+?data-src="([^"]+).+?time">([^<]+).+?href="([^"]+).+?>([^<]+)', re.DOTALL | re.IGNORECASE).findall(html)
-    match = re.compile(r'class="media-card video-card".+?href="([^"]+)".+?title="([^"]+).+?src="([^"]+)".+?duration-badge">([^>]+)<', re.DOTALL | re.IGNORECASE).findall(html)
+    match = re.compile(r'class="media-card video-card".+?href="([^"]+)".+?title="([^"]+).+?img\ssrc="([^"]+)".+?duration-badge">([^>]+)<', re.DOTALL | re.IGNORECASE).findall(html)
     for videopage, name, img, duration in match:
         name = utils.cleantext(name)
         if videopage.startswith('//'):
             videopage = 'https:' + videopage
         if img.startswith('//'):
             img = 'https:' + img.replace(' ', '%20')
+        if site.url not in img:
+            img = site.url.rstrip('/') + img
         site.add_download_link(name, videopage, 'Playvid', img, name, duration=duration)
 
     re_npurl = r'prev-next-item"(?!.*aria-disabled="true").+?href="([^"]+)'
@@ -62,9 +64,9 @@ def List(url):
 @site.register()
 def Categories(url):
     cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'class="channel-card".+?href="([^"]+).+?src="([^"]+).+?badge">([^<]+).+?channel-name">([^>]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
+    match = re.compile(r'class="channel-card".+?href="([^"]+).+?img\ssrc="([^"]+)".+?title=.+?">([^>]+)<.+?channel-name">([^>]+)<', re.IGNORECASE | re.DOTALL).findall(cathtml)
     match = list(set(match))
-    match.sort(key=lambda x: x[2])
+    match.sort(key=lambda x: x[3])
     for caturl, img, cnt, name in match:
         name = utils.cleantext(name + ' [COLOR blue][{}][/COLOR]'.format(cnt))
         if caturl.startswith('//'):
@@ -80,7 +82,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        url = url + keyword.replace(' ', '-') + '/page1.html'
+        url = url + urllib_parse.quote_plus(keyword.replace(' ', '-'))
         List(url)
 
 
