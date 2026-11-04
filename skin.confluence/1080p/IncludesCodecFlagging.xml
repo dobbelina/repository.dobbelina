@@ -59,7 +59,7 @@
 			<width>120</width>
 			<height>53</height>
 			<aspectratio align="right">keep</aspectratio>
-			<texture>$INFO[ListItem.AudioCodec,flagging/audio/,.png]</texture>
+			<texture>$VAR[ListItemAudioCodecTexture,flagging/audio/,.png]</texture>
 		</control>
 	</include>
 	<include name="AudioChannelsFlaggingConditions">
@@ -80,7 +80,7 @@
 			<texture>$INFO[ListItem.VideoAspect,flagging/aspectratio/,.png]</texture>
 		</control>
 	</include>
-	
+		
 <variable name="VideoPlayerAudioCodecTexture">
 
 	<!-- AAC -->
@@ -108,6 +108,18 @@
 	<!-- All original codec filenames -->
 	<value>$INFO[VideoPlayer.AudioCodec,flagging/audio/,.png]</value>
 
+</variable>
+
+<variable name="ListItemAudioCodecTexture">
+	<!-- AAC variants -->
+	<value condition="String.IsEqual(ListItem.AudioCodec,aac_lc)">aac</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,aac_ltp)">aac</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,aac_ssr)">aac</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,he_aac)">aac</value>
+	<value condition="String.IsEqual(ListItem.AudioCodec,he_aac_v2)">aac</value>
+
+	<!-- Default codec lookup -->
+	<value>$INFO[ListItem.AudioCodec]</value>
 </variable>
 
 <variable name="VideoPlayerVideoCodecTexture">
