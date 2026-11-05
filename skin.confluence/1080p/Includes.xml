@@ -543,6 +543,7 @@
 	</variable>
 	<variable name="videocodec">
 		<value condition="[String.StartsWith(ListItem.VideoCodec,div) | String.IsEqual(ListItem.VideoCodec,dx50)]">divx</value>
+		<value condition="String.Contains(ListItem.VideoCodec,xvid)">mpeg4</value>
 		<value condition="String.Contains(ListItem.VideoCodec,mpeg4)">mpeg4</value>
 		<value>$INFO[ListItem.VideoCodec]</value>
 	</variable>
