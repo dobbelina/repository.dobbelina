@@ -80,6 +80,37 @@
 			<texture>$INFO[ListItem.VideoAspect,flagging/aspectratio/,.png]</texture>
 		</control>
 	</include>
+	
+<variable name="VideoPlayerVideoCodecTexture">
+
+	<!-- MPEG-1 and MPEG-2 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpeg1)">flagging/video/mpeg1video.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpeg2)">flagging/video/mpeg2video.png</value>
+
+	<!-- MPEG-4 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp4v)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,3iv2)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp42)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mp43)">flagging/video/mpeg4.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,mpg4)">flagging/video/mpeg4.png</value>
+	
+
+	<!-- VC-1 -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,vc1)">flagging/video/vc-1.png</value>
+
+	<!-- DivX variants -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,div2)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,div3)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,divx 4)">flagging/video/divx.png</value>
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,dx50)">flagging/video/divx.png</value>
+
+	<!-- WMV family -->
+	<value condition="String.IsEqual(VideoPlayer.VideoCodec,wmv2)">flagging/video/wmv.png</value>
+
+	<!-- Automatic filename lookup for all other codecs -->
+	<value>$INFO[VideoPlayer.VideoCodec,flagging/video/,.png]</value>
+
+</variable>	
 		
 <variable name="VideoPlayerAudioCodecTexture">
 
