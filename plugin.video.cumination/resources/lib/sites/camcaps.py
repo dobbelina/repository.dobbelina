@@ -26,7 +26,7 @@ import xbmcgui
 from six.moves import urllib_parse
 
 
-site = AdultSite('camcaps', '[COLOR hotpink]Camcaps[/COLOR]', 'https://camcaps.tv/', 'camcaps', 'camcaps')
+site = AdultSite('camcaps', '[COLOR hotpink]Camcaps[/COLOR]', 'https://camcaps.tv/', 'camcaps.png', 'camcaps')
 
 
 @site.register(default_mode=True)
