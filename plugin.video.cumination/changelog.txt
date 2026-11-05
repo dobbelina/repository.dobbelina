@@ -2,5 +2,4 @@
 - sextb - fix listing
 - HomeMovies Tube search pagination fixed
 - Hitprn added tags
-
-
+- watcherotic - fix thumbnails (Kodi 22)
