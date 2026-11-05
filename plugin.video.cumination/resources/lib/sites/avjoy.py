@@ -23,7 +23,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('avjoy', '[COLOR hotpink]Avjoy[/COLOR]', 'https://en.avjoy.me/', 'https://en.avjoy.me/static/images/logo.png', 'avjoy')
+site = AdultSite('avjoy', '[COLOR hotpink]Avjoy[/COLOR]', 'https://en.avjoy.me/', 'https://en.avjoy.me/images/logo/logo.png', 'avjoy')
 
 
 @site.register(default_mode=True)
@@ -55,7 +55,7 @@ def List(url):
         page_match = re.search(r'page=(\d+)', npurl)
         page_num = page_match.group(1) if page_match else '?'
         site.add_dir('[COLOR hotpink]Next Page...[/COLOR] ({})'.format(page_num), npurl, 'List', site.img_next)
-    
+
     utils.eod()
 
 
@@ -70,10 +70,10 @@ def Categories(url):
     main_section = re.search(r'<h1>Categories</h1>(.*?)</div>\s*</div>\s*</div>\s*<div class="footer-container', cathtml, re.DOTALL | re.IGNORECASE)
     if main_section:
         cathtml = main_section.group(1)
-    
+
     pattern = r'<a href="(/videos/[^"]+)">\s*<div class="thumb-overlay">\s*<img src="([^"]+)"[^>]+title="([^"]+)".*?<div class="category-title">\s*<div[^>]*>([^<]+)</div>\s*<div[^>]*>([^<]+)</div>'
     match = re.compile(pattern, re.DOTALL | re.IGNORECASE).findall(cathtml)
-    
+
     seen = {}
     for catpage, thumb, img_title, name, count in match:
         if catpage not in seen:
@@ -101,10 +101,10 @@ def Search(url, keyword=None):
 def Playvid(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
     vp.progress.update(25, "[CR]Loading video page[CR]")
-    
+
     headers = {'Referer': site.url}
     videohtml = utils.getHtml(url, site.url, headers=headers)
-    
+
     sources = {}
     for source_match in re.finditer(r'<source\b[^>]+>', videohtml, re.IGNORECASE):
         tag = source_match.group(0)
@@ -114,49 +114,49 @@ def Playvid(url, name, download=None):
         src = html.unescape(src_match.group(1).strip())
         if '.mp4' not in src:
             continue
-        
+
         res_match = re.search(r'(?:res|label|quality)=[\'"]([^\'"]+)[\'"]', tag, re.IGNORECASE)
         quality = res_match.group(1) if res_match else 'SD'
-        
+
         quality_str = re.sub(r'\D', '', quality) if re.search(r'\d', quality) else quality
         if quality_str.isdigit():
             quality_str = quality_str + 'p'
-        
+
         sources[quality_str] = urllib_parse.urljoin(site.url, src)
-    
+
     if not sources:
         utils.notify('Oh oh', 'No video found')
         vp.progress.close()
         return
-    
+
     valid_sources = {}
     for quality, stream_url in sources.items():
         if not _is_stream_expired(stream_url):
             valid_sources[quality] = stream_url
-    
+
     if not valid_sources:
         utils.notify('Oh oh', 'Video link expired')
         vp.progress.close()
         return
-    
+
     if len(valid_sources) == 1:
         videourl = list(valid_sources.values())[0]
     else:
         videourl = utils.prefquality(valid_sources, sort_by=lambda x: int(re.sub(r'\D', '', x)) if re.search(r'\d', x) else 0, reverse=True)
-    
+
     if not videourl:
         vp.progress.close()
         return
-    
+
     play_headers = {
         'User-Agent': utils.USER_AGENT,
         'Referer': url,
         'Origin': site.url
     }
-    
+
     header_string = urllib_parse.urlencode(play_headers)
     videourl = f"{videourl}|{header_string}"
-    
+
     vp.progress.update(90, "[CR]Playing video[CR]")
     vp.play_from_direct_link(videourl)
 
@@ -164,7 +164,7 @@ def Playvid(url, name, download=None):
 def _is_stream_expired(stream_url):
     if not stream_url:
         return True
-    
+
     for param in ('expires', 'expire', 'e'):
         m = re.search(rf'[?&]{param}=(\d+)', stream_url, re.IGNORECASE)
         if m:
@@ -174,7 +174,7 @@ def _is_stream_expired(stream_url):
                     return True
             except Exception:
                 pass
-    
+
     path_expiry = re.search(r'/video/[^/]+/(\d{10})/[^/]+\.mp4', stream_url)
     if path_expiry:
         try:
@@ -183,5 +183,5 @@ def _is_stream_expired(stream_url):
                 return True
         except Exception:
             pass
-    
+
     return False
