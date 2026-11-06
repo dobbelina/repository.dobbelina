@@ -543,8 +543,14 @@
 	</variable>
 	<variable name="videocodec">
 		<value condition="[String.StartsWith(ListItem.VideoCodec,div) | String.IsEqual(ListItem.VideoCodec,dx50)]">divx</value>
-		<value condition="String.Contains(ListItem.VideoCodec,xvid)">mpeg4</value>
-		<value condition="String.Contains(ListItem.VideoCodec,mpeg4)">mpeg4</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,mpeg1)">mpeg1video</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,mpeg2)">mpeg2video</value>
+		<value condition="String.StartsWith(ListItem.VideoCodec,mp4)">mpeg4</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,3iv2)">mpeg4</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,mpg4)">mpeg4</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,wmv2)">wmv</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,vc1)">vc-1</value>
+		<value condition="String.IsEqual(ListItem.VideoCodec,xvid)">mpeg4</value>
 		<value>$INFO[ListItem.VideoCodec]</value>
 	</variable>
 	<variable name="SeekLabel">
