@@ -115,7 +115,7 @@ Kodi is a registered trademark of the XBMC Foundation. We are not connected to o
     </extension>
 </addon>
 
-<addon id="skin.confluence" version="5.0.9" name="Confluence" provider-name="Jezz_X, Team Kodi">
+<addon id="skin.confluence.special" version="5.0.9" name="Confluence Special" provider-name="Jezz_X, Team Kodi">
 	<requires>
 		<import addon="xbmc.gui" version="5.18.0"/>
 	</requires>
