@@ -1,5 +1,3 @@
-[B]Version 1.1.207[/B]
-- sextb - fix listing
-- HomeMovies Tube search pagination fixed
-- Hitprn added tags
-- watcherotic - fix thumbnails (Kodi 22)
+[B]Version 1.1.208[/B]
+- perverzija - fix listing
+- pervtube - new site
