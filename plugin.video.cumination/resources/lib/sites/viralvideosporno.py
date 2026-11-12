@@ -74,11 +74,13 @@ def Playvid(url, name, download=None):
     for link in sources:
         if vp.resolveurl.HostedMediaFile(link).valid_url():
             links[link.split('/')[2]] = link
-    videourl = utils.selector('Select link', links)
-    if not videourl:
-        vp.progress.close()
+    if sources:
+        links = {link for link in sources if vp.resolveurl.HostedMediaFile(link)}
+        vp.play_from_link_list(links)
         return
-    vp.play_from_link_to_resolve(videourl)
+    else:
+        utils.notify(name, utils.i18n('not_found'))
+        vp.progress.close()
 
 
 @site.register()

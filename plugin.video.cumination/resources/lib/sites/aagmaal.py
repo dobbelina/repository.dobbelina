@@ -79,8 +79,9 @@ def Playvid(url, name, download=None):
     pat2 = re.compile(r'''<br\s*/>\s*([\d]+)\.\s*<a\s*href="([^"]+)''', re.DOTALL | re.IGNORECASE)
     links = pat1.findall(videopage) or pat2.findall(videopage)
     if links:
-        links = {host: link for host, link in links if vp.resolveurl.HostedMediaFile(link)}
-        videourl = utils.selector('Select link', links)
+        links = {link for host, link in links if vp.resolveurl.HostedMediaFile(link)}
+        vp.play_from_link_list(links)
+        return
     else:
         r = re.search(r'<iframe\s*(?:loading="lazy"\s*)?src="([^"]+)', videopage)
         if r:
@@ -91,7 +92,7 @@ def Playvid(url, name, download=None):
             videourl = r.group(1)
 
     if not videourl:
-        utils.notify('Oh Oh', 'No Videos found')
+        utils.notify(name, utils.i18n('not_found'))
         vp.progress.close()
         return
 
