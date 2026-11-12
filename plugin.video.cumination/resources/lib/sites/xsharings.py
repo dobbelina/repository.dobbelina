@@ -44,12 +44,16 @@ def List(url):
     if 'It looks like nothing was found for this search' in listhtml:
         utils.notify('No results found', 'Try a different search term')
         return
+    match = re.compile(r'<main id="main"(.+?)</main>', re.IGNORECASE | re.DOTALL).findall(listhtml)
+    if not match: return
+    container = match[0]
 
     delimiter = 'data-post-id="'
     re_videopage = 'href="([^"]+)"'
     re_name = 'title="([^"]+)"'
-    re_img = 'data-src="([^"]+)"'
+    re_img = '(?:data-src|src)="([^"]+)"'
     re_duration = 'clock-o"></i>([^<]+)<'
+    skip = 'class="more-videos'
 
     cm = []
     cm_lookupinfo = (utils.addon_sys + "?mode=xsharings.Lookupinfo&url=")
@@ -57,25 +61,28 @@ def List(url):
     cm_related = (utils.addon_sys + "?mode=xsharings.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
 
-    utils.videos_list(site, 'xsharings.Play', listhtml, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm)
+    utils.videos_list(site, 'xsharings.Play', container, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, contextm=cm, skip=skip)
 
-    re_npurl = r'aria-current="page">\d+</a></li><li><a href="([^"]+)"'
-    re_npnr = r'aria-current="page">\d+.+?>(\d+)</a>'
-    re_lpnr = r"/page/(\d+)/[^']*'>Last<"
+    re_npurl = r'href="(https://xsharings\.com/page/\d+/\?filter=latest)">Next<'
+    re_npnr = r'href="https://xsharings\.com/page/(\d+)/\?filter=latest">Next<'
+    re_lpnr = r'href="https://xsharings\.com/page/(\d+)/\?filter=latest">Last<'
     utils.next_page(site, 'xsharings.List', listhtml, re_npurl, re_npnr, re_lpnr=re_lpnr, contextm='xsharings.GotoPage')
     utils.eod()
 
 
 @site.register()
 def Categories(url):
-    cathtml = utils.getHtml(url, site.url)
-    match = re.compile(r'article id="post.+?href="([^"]+)" title="([^"]+)">.+?(?:img src|data-src)="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
+    html = utils.getHtml(url, site.url)
+    match = re.compile(r'<div class="videos-list">(.+?)</main>', re.DOTALL | re.IGNORECASE).findall(html)
+    cathtml = match[0]
+    match = re.compile(r'article id="post.+?href="([^"]+)" title="([^"]+)">.+?(?:data-lazy|data)-src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(cathtml)
     for siteurl, name, img in match:
         name = utils.cleantext(name)
         site.add_dir(name, siteurl, 'List', img)
-    match = re.search(r'aria-current="page">\d+</a></li><li><a href="([^"]+)"', cathtml, re.IGNORECASE | re.DOTALL)
-    if match:
-        site.add_dir('Next Page', match.group(1), 'Categories', site.img_next)
+    re_npurl = r'class="current">\d+</a>.*?href="([^"]+)"'  # r'href="(https://xsharings\.com/(?:actors|categories)/page/\d+/)"(?:>Next<|)'
+    re_npnr = r'class="current">\d+</a>.*?href=".*?>(\d+)</a>' # r'href="https://xsharings\.com/(?:actors|categories)/page/(\d+)/"(?:>Next<|)'
+    re_lpnr = r'href="https://xsharings\.com/(?:actors|categories)/page/(\d+)/">Last<'
+    utils.next_page(site, 'xsharings.Categories',  cathtml, re_npurl, re_npnr, re_lpnr=re_lpnr)
     utils.eod()
 
 
@@ -104,24 +111,17 @@ def Search(url, keyword=None):
 @site.register()
 def Play(url, name, download=None):
     vp = utils.VideoPlayer(name, download)
-    html = utils.getHtml(url)
-    iframematch = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
-    if iframematch:
-        sources = {i.split('/')[2]: i for i in iframematch}
-        iframe = utils.selector('Select video host:', sources)
-        if iframe:
-            if vp.resolveurl.HostedMediaFile(iframe).valid_url():
-                vp.play_from_link_to_resolve(iframe)
-            else:
-                iframehtml = utils.getHtml(iframe, url)
-                packed = utils.get_packed_data(iframehtml)
-                packed = '{' + packed.split('}')[0].split('{')[-1] + '}'
-                packed = json.loads(packed)
-                video_url = packed.get('hls2')
-                if video_url:
-                    vp.play_from_direct_link(video_url)
+    try:
+        html = utils.getHtml(url)
+    except:
+        utils.notify(name, utils.i18n('not_found'))
+        return
+    links = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(html)
+    if links:
+        vp.play_from_link_list(links)
+        return
     else:
-        utils.notify('Oh oh', 'No video found')
+        utils.notify(name, utils.i18n('not_found'))
 
 
 @site.register()
