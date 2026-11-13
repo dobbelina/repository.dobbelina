@@ -249,7 +249,7 @@
 					<itemgap>8</itemgap>
 					<orientation>horizontal</orientation>
 					<control type="label" id="1">
-						<width min="15" max="720">auto</width>
+						<width min="15" max="520">auto</width>
 						<height>45</height>
 						<font>font30</font>
 						<align>left</align>
@@ -297,6 +297,27 @@
 						<aspectratio align="center">keep</aspectratio>
 						<texture>$INFO[VideoPlayer.AudioChannels,flagging/audio/,.png]</texture>
 						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.AudioChannels)</visible>
+					</control>
+					<control type="group" id="1">
+						<width>90</width>
+						<height>53</height>
+						<visible>!Player.ChannelPreviewActive</visible>
+						<control type="image" id="1">
+							<top>0</top>
+							<width>90</width>
+							<height>53</height>
+							<texture>flagging/fps.png</texture>
+						</control>
+						<control type="label" id="1">
+							<left>12</left>
+							<top>25</top>
+							<width>71</width>
+							<height>53</height>
+							<font>font10</font>
+							<align>left</align>
+							<label>$INFO[Player.Process(VideoFPS)]</label>
+							<textcolor>grey</textcolor>
+						</control>
 					</control>
 					<control type="group" id="1">
 						<width>110</width>
