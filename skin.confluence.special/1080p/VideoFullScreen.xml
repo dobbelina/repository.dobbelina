@@ -267,20 +267,20 @@
 						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.VideoResolution)</visible>
 					</control>
 					<control type="image" id="1">
-						<description>Video Codec Image</description>
-						<width>110</width>
-						<height>53</height>
-						<aspectratio align="center">keep</aspectratio>
-						<texture>$VAR[VideoPlayerVideoCodecTexture]</texture>
-						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.VideoCodec)</visible>
-					</control>
-					<control type="image" id="1">
 						<description>Codec Image</description>
 						<width>110</width>
 						<height>53</height>
 						<aspectratio align="left">keep</aspectratio>
 						<texture>$INFO[VideoPlayer.HdrType,flagging/video/,.png]</texture>
 						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.HdrType)</visible>
+					</control>
+					<control type="image" id="1">
+						<description>Video Codec Image</description>
+						<width>110</width>
+						<height>53</height>
+						<aspectratio align="center">keep</aspectratio>
+						<texture>$VAR[VideoPlayerVideoCodecTexture]</texture>
+						<visible>!Player.ChannelPreviewActive + !String.IsEmpty(VideoPlayer.VideoCodec)</visible>
 					</control>
 					<control type="image" id="1">
 						<description>Audio Codec Image</description>
