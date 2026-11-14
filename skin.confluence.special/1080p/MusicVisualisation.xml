@@ -166,15 +166,44 @@
 					</control>
 					<control type="image">
 						<description>Audio Codec Image</description>
-						<width>122</width>
+						<width>102</width>
 						<height>44</height>
-						<texture>$INFO[MusicPlayer.Codec,flagging/audio/,.png]</texture>
+						<texture>$VAR[MusicPlayerCodecTexture]</texture>
 						<visible>!Player.ChannelPreviewActive</visible>
+					</control>
+					<control type="group">
+						<width>180</width>
+						<height>44</height>
+						<visible>!Player.ChannelPreviewActive</visible>
+						<control type="image">
+						    <left>72</left>
+							<width>110</width>
+							<height>44</height>
+							<texture>flagging/blank.png</texture>
+						</control>
+						<control type="label">
+							<left>80</left>
+							<top>7</top>
+							<width>91</width>
+							<height>44</height>
+							<font>font10</font>
+							<align>left</align>
+							<label>$INFO[MusicPlayer.BitRate] kbps</label>
+							<textcolor>grey</textcolor>
+						</control>
+					    <control type="image">
+							<description>Audio Channels Image</description>
+							<width>70</width>
+							<height>44</height>
+							<aspectratio align="center">keep</aspectratio>
+							<texture>$INFO[MusicPlayer.Channels,flagging/audio/,.png]</texture>
+							<visible>!Player.ChannelPreviewActive + !String.IsEmpty(MusicPlayer.Channels)</visible>
+					    </control>
 					</control>
 					<control type="group">
 						<description>Rating</description>
 						<width>258</width>
-						<height>44</height>
+						<height>53</height>
 						<control type="image">
 							<description>rating back</description>
 							<left>0</left>

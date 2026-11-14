@@ -76,7 +76,7 @@
 			<control type="label">
 				<description>Album Label</description>
 				<left>255</left>
-				<top>398</top>
+				<top>380</top>
 				<height>38</height>
 				<width>1500</width>
 				<label>$INFO[MusicPlayer.Artist,, - ]$INFO[MusicPlayer.Album]$INFO[musicplayer.discnumber, - $LOCALIZE[427]:]</label>
@@ -89,7 +89,7 @@
 			<control type="label">
 				<description>Title label</description>
 				<left>255</left>
-				<top>428</top>
+				<top>410</top>
 				<height>45</height>
 				<width>1500</width>
 				<label>$INFO[Player.Title]</label>
@@ -102,10 +102,10 @@
 			<control type="label">
 				<description>Time Label</description>
 				<left>255</left>
-				<top>465</top>
+				<top>455</top>
 				<height>45</height>
 				<width>450</width>
-				<label>$INFO[Player.Time]$INFO[Player.Duration,[COLOR=blue] / [/COLOR]]</label>
+				<label>$INFO[Player.Time]$INFO[Player.Duration,[COLOR=blue] / [/COLOR]][CR]$INFO[MusicPlayer.BitRate] kbps</label>
 				<align>left</align>
 				<aligny>center</aligny>
 				<font>font12</font>

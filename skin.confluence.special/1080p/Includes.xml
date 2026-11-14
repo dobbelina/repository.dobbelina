@@ -449,8 +449,8 @@
 		<value condition="Control.IsVisible(507) + Player.HasAudio">$LOCALIZE[31040]$INFO[musicplayer.Playlistposition,: ]$INFO[musicplayer.Playlistlength,/]</value>
 	</variable>
 	<variable name="MusicInfoListViewPanel">
-		<value condition="Control.IsVisible(506)">$INFO[ListItem.TrackNumber,,. ]$INFO[ListItem.Title,,[CR]]$INFO[ListItem.Artist,,[CR]]$INFO[ListItem.Album,[COLOR grey2],[/COLOR][CR]]$INFO[ListItem.DiscNumber,[COLOR grey2]$LOCALIZE[427] ,[/COLOR][CR]]$INFO[ListItem.Year,[COLOR grey2], | [/COLOR]]$INFO[ListItem.Genre,[COLOR grey2],[/COLOR][CR]]$INFO[ListItem.PlayCount,$LOCALIZE[567]: ,[CR]]$INFO[ListItem.Time,$LOCALIZE[180]: ,/]$INFO[ListItem.Duration,,[CR]]</value>
-		<value condition="Control.IsVisible(507) + Player.HasAudio">$INFO[MusicPlayer.TrackNumber,,. ]$INFO[MusicPlayer.Title,,[CR]]$INFO[MusicPlayer.Artist,,[CR]]$INFO[MusicPlayer.Album,[COLOR grey2],[/COLOR][CR]]$INFO[MusicPlayer.DiscNumber,[COLOR grey2]$LOCALIZE[427] ,[/COLOR][CR]]$INFO[MusicPlayer.Year,[COLOR grey2], | [/COLOR]]$INFO[MusicPlayer.Genre,[COLOR grey2],[/COLOR][CR]]$INFO[MusicPlayer.PlayCount,$LOCALIZE[567]: ,[CR]]$INFO[MusicPlayer.Time,$LOCALIZE[31016]: ,/]$INFO[MusicPlayer.Duration,,[CR]]</value>
+		<value condition="Control.IsVisible(506)">$INFO[ListItem.TrackNumber,,. ]$INFO[ListItem.Title,,[CR]]$INFO[ListItem.Artist,,[CR]]$INFO[ListItem.Album,[COLOR grey2],[/COLOR][CR]]$INFO[ListItem.DiscNumber,[COLOR grey2]$LOCALIZE[427] ,[/COLOR][CR]]$INFO[ListItem.Year,[COLOR grey2], | [/COLOR]]$INFO[ListItem.Genre,[COLOR grey2],[/COLOR][CR]]$INFO[ListItem.PlayCount,$LOCALIZE[567]: ,[CR]]$INFO[ListItem.Time,$LOCALIZE[180]: ,/]$INFO[ListItem.Duration,,[CR]]$INFO[ListItem.BitRate,, kbps[CR]]</value>
+		<value condition="Control.IsVisible(507) + Player.HasAudio">$INFO[MusicPlayer.TrackNumber,,. ]$INFO[MusicPlayer.Title,,[CR]]$INFO[MusicPlayer.Artist,,[CR]]$INFO[MusicPlayer.Album,[COLOR grey2],[/COLOR][CR]]$INFO[MusicPlayer.DiscNumber,[COLOR grey2]$LOCALIZE[427] ,[/COLOR][CR]]$INFO[MusicPlayer.Year,[COLOR grey2], | [/COLOR]]$INFO[MusicPlayer.Genre,[COLOR grey2],[/COLOR][CR]]$INFO[MusicPlayer.PlayCount,$LOCALIZE[567]: ,[CR]]$INFO[MusicPlayer.Time,$LOCALIZE[31016]: ,/]$INFO[MusicPlayer.Duration,,[CR]]$INFO[MusicPlayer.BitRate,, kbps[CR]]</value>
 	</variable>
 	<variable name="MusicInfoListViewtRating">
 		<value condition="Control.IsVisible(506)">$INFO[ListItem.UserRating,ratings/,.png]</value>
@@ -619,6 +619,25 @@
 		<value>unk</value>
 	</variable>
 	
+	<variable name="MusicPlayerCodecTexture">
+
+		<!-- AAC -->
+		<value condition="String.StartsWith(MusicPlayer.Codec,aac_)">flagging/audio/aac.png</value>
+		<value condition="String.StartsWith(MusicPlayer.Codec,he_)">flagging/audio/aac.png</value>
+
+		<!-- DTS -->
+		<value condition="String.StartsWith(MusicPlayer.Codec,dts_)">flagging/audio/dts.png</value>
+		<value condition="String.IsEqual(MusicPlayer.Codec,dtshd_ma_x)">flagging/audio/dtshd_ma.png</value>
+		<value condition="String.IsEqual(MusicPlayer.Codec,dtshd_ma_x_imax)">flagging/audio/dtshd_ma.png</value>
+
+		<!-- Dolby -->
+		<value condition="String.IsEqual(MusicPlayer.Codec,eac3_ddp_atmos)">flagging/audio/eac3.png</value>
+		<value condition="String.IsEqual(MusicPlayer.Codec,truehd_atmos)">flagging/audio/truehd.png</value>
+
+		<!-- All original codec filenames -->
+		<value>$INFO[MusicPlayer.Codec,flagging/audio/,.png]</value>
+	</variable>
+	
 	<variable name="SeekLabel">
 		<value condition="[Player.Playing + !Player.Seeking + !Player.HasPerformedSeek(3)] | Player.IsTempo">$LOCALIZE[31042]</value>
 		<value condition="[Player.Paused + !Player.Caching] + !Player.Seeking">$LOCALIZE[31043]</value>
@@ -695,8 +714,8 @@
 		<value>$INFO[ListItem.Label]</value>
 	</variable>
 	<variable name="VideoManagerLabel2">
-		<value condition="ListItem.IsStereoscopic">$INFO[ListItem.Duration,$LOCALIZE[180]: ][CR]$VAR[videocodec,, ]$INFO[ListItem.VideoResolution,| , ]$VAR[VideoResolutionTypeVar,, ]$INFO[ListItem.HdrType,| , ]| 3D $INFO[ListItem.VideoAspect,| ,:1 ]$INFO[ListItem.AudioCodec,| , ]$VAR[AudioChannels]</value>
-		<value>$INFO[ListItem.Duration,$LOCALIZE[180]: ][CR]$VAR[videocodec,, ]$INFO[ListItem.VideoResolution,| , ]$VAR[VideoResolutionTypeVar,, ]$INFO[ListItem.HdrType,| , ]$INFO[ListItem.VideoAspect,| ,:1 ]$INFO[ListItem.AudioCodec,| , ]$VAR[AudioChannels]</value>
+		<value condition="ListItem.IsStereoscopic">$INFO[ListItem.Duration,$LOCALIZE[180]: ][CR]$VAR[videocodec,, ]$INFO[ListItem.VideoResolution,| , ]$VAR[VideoResolutionTypeVar,, ]$INFO[ListItem.HdrType,| , ]| 3D $INFO[ListItem.VideoAspect,| ,:1 ]$VAR[ListItemAudioCodecTexture,| , ]$VAR[AudioChannels]</value>
+		<value>$INFO[ListItem.Duration,$LOCALIZE[180]: ][CR]$VAR[videocodec,, ]$INFO[ListItem.VideoResolution,| , ]$VAR[VideoResolutionTypeVar,, ]$INFO[ListItem.HdrType,| , ]$INFO[ListItem.VideoAspect,| ,:1 ]$VAR[ListItemAudioCodecTexture,| , ]$VAR[AudioChannels]</value>
 	</variable>
 	<variable name="AudioChannels">
 		<value condition="String.IsEqual(ListItem.AudioChannels,0)">0.0</value>
