@@ -303,7 +303,6 @@
 						<height>53</height>
 						<visible>!Player.ChannelPreviewActive</visible>
 						<control type="image" id="1">
-							<top>0</top>
 							<width>90</width>
 							<height>53</height>
 							<texture>flagging/fps.png</texture>
