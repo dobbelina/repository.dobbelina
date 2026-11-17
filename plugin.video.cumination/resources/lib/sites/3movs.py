@@ -49,7 +49,6 @@ def Main():
 
 @site.register()
 def List(url, page=1):
-    xbmcgui.Dialog().textviewer(url, url)
     if page is None:
         page = 1
     else:
@@ -198,7 +197,6 @@ def GotoPage(url, np, lp):
             url = re.sub(r'=\d+?$', f'={pg}', url)
         else:
             url = re.sub(r'/\d+/?$', f'/{pg}/', url)
-        xbmcgui.Dialog().textviewer('GoToPage', url)
         # url = url.replace('/{}/?'.format(np), '/{}/?'.format(pg))
         if int(lp) > 0 and int(pg) > int(lp):
             utils.notify(msg='Out of range!')
