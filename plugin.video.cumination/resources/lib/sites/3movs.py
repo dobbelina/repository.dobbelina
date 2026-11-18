@@ -18,13 +18,15 @@
 
 import re
 import html as html_module
+import urllib.parse as urllib_parse
+import xbmc
+import xbmcgui
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
 site = AdultSite('3movs', '[COLOR hotpink]3Movs[/COLOR]', 'https://www.3movs.com/', '3movs.png', '3movs')
 
-# Headers personnalisés
 movs_headers = utils.base_hdrs.copy()
 movs_headers.update({
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -41,14 +43,12 @@ def Main():
     site.add_dir('[COLOR hotpink]Most Viewed[/COLOR]', site.url + 'most-viewed/all-time/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Top Rated[/COLOR]', site.url + 'top-rated/all-time/', 'List', site.img_cat)
     site.add_dir('[COLOR hotpink]Longest[/COLOR]', site.url + 'longest/', 'List', site.img_cat)
-    # Vidéos récentes directement à la racine
-    List(site.url + 'videos/')
+    List(site.url + 'latest-updates/1/')
     utils.eod()
 
 
 @site.register()
 def List(url, page=1):
-    # Gérer le cas où page est None ou une chaîne
     if page is None:
         page = 1
     else:
@@ -57,7 +57,6 @@ def List(url, page=1):
         except:
             page = 1
 
-    # Gestion de la pagination
     current_url = url
     if page > 1:
         if '/search_videos/' in url and '?' in url:
@@ -78,7 +77,6 @@ def List(url, page=1):
         utils.eod()
         return
 
-    # Extraction des vidéos - pattern 3movs
     blocks = re.split(r'<div[^>]+class=["\'][^"\']*item thumb', html)[1:]
 
     for block in blocks:
@@ -100,9 +98,23 @@ def List(url, page=1):
 
             site.add_download_link(v_title, v_url, 'Playvid', v_thumb, v_title, duration=v_duration)
 
-    # Pagination
-    if 'Next' in html or 'icon-arrow-right' in html:
-        site.add_dir('[COLOR hotpink]Next Page >>[/COLOR]', url, 'List', site.img_next, page=page + 1)
+    if 'data-parameters="' in html:
+        match = re.findall('class="item active".+?class="item.+?(?:href="#search".+?data-parameters="|href=")([^"]+(\d+))"', html, re.DOTALL)
+        q = match[0][0].split(';')[0].replace(':', '=')
+        f = match[0][0].split(';')[3].split('+')[0] + '=' + match[0][1]
+        npurl = site.url + 'search_videos/?' + q + '&' + f
+        npnr = match[0][1]
+        pages = [int(x) for x in re.findall(r'title="Page\s+(\d+)"', html)]
+        lpnr = max(pages)
+        # cm_page = (utils.addon_sys + "?mode={}.GotoPage".format(site.name) + "&url=" + urllib_parse.quote_plus(npurl) + "&np=" + str(npnr) + "&lp=" + str(lpnr))
+        # cm = [('[COLOR violet]Goto Page #[/COLOR]', 'RunPlugin(' + cm_page + ')')]
+
+        site.add_dir('[COLOR hotpink]Next Page ({0}/{1})[/COLOR]'.format(npnr, lpnr), npurl, 'List', site.img_next) #, contextm=cm)
+    else:
+        re_npurl = r'class="item active".+?class="item.+?href="([^"]+)"'
+        re_npnr = r'class="item active".+?class="item.+?href="[^"]*.?(\d+)/"'
+        re_lpnr = r'class="item"><a\shref=".+?><a\shref="[^"]*.?/(\d+)/"'
+        utils.next_page(site, '{}.List'.format(site.name), html, re_npurl, re_npnr, re_lpnr=re_lpnr)    #, contextm='{}.GotoPage'.format(site.name))
 
     utils.eod()
 
@@ -116,16 +128,18 @@ def Categories(url):
         utils.eod()
         return
 
-    # Pattern pour les catégories 3movs
     cat_pattern = r'<div[^>]+thumb_cat item[^>]*>.*?<a[^>]+href=["\'](https?://www\.3movs\.com/categories/[^"\']+)["\'][^>]+title=["\']([^"\']+)["\'].*?data-src=["\']([^"\']+)["\'].*?<div[^>]+title[^>]*>(.*?)</div>'
     cats = re.findall(cat_pattern, cathtml, re.DOTALL)
 
+    cat = []
     for c_url, c_title, c_thumb, c_inner_html in cats:
         count_match = re.search(r'<span>([^<]+)</span>', c_inner_html)
         count = count_match.group(1) if count_match else ""
+        c_url = site.url + 'search_videos/?q=' + c_title
         display_title = f"{html_module.unescape(c_title)} [COLOR hotpink]({count})[/COLOR]"
-        site.add_dir(display_title, c_url, 'List', c_thumb)
-
+        cat.append((display_title, c_url, c_thumb))
+    for item in sorted(cat, key=lambda x: x[0]):
+        site.add_dir(item[0], item[1], 'List', item[2])
     utils.eod()
 
 
@@ -134,7 +148,7 @@ def Search(url, keyword=None):
     if not keyword:
         site.search_dir(url, 'Search')
     else:
-        search_url = site.url + 'search_videos/?q=' + keyword.replace(' ', '+')
+        search_url = site.url + 'search_videos/?q=' + keyword.replace(' ', '-')
         List(search_url, 1)  # Ajoute juste le paramètre page ici
 
 
@@ -150,24 +164,20 @@ def Playvid(url, name, download=None):
         utils.notify('Error', 'Failed to load video page')
         return
 
-    # Extraction du flux vidéo - pattern KVS flashvars
     player_config = re.search(r'var\s+flashvars\s*=\s*({.*?});', page_html, re.DOTALL)
     stream_url = None
 
     if player_config:
         config_json = player_config.group(1)
-        # Chercher video_url (HQ) et video_alt_url (LQ)
         hq_match = re.search(r'video_url:\s*[\'"](.*?)[\'"]', config_json)
         lq_match = re.search(r'video_alt_url:\s*[\'"](.*?)[\'"]', config_json)
 
         hq_url = hq_match.group(1) if hq_match else None
         lq_url = lq_match.group(1) if lq_match else None
 
-        # Préférer la qualité HQ
         stream_url = hq_url or lq_url
 
     if stream_url:
-        # Ajouter headers pour la lecture
         stream_url += '|User-Agent={0}&Referer={1}'.format(
             utils.USER_AGENT,
             site.url
@@ -176,4 +186,20 @@ def Playvid(url, name, download=None):
         vp.progress.close()
     else:
         vp.progress.close()
-        utils.notify('Error', 'Could not extract video URL')
+        utils.notify(name, utils.i18n('not_found'))
+
+@site.register()
+def GotoPage(url, np, lp):
+    dialog = xbmcgui.Dialog()
+    pg = dialog.numeric(0, 'Enter Page number')
+    if pg:
+        if '=' in url:
+            url = re.sub(r'=\d+?$', f'={pg}', url)
+        else:
+            url = re.sub(r'/\d+/?$', f'/{pg}/', url)
+        # url = url.replace('/{}/?'.format(np), '/{}/?'.format(pg))
+        if int(lp) > 0 and int(pg) > int(lp):
+            utils.notify(msg='Out of range!')
+            return
+        contexturl = (utils.addon_sys + "?mode={}.List".format(site.name) + "&url=" + urllib_parse.quote_plus(url))
+        xbmc.executebuiltin('Container.Update(' + contexturl + ')')

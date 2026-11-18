@@ -2181,20 +2181,32 @@ def _bdecode(text, binary=False):
 
 def get_packed_data(html):
     packed_data = ''
-    for match in re.finditer(r'''(eval\s*\(function\(p,a,c,k,e,.*?)</script>''', html, re.DOTALL | re.I):
+    for match in re.finditer(
+        r'(eval\s*\(function\(p,a,c,k,e,.*?)</script>',
+        html,
+        re.DOTALL | re.I
+    ):
         r = match.group(1)
-        t = re.findall(r'(eval\s*\(function\(p,a,c,k,e,)', r, re.DOTALL | re.IGNORECASE)
-        if len(t) == 1:
-            if jsunpack.detect(r):
-                packed_data += jsunpack.unpack(r)
-        else:
-            t = r.split('eval')
-            t = ['eval' + x for x in t if x]
-            for r in t:
+        try:
+            t = re.findall(
+                r'(eval\s*\(function\(p,a,c,k,e,)',
+                r,
+                re.DOTALL | re.I
+            )
+            if len(t) == 1:
+
                 if jsunpack.detect(r):
                     packed_data += jsunpack.unpack(r)
-    return packed_data
+            else:
+                parts = r.split('eval')
+                parts = ['eval' + x for x in parts if x]
+                for item in parts:
 
+                    if jsunpack.detect(item):
+                        packed_data += jsunpack.unpack(item)
+        except Exception as e:
+            kodilog('UNPACK ERROR: %s' % e)
+    return packed_data
 
 class LookupInfo:
     def __init__(self, siteurl, url, default_mode, lookup_list, starthtml=None, stophtml=None):
@@ -2371,3 +2383,4 @@ def addKeywordFromContext(name):
     addKeyword(edited_keyword)
     notify('Keyword added', '"{}" added to search keywords'.format(edited_keyword[:50]))
     xbmc.executebuiltin('Container.Refresh')
+
