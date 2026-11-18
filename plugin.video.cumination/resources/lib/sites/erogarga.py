@@ -23,7 +23,8 @@ import xbmcgui
 from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
-from resources.lib.sites.spankbang import Playvid
+from resources.lib.sites.spankbang import Playvid as SpankbangPlayvid
+from resources.lib.sites.watcherotic import Play as WatcheroticPlayvid
 
 site = AdultSite('erogarga', '[COLOR hotpink]EroGarga[/COLOR]', 'https://www.erogarga.com/', 'erogarga.png', 'erogarga')
 site1 = AdultSite('fulltaboo', '[COLOR hotpink]FullTaboo[/COLOR]', 'https://fulltaboo.tv/', 'fulltaboo.png', 'fulltaboo')
@@ -73,7 +74,7 @@ def List(url):
     cm.append(('[COLOR deeppink]Lookup info[/COLOR]', 'RunPlugin(' + cm_lookupinfo + ')'))
     cm_related = (utils.addon_sys + "?mode=erogarga.Related&url=")
     cm.append(('[COLOR deeppink]Related videos[/COLOR]', 'RunPlugin(' + cm_related + ')'))
-    utils.videos_list(site, 'erogarga.Play', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip, img_options='|User-Agent=' + utils.USER_AGENT)
+    utils.videos_list(site, 'erogarga.Playvid', html, delimiter, re_videopage, re_name, re_img, re_duration=re_duration, re_quality=re_quality, contextm=cm, skip=skip, img_options='|User-Agent=' + utils.USER_AGENT)
 
     re_npurl = 'href="([^"]+)"[^>]*>Next' if '>Next' in html else 'class="current".+?href="([^"]+)"'
     re_npnr = r'/page/(\d+)[^>]*>Next' if '>Next' in html else r'class="current".+?rel="follow">(\d+)<'
@@ -117,25 +118,68 @@ def Search(url, keyword=None):
 
 
 @site.register()
-def Play(url, name, download=None):
+def Playvid(url, name, download=None):
     siteurl = getBaselink(url)
-
     videohtml = utils.getHtml(url, siteurl)
 
-    if 'koreanporn' in url:
-        vp = utils.VideoPlayer(name, download=download)
-        match = re.compile(r'<iframe src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
-        if match:
-            videohtml = utils.getHtml(match[0], url)
+    vp = utils.VideoPlayer(name, download=download)
+    match = re.compile(r'<iframe[^>]+src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    if match:
+        videolink = match[0]
+        if 'watcherotic.com' in videolink:
+            WatcheroticPlayvid(videolink, name, download=download)
+            return
+        elif '/player/play.php?vid=' in videolink:
+            vid = videolink.split('?vid=')[-1]
+            host = videolink.split('player/play.php')[0]
+            posturl = '{}player/ajax_sources.php'.format(host)
+            formdata = {'vid': vid, 'alternative': 'iframe', 'ord': '0'}
+            data = utils.postHtml(posturl, form_data=formdata)
+            data = data.replace(r'\/', '/')
+            jsondata = json.loads(data)
+            src = jsondata["source"]
+            if len(src) > 0:
+                videolink = src[0]["file"]
+            else:
+                formdata = {'vid': vid, 'alternative': 'mp4', 'ord': '0'}
+                data = utils.postHtml(posturl, form_data=formdata)
+                data = data.replace(r'\/', '/')
+                jsondata = json.loads(data)
+                videolink = jsondata["source"][0]["file"]
+        elif '/player-x.php?q=' in videolink:
+            vurl = videolink.split('?q=')[-1]
+            vurl = utils._bdecode(vurl)
+            vurl = urllib_parse.unquote_plus(vurl)
+            videolink = vurl.split('source src="')[-1].split('"')[0] + '|referer=' + siteurl
+
+        if vp.resolveurl.HostedMediaFile(videolink):
+            vp.play_from_link_to_resolve(videolink)
+        else:
+            vp.play_from_direct_link(videolink + '|referer=' + siteurl)
+    else:
         match = re.compile(r'<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+        if match:
+            videolink = match[0]
+            vp.play_from_direct_link(videolink + '|referer=' + url)
+
+    return
+    match = re.compile(r'<source src="([^"]+)"', re.DOTALL | re.IGNORECASE).findall(videohtml)
+    if match:
         vp.play_from_direct_link(match[0] + '|referer=' + url)
         return
 
-    vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"', direct_regex='file:"([^"]+)"')
+    vp = utils.VideoPlayer(name, download=download, regex='"file":"([^"]+)"', direct_regex='source src="([^"]+)"')
     match = re.compile(r'''<iframe[^>]+src=['"](h[^'"]+)['"]''', re.DOTALL | re.IGNORECASE).findall(videohtml)
 
     playerurl = match[0]
+    utils.kodilog('Player URL: {}'.format(playerurl))
+    if 'eporner' in playerurl:
+        from resources.lib.sites.eporner import Playvid as EpornerPlayvid
+        EpornerPlayvid(playerurl, name, download=download)
+        return
+
     if vp.resolveurl.HostedMediaFile(playerurl).valid_url():
+        utils.kodilog('Resolving URL: {}'.format(playerurl))
         vp.play_from_link_to_resolve(playerurl)
         return
     elif '/player-x.php?q=' in playerurl:
@@ -191,7 +235,7 @@ def Play(url, name, download=None):
 
     if 'spankbang' in videolink:
         videolink = videolink.replace('/embed/', '/video/')
-        Playvid(videolink, name, download=download)
+        SpankbangPlayvid(videolink, name, download=download)
     else:
         vp.play_from_direct_link(videolink)
 
