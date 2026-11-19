@@ -204,6 +204,7 @@
 						<description>Rating</description>
 						<width>258</width>
 						<height>53</height>
+						<visible>!Player.IsInternetStream</visible>
 						<control type="image">
 							<description>rating back</description>
 							<left>0</left>
