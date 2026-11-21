@@ -275,6 +275,7 @@
 				<font />
 				<texturefocus>OSDRateFO.png</texturefocus>
 				<texturenofocus>OSDRateNF.png</texturenofocus>
+				<visible>!Player.IsInternetStream</visible>
 				<onclick>setrating</onclick>
 			</control>
 			<control type="togglebutton" id="701">
