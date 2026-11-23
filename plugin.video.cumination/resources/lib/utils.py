@@ -40,7 +40,6 @@ from resources.lib.basics import (
     cookiePath, cum_image, cuminationicon, eod,
     favoritesdb, keys, searchDir, profileDir
 )
-from urllib.parse import urlparse
 from resources.lib.brotlidecpy import decompress
 from resources.lib.url_dispatcher import URL_Dispatcher
 from resources.lib.jsonrpc import toggle_debug
@@ -757,6 +756,7 @@ def PlayStream(name, url):
 
 def getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
     return cache.cacheFunction(_getHtml, url, referer, headers, NoCookie, data, error, ignoreCertificateErrors)
+
 
 def _getHtml(url, referer='', headers=None, NoCookie=None, data=None, error='return', ignoreCertificateErrors=False):
     # Reuse a valid FlareSolverr browser identity before entering the stock
@@ -1848,28 +1848,17 @@ class VideoPlayer():
         self.progress.update(90, "[CR]{0}[CR]".format(i18n('play_dlink')))
         self.play_from_direct_link(videourl)
 
-
     @_cancellable
     def play_from_link_list(self, links):
         use_universal = addon.getSetting("universal_resolvers") == "true"
 
         links = self.bypass_hosters(links)
-
-        sources = self._clean_urls([
-            self.resolveurl.HostedMediaFile(
-                x,
-                title=urlparse(x).netloc,
-                include_universal=use_universal
-            )
-            for x in links
-        ])
-
+        sources = self._clean_urls([self.resolveurl.HostedMediaFile(x, title=urllib_parse.urlparse(x).netloc, include_universal=use_universal) for x in links])
         if not sources:
             notify(i18n('oh_oh'), i18n('not_found'))
             return
 
         self._select_source(sources)
-
 
     @_cancellable
     def _select_source(self, sources):
@@ -1892,28 +1881,12 @@ class VideoPlayer():
                 start_idx = 0
 
         # Fallback circular:
-        ordered_sources = (
-            sources[start_idx:] +
-            sources[:start_idx]
-        )
+        ordered_sources = (sources[start_idx:] + sources[:start_idx])
 
         for pos, source in enumerate(ordered_sources, 1):
-            kodilog(
-                "Trying server {}/{}: {}".format(
-                    pos,
-                    len(ordered_sources),
-                    source.title
-                )
-            )
-
             if self.play_from_link_to_resolve(source):
-                kodilog(
-                    "Server OK: {}".format(source.title)
-                )
                 return
-
         notify(i18n('oh_oh'), i18n('not_found'))
-
 
     @_cancellable
     def play_from_link_to_resolve(self, source):
@@ -1921,54 +1894,25 @@ class VideoPlayer():
             self.play_from_link_list([source])
             return False
 
-        self.progress.update(
-            80,
-            "[CR]{0}[CR]{1} {2}".format(
-                i18n('to_smr'),
-                i18n('play_from'),
-                source.title
-            )
-        )
+        self.progress.update(80, "[CR]{0}[CR]{1} {2}".format(i18n('to_smr'), i18n('play_from'), source.title))
 
         try:
             link = source.resolve()
         except self.resolveurl.resolver.ResolverError:
             link = False
         except Exception as exc:
-            kodilog(
-                "Resolve exception on {}: {}".format(
-                    source.title,
-                    exc
-                )
-            )
+            kodilog("Resolve exception on {}: {}".format(source.title, exc))
             link = False
 
         if not link:
-            kodilog(
-                "Resolver failed: {}".format(
-                    source.title
-                )
-            )
+            kodilog("Resolver failed: {}".format(source.title))
 
-            notify(
-                i18n('rslv_fail'),
-                '{} {}'.format(
-                    source.title,
-                    i18n('not_rslv')
-                )
-            )
-
+            notify(i18n('rslv_fail'), '{} {}'.format(source.title, i18n('not_rslv')))
             return False
 
         self.progress.close()
 
-        playvid(
-            link,
-            self.name,
-            self.download,
-            IA_check=self.IA_check
-        )
-
+        playvid(link, self.name, self.download, IA_check=self.IA_check)
         return True
 
     @_cancellable
@@ -2181,11 +2125,7 @@ def _bdecode(text, binary=False):
 
 def get_packed_data(html):
     packed_data = ''
-    for match in re.finditer(
-        r'(eval\s*\(function\(p,a,c,k,e,.*?)</script>',
-        html,
-        re.DOTALL | re.I
-    ):
+    for match in re.finditer(r'(eval\s*\(function\(p,a,c,k,e,.*?)</script>', html, re.DOTALL | re.I):
         r = match.group(1)
         try:
             t = re.findall(
@@ -2207,6 +2147,7 @@ def get_packed_data(html):
         except Exception as e:
             kodilog('UNPACK ERROR: %s' % e)
     return packed_data
+
 
 class LookupInfo:
     def __init__(self, siteurl, url, default_mode, lookup_list, starthtml=None, stophtml=None):
@@ -2383,4 +2324,3 @@ def addKeywordFromContext(name):
     addKeyword(edited_keyword)
     notify('Keyword added', '"{}" added to search keywords'.format(edited_keyword[:50]))
     xbmc.executebuiltin('Container.Refresh')
-
