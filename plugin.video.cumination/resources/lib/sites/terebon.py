@@ -24,7 +24,7 @@ from six.moves import urllib_parse
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
 
-site = AdultSite('terebon', '[COLOR hotpink]Terebon[/COLOR]', 'https://b.terebon.net/', 'terebon.png', 'terebon')
+site = AdultSite('terebon', '[COLOR hotpink]Terebon[/COLOR]', 'https://c.terebon.net/', 'terebon.png', 'terebon')
 
 
 @site.register(default_mode=True)

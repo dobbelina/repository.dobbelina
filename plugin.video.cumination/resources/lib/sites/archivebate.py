@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-import hashlib
 import html as html_module
 import json
-import os
 import re
-import sys
-import xbmc
-import xbmcgui
-import xbmcvfs
 
 from resources.lib import utils
 from resources.lib.adultsite import AdultSite
@@ -103,6 +97,8 @@ class ArchivebateScraper:
 
         component_name, method_name = self._get_listing_target(url)
         utils.kodilog("Using component: " + component_name + ", method: " + method_name)
+        page_match = re.search(r'[?&]page=(\d+)(?:&|$)', url)
+        current_page = int(page_match.group(1)) if page_match else 1
 
         component = self._extract_livewire_component(page_html, component_name)
         if not component:
@@ -120,6 +116,11 @@ class ArchivebateScraper:
         csrf_token = csrf_match.group(1) if csrf_match else ""
 
         endpoint = "{}/livewire/message/{}".format(self.base_url, component_name)
+        update_params = []
+        if current_page > 1:
+            method_name = "gotoPage"
+            update_params = [current_page, "page"]
+
         payload = {
             "fingerprint": component.get("fingerprint", {}),
             "serverMemo": component.get("serverMemo", {}),
@@ -128,7 +129,7 @@ class ArchivebateScraper:
                 "payload": {
                     "id": component.get("fingerprint", {}).get("id", ""),
                     "method": method_name,
-                    "params": [],
+                    "params": update_params,
                 },
             }]
         }
@@ -170,6 +171,13 @@ class ArchivebateScraper:
             next_url = next_match.group(1)
             if not next_url.startswith("http"):
                 next_url = self.base_url + next_url
+        elif re.search(r'<button\b[^>]*\brel="next"[^>]*>', listing_html, re.IGNORECASE):
+            next_page = current_page + 1
+            if page_match:
+                next_url = url[:page_match.start(1)] + str(next_page) + url[page_match.end(1):]
+            else:
+                separator = '&' if '?' in url else '?'
+                next_url = url + separator + "page=" + str(next_page)
 
         return listing_html, next_url
 
@@ -205,7 +213,7 @@ class ArchivebateScraper:
         videos = []
         seen = set()
 
-        blocks = re.findall(r'(<section class="video_item">[\s\S]*?<\/section>)', listing_html, re.IGNORECASE)
+        blocks = re.findall(r'(<section\b[^>]*\bclass="[^"]*\bvideo_item\b[^"]*"[^>]*>[\s\S]*?<\/section>)', listing_html, re.IGNORECASE)
         utils.kodilog("Found " + str(len(blocks)) + " video blocks")
 
         for block in blocks:
@@ -213,9 +221,7 @@ class ArchivebateScraper:
             if not watch_match:
                 watch_match = re.search(r'href="(/watch/\d+)"', block, re.IGNORECASE)
 
-            profile_match = re.search(r'<a href="(https://archivebate\.com/profile/[^"]+)">([^<]+)<\/a>', block, re.IGNORECASE)
-            if not profile_match:
-                profile_match = re.search(r'href="(/profile/[^"]+)">([^<]+)<', block, re.IGNORECASE)
+            profile_match = re.search(r'<a\b[^>]*\bhref="(https://archivebate\.com/profile/[^"]+|/profile/[^"]+)"[^>]*>([^<]+)<\/a>', block, re.IGNORECASE)
 
             thumb_match = re.search(r'poster="([^"]+)"', block, re.IGNORECASE)
             if not thumb_match:
